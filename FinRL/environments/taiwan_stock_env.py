@@ -74,7 +74,9 @@ class TaiwanStockTradingEnv(gym.Env):
         commission_rate: float = 0.0015,
         tax_rate: float = 0.003,
         lookback_window: int = 60,
-        reward_func=None
+        reward_func=None,
+        initial_shares: int = 0,
+        initial_avg_cost: float = 0.0,
     ):
         """
         初始化交易環境
@@ -112,6 +114,10 @@ class TaiwanStockTradingEnv(gym.Env):
             self.reward_func = RewardFunction()
         else:
             self.reward_func = reward_func
+        
+        # 現有持股（用於載入真實部位）
+        self._initial_shares = initial_shares
+        self._initial_avg_cost = initial_avg_cost
         
         # =====================================================================
         # 環境狀態初始化
@@ -776,12 +782,12 @@ class TaiwanStockTradingEnv(gym.Env):
         # 重置狀態
         self.current_step = 0
         self.balance = self.initial_balance
-        self.position = 0
-        self.avg_cost = 0.0
-        self.total_cost = 0.0
+        self.position = self._initial_shares
+        self.avg_cost = self._initial_avg_cost if self._initial_shares > 0 else 0.0
+        self.total_cost = self.position * self.avg_cost if self.position > 0 else 0.0
         
         # 重置風險指標
-        self.peak_value = self.initial_balance
+        self.peak_value = self.initial_balance + self.position * self.df.iloc[0]['close']
         self.max_drawdown = 0.0
         
         # 重置 T+2 交割追蹤

@@ -52,13 +52,16 @@ class StockTrainer:
     單支股票的訓練器
     """
 
-    def __init__(self, ticker: str, df: pd.DataFrame, agent_type: str = "ppo"):
+    def __init__(self, ticker: str, df: pd.DataFrame, agent_type: str = "ppo",
+                 initial_shares: int = 0, initial_avg_cost: float = 0.0):
         self.ticker = ticker
         self.df = df
         self.agent_type = agent_type
         self.model = None
         self.env = None
         self.info = PORTFOLIO_HOLDINGS.get(ticker, {})
+        self.initial_shares = initial_shares
+        self.initial_avg_cost = initial_avg_cost
 
     def create_env(self):
         """建立交易環境"""
@@ -73,6 +76,8 @@ class StockTrainer:
             'commission_rate': 0.001425,
             'tax_rate': 0.003,
             'lookback_window': 60,
+            'initial_shares': self.initial_shares,
+            'initial_avg_cost': self.initial_avg_cost,
         }
 
         env = TaiwanStockTradingEnv(**env_config)
@@ -184,9 +189,18 @@ class PortfolioTrainer:
                 continue
 
             df = self.stock_data[ticker]
+            
+            # 從 PORTFOLIO_HOLDINGS 取得初始持股
+            holding = PORTFOLIO_HOLDINGS.get(ticker, {})
+            initial_shares = holding.get('shares', 0)
+            initial_avg_cost = holding.get('cost_basis', 0.0)
 
-            # 建立訓練器
-            trainer = StockTrainer(ticker, df, self.agent_type)
+            # 建立訓練器（含初始持股）
+            trainer = StockTrainer(
+                ticker, df, self.agent_type,
+                initial_shares=initial_shares,
+                initial_avg_cost=initial_avg_cost
+            )
             self.trainers[ticker] = trainer
 
             # 訓練
