@@ -33,7 +33,13 @@ PORTFOLIO_HOLDINGS = {
         "ticker_yf": "00646.TW",
         "ticker_local": "00646",
     },
-    # 00679B 元大美債20年 - Yahoo Finance 無法取得資料（可能已下市或改碼）
+    "00679B.TW": {
+        "name": "元大美債20年",
+        "shares": 23000,
+        "cost_basis": None,
+        "ticker_yf": "00679B.TW",
+        "ticker_local": "00679B",
+    },
     "00713.TW": {
         "name": "元大台灣高息低波",
         "shares": 4686,
@@ -41,7 +47,13 @@ PORTFOLIO_HOLDINGS = {
         "ticker_yf": "00713.TW",
         "ticker_local": "00713",
     },
-    # 00751B 元大AAA至A公司債 - Yahoo Finance 無法取得資料（可能已下市或改碼）
+    "00751B.TW": {
+        "name": "元大AAA至A公司債",
+        "shares": 1000,
+        "cost_basis": None,
+        "ticker_yf": "00751B.TW",
+        "ticker_local": "00751B",
+    },
     "00878.TW": {
         "name": "國泰永續高股息",
         "shares": 13836,
@@ -68,7 +80,7 @@ INITIAL_WEIGHTS = None
 TRADE_UNIT = 1000
 
 # 是否為 ETF
-ETF_TICKERS = ["0050.TW", "0056.TW", "00646.TW", "00713.TW", "00878.TW"]
+ETF_TICKERS = ["0050.TW", "0056.TW", "00646.TW", "00679B.TW", "00713.TW", "00751B.TW", "00878.TW"]
 STOCK_TICKERS = ["2884.TW"]
 
 # ============================================================================
