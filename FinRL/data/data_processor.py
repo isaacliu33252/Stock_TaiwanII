@@ -203,7 +203,7 @@ class DataProcessor:
         df = df.copy()
         
         # === 漲跌停檢測 ===
-        if 'close' in df.columns and 'close' in df.columns:
+        if 'close' in df.columns:
             # 計算每日價格變化
             prev_close = df['close'].shift(1)
             price_change = (df['close'] - prev_close) / prev_close

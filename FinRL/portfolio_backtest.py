@@ -120,31 +120,22 @@ class PortfolioBacktester:
         value_df = pd.concat(portfolio_values, axis=1)
         value_df = value_df.ffill().fillna(0)
 
-        # 總組合價值
+        # 總組合價值（持股 * 歷史股價）
         value_df['total'] = value_df.sum(axis=1)
 
-        # 加上現金 (假設初始資金投入組合)
-        # 計算初始總成本
-        first_valid = value_df.iloc[0]
-        initial_investment = first_valid.sum()
-        cash = self.initial_cash - initial_investment
+        # 初始總值 = 第一天各股收盤價 * 股數 之和
+        self.initial_total = value_df['total'].iloc[0]
 
-        value_df['cash'] = cash
-        value_df['portfolio_total'] = value_df['total'] + cash
-
-        # 計算每日報酬率
-        value_df['daily_return'] = value_df['portfolio_total'].pct_change()
+        # 計算每日報酬率（相對於初始總值）
+        value_df['daily_return'] = value_df['total'].pct_change()
 
         # 累計報酬率
-        value_df['cumulative_return'] = (
-            value_df['portfolio_total'] / self.initial_cash - 1
-        )
+        value_df['cumulative_return'] = value_df['total'] / self.initial_total - 1
 
         self.portfolio_value = value_df
 
         print(f"\n資料範圍: {value_df.index[0].date()} ~ {value_df.index[-1].date()}")
-        print(f"初始投資: {initial_investment:,.0f} (持股) + {cash:,.0f} (現金)")
-        print(f"初始總值: {self.initial_cash:,.0f}")
+        print(f"初始總值（歷史起點）: {self.initial_total:,.0f}")
 
         return value_df
 
@@ -155,7 +146,8 @@ class PortfolioBacktester:
 
         df = self.portfolio_value
 
-        total_return = df['portfolio_total'].iloc[-1] / self.initial_cash - 1
+        initial_total = self.initial_total
+        total_return = df['total'].iloc[-1] / initial_total - 1
         annual_return = (1 + total_return) ** (252 / len(df)) - 1
 
         # 波動率 (年化)
@@ -180,7 +172,7 @@ class PortfolioBacktester:
         win_rate = win_days / total_days if total_days > 0 else 0
 
         # 月化報酬
-        monthly = df['portfolio_total'].resample('ME').last()
+        monthly = df['total'].resample('ME').last()
         monthly_returns = monthly.pct_change().dropna()
         monthly_win_rate = (monthly_returns > 0).sum() / len(monthly_returns) if len(monthly_returns) > 0 else 0
 
@@ -194,7 +186,7 @@ class PortfolioBacktester:
             "Calmar Ratio": f"{calmar:.3f}",
             "勝率 (日)": f"{win_rate*100:.1f}%",
             "勝率 (月)": f"{monthly_win_rate*100:.1f}%",
-            "最終市值": f"{df['portfolio_total'].iloc[-1]:,.0f}",
+            "最終市值": f"{df['total'].iloc[-1]:,.0f}",
         }
 
         return self.metrics
@@ -250,8 +242,8 @@ class PortfolioBacktester:
 
             # 1. 組合價值曲線
             ax1 = axes[0]
-            ax1.plot(df.index, df['portfolio_total'], label='投資組合', linewidth=2)
-            ax1.axhline(self.initial_cash, color='gray', linestyle='--', label='初始資金')
+            ax1.plot(df.index, df['total'], label='投資組合', linewidth=2)
+            ax1.axhline(self.initial_total, color='gray', linestyle='--', label='初始總值')
             ax1.set_title('投資組合價值', fontsize=14)
             ax1.set_ylabel('價值 (TWD)')
             ax1.legend()
@@ -321,7 +313,7 @@ class PortfolioBacktester:
             f.write("=" * 60 + "\n\n")
             f.write(f"回測日期: {datetime.now()}\n")
             f.write(f"期間: {self.metrics.get('期間', 'N/A')}\n")
-            f.write(f"初始資金: {self.initial_cash:,.0f}\n\n")
+            f.write(f"初始總值: {self.initial_total:,.0f}\n\n")
 
             for key, value in self.metrics.items():
                 f.write(f"  {key}: {value}\n")

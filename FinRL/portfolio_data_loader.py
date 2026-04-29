@@ -35,8 +35,8 @@ try:
     from config import TRAIN_START_DATE, TRAIN_END_DATE, TEST_START_DATE, TEST_END_DATE
 except ImportError:
     # fallback
-    ALL_TICKERS = ["0050.TW", "0056.TW", "00646.TW", "00679B.TW",
-                   "00713.TW", "00751B.TW", "00878.TW", "2884.TW"]
+    ALL_TICKERS = ["0050.TW", "0056.TW", "00646.TW", "00679B.TWO",
+                   "00713.TW", "00751B.TWO", "00878.TW", "2884.TW"]
     PORTFOLIO_HOLDINGS = {}
     BACKTEST_START = "2021-01-01"
     BACKTEST_END = "2024-12-31"
@@ -75,6 +75,12 @@ def download_all_stocks(
     print(f"[Portfolio Data Loader] 開始下載 {len(tickers)} 檔股票...")
     print(f"[Portfolio Data Loader] 日期區間: {start_date} ~ {end_date}")
 
+    # TW/TWO mapping for Yahoo Finance
+    YF_TICKER_MAP = {
+        "00679B.TW": "00679B.TWO",
+        "00751B.TW": "00751B.TWO",
+    }
+
     for i, ticker in enumerate(tickers):
         cache_file = cache_dir / f"{ticker.replace('.', '_')}.parquet"
 
@@ -88,11 +94,14 @@ def download_all_stocks(
             except Exception:
                 pass
 
+        # 轉換為 Yahoo Finance ticker
+        yf_ticker = YF_TICKER_MAP.get(ticker, ticker)
+        
         # 下載
-        print(f"  [{i+1}/{len(tickers)}] 下載 {ticker}...", end=" ", flush=True)
+        print(f"  [{i+1}/{len(tickers)}] 下載 {ticker}... (YF: {yf_ticker})", end=" ", flush=True)
         try:
-            yf_ticker = yf.Ticker(ticker)
-            df = yf_ticker.history(start=start_date, end=end_date, interval=interval)
+            yf_ticker_obj = yf.Ticker(yf_ticker)
+            df = yf_ticker_obj.history(start=start_date, end=end_date, interval=interval)
 
             if df.empty:
                 print("無數據")

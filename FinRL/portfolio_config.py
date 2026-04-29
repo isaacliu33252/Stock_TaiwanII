@@ -37,7 +37,7 @@ PORTFOLIO_HOLDINGS = {
         "name": "元大美債20年",
         "shares": 23000,
         "cost_basis": None,
-        "ticker_yf": "00679B.TW",
+        "ticker_yf": "00679B.TWO",
         "ticker_local": "00679B",
     },
     "00713.TW": {
@@ -51,7 +51,7 @@ PORTFOLIO_HOLDINGS = {
         "name": "元大AAA至A公司債",
         "shares": 1000,
         "cost_basis": None,
-        "ticker_yf": "00751B.TW",
+        "ticker_yf": "00751B.TWO",
         "ticker_local": "00751B",
     },
     "00878.TW": {

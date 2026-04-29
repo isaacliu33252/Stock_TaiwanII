@@ -214,6 +214,7 @@ class BacktestEngine:
         # Sortino 比率 (只用於下行風險)
         # =====================================================================
         # Sortino = (平均報酬 - 目標報酬) / 下行標準差
+        target_return = risk_free_rate  # 目標報酬率 = 無風險利率
         downside_returns = daily_returns[daily_returns < target_return]
         if len(downside_returns) > 1 and downside_returns.std() > 0:
             excess_return = daily_returns.mean() - target_return
