@@ -1,74 +1,60 @@
 # ============================================================================
 # Portfolio Configuration - 投資組合配置
 # ============================================================================
-# 用戶持股明細
-#
-# 更新日期: 2026-04-28
-#
-# 格式:
-#   ticker: Yahoo Finance 格式代碼
-#   name: 中文名稱
-#   shares: 持有股數
-#   cost_basis: 成本價 (可選，填入後可用於計算未實現損益)
+# 自動從 taiwan_stock_.xlsx 讀取持股資料
+# ============================================================================
 
-PORTFOLIO_HOLDINGS = {
-    "0050.TW": {
-        "name": "元大台灣50",
-        "shares": 1036,
-        "cost_basis": None,
-        "ticker_yf": "0050.TW",
-        "ticker_local": "0050",
-    },
-    "0056.TW": {
-        "name": "元大高股息",
-        "shares": 16429,
-        "cost_basis": None,
-        "ticker_yf": "0056.TW",
-        "ticker_local": "0056",
-    },
-    "00646.TW": {
-        "name": "元大S&P500",
-        "shares": 32,
-        "cost_basis": None,
-        "ticker_yf": "00646.TW",
-        "ticker_local": "00646",
-    },
-    "00679B.TW": {
-        "name": "元大美債20年",
-        "shares": 23000,
-        "cost_basis": None,
-        "ticker_yf": "00679B.TWO",
-        "ticker_local": "00679B",
-    },
-    "00713.TW": {
-        "name": "元大台灣高息低波",
-        "shares": 4686,
-        "cost_basis": None,
-        "ticker_yf": "00713.TW",
-        "ticker_local": "00713",
-    },
-    "00751B.TW": {
-        "name": "元大AAA至A公司債",
-        "shares": 1000,
-        "cost_basis": None,
-        "ticker_yf": "00751B.TWO",
-        "ticker_local": "00751B",
-    },
-    "00878.TW": {
-        "name": "國泰永續高股息",
-        "shares": 13836,
-        "cost_basis": None,
-        "ticker_yf": "00878.TW",
-        "ticker_local": "00878",
-    },
-    "2884.TW": {
-        "name": "玉山金",
-        "shares": 20,
-        "cost_basis": None,
-        "ticker_yf": "2884.TW",
-        "ticker_local": "2884",
-    },
+import pandas as pd
+from pathlib import Path
+
+_EXCEL_PATH = Path(__file__).parent / "taiwan_stock_.xlsx"
+
+# 代碼對照表（Excel 欄位名 → Yahoo Finance 代碼）
+_TICKER_MAP = {
+    "0050":  "0050.TW",
+    "0056":  "0056.TW",
+    "00646": "00646.TW",
+    "00679B": "00679B.TWO",
+    "00713": "00713.TW",
+    "00751B": "00751B.TWO",
+    "00878": "00878.TW",
+    "2884":  "2884.TW",
 }
+
+# 名字對照表
+_NAME_MAP = {
+    "0050":  "元大台灣50",
+    "0056":  "元大高股息",
+    "00646": "元大S&P500",
+    "00679B": "元大美債20年",
+    "00713": "元大台灣高息低波",
+    "00751B": "元大AAA至A公司債",
+    "00878": "國泰永續高股息",
+    "2884":  "玉山金",
+}
+
+def _load_holdings() -> dict:
+    """從 Excel 檔讀取持股資料，自動對應 Yahoo Finance 代碼。"""
+    df = pd.read_excel(_EXCEL_PATH, header=0)
+    row = df.iloc[0]
+
+    holdings = {}
+    for col in df.columns[1:]:  # 跳過第一欄（標籤欄）
+        # 從欄位名解析代碼（如 "元大台灣50 \n0050" → "0050"）
+        code = col.split("\n")[-1].strip()
+        shares = int(row[col])
+
+        yf_ticker = _TICKER_MAP.get(code, code + ".TW")
+        holdings[yf_ticker] = {
+            "name":         _NAME_MAP.get(code, code),
+            "shares":       shares,
+            "cost_basis":   None,
+            "ticker_yf":    yf_ticker,
+            "ticker_local": code,
+        }
+    return holdings
+
+PORTFOLIO_HOLDINGS = _load_holdings()
 
 # 所有股票代碼列表
 ALL_TICKERS = list(PORTFOLIO_HOLDINGS.keys())
@@ -80,7 +66,7 @@ INITIAL_WEIGHTS = None
 TRADE_UNIT = 1000
 
 # 是否為 ETF
-ETF_TICKERS = ["0050.TW", "0056.TW", "00646.TW", "00679B.TW", "00713.TW", "00751B.TW", "00878.TW"]
+ETF_TICKERS = [t for t in ALL_TICKERS if t != "2884.TW"]
 STOCK_TICKERS = ["2884.TW"]
 
 # ============================================================================
