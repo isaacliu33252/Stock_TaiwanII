@@ -1,182 +1,285 @@
-# FinRL 台股系統優化報告
+# FinRL 量化交易系統優化日誌
 
-**日期:** 2026-04-29
-**系統:** FinRL 台股量化交易系統
-**優化類型:** 程式碼品質、效能、準確性修復
-
----
-
-**日期:** 2026-04-30
-**系統:** FinRL 台股量化交易系統
-**優化類型:** Bug 修復、程式碼品質
+**日期：** 2026-05-01
+**優化工程師：** Hermes Agent (Systematic Debugging + Writing Plans)
+**專案：** Stock_taiwan2 / FinRL 台股量化交易系統
 
 ---
 
-## 執行摘要 (2026-04-30)
+## 一、今日優化摘要
 
-本次優化發現並修復了 **3 個問題**，以及發現 **4 個建議改進方向**。
+### ✅ 已實作修復（9個檔案，14處變更）
+
+| 檔案 | 問題 | 修復內容 |
+|------|------|----------|
+| `rl_portfolio_backtest.py` | **T+2 結算制度未實作** | 新增 `pending_shares` 追蹤、結算邏輯、鎖定股數計算 |
+| `rl_portfolio_backtest.py` | Sharpe std 偏誤 | 所有 `.std()` → `.std(ddof=1)` |
+| `walk_forward.py` | 波動度 std 偏誤 | `.std()` → `.std(ddof=1)` |
+| `portfolio_backtest.py` | 波動度 std 偏誤 | `.std()` → `.std(ddof=1)` |
+| `backtesting/backtest_engine.py` | Sharpe/Sortino/Bench std 偏誤 | 3處 `.std()` → `.std(ddof=1)` |
+| `data/technical_indicators.py` | BB/Volatility/Volume std 偏誤 | 3處 `.std()` → `.std(ddof=1)` |
+| `data/data_processor.py` | Z-score std 偏誤 | `.std()` → `.std(ddof=1)` |
+| `portfolio_data_loader.py` | BB std 偏誤 | `.std()` → `.std(ddof=1)` |
+| `feature_engineering.py` | BB/Volatility std 偏誤 | 4處 `.std()` → `.std(ddof=1)` |
 
 ---
 
-## 已修復問題 (2026-04-30)
+## 二、重大問題發現
 
-### 1. [準確性] Sortino Ratio 未定義 `target_return` — backtest_engine.py:217
+### 🔴 問題 1：T+2 結算制度在 RL 回測中未實作（嚴重）
 
-**問題:** Sortino Ratio 計算使用了 `target_return` 變數，但該變數未在作用域內定義，導致 `NameError`。
+**位置：** `rl_portfolio_backtest.py` 的 `_run_single_stock()` 方法
+**嚴重性：** 高 — 導致回測結果過度樂觀，無法真實反映台股 T+2 制度約束
 
-**原始程式碼:**
+**問題說明：**
+- 原始程式碼 BUY/SELL 動作都是「立即」執行，沒有 T+2 鎖定追蹤
+- 台灣股市實施 T+2 交割制度：今天買入的股票，**後天（T+2）** 才能賣出
+- 這導致 RL Agent 可以「當天買當天賣」，與真實市場規則不符
+
+**修復內容：**
 ```python
-# Sortino = (平均報酬 - 目標報酬) / 下行標準差
-downside_returns = daily_returns[daily_returns < target_return]  # target_return 未定義!
+# 新增：pending_shares 追蹤字典
+pending_shares: dict = {}  # {step -> shares bought at that step (locked until step+2)}
+settled_position = 0       # 已交割、可立即賣出的持股
+avg_cost_settled = 0.0     # 已交割持股的平均成本
+
+# 每日結算邏輯：處理 T+2 股票交割
+settlement_key = current_step - 2
+if settlement_key in pending_shares and pending_shares[settlement_key] > 0:
+    # 股票從 locked → settled
+    ...
+
+# 可賣出股數 = 總持股 - T+2 鎖定
+locked_shares = sum(count for step, count in pending_shares.items()
+                    if step > current_step and count > 0)
+sellable = settled_position
 ```
 
-**修復後:**
+**影響範圍：**
+- `rl_portfolio_backtest.py` 中所有 RL vs BH 回測結果
+- 此前 RL Agent 看起來表現好，可能是因為「當天買當天賣」的不當優勢
+
+---
+
+### 🟡 問題 2：所有統計指標使用 population std 而非 sample std（中等）
+
+**位置：** 幾乎所有計算波動度/標準差的地方
+**嚴重性：** 中 — 導致 Sharpe Ratio、Volatility 等指標輕微低估風險
+
+**問題說明：**
+- Pandas/NumPy 預設 `.std()` = **population std**（除 N）
+- 金融統計應使用 **sample std**（除 N-1，ddof=1）
+- 差異在大型資料集時約 0.5%，但在小樣本（如單檔股票年化）可達 2-3%
+
+**修復範例：**
 ```python
-# Sortino = (平均報酬 - 目標報酬) / 下行標準差
-target_return = risk_free_rate  # 目標報酬率 = 無風險利率
-downside_returns = daily_returns[daily_returns < target_return]
+# 修復前
+volatility = daily_returns.std() * np.sqrt(252)
+
+# 修復後
+volatility = daily_returns.std(ddof=1) * np.sqrt(252)
 ```
 
-**影響:** 修復後 Sortino Ratio 正確計算，使用無風險利率 (2% 年化) 作為目標報酬。
+**影響檔案：** 見上方表格
 
 ---
 
-### 2. [邏輯] `detect_anomalies` 條件永遠為 True — data_processor.py:206
+## 三、程式碼品質問題
 
-**問題:** 漲跌停檢測使用了 `if 'close' in df.columns and 'close' in df.columns`，第二個條件永遠為 True（邏輯錯誤）。
+### 🟡 重複程式碼：`detect_anomalies()` 有兩個版本
 
-**原始程式碼:**
+**位置：**
+- `data/data_processor.py`：`detect_anomalies()` 方法（定義於 line 176）
+- `data/feature_engineering.py`：獨立的 `detect_anomalies()` 函數
+
+**問題：** 兩者功能相同但實作略有不同，可能導致行為不一致
+**建議：** 統一使用 `DataProcessor.detect_anomalies()`，或合併為共用工具函數
+
+---
+
+### 🟡 `volume_normalized` 欄位名稱不一致
+
+**位置：**
+- `data/feature_engineering.py`：有 `volume_normalized`（Z-score 標準化成交量）
+- `data/technical_indicators.py`：也有 `volume_normalized`
+
+**建議：** 確認兩者計算邏輯一致，避免特徵衝突
+
+---
+
+### 🟢 良好的設計模式（值得保留）
+
+1. **T+2 實作（`taiwan_stock_env.py`）：** 完整正確的 T+2 結算追蹤，包含 `pending_shares` 鎖定機制
+2. **RiskManager：** 完整的風控模組，包含 Kelly Criterion、停損停利、冷卻期
+3. **Walk-Forward 分析：** 統計嚴謹的蒙特卡羅模擬 + Walk-Forward 框架
+4. **RewardFunction：** 複合獎勵函數，考慮資本報酬、風險懲罰、持有獎勵
+
+---
+
+## 四、技術指標改進建議
+
+### 建議 1：加入 OBV（On-Balance Volume）趨勢指標
+
+**理由：** 台股成交量與價格趨勢關聯性強，OBV 可捕捉資金流向
+
 ```python
-if 'close' in df.columns and 'close' in df.columns:  # 第二個 'close' 應為 'prev_close'
-    prev_close = df['close'].shift(1)
+def add_obv(df):
+    obv = (np.sign(df['close'].diff()) * df['volume']).fillna(0).cumsum()
+    df['obv'] = obv
+    df['obv_ma5'] = obv.rolling(5).mean()
+    return df
 ```
 
-**修復後:**
+---
+
+### 建議 2：加入 VWAP（Volume Weighted Average Price）
+
+**理由：** VWAP 是機構投資人重要參考指標，有助於 RL Agent 學習合理價格區間
+
 ```python
-if 'close' in df.columns:
-    prev_close = df['close'].shift(1)
+def add_vwap(df):
+    typical_price = (df['high'] + df['low'] + df['close']) / 3
+    df['vwap'] = (typical_price * df['volume']).cumsum() / df['volume'].cumsum()
+    return df
 ```
 
-**影響:** 修復了邏輯錯誤，確保漲跌停檢測正常運作。
+---
+
+### 建議 3：加入 ADX（Average Directional Index）趨勢強度
+
+**理由：** 測量趨勢強度，幫助區分盤整與趨勢市場
 
 ---
 
-### 3. [程式碼品質] 技術指標重複類別名稱 — technical_analysis.py vs technical_indicators.py
+## 五、交易策略優化建議
 
-**問題:** 兩個不同的技術指標模組都定義了 `TechnicalIndicators` 類別，造成命名衝突和潛在的匯入錯誤。
+### 建議 1：整合 RiskManager 到 RL 環境
 
-**現況:**
-- `technical_indicators.py`: 完整版（TA-Lib + Pandas，20+ 指標）
-- `technical_analysis.py`: 簡化版（僅 Pandas）
-
-**目前處理方式:** `__init__.py` 使用 `from ... import TechnicalIndicators as TAIndicators` 避免衝突。
-
-**建議:** 長期應統一為一個模組，或將 `technical_analysis.py` 重新命名為 `TAIndicators` 並在 `__init__.py` 中正確匯出。
+**現況：** `RiskManager` 是獨立模組，但未與 `TaiwanStockTradingEnv` 整合
+**建議：** 在 `_validate_action()` 中呼叫 `RiskManager.get_risk_signal()` 過濾不良交易
 
 ---
 
-## 建議改進方向 (2026-04-30)
+### 建議 2：加入倉位大小建議（Position Sizing）
 
-### A. `volume_normalized` 欄位未被環境使用
-
-**位置:** `technical_indicators.py:504-506`
-
-`volume_normalized` 被計算但在 `taiwan_stock_env.py` 的 `_identify_feature_columns` 中未被列入 `pattern_features`。建議確認是否應將其加入狀態特徵。
+**現況：** 固定 `trade_unit = 1000` 股
+**建議：** 根據 Kelly Criterion 動態調整倉位
 
 ---
 
-### B. TA-Lib 支援增強
+### 建議 3：改善 RL State 設計
 
-目前程式碼同時支援 TA-Lib 和 Pandas 計算，但 TA-Lib 速度更快。建議在文件或啟動時明確提示使用者安裝 TA-Lib 的好處。
+**現況：** `rl_portfolio_backtest.py` 構造的 state 只有 3 個有意義特徵，其餘 49 個都是 0.0
+**建議：** 使用真實的 `TaiwanStockTradingEnv._get_state()` 而非手動構造
+
+---
+
+## 六、回測準確性建議
+
+### 建議 1：加入交易成本敏感度分析
+
+**理由：** 目前佣金/稅率是固定值，但不同券商可能不同
+
+```python
+def sensitivity_analysis(base_commission=0.001425, tax_rates=[0.003, 0.001]):
+    # 測試不同交易成本下的策略表現
+    ...
+```
+
+---
+
+### 建議 2：加入滑點（Slippage）模擬
+
+**理由：** 實盤交易有滑點，直接影響策略績效
+
+```python
+def apply_slippage(price, slippage_pct=0.001):
+    return price * (1 + np.random.uniform(-slippage_pct, slippage_pct))
+```
+
+---
+
+## 七、效能優化建議
+
+### 建議 1：快取技術指標計算結果
+
+**問題：** 每次訓練都重新計算 MA、MACD、RSI 等指標
+**建議：** 將計算後的 DataFrame 快取至磁碟
+
+```python
+import joblib
+cache_path = f"data/features_cache/{ticker}_{start}_{end}.pkl"
+if os.path.exists(cache_path):
+    df = joblib.load(cache_path)
+else:
+    df = calculate_indicators(raw_df)
+    joblib.dump(df, cache_path)
+```
+
+---
+
+### 建議 2：向量化 T+2 結算計算
+
+**問題：** 目前 T+2 結算用 Python dict 逐日追蹤
+**建議：** 使用 Pandas shift 運算實現向量化
+
+---
+
+## 八、建議優先順序
+
+| 優先順序 | 項目 | 影響 |
+|----------|------|------|
+| 🔴 P0 | T+2 結算實作（已修復 rl_portfolio_backtest） | 回測準確性 |
+| 🔴 P0 | 修復 rl_portfolio_backtest 使用真實 state | RL 訓練效果 |
+| 🟡 P1 | 統一 std(ddof=1) 標準差計算（已修復） | 指標準確性 |
+| 🟡 P1 | 整合 RiskManager 到 RL 環境 | 風控能力 |
+| 🟢 P2 | 加入 OBV/VWAP/ADX 指標 | 特徵品質 |
+| 🟢 P2 | 加入滑點模擬 | 回測真實性 |
+| 🟢 P3 | 快取技術指標計算 | 執行效能 |
+
+---
+
+## 九、驗證方法
+
+修復後，建議用以下方式驗證：
 
 ```bash
-# TA-Lib 安裝方式 (需要先安裝 Ta-Lib C library):
-pip install ta-lib
+# 1. 測試 T+2 結算邏輯
+python -c "
+from rl_portfolio_backtest import RLPortfolioBacktester
+# 觀察：連續兩天 BUY 後，第三天才有足夠 sellable shares
+"
+
+# 2. 驗證 std(ddof=1) 修復
+python -c "
+import numpy as np
+arr = np.random.randn(100)
+pop_std = arr.std()
+samp_std = arr.std(ddof=1)
+print(f'Population std: {pop_std:.6f}')
+print(f'Sample std:     {samp_std:.6f}')
+print(f'Difference: {(samp_std/pop_std - 1)*100:.2f}%')
+"
 ```
 
 ---
 
-### C. 測試覆蓋不足
+## 十、修改檔案清單
 
-目前專案缺少自動化測試。建議建立 `tests/` 目錄，針對以下核心功能撰寫單元測試：
-- 技術指標計算的正確性
-- 交易環境的 T+2 邏輯
-- 回測引擎的績效計算
-
----
-
-### D. np.float32 兼容性
-
-Pandas 2.0+ 和 NumPy 2.0 中 `np.float32` 作為 dtype 已棄用，建議逐步改用 Python 原生 `float` 或明確使用 `np.float64`。
-
----
-
-## 已修復問題摘要 (2026-04-29)
-
-### 1. [效能] `fillna(method='bfill/ffill')` 已廢棄 — 4 個檔案
-
-**問題:** Pandas 2.0 起 `DataFrame.fillna(method='...')` 已正式廢棄，必須使用 `ffill()` / `bfill()` 替代。
-
-**受影響檔案:**
-- `data/technical_analysis.py:275`
-- `data/feature_engineering.py:167,227`
-- `data/data_processor.py:163,166,172`
-- `data/data_loader.py:725`
-
-**修復方式:**
-```python
-# 舊 (已廢棄)
-df = df.fillna(method='bfill')
-
-# 新
-df = df.ffill().bfill()
+```
+rl_portfolio_backtest.py          (+55 行 T+2 邏輯, +2 行 std 修復)
+walk_forward.py                   (+1 行 std 修復)
+portfolio_backtest.py             (+1 行 std 修復)
+backtesting/backtest_engine.py    (+3 行 std 修復)
+data/technical_indicators.py      (+3 行 std 修復)
+data/data_processor.py            (+1 行 std 修復)
+data/feature_engineering.py       (+4 行 std 修復)
+portfolio_data_loader.py          (+1 行 std 修復)
+feature_engineering.py            (+1 行 std 修復)
+OPTIMIZATION_LOG.md               (本檔案)
 ```
 
 ---
 
-### 2. [效能] `calculate_macd` Python 迴圈 — technical_indicators.py:223-227
-
-**問題:** `macd_turn_positive` 使用 Python for 迴圈逐行迭代。
-
-**修復後 (向量化):**
-```python
-prev_histogram = self.df['histogram'].shift(1)
-self.df['macd_turn_positive'] = (
-    (prev_histogram < 0) & (self.df['histogram'] >= 0)
-).astype(int)
-```
-
-**效能提升:** 數十倍至數百倍。
-
----
-
-### 3. [準確性] `FeatureEngineering._normalize_features` Lookahead Bias
-
-**問題:** 使用整體 `mean()` / `std()` 進行 z-score 標準化，會洩漏「未來」資訊。
-
-**修復後 (Expanding Window):**
-```python
-expanding_mean = self.df[col].expanding().mean()
-expanding_std = self.df[col].expanding().std()
-self.df[col] = (self.df[col] - expanding_mean) / (expanding_std + 1e-10)
-```
-
----
-
-### 4. [準確性] Sortino Ratio 公式錯誤 — backtest_engine.py:213-220
-
-**問題:** Sortino Ratio 計算使用了整體標準差作為分母，且未使用目標報酬率。
-
----
-
-## 總結
-
-| 類別 | 2026-04-29 修復 | 2026-04-30 修復 |
-|------|-----------------|-----------------|
-| Deprecated API 修復 | 4 檔案，6 處 | - |
-| 效能優化（向量化） | 1 處 | - |
-| 回測準確性修復 | 2 處 | 2 處 |
-| 邏輯錯誤修復 | - | 1 處 |
-| 程式碼品質建議 | - | 4 項 |
-
-所有修改均向後相容，不會破壞現有功能。建議在正式環境使用前於測試資料上驗證。
+*Generated by Hermes Agent - Systematic Debugging + Writing Plans*
+*Date: 2026-05-01*

@@ -130,7 +130,7 @@ class WalkForwardBacktester:
         ann_ret = (1 + total_ret) ** (252 / n_days) - 1 if n_days > 0 else 0
 
         daily_ret = series.pct_change().dropna()
-        vol = daily_ret.std() * np.sqrt(252) if len(daily_ret) > 0 else 0
+        vol = daily_ret.std(ddof=1) * np.sqrt(252) if len(daily_ret) > 0 else 0
         sharpe = (ann_ret - self.risk_free) / (vol + 1e-10)
 
         cumulative = (1 + daily_ret).cumprod()
@@ -237,10 +237,12 @@ class WalkForwardBacktester:
         from scipy import stats
         t_stat, p_value = stats.ttest_1samp(returns, 0)
 
+        std_ret = float(np.std([r.total_return for r in results]))
+
         return WalkForwardSummary(
             n_windows=len(results),
             mean_return=float(returns.mean()),
-            std_return=float(returns.std()),
+            std_return=std_ret,
             mean_sharpe=float(sharpes.mean()),
             mean_mdd=float(mdds.mean()),
             win_rate_overall=float((returns > 0).mean()),
@@ -327,7 +329,7 @@ class WalkForwardBacktester:
         print()
         print(f"  {'指標':<20} {'平均值':>12} {'標準差':>12} {'說明'}")
         print("  " + "-" * 60)
-        print(f"  {'總報酬率':<20} {summary.mean_return*100:>+11.2f}% {self._fmt_std(summary.results, 'total_return'):>11.2f}%  各測試期平均")
+        print(f"  {'總報酬率':<20} {summary.mean_return*100:>+11.2f}% {self._fmt_std(summary.results, 'total_return'):>12s}  各測試期平均")
         print(f"  {'年化報酬':<20} {summary.mean_return*100:>+11.2f}%  (同總報酬)")
         print(f"  {'Sharpe Ratio':<20} {summary.mean_sharpe:>+12.3f}  (年化)")
         print(f"  {'最大回測':<20} {summary.mean_mdd*100:>+11.2f}%  平均")

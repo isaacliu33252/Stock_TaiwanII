@@ -32,7 +32,7 @@ from portfolio_config import (
     SAVE_FREQUENCY, EVAL_FREQUENCY
 )
 from portfolio_data_loader import download_all_stocks, merge_portfolio_data
-from config import PPO_CONFIG, A2C_CONFIG, SAC_CONFIG
+from config import PPO_CONFIG, A2C_CONFIG
 
 
 def setup_imports():
@@ -65,7 +65,7 @@ class StockTrainer:
 
     def create_env(self):
         """建立交易環境"""
-        from FinRL.environments.taiwan_stock_env import TaiwanStockTradingEnv
+        from environments.taiwan_stock_env import TaiwanStockTradingEnv
 
         env_config = {
             'df': self.df,
@@ -76,8 +76,8 @@ class StockTrainer:
             'commission_rate': 0.001425,
             'tax_rate': 0.003,
             'lookback_window': 60,
-            'initial_shares': self.initial_shares,
-            'initial_avg_cost': self.initial_avg_cost,
+            'initial_shares': self.initial_shares or 0,
+            'initial_avg_cost': self.initial_avg_cost if self.initial_avg_cost is not None else 0.0,
         }
 
         env = TaiwanStockTradingEnv(**env_config)
@@ -89,8 +89,6 @@ class StockTrainer:
             return PPO_CONFIG.copy()
         elif self.agent_type == "a2c":
             return A2C_CONFIG.copy()
-        elif self.agent_type == "sac":
-            return SAC_CONFIG.copy()
         return {}
 
     def train(self, timesteps: int = 100_000, save_path: str = None):
@@ -108,16 +106,36 @@ class StockTrainer:
         config = self.get_agent_config()
         config['learning_rate'] = LEARNING_RATE
 
+        # 提取 policy_kwargs 相關參數
+        policy_kwargs = {}
+        if 'net_arch' in config:
+            policy_kwargs['net_arch'] = config.pop('net_arch')
+
+        # 過濾掉非 SB3 參數
+        # PPO 有效參數
+        ppo_valid = {
+            'n_steps', 'batch_size', 'n_epochs', 'gamma', 'gae_lambda',
+            'clip_range', 'learning_rate', 'ent_coef',
+            'clip_range_vf', 'max_grad_norm',
+        }
+        # A2C 有效參數
+        a2c_valid = {
+            'n_steps', 'gamma', 'gae_lambda', 'learning_rate', 'ent_coef',
+            'use_rmsprop', 'rmsprop_eps', 'max_grad_norm',
+        }
+
+        valid = ppo_valid if self.agent_type == "ppo" else a2c_valid
+        filtered_config = {k: v for k, v in config.items() if k in valid}
+        if policy_kwargs:
+            filtered_config['policy_kwargs'] = policy_kwargs
+
         # 建立 Agent
         if self.agent_type == "ppo":
             from stable_baselines3 import PPO
-            self.model = PPO("MlpPolicy", env, **config, verbose=1)
+            self.model = PPO("MlpPolicy", env, **filtered_config, verbose=1)
         elif self.agent_type == "a2c":
             from stable_baselines3 import A2C
-            self.model = A2C("MlpPolicy", env, **config, verbose=1)
-        elif self.agent_type == "sac":
-            from stable_baselines3 import SAC
-            self.model = SAC("MlpPolicy", env, **config, verbose=1)
+            self.model = A2C("MlpPolicy", env, **filtered_config, verbose=1)
 
         # 訓練
         self.model.learn(
@@ -174,11 +192,17 @@ class PortfolioTrainer:
 
         return self.stock_data
 
-    def train_all(self):
-        """訓練所有股票的 Agent"""
+    def train_all(self, resume=False):
+        """訓練所有股票的 Agent
+
+        Args:
+            resume: 若為 True，跳過已存在模型檔的股票（断点续训）
+        """
         print("=" * 60)
         print(f"開始多智能體訓練 - {len(self.tickers)} 檔股票")
         print(f"Agent: {self.agent_type.upper()}, 每檔 {self.timesteps:,} 步")
+        if resume:
+            print("模式: resume（跳過已訓練的股票）")
         print("=" * 60)
 
         results = {}
@@ -187,6 +211,19 @@ class PortfolioTrainer:
             if ticker not in self.stock_data:
                 print(f"[{i+1}/{len(self.tickers)}] {ticker} 無數據，跳過")
                 continue
+
+            # --resume: 檢查是否已訓練過
+            if resume:
+                model_path = self.models_dir / f"{ticker.replace('.', '_')}_{self.agent_type}.zip"
+                if model_path.exists():
+                    print(f"[{i+1}/{len(self.tickers)}] {ticker} 已存在模型，跳過")
+                    results[ticker] = {
+                        "name": PORTFOLIO_HOLDINGS.get(ticker, {}).get('name', ''),
+                        "shares": PORTFOLIO_HOLDINGS.get(ticker, {}).get('shares', 0),
+                        "model_path": str(model_path),
+                        "data_points": len(self.stock_data[ticker]),
+                    }
+                    continue
 
             df = self.stock_data[ticker]
             
@@ -255,6 +292,8 @@ if __name__ == "__main__":
                         help='訓練資料結束日期')
     parser.add_argument('--stocks', type=str, default=None,
                         help='指定股票 (逗號分隔，預設全部)')
+    parser.add_argument('--resume', action='store_true',
+                        help='续训模式：跳過已存在模型的股票（断点续训）')
     args = parser.parse_args()
 
     # 檢查依賴
@@ -282,6 +321,6 @@ if __name__ == "__main__":
     trainer.prepare_data()
 
     # 訓練
-    results = trainer.train_all()
+    results = trainer.train_all(resume=args.resume)
 
     print("\n完成！")

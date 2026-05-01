@@ -194,8 +194,8 @@ class BacktestEngine:
         risk_free_rate = 0.02 / 252  # 日化無風險利率
         excess_returns = daily_returns - risk_free_rate
         
-        if len(excess_returns) > 1 and excess_returns.std() > 0:
-            sharpe_ratio = (excess_returns.mean() / excess_returns.std()) * np.sqrt(252)
+        if len(excess_returns) > 1 and excess_returns.std(ddof=1) > 0:
+            sharpe_ratio = (excess_returns.mean() / excess_returns.std(ddof=1)) * np.sqrt(252)
         else:
             sharpe_ratio = 0
         
@@ -216,9 +216,9 @@ class BacktestEngine:
         # Sortino = (平均報酬 - 目標報酬) / 下行標準差
         target_return = risk_free_rate  # 目標報酬率 = 無風險利率
         downside_returns = daily_returns[daily_returns < target_return]
-        if len(downside_returns) > 1 and downside_returns.std() > 0:
+        if len(downside_returns) > 1 and downside_returns.std(ddof=1) > 0:
             excess_return = daily_returns.mean() - target_return
-            sortino_ratio = excess_return / downside_returns.std() * np.sqrt(252)
+            sortino_ratio = excess_return / downside_returns.std(ddof=1) * np.sqrt(252)
         else:
             sortino_ratio = 0
         
@@ -449,7 +449,7 @@ class BacktestEngine:
         
         # 計算 Benchmark 的指標
         bench_total_return = (1 + benchmark_returns).prod() - 1
-        bench_sharpe = benchmark_returns.mean() / benchmark_returns.std() * np.sqrt(252) if benchmark_returns.std() > 0 else 0
+        bench_sharpe = benchmark_returns.mean() / benchmark_returns.std(ddof=1) * np.sqrt(252) if benchmark_returns.std(ddof=1) > 0 else 0
         
         # 比較
         comparison = {

@@ -84,7 +84,8 @@ class PortfolioBacktester:
 
     def calculate_portfolio_value(self) -> pd.DataFrame:
         """
-        根據持股數和歷史股價，計算投資組合價值變化
+        根據持股數和歷史股價，計算投資組合價值變化。
+        包含交易成本（買入佣金、賣出佣金+稅）。
         """
         if not self.stock_data:
             self.download_data()
@@ -126,16 +127,44 @@ class PortfolioBacktester:
         # 初始總值 = 第一天各股收盤價 * 股數 之和
         self.initial_total = value_df['total'].iloc[0]
 
-        # 計算每日報酬率（相對於初始總值）
+        # ─────────────────────────────────────────────────────────────
+        # 交易成本估算
+        # 假設：初始買入時付出買入佣金，持有期結束時假設一次賣出（結算）
+        # 買入佣金 = 初始投資總額 × 佣金率
+        # 賣出成本 = 最終市值 × (佣金率 + 稅率)
+        # ETF 稅率較低（0.1%），股票為 0.3%
+        # ─────────────────────────────────────────────────────────────
+        initial_investment = self.initial_total  # 期初買入總成本
+        final_value = value_df['total'].iloc[-1]
+
+        buy_commission = initial_investment * self.commission
+
+        sell_commission = final_value * self.commission
+        sell_tax = final_value * self.tax
+        total_cost = buy_commission + sell_commission + sell_tax
+
+        self._buy_commission = buy_commission
+        self._sell_commission = sell_commission
+        self._sell_tax = sell_tax
+        self._total_cost = total_cost
+        net_final = final_value - total_cost
+        self._net_final = net_final
+
+        # 計算每日報酬率（相對於初始總值，扣除成本）
         value_df['daily_return'] = value_df['total'].pct_change()
 
-        # 累計報酬率
-        value_df['cumulative_return'] = value_df['total'] / self.initial_total - 1
+        # 累計報酬率（以淨最終值計算）
+        value_df['cumulative_return'] = net_final / self.initial_total - 1
 
         self.portfolio_value = value_df
 
         print(f"\n資料範圍: {value_df.index[0].date()} ~ {value_df.index[-1].date()}")
         print(f"初始總值（歷史起點）: {self.initial_total:,.0f}")
+        print(f"  買入佣金（{self.commission*100:.3f}%）: -{buy_commission:,.0f}")
+        print(f"  賣出佣金（{self.commission*100:.3f}%）: -{sell_commission:,.0f}")
+        print(f"  賣出稅（{self.tax*100:.2f}%）: -{sell_tax:,.0f}")
+        print(f"  交易成本合計: -{total_cost:,.0f}")
+        print(f"  淨最終值（扣除成本）: {net_final:,.0f}")
 
         return value_df
 
@@ -147,12 +176,13 @@ class PortfolioBacktester:
         df = self.portfolio_value
 
         initial_total = self.initial_total
-        total_return = df['total'].iloc[-1] / initial_total - 1
+        net_final = self._net_final
+        total_return = net_final / initial_total - 1
         annual_return = (1 + total_return) ** (252 / len(df)) - 1
 
-        # 波動率 (年化)
+        # 波動率 (年化，ddof=1 為樣本標準差)
         daily_returns = df['daily_return'].dropna()
-        volatility = daily_returns.std() * np.sqrt(252)
+        volatility = daily_returns.std(ddof=1) * np.sqrt(252)
 
         # Sharpe Ratio
         sharpe = (annual_return - RISK_FREE_RATE) / (volatility + 1e-10)
@@ -178,7 +208,7 @@ class PortfolioBacktester:
 
         self.metrics = {
             "期間": f"{df.index[0].date()} ~ {df.index[-1].date()}",
-            "總報酬率": f"{total_return*100:.2f}%",
+            "總報酬率（扣除成本）": f"{total_return*100:.2f}%",
             "年化報酬": f"{annual_return*100:.2f}%",
             "年化波動率": f"{volatility*100:.2f}%",
             "Sharpe Ratio": f"{sharpe:.3f}",
@@ -186,7 +216,9 @@ class PortfolioBacktester:
             "Calmar Ratio": f"{calmar:.3f}",
             "勝率 (日)": f"{win_rate*100:.1f}%",
             "勝率 (月)": f"{monthly_win_rate*100:.1f}%",
-            "最終市值": f"{df['total'].iloc[-1]:,.0f}",
+            "最終市值（毛）": f"{df['total'].iloc[-1]:,.0f}",
+            "交易成本合計": f"-{self._total_cost:,.0f}",
+            "淨最終值": f"{self._net_final:,.0f}",
         }
 
         return self.metrics

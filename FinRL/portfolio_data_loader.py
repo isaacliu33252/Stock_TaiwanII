@@ -194,7 +194,7 @@ def add_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
     # Bollinger Bands
     bb_window = 20
     df['bb_middle'] = df['close'].rolling(window=bb_window).mean()
-    bb_std = df['close'].rolling(window=bb_window).std()
+    bb_std = df['close'].rolling(window=bb_window).std(ddof=1)
     df['bb_upper'] = df['bb_middle'] + 2 * bb_std
     df['bb_lower'] = df['bb_middle'] - 2 * bb_std
 

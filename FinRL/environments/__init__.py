@@ -27,14 +27,13 @@ __version__ = "1.0.0"
 # 匯出主要類別
 from environments.taiwan_stock_env import TaiwanStockTradingEnv
 from environments.action_space import DiscreteActions, translate_action, is_valid_buy_action, is_valid_sell_action
-from environments.reward_function import RewardFunction, composite_reward, simple_reward, sharpe_based_reward
+from environments.reward_function import RewardFunction, simple_reward, sharpe_based_reward
 
 # 方便直接匯入所有環境
 __all__ = [
     "TaiwanStockTradingEnv",  # 主要交易環境
     "DiscreteActions",         # 離散動作空間枚舉
     "RewardFunction",          # 複合獎勵函數類
-    "composite_reward",        # 複合獎勵函數
     "simple_reward",           # 簡單獎勵函數
     "sharpe_based_reward",     # Sharpe獎勵函數
     "translate_action",        # 動作翻譯

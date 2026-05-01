@@ -425,7 +425,7 @@ class TechnicalIndicators:
             self.df['bb_lower'] = lower
         else:
             middle = self.df['close'].rolling(window=period).mean()
-            std = self.df['close'].rolling(window=period).std()
+            std = self.df['close'].rolling(window=period).std(ddof=1)
             self.df['bb_upper'] = middle + std_dev * std
             self.df['bb_middle'] = middle
             self.df['bb_lower'] = middle - std_dev * std
@@ -503,7 +503,7 @@ class TechnicalIndicators:
         # 標準化成交量 (z-score)
         self.df['volume_normalized'] = (
             self.df['volume'] - self.df['volume'].rolling(window=20).mean()
-        ) / (self.df['volume'].rolling(window=20).std() + 1e-10)
+        ) / (self.df['volume'].rolling(window=20).std(ddof=1) + 1e-10)
         
         return self.df
     
@@ -572,7 +572,7 @@ class TechnicalIndicators:
         
         # === 波動率 ===
         # 20日標準差 (標準化)
-        self.df['volatility'] = close.rolling(window=20).std() / (close.rolling(window=20).mean() + 1e-10)
+        self.df['volatility'] = close.rolling(window=20).std(ddof=1) / (close.rolling(window=20).mean() + 1e-10)
         
         return self.df
     

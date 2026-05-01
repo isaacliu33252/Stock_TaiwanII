@@ -108,33 +108,32 @@ class RewardFunction:
         rewards = {}
         
         # =====================================================================
-        # 1. 資本報酬 (核心獎勵)
+        # 1. 資本報酬 (核心獎勵) — 關鍵：安全計算 + clamp
         # =====================================================================
-        # 資本報酬是最重要的獎勵信號，反映策略的絕對獲利能力
-        # 使用百分比變化，規模不變
-        portfolio_return = (
-            (portfolio_value - previous_portfolio_value) / 
-            previous_portfolio_value
-        )
-        rewards['capital'] = portfolio_return * 100  # 放大以便於學習
+        value_change = portfolio_value - previous_portfolio_value
+        # 預防除零或初始 value 極小
+        if previous_portfolio_value > 1.0:
+            portfolio_return = value_change / previous_portfolio_value
+        else:
+            portfolio_return = 0.0
+        # clamp: 單步報酬不超過 ±10%，避免 NaN/inf 傳播
+        portfolio_return = max(-0.10, min(0.10, portfolio_return))
+        rewards['capital'] = portfolio_return  # 不再 *100，直接用小幅值
         
         # =====================================================================
         # 2. 持有獎勵 (減少過度交易)
         # =====================================================================
-        # 當持有獲利部位時，持續持有應該獲得小幅獎勵
-        # 這鼓勵趨勢跟蹤，避免過早獲利了結
         rewards['holding'] = 0.0
-        if position > 0 and action == 0:  # HOLD
+        if position > 0 and action == 0 and avg_cost > 0:
             unrealized_pnl = (close_price - avg_cost) / avg_cost
+            # clamp unrealized pnl
+            unrealized_pnl = max(-1.0, min(1.0, unrealized_pnl))
             if unrealized_pnl > 0:
-                # 持有獲利部位，給予正向獎勵
                 rewards['holding'] = unrealized_pnl * self.holding_bonus
         
         # =====================================================================
         # 3. 交易懲罰 (避免過度交易)
         # =====================================================================
-        # 交易需要支付佣金和滑價，應該懲罰頻繁交易
-        # 只對實際買賣動作懲罰，HOLD 不懲罰
         rewards['trade'] = 0.0
         if action in [1, 2]:  # BUY or SELL
             rewards['trade'] = -self.trade_penalty
@@ -142,8 +141,6 @@ class RewardFunction:
         # =====================================================================
         # 4. 停損懲罰 (控制風險)
         # =====================================================================
-        # 停損代表策略判斷錯誤，給予較大懲罰
-        # 這幫助 Agent 學會控制虧損
         rewards['stop_loss'] = 0.0
         if action == 4:  # STOP_LOSS
             rewards['stop_loss'] = -self.stop_loss_penalty
@@ -151,41 +148,35 @@ class RewardFunction:
         # =====================================================================
         # 5. 勝率獎勵 (鼓勵正向期望策略)
         # =====================================================================
-        # 如果歷史交易勝率高，給予正向獎勵
-        # 這鼓勵 Agent 發展高勝率策略
         rewards['win_rate'] = 0.0
         if len(trade_history) > 0:
             wins = sum(1 for t in trade_history if t.get('pnl', 0) > 0)
             win_rate = wins / len(trade_history)
-            # 勝率超過 50% 才有獎勵
             rewards['win_rate'] = (win_rate - 0.5) * self.win_rate_bonus
         
         # =====================================================================
         # 6. 最大回撒懲罰 (風險控制)
         # =====================================================================
-        # 最大回撒代表歷史最大虧損，高回撒代表高風險
-        # 應該懲罰高回撒，鼓勵穩定增長
         rewards['drawdown'] = -max_drawdown * self.drawdown_penalty
         
         # =====================================================================
         # 7. 台股涨跌停 Bonus/Penalty
         # =====================================================================
-        # 台股有涨跌停限制，當接近涨跌停時：
-        # - 持有漲停股: 正面獎勵 (流動性緊張)
-        # - 持有跌停股: 負面懲罰 (無法賣出)
         rewards['limit_up_down'] = 0.0
-        if previous_close is not None and position > 0:
+        if previous_close is not None and previous_close > 0 and position > 0:
             daily_change = (close_price - previous_close) / previous_close
-            if abs(daily_change) >= 0.095:  # 接近涨跌停 (9.5%)
+            if abs(daily_change) >= 0.095:
                 if daily_change > 0:
-                    rewards['limit_up_down'] = 0.02  # 漲停 bonus
+                    rewards['limit_up_down'] = 0.02
                 else:
-                    rewards['limit_up_down'] = -0.02  # 跌停 penalty
+                    rewards['limit_up_down'] = -0.02
         
         # =====================================================================
-        # 計算總獎勵
+        # 計算總獎勵 — clamp 最終輸出
         # =====================================================================
         total_reward = sum(rewards.values())
+        # clamp 總獎勵，避免單步 reward 太大/太小導致梯度爆炸
+        total_reward = max(-1.0, min(1.0, total_reward))
         
         return total_reward, rewards
     

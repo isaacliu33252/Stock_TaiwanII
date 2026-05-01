@@ -451,7 +451,7 @@ class DataProcessor:
             
             if method == 'zscore':
                 mean = df[col].mean()
-                std = df[col].std()
+                std = df[col].std(ddof=1)
                 norm_params[col] = {'mean': mean, 'std': std}
                 
                 # 避免除以零

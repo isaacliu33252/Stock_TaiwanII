@@ -94,7 +94,7 @@ def add_all_features(df: pd.DataFrame) -> pd.DataFrame:
     # ─── 布林帶 ───────────────────────────────────────────────────────────
     bb_window = 20
     df['bb_middle'] = close.rolling(window=bb_window).mean()
-    bb_std = close.rolling(window=bb_window).std()
+    bb_std = close.rolling(window=bb_window).std(ddof=1)
     df['bb_upper'] = df['bb_middle'] + 2 * bb_std
     df['bb_lower'] = df['bb_middle'] - 2 * bb_std
     df['bb_width'] = (df['bb_upper'] - df['bb_lower']) / df['bb_middle']
@@ -120,8 +120,8 @@ def add_all_features(df: pd.DataFrame) -> pd.DataFrame:
         df[f'momentum_{period}_slope'] = df[f'momentum_{period}'].diff()
 
     # 滾動收益率標準差（市場波動度）
-    df['rolling_vol_5'] = df['momentum_5'].rolling(5).std()
-    df['rolling_vol_20'] = df['momentum_20'].rolling(20).std()
+    df['rolling_vol_5'] = df['momentum_5'].rolling(5).std(ddof=1)
+    df['rolling_vol_20'] = df['momentum_20'].rolling(20).std(ddof=1)
 
     # ─── 成交量特徵 ──────────────────────────────────────────────────────
     vol = df['volume']
