@@ -497,7 +497,8 @@ class BacktestEngine:
             done = terminated
             
             # 記錄狀態
-            current_value = info.get('total_asset', 0)
+            # 修正: 環境回傳 portfolio_value，backtest.py 原本錯誤讀取 total_asset
+            current_value = info.get('portfolio_value', info.get('total_asset', 0))
             self.portfolio_values.append(current_value)
             
             # 記錄日期
@@ -888,7 +889,7 @@ class BacktestEngine:
 
 
 # ============================================================================
-工廠函式
+# 工廠函式
 # ============================================================================
 
 def create_backtest_engine(

@@ -16,11 +16,11 @@ TaiwanStockTradingEnv - 台股交易環境 (Gym-style)
 
 狀態向量結構 (52維):
     1. 價格特徵 (6維): close, open, high, low, volume, turnover
-    2. 技術指標 (20維): MA, MACD, RSI, KDJ, BB, ATR
+    2. 技術指標 (20維): MA, MACD, RSI, KDJ, BB, ATR, DMI/ADX, MFI
     3. 型態特徵 (8維): 突破/跌破信號、量增、動量等
     4. 基本面特徵 (8維): 三大法人淨買、殖利率、PE、PB
     5. 部位特徵 (6維): 持股數、成本、未實現盈虧等
-    6. 市場情緒 (4維): 大盤報酬、成交量變化等
+    6. T+2 鎖定特徵 (4維): 鎖定比例、可賣出比例、是否鎖定、持有天數
 
 作者: FinRL量化交易專家
 """
@@ -370,14 +370,36 @@ class TaiwanStockTradingEnv(gym.Env):
         # 現金比例
         cash_ratio = self.balance / portfolio_value if portfolio_value > 0 else 1.0
         state_list.append(cash_ratio)
-        
+
         # =====================================================================
-        # 6. 市場情緒特徵 (4維) - 填充0或計算
+        # 6. T+2 鎖定特徵 (取代原市場情緒特徵 4維)
         # =====================================================================
-        # 如果有加權指數數據，可以計算這些特徵
-        # 這裡先用0填充
-        state_list.extend([0.0, 0.0, 0.0, 0.0])
-        
+        # 計算 T+2 鎖定股數
+        locked_shares = sum(
+            count for step, count in self.pending_shares.items() if step > self.current_step
+        )
+        # 鎖定比例（持股中有多少比例被 T+2 鎖定）
+        t2_lock_ratio = locked_shares / (self.position + 1e-10)
+        state_list.append(float(t2_lock_ratio))
+
+        # 可賣出股數（總持股 - 鎖定股數）
+        sellable_shares = max(0, self.position - locked_shares)
+        # 可賣出比例
+        sellable_ratio = sellable_shares / (self.position + 1e-10)
+        state_list.append(float(sellable_ratio))
+
+        # 是否處於 T+2 鎖定中（0 或 1）
+        is_locked = 1.0 if locked_shares > 0 and self.position > 0 else 0.0
+        state_list.append(is_locked)
+
+        # 持有股票的天數（從买入以來的天數）
+        holding_days = 0.0
+        for trade in reversed(self.trade_history):
+            if trade.get('type', '').startswith('BUY'):
+                holding_days = self.current_step - trade.get('step', 0)
+                break
+        state_list.append(float(holding_days) / 60)  # 正規化
+
         # 確保長度為52
         state_array = np.array(state_list[:52], dtype=np.float32)
         
@@ -456,8 +478,10 @@ class TaiwanStockTradingEnv(gym.Env):
             # 直到 T+2 日才能真正賣出
             
             # 執行買入
-            self.balance -= cost
-            self.balance -= cost * self.commission_rate
+            # 台股買入成本 = 股價×股數 + 買入佣金（0.1425%）
+            # （不收交易稅，稅只在賣出時收取 0.3%）
+            self.balance -= cost               # 扣除股票本金
+            self.balance -= cost * self.commission_rate  # 扣除買入佣金
             
             # 更新持股成本
             total_cost_new = self.position * self.avg_cost + cost
@@ -591,6 +615,8 @@ class TaiwanStockTradingEnv(gym.Env):
             # 計算 pnl
             pnl = net_proceeds - (self.position * self.avg_cost)
             
+            # 修正: 先保存即將變動的持股數，再更新狀態，避免 trade_history 記錄為 0
+            sold_shares = self.position
             self.balance += net_proceeds
             self.position = 0
             self.avg_cost = 0.0
@@ -599,7 +625,7 @@ class TaiwanStockTradingEnv(gym.Env):
                 'step': self.current_step,
                 'action': action,
                 'price': trade_price,
-                'shares': self.position,
+                'shares': sold_shares,  # 修正: 用 sold_shares 而非已歸零的 self.position
                 'position': 0,
                 'pnl': pnl,
                 'type': 'CLOSE'
@@ -623,13 +649,15 @@ class TaiwanStockTradingEnv(gym.Env):
                 return False, f"全部持股 T+2 鎖定中 (鎖定: {locked_shares} 股)"
             
             # 停損賣出 (以市價賣出可卖出的部分)
+            # 修正: 先保存 sold_shares 再更新狀態，避免 trade_history 記錄為 0
+            sold_shares = self.position
             proceeds = trade_price * self.position
             commission = proceeds * self.commission_rate
             tax = proceeds * self.tax_rate
             net_proceeds = proceeds - commission - tax
             
             # 計算 pnl (負值代表虧損)
-            pnl = net_proceeds - (self.position * self.avg_cost)
+            pnl = net_proceeds - (sold_shares * self.avg_cost)
             
             self.balance += net_proceeds
             self.position = 0
@@ -639,7 +667,7 @@ class TaiwanStockTradingEnv(gym.Env):
                 'step': self.current_step,
                 'action': action,
                 'price': trade_price,
-                'shares': self.position,
+                'shares': sold_shares,  # 修正: 用 sold_shares 而非已歸零的 self.position
                 'position': 0,
                 'pnl': pnl,
                 'type': 'STOP_LOSS'

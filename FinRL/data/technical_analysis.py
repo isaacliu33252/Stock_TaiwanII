@@ -25,14 +25,24 @@ import numpy as np
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import (
-    RSI_PERIOD, RSI_OVERBOUGHT, RSI_OVERSOLD,
-    MACD_FAST, MACD_SLOW, MACD_SIGNAL,
-    BB_PERIOD, BB_STD,
-    MA_SHORT, MA_MEDIUM, MA_LONG,
-    ATR_PERIOD,
-    KD_PERIOD, KD_SMOOTH_K, KD_SMOOTH_D,
-)
+from config import INDICATOR_CONFIG
+
+# 向後兼容：把 INDICATOR_CONFIG 的值展開為模組級變數
+RSI_PERIOD    = INDICATOR_CONFIG['rsi_period']
+RSI_OVERBOUGHT = INDICATOR_CONFIG['rsi_overbought']
+RSI_OVERSOLD   = INDICATOR_CONFIG['rsi_oversold']
+MACD_FAST      = INDICATOR_CONFIG['macd_fast']
+MACD_SLOW      = INDICATOR_CONFIG['macd_slow']
+MACD_SIGNAL    = INDICATOR_CONFIG['macd_signal']
+BB_PERIOD      = INDICATOR_CONFIG['bb_period']
+BB_STD         = INDICATOR_CONFIG['bb_std']
+ATR_PERIOD     = INDICATOR_CONFIG['atr_period']
+KD_PERIOD      = INDICATOR_CONFIG['kdj_period']
+KD_SMOOTH_K    = INDICATOR_CONFIG['kdj_smooth_k']
+KD_SMOOTH_D    = INDICATOR_CONFIG['kdj_smooth_d']
+MA_SHORT       = INDICATOR_CONFIG['ma_periods'][1]   # 5
+MA_MEDIUM      = INDICATOR_CONFIG['ma_periods'][2]   # 10
+MA_LONG        = INDICATOR_CONFIG['ma_periods'][3]   # 20
 
 
 class TechnicalIndicators:
@@ -144,6 +154,10 @@ class TechnicalIndicators:
         # 計算上下軌
         df["BB_upper"] = df["BB_middle"] + (std * df["BB_std"])
         df["BB_lower"] = df["BB_middle"] - (std * df["BB_std"])
+        
+        # === 計算布林通道寬度 (標準化) ===
+        # 避免除以零：用 + 1e-10
+        df["BB_width"] = (df["BB_upper"] - df["BB_lower"]) / (df["BB_middle"] + 1e-10)
         
         # 去除多餘的標準差欄位
         df = df.drop("BB_std", axis=1)
@@ -263,17 +277,14 @@ class TechnicalIndicators:
         result = df.copy()
         
         # 依序計算各指標
-        result = cls.calculate_returns(result)
         result = cls.calculate_rsi(result)
         result = cls.calculate_macd(result)
         result = cls.calculate_bollinger_bands(result)
         result = cls.calculate_ma(result)
         result = cls.calculate_atr(result)
         result = cls.calculate_kd(result)
-        
-        # 填補 NaN 值 (使用 ffill + bfill 取代已廢棄的 method 參數)
-        result = result.ffill().bfill()
-        
+        result = result.ffill()  # ffill only — bfill 會用到未來數據，且對交易資料無意義
+
         return result
 
 

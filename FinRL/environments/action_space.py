@@ -41,15 +41,15 @@ class DiscreteActions(Enum):
     CLOSE_POSITION = 3 # 清倉 (全部賣出)
     STOP_LOSS = 4      # 停損賣出
     
-    @property
-    def name(self) -> str:
-        """取得動作名稱"""
-        return self.name
-    
-    @property
-    def value(self) -> int:
-        """取得動作數值"""
-        return self.value
+    # 修正: 移除自訂 name/value property，避免遞迴無限迴圈
+    # Python Enum 已有內建 .name 和 .value 屬性，直接使用即可
+    # 舊程式碼:
+    #     @property
+    #     def name(self) -> str:
+    #         return self.name   # 遞迴！
+    #     @property
+    #     def value(self) -> int:
+    #         return self.value  # 遞迴！
     
     @classmethod
     def from_value(cls, value: int) -> 'DiscreteActions':

@@ -165,59 +165,14 @@ def align_trading_days(stock_data: Dict[str, pd.DataFrame]) -> pd.DataFrame:
 
 def add_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
     """
-    為股票數據添加技術指標
+    為股票數據添加技術指標。
+    
+    統一使用 data/technical_indicators.py 的 TechnicalIndicators 類別，
+    確保計算邏輯一致，避免重複代碼。
     """
-    df = df.copy()
-
-    # 收益率
-    df['returns'] = df['close'].pct_change()
-    df['log_returns'] = np.log(df['close'] / df['close'].shift(1))
-
-    # 移動平均線
-    for window in [5, 20, 60]:
-        df[f'ma{window}'] = df['close'].rolling(window=window).mean()
-
-    # RSI
-    delta = df['close'].diff()
-    gain = delta.clip(lower=0).rolling(window=14).mean()
-    loss = (-delta.clip(upper=0)).rolling(window=14).mean()
-    rs = gain / (loss + 1e-10)
-    df['rsi'] = 100 - (100 / (1 + rs))
-
-    # MACD
-    ema12 = df['close'].ewm(span=12, adjust=False).mean()
-    ema26 = df['close'].ewm(span=26, adjust=False).mean()
-    df['macd'] = ema12 - ema26
-    df['macd_signal'] = df['macd'].ewm(span=9, adjust=False).mean()
-    df['macd_hist'] = df['macd'] - df['macd_signal']
-
-    # Bollinger Bands
-    bb_window = 20
-    df['bb_middle'] = df['close'].rolling(window=bb_window).mean()
-    bb_std = df['close'].rolling(window=bb_window).std(ddof=1)
-    df['bb_upper'] = df['bb_middle'] + 2 * bb_std
-    df['bb_lower'] = df['bb_middle'] - 2 * bb_std
-
-    # ATR
-    high_low = df['high'] - df['low']
-    high_close = np.abs(df['high'] - df['close'].shift())
-    low_close = np.abs(df['low'] - df['close'].shift())
-    tr = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
-    df['atr'] = tr.rolling(window=14).mean()
-
-    # KDJ
-    low_n = df['low'].rolling(window=9).min()
-    high_n = df['high'].rolling(window=9).max()
-    rsv = (df['close'] - low_n) / (high_n - low_n + 1e-10) * 100
-    df['kd_k'] = rsv.ewm(com=2).mean()
-    df['kd_d'] = df['kd_k'].ewm(com=2).mean()
-    df['kd_j'] = 3 * df['kd_k'] - 2 * df['kd_d']
-
-    # 成交量變化
-    df['volume_change'] = df['volume'].pct_change()
-    df['volume_ma5'] = df['volume'].rolling(window=5).mean()
-
-    return df
+    from data.technical_indicators import TechnicalIndicators
+    ti = TechnicalIndicators(df)
+    return ti.calculate_all()
 
 
 def merge_portfolio_data(
