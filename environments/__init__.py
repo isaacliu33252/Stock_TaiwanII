@@ -13,7 +13,7 @@
 
 使用方式：
     import gymnasium as gym
-    from FinRL.environments import TaiwanStockTradingEnv, DiscreteActions, RewardFunction
+    from .environments import TaiwanStockTradingEnv, DiscreteActions, RewardFunction
     
     env = TaiwanStockTradingEnv(df=data, initial_balance=1_000_000)
     observation, info = env.reset()

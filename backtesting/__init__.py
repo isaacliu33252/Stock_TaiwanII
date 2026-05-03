@@ -12,7 +12,7 @@
 - PyFolio 整合
 
 使用方式：
-    from FinRL.backtesting import BacktestEngine, calculate_all_metrics
+    from .backtesting import BacktestEngine, calculate_all_metrics
     
     # 建立回測引擎
     bt = BacktestEngine(env, agent, initial_balance=1_000_000)
@@ -31,8 +31,8 @@ __version__ = "1.0.0"
 __author__ = "FinRL量化交易專家"
 
 # 匯出主要類別
-from FinRL.backtesting.backtest import BacktestEngine
-from FinRL.backtesting.backtest import (
+from .backtest import BacktestEngine
+from .backtest import (
     calculate_sharpe_ratio,
     calculate_max_drawdown,
     calculate_win_rate,
@@ -43,7 +43,7 @@ from FinRL.backtesting.backtest import (
 )
 
 # 匯出績效指標模組
-from FinRL.backtesting.performance_metrics import (
+from .performance_metrics import (
     calculate_all_metrics,
     format_metrics,
     calculate_volatility,

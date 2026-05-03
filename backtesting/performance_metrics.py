@@ -11,7 +11,7 @@
 4. 交易統計指標：勝率、利潤因子、獲利/虧損比
 
 使用方式：
-    from FinRL.backtesting.performance_metrics import calculate_all_metrics
+    from backtesting.performance_metrics import calculate_all_metrics
     
     metrics = calculate_all_metrics(returns, equity_curve, trade_history)
 
@@ -20,29 +20,13 @@
 
 import numpy as np
 from typing import Dict, List, Any, Optional, Tuple
-import sys
-import os
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-
-# ============================================================================
-# 個別績效指標計算函式
-# ============================================================================
 
 def calculate_sharpe_ratio(
     returns: np.ndarray,
     risk_free_rate: float = 0.02
 ) -> float:
-    """
-    計算夏普比率 (Sharpe Ratio)
-    
-    公式：夏普比率 = (投資組合報酬 - 無風險利率) / 投資組合標準差
-    
-    意義：衡量每承受一單位風險所獲得的超額報酬
-    - > 1 表示報酬戰勝風險
-    - > 2 表示優異的風險調整表現
-    """
+    """計算夏普比率 (Sharpe Ratio)"""
     if len(returns) < 2:
         return 0.0
     
@@ -62,14 +46,7 @@ def calculate_sortino_ratio(
     returns: np.ndarray,
     target: float = 0.0
 ) -> float:
-    """
-    計算索提諾比率 (Sortino Ratio)
-    
-    公式：索提諾比率 = (投資組合報酬 - 目標報酬) / 下行標準差
-    
-    意義：只考慮下行風險的風險調整報酬
-    - 與夏普比率類似，但只計算負報酬的波動
-    """
+    """計算索提諾比率 (Sortino Ratio)"""
     if len(returns) < 2:
         return 0.0
     
@@ -90,13 +67,7 @@ def calculate_sortino_ratio(
 def calculate_max_drawdown(
     equity_curve: np.ndarray
 ) -> Tuple[float, int, int]:
-    """
-    計算最大回撤 (Maximum Drawdown)
-    
-    公式：最大回撤 = max(Peak - Trough) / Peak
-    
-    意義：衡量投資組合從歷史高峰到低谷的最大跌幅
-    """
+    """計算最大回撤 (Maximum Drawdown)"""
     if len(equity_curve) < 2:
         return 0.0, 0, 0
     
@@ -114,13 +85,7 @@ def calculate_calmar_ratio(
     annual_return: float,
     max_drawdown: float
 ) -> float:
-    """
-    計算卡瑪比率 (Calmar Ratio)
-    
-    公式：卡瑪比率 = 年化報酬率 / 最大回撤
-    
-    意義：衡量報酬與最大風險的比率
-    """
+    """計算卡瑪比率 (Calmar Ratio)"""
     if max_drawdown == 0 or max_drawdown == 0.0:
         return 0.0
     
@@ -131,11 +96,7 @@ def calculate_annual_return(
     total_return: float,
     days: int
 ) -> float:
-    """
-    計算年化報酬率 (Annual Return)
-    
-    公式：年化報酬 = (1 + 總報酬)^(252/交易天數) - 1
-    """
+    """計算年化報酬率 (Annual Return)"""
     if days <= 0:
         return 0.0
     
@@ -144,11 +105,7 @@ def calculate_annual_return(
 
 
 def calculate_volatility(returns: np.ndarray) -> float:
-    """
-    計算波動率 (Volatility)
-    
-    意義：衡量報酬率的變動程度
-    """
+    """計算波動率 (Volatility)"""
     if len(returns) < 2:
         return 0.0
     
@@ -156,11 +113,7 @@ def calculate_volatility(returns: np.ndarray) -> float:
 
 
 def calculate_win_rate(trade_history: List[Dict]) -> float:
-    """
-    計算勝率 (Win Rate)
-    
-    意義：盈利交易筆數 / 總交易筆數
-    """
+    """計算勝率 (Win Rate)"""
     if not trade_history:
         return 0.0
     
@@ -174,13 +127,7 @@ def calculate_win_rate(trade_history: List[Dict]) -> float:
 
 
 def calculate_profit_factor(trade_history: List[Dict]) -> float:
-    """
-    計算利潤因子 (Profit Factor)
-    
-    公式：利潤因子 = 總盈利 / 總虧損
-    
-    意義：> 1 表示策略有正期望值
-    """
+    """計算利潤因子 (Profit Factor)"""
     if not trade_history:
         return 0.0
     
@@ -199,9 +146,7 @@ def calculate_profit_factor(trade_history: List[Dict]) -> float:
 
 
 def calculate_win_loss_stats(trade_history: List[Dict]) -> Tuple[float, float, float]:
-    """
-    計算平均獲利、平均虧損、獲利虧損比
-    """
+    """計算平均獲利、平均虧損、獲利虧損比"""
     if not trade_history:
         return 0.0, 0.0, 0.0
     
@@ -225,9 +170,7 @@ def calculate_win_loss_stats(trade_history: List[Dict]) -> Tuple[float, float, f
 
 
 def calculate_max_drawdown_duration(equity_curve: np.ndarray) -> int:
-    """
-    計算最大回撤持續天數
-    """
+    """計算最大回撤持續天數"""
     if len(equity_curve) < 2:
         return 0
     
@@ -248,9 +191,7 @@ def calculate_max_drawdown_duration(equity_curve: np.ndarray) -> int:
 
 
 def calculate_max_consecutive_loss(trade_history: List[Dict]) -> float:
-    """
-    計算最大連續虧損金額
-    """
+    """計算最大連續虧損金額"""
     if not trade_history:
         return 0.0
     
@@ -273,9 +214,7 @@ def calculate_max_consecutive_loss(trade_history: List[Dict]) -> float:
 
 
 def calculate_avg_holding_days(trade_history: List[Dict]) -> float:
-    """
-    計算平均持有天數
-    """
+    """計算平均持有天數"""
     if len(trade_history) < 2:
         return 0.0
     
@@ -298,10 +237,6 @@ def calculate_avg_holding_days(trade_history: List[Dict]) -> float:
     return np.mean(holding_periods) if holding_periods else 0.0
 
 
-# ============================================================================
-# 綜合績效指標計算
-# ============================================================================
-
 def calculate_all_metrics(
     equity_curve: np.ndarray,
     returns: np.ndarray,
@@ -314,30 +249,27 @@ def calculate_all_metrics(
     
     這是主要的使用接口，一次計算所有指標。
     
-    參數：
+    Args:
         equity_curve: 權益曲線陣列
         returns: 收益率序列
         trade_history: 交易歷史列表
         initial_balance: 初始資金
         risk_free_rate: 無風險利率（年化）
     
-    返回：
+    Returns:
         包含所有指標的字典
     """
     n = len(equity_curve)
     
-    # 基本報酬指標
     total_return = (equity_curve[-1] - initial_balance) / initial_balance
     annual_return = calculate_annual_return(total_return, n)
     volatility = calculate_volatility(returns)
     
-    # 風險調整報酬指標
     sharpe_ratio = calculate_sharpe_ratio(returns, risk_free_rate)
     sortino_ratio = calculate_sortino_ratio(returns, target=0.0)
     max_drawdown, _, _ = calculate_max_drawdown(equity_curve)
     calmar_ratio = calculate_calmar_ratio(annual_return, max_drawdown)
     
-    # 交易統計
     win_rate = calculate_win_rate(trade_history)
     profit_factor = calculate_profit_factor(trade_history)
     avg_win, avg_loss, win_loss_ratio = calculate_win_loss_stats(trade_history)
@@ -346,89 +278,27 @@ def calculate_all_metrics(
     buy_trades = sum(1 for t in trade_history if t.get('action') == 1)
     sell_trades = sum(1 for t in trade_history if t.get('action') in [2, 3])
     
-    # 其他指標
     max_dd_duration = calculate_max_drawdown_duration(equity_curve)
     max_consecutive_loss = calculate_max_consecutive_loss(trade_history)
     avg_holding_days = calculate_avg_holding_days(trade_history)
     
     return {
-        # 報酬指標
         'total_return': total_return,
         'annual_return': annual_return,
         'volatility': volatility,
-        
-        # 風險調整報酬指標
         'sharpe_ratio': sharpe_ratio,
         'sortino_ratio': sortino_ratio,
         'calmar_ratio': calmar_ratio,
-        
-        # 風險指標
         'max_drawdown': max_drawdown,
         'max_drawdown_duration': max_dd_duration,
-        
-        # 交易統計
-        'total_trades': total_trades,
-        'buy_trades': buy_trades,
-        'sell_trades': sell_trades,
         'win_rate': win_rate,
         'profit_factor': profit_factor,
         'avg_win': avg_win,
         'avg_loss': avg_loss,
         'win_loss_ratio': win_loss_ratio,
-        
-        # 其他
-        'avg_holding_days': avg_holding_days,
+        'total_trades': total_trades,
+        'buy_trades': buy_trades,
+        'sell_trades': sell_trades,
         'max_consecutive_loss': max_consecutive_loss,
-        
-        # 最終狀態
-        'final_value': equity_curve[-1],
-        'initial_balance': initial_balance,
-        'total_days': n,
+        'avg_holding_days': avg_holding_days,
     }
-
-
-def format_metrics(metrics: Dict[str, Any]) -> str:
-    """
-    格式化指標為易讀的字串
-    
-    參數：
-        metrics: 績效指標字典
-    
-    返回：
-        格式化的字串
-    """
-    lines = []
-    lines.append("=" * 60)
-    lines.append("                 績效指標摘要")
-    lines.append("=" * 60)
-    
-    lines.append("\n【報酬指標】")
-    lines.append(f"  總報酬率:     {metrics.get('total_return', 0)*100:>10.2f} %")
-    lines.append(f"  年化報酬率:   {metrics.get('annual_return', 0)*100:>10.2f} %")
-    lines.append(f"  波動率:       {metrics.get('volatility', 0)*100:>10.2f} %")
-    
-    lines.append("\n【風險調整報酬指標】")
-    lines.append(f"  夏普比率:     {metrics.get('sharpe_ratio', 0):>10.3f}")
-    lines.append(f"  索提諾比率:   {metrics.get('sortino_ratio', 0):>10.3f}")
-    lines.append(f"  卡瑪比率:     {metrics.get('calmar_ratio', 0):>10.3f}")
-    
-    lines.append("\n【風險指標】")
-    lines.append(f"  最大回撤:     {metrics.get('max_drawdown', 0)*100:>10.2f} %")
-    lines.append(f"  最大回撤天數: {metrics.get('max_drawdown_duration', 0):>10}")
-    
-    lines.append("\n【交易統計】")
-    lines.append(f"  總交易次數:   {metrics.get('total_trades', 0):>10}")
-    lines.append(f"  買入次數:     {metrics.get('buy_trades', 0):>10}")
-    lines.append(f"  賣出次數:     {metrics.get('sell_trades', 0):>10}")
-    lines.append(f"  勝率:         {metrics.get('win_rate', 0)*100:>10.2f} %")
-    lines.append(f"  利潤因子:     {metrics.get('profit_factor', 0):>10.3f}")
-    lines.append(f"  平均獲利:     {metrics.get('avg_win', 0):>10,.2f} TWD")
-    lines.append(f"  平均虧損:     {metrics.get('avg_loss', 0):>10,.2f} TWD")
-    
-    lines.append("\n【最終狀態】")
-    lines.append(f"  初始資金:     {metrics.get('initial_balance', 0):>10,.0f} TWD")
-    lines.append(f"  最終價值:     {metrics.get('final_value', 0):>10,.0f} TWD")
-    
-    lines.append("=" * 60)
-    
-    return "\n".join(lines)

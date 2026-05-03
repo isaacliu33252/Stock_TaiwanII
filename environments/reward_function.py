@@ -47,12 +47,14 @@ class RewardFunction:
     
     def __init__(
         self,
-        trade_penalty: float = 0.001,
+        trade_penalty: float = 0.0003,  # 降低交易懲罰，鼓勵主動交易
         stop_loss_penalty: float = 0.05,
         drawdown_penalty: float = 0.5,
         holding_bonus: float = 0.1,
         win_rate_bonus: float = 0.1,
-        risk_free_rate: float = 0.02
+        risk_free_rate: float = 0.02,
+        inactivity_penalty: float = 0.002,  # 連續空倉不作為懲罰
+        profitable_hold_scale: float = 0.15,  # 盈利持倉複合成長權重
     ):
         """
         初始化獎勵函數
@@ -71,6 +73,8 @@ class RewardFunction:
         self.holding_bonus = holding_bonus
         self.win_rate_bonus = win_rate_bonus
         self.risk_free_rate = risk_free_rate
+        self.inactivity_penalty = inactivity_penalty
+        self.profitable_hold_scale = profitable_hold_scale
     
     def calculate(
         self,
@@ -126,17 +130,26 @@ class RewardFunction:
         rewards['holding'] = 0.0
         if position > 0 and action == 0 and avg_cost > 0:
             unrealized_pnl = (close_price - avg_cost) / avg_cost
-            # clamp unrealized pnl
             unrealized_pnl = max(-1.0, min(1.0, unrealized_pnl))
             if unrealized_pnl > 0:
-                rewards['holding'] = unrealized_pnl * self.holding_bonus
+                # 盈利持倉：複合成長獎勵（線性 + 平方項）
+                rewards['holding'] = unrealized_pnl * self.holding_bonus + (unrealized_pnl ** 2) * self.profitable_hold_scale
         
         # =====================================================================
-        # 3. 交易懲罰 (避免過度交易)
+        # 3. 交易懲罰 (降低，讓模型更願意交易)
         # =====================================================================
         rewards['trade'] = 0.0
         if action in [1, 2]:  # BUY or SELL
             rewards['trade'] = -self.trade_penalty
+        
+        # =====================================================================
+        # 3b. 空倉不作為懲罰（鼓勵定期出手）
+        # =====================================================================
+        rewards['inactivity'] = 0.0
+        if position == 0 and action == 0:
+            # 連續空倉 hold，懲罰遞增（由調用方傳入 days_since_trade）
+            # 此處假設調用時有額外資訊，這裡用 position=0 且 action=0 當 proxy
+            rewards['inactivity'] = -self.inactivity_penalty
         
         # =====================================================================
         # 4. 停損懲罰 (控制風險)

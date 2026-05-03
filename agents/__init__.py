@@ -9,7 +9,7 @@
 - A2C (Advantage Actor-Critic) - Baseline
 
 使用方式：
-    from FinRL.agents import PPOAgent
+    from agents import PPOAgent
     
     agent = PPOAgent(env)
     agent.train(total_timesteps=100000)
@@ -20,8 +20,8 @@
 __version__ = "1.0.0"
 
 # 匯出主要類別
-from FinRL.agents.ppo_agent import PPOAgent, create_ppo_agent, load_ppo_agent
-from FinRL.agents.a2c_agent import A2CAgent, create_a2c_agent, load_a2c_agent
+from .ppo_agent import PPOAgent, create_ppo_agent, load_ppo_agent
+from .a2c_agent import A2CAgent, create_a2c_agent, load_a2c_agent
 
 # 向後相容性別名 (已棄用)
 PPOTrainer = PPOAgent

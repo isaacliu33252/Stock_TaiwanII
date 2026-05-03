@@ -24,7 +24,27 @@ import numpy as np
 
 warnings.filterwarnings('ignore')
 
+import urllib.request
+import urllib.parse
+
 PROJECT_ROOT = Path(__file__).parent
+
+def _send_notification(message: str, chat_id: str = "8605791933"):
+    """發送 Telegram 通知"""
+    token = "8713079660:AAFKzYjHaJMyRUtqinIRDrklslCF20ynpuU"
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    data = urllib.parse.urlencode({
+        "chat_id": chat_id,
+        "text": message,
+        "parse_mode": "HTML"
+    }).encode()
+    try:
+        req = urllib.request.Request(url, data=data)
+        with urllib.request.urlopen(req, timeout=10):
+            pass
+    except Exception as e:
+        print(f"[通知發送失敗] {e}")
+
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from portfolio_config import (
@@ -65,7 +85,8 @@ class EnhancedStockTrainer:
         self.initial_avg_cost = initial_avg_cost
         self.enable_risk_manager = enable_risk_manager
         self.enable_enhanced_reward = enable_enhanced_reward
-        
+        self.timesteps = 0  # 儲存訓練步數
+
         # 初始化風控
         if enable_risk_manager:
             from risk_manager_v2 import RiskManager
@@ -182,7 +203,8 @@ class EnhancedStockTrainer:
             total_timesteps=timesteps,
             progress_bar=False,
         )
-        
+        self.timesteps = timesteps
+
         # 訓練完成，收集統計
         stats = self._collect_stats(env)
         
@@ -201,7 +223,7 @@ class EnhancedStockTrainer:
         stats = {
             'ticker': self.ticker,
             'agent_type': self.agent_type,
-            'total_steps': timesteps if 'timesteps' in dir() else 0,
+            'total_steps': self.timesteps,
             'best_sharpe': self.train_stats['best_sharpe'],
             'early_stopped': self.train_stats['early_stopped'],
             'total_trades': self.train_stats['total_trades'],
@@ -424,27 +446,59 @@ def main():
         print(f"\n結果已儲存: {output_file}")
     
     else:
-        # 單一股票訓練
-        ticker = tickers[0]
-        info = PORTFOLIO_HOLDINGS.get(ticker, {})
+        total = len(tickers)
+        results = []
         
-        trainer = EnhancedStockTrainer(
-            ticker=ticker,
-            df=stock_data[ticker],
-            agent_type=args.agent,
-            initial_shares=info.get('shares', 0),
-            enable_risk_manager=not args.no_risk,
-            enable_enhanced_reward=not args.no_enhanced_reward,
+        for i, ticker in enumerate(tickers, 1):
+            print(f"\n[{i}/{total}] 開始訓練 {ticker}")
+            
+            info = PORTFOLIO_HOLDINGS.get(ticker, {})
+            
+            trainer = EnhancedStockTrainer(
+                ticker=ticker,
+                df=stock_data[ticker],
+                agent_type=args.agent,
+                initial_shares=info.get('shares', 0),
+                enable_risk_manager=not args.no_risk,
+                enable_enhanced_reward=not args.no_enhanced_reward,
+            )
+            
+            save_path = str(PROJECT_ROOT / "FinRL" / "models" / "portfolio" / f"{ticker}_enhanced")
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            
+            stats = trainer.train(timesteps=args.timesteps, save_path=save_path)
+            result = trainer.backtest()
+            
+            final_value = result.get('final_value', 0)
+            sharpe = stats.get('best_sharpe', 0)
+            trades = stats.get('total_trades', 0)
+            
+            print(f"\n[{i}/{total}] {ticker} 完成：Sharpe={sharpe:.3f}, Trades={trades}, 最終價值=${final_value:,.0f}")
+            
+            # 發送 Telegram 通知
+            _send_notification(
+                f"📊 FinRL 訓練進度 [{i}/{total}]\n"
+                f"股票：{ticker}\n"
+                f"Sharpe：{sharpe:.3f}\n"
+                f"交易次數：{trades}\n"
+                f"最終價值：${final_value:,.0f}"
+            )
+            
+            results.append({**stats, **result})
+        
+        # 所有訓練完成
+        _send_notification(
+            f"✅ FinRL 全體訓練完成！\n"
+            f"股票：{len(tickers)} 檔\n"
+            f"總訓練步數：{args.timesteps:,} × {len(tickers)}"
         )
         
-        save_path = str(PROJECT_ROOT / "FinRL" / "models" / "portfolio" / f"{ticker}_enhanced")
-        os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        
-        stats = trainer.train(timesteps=args.timesteps, save_path=save_path)
-        
-        # 回測
-        result = trainer.backtest()
-        print(f"\n回測結果: 最終價值=${result.get('final_value', 0):,.0f}")
+        # 儲存結果
+        output_file = PROJECT_ROOT / "results" / f"training_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        output_file.parent.mkdir(exist_ok=True)
+        with open(output_file, 'w') as f:
+            json.dump(results, f, indent=2, default=str)
+        print(f"\n結果已儲存: {output_file}")
 
 
 if __name__ == '__main__':

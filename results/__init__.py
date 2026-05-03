@@ -11,7 +11,7 @@
 - PyFolio tearsheet 產生
 
 使用方式：
-    from FinRL.results import ResultTracker, TradingPlotter
+    from .results import ResultTracker, TradingPlotter
     
     # 追蹤結果
     tracker = ResultTracker()
@@ -28,8 +28,8 @@
 __version__ = "1.0.0"
 
 # 匯出主要類別
-from FinRL.results.plotter import TradingPlotter, create_plotter
-from FinRL.results.result_tracker import ResultTracker, create_result_tracker
+from .results.plotter import TradingPlotter, create_plotter
+from .results.result_tracker import ResultTracker, create_result_tracker
 
 # 方便直接匯入
 __all__ = [
