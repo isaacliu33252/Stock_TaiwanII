@@ -469,7 +469,14 @@ class TaiwanStockDataLoader:
         
         # 檢查快取
         if use_cache and cache_file.exists():
-            df = pd.read_parquet(cache_file)
+            try:
+                df = pd.read_parquet(cache_file)
+            except AttributeError:
+                # PyArrow 24 + Pandas 3 相容性問題，使用 dataset API 讀取
+                import pyarrow.dataset as pads
+                dataset = pads.dataset(str(cache_file))
+                table = dataset.to_table()
+                df = table.to_pandas(timestamp_as_object=True)
             print(f"[TaiwanStockDataLoader] 從快取載入 {symbol}: {len(df)} 筆資料")
             return df
         
