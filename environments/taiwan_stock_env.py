@@ -671,10 +671,10 @@ class TaiwanStockTradingEnv(gym.Env):
         """
         # 取得前一日收盤價 (用於涨跌停計算)
         prev_close = self.df.iloc[self.current_step - 1]['close'] if self.current_step > 0 else 0
-        
-        # 取得目前投資組合價值 (交易前)
-        current_price = self.df.iloc[self.current_step]['close']
-        previous_portfolio_value = self.balance + self.position * current_price
+
+        # 取得目前投資組合價值 (交易前用前一步收盤價)
+        prev_step_price = prev_close if prev_close != 0 else self.df.iloc[0]['close']
+        previous_portfolio_value = self.balance + self.position * prev_step_price
         
         # 執行交易
         executed, message = self._execute_trade(action)

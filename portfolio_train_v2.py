@@ -101,14 +101,18 @@ class EnhancedStockTrainer:
         else:
             self.risk_manager = None
         
-        # 初始化增強獎勵
+        # 初始化增強獎勵（v3 DynamicRewardShaper）
         if enable_enhanced_reward:
-            from environments.reward_function_v2 import RewardFunction
-            self.reward_func = RewardFunction(
-                sortino_weight=0.2,
-                calmar_weight=0.15,
+            from environments.reward_function_v3 import DynamicRewardShaper
+            self.reward_func = DynamicRewardShaper(
+                sortino_weight=0.25,
+                calmar_weight=0.20,
                 volatility_penalty=0.1,
                 drawdown_penalty=0.5,
+                holding_bonus=0.02,
+                trade_reward=0.001,       # 降低：抑制過度交易
+                init_reward_scale=1.5,
+                final_reward_scale=0.6,
             )
         else:
             self.reward_func = None
@@ -138,6 +142,7 @@ class EnhancedStockTrainer:
             'lookback_window': 60,
             'initial_shares': self.initial_shares or 0,
             'initial_avg_cost': self.initial_avg_cost if self.initial_avg_cost is not None else 0.0,
+            'reward_func': self.reward_func,
         }
         
         env = TaiwanStockTradingEnv(**env_config)
@@ -199,6 +204,11 @@ class EnhancedStockTrainer:
         
         # 訓練（不傳入自定義回調）
         self.model = model
+        
+        # 傳遞 total_steps 給 DynamicRewardShaper（用於 progressive decay）
+        if self.reward_func is not None and hasattr(self.reward_func, 'set_total_steps'):
+            self.reward_func.set_total_steps(timesteps)
+        
         self.model.learn(
             total_timesteps=timesteps,
             progress_bar=False,
@@ -274,6 +284,7 @@ class EnhancedStockTrainer:
             'lookback_window': 60,
             'initial_shares': self.initial_shares,
             'initial_avg_cost': self.initial_avg_cost,
+            'reward_func': self.reward_func,
         }
         
         env = TaiwanStockTradingEnv(**env_config)
