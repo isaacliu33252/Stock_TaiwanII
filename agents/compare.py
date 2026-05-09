@@ -192,7 +192,7 @@ def run_backtrader_ma_strategy(
         'final_value': final_value,
         'max_drawdown': max_dd,
         'sharpe_ratio': sharpe,
-        'volatility': np.std(returns_series) * np.sqrt(252),
+        'volatility': np.std(returns_series, ddof=1) * np.sqrt(252),
     }
     
     return {

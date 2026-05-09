@@ -150,24 +150,15 @@ def add_all_features(df: pd.DataFrame) -> pd.DataFrame:
     # 突破近期高點
     df['breakout_20d'] = (close >= df['highest_20d']).astype(int)
 
-    # ─── 漲跌連續性 ─────────────────────────────────────────────────────
+    # ─── 漲跌連續性（向量化的 groupby.cumsum()，比 Python 迴圈快 100 倍）──
     daily_return = close.pct_change()
-    df['consecutive_up'] = 0
-    df['consecutive_down'] = 0
-    current_up = 0
-    current_down = 0
-    for i, ret in enumerate(daily_return):
-        if ret > 0:
-            current_up += 1
-            current_down = 0
-        elif ret < 0:
-            current_down += 1
-            current_up = 0
-        else:
-            current_up = 0
-            current_down = 0
-        df.iloc[i, df.columns.get_loc('consecutive_up')] = current_up
-        df.iloc[i, df.columns.get_loc('consecutive_down')] = current_down
+    is_up = daily_return > 0
+    is_down = daily_return < 0
+    # 同號為一組，組內 cumsum() 即為連續天數
+    up_groups = (~is_up).cumsum()
+    down_groups = (~is_down).cumsum()
+    df['consecutive_up'] = is_up.groupby(up_groups).cumsum()
+    df['consecutive_down'] = is_down.groupby(down_groups).cumsum()
 
     # ─── Gap（跳空） ─────────────────────────────────────────────────────
     prev_close = close.shift(1)

@@ -306,8 +306,8 @@ def calculate_performance_metrics(episode_results, risk_free_rate=0.02, trading_
     # Sharpe Ratio
     daily_rf = risk_free_rate / trading_days
     excess_returns = np.array(returns) - daily_rf
-    if np.std(excess_returns) > 0:
-        sharpe_ratio = np.mean(excess_returns) / np.std(excess_returns) * np.sqrt(trading_days)
+    if np.std(excess_returns, ddof=1) > 0:
+        sharpe_ratio = np.mean(excess_returns) / np.std(excess_returns, ddof=1) * np.sqrt(trading_days)
     else:
         sharpe_ratio = 0
     
@@ -353,8 +353,8 @@ def calculate_performance_metrics(episode_results, risk_free_rate=0.02, trading_
     
     # Sortino Ratio
     downside_returns = [r for r in returns if r < 0]
-    if len(downside_returns) > 0 and np.std(downside_returns) > 0:
-        sortino_ratio = mean_return / np.std(downside_returns) * np.sqrt(trading_days)
+    if len(downside_returns) > 0 and np.std(downside_returns, ddof=1) > 0:
+        sortino_ratio = mean_return / np.std(downside_returns, ddof=1) * np.sqrt(trading_days)
     else:
         sortino_ratio = 0
     

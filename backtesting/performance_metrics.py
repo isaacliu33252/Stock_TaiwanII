@@ -50,7 +50,7 @@ def calculate_sharpe_ratio(
     excess_returns = returns - daily_rf
     
     mean_excess = np.mean(excess_returns)
-    std_excess = np.std(excess_returns)
+    std_excess = np.std(excess_returns, ddof=1)
     
     if std_excess == 0:
         return 0.0
@@ -78,7 +78,7 @@ def calculate_sortino_ratio(
     if len(downside_returns) == 0:
         return 0.0
     
-    downside_std = np.std(downside_returns)
+    downside_std = np.std(downside_returns, ddof=1)
     
     if downside_std == 0:
         return 0.0
@@ -152,7 +152,7 @@ def calculate_volatility(returns: np.ndarray) -> float:
     if len(returns) < 2:
         return 0.0
     
-    return np.std(returns) * np.sqrt(252)
+    return np.std(returns, ddof=1) * np.sqrt(252)
 
 
 def calculate_win_rate(trade_history: List[Dict]) -> float:

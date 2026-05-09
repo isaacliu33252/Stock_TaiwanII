@@ -72,7 +72,7 @@ def calculate_sharpe_ratio(returns: np.ndarray, risk_free_rate: float = 0.02) ->
     
     # 計算年化夏普比率
     mean_excess = np.mean(excess_returns)
-    std_excess = np.std(excess_returns)
+    std_excess = np.std(excess_returns, ddof=1)
     
     if std_excess == 0:
         return 0.0
@@ -244,7 +244,7 @@ def calculate_sortino_ratio(returns: np.ndarray, target: float = 0.0) -> float:
         return 0.0
     
     # 計算下行標準差
-    downside_std = np.std(downside_returns)
+    downside_std = np.std(downside_returns, ddof=1)
     
     if downside_std == 0:
         return 0.0
@@ -301,7 +301,7 @@ def calculate_volatility(returns: np.ndarray) -> float:
     if len(returns) < 2:
         return 0.0
     
-    volatility = np.std(returns) * np.sqrt(252)
+    volatility = np.std(returns, ddof=1) * np.sqrt(252)
     return volatility
 
 
@@ -497,7 +497,8 @@ class BacktestEngine:
             done = terminated
             
             # 記錄狀態
-            current_value = info.get('total_asset', 0)
+            # 修正: 環境回傳 portfolio_value，backtest.py 原本錯誤讀取 total_asset
+            current_value = info.get('portfolio_value', info.get('total_asset', 0))
             self.portfolio_values.append(current_value)
             
             # 記錄日期
@@ -888,7 +889,7 @@ class BacktestEngine:
 
 
 # ============================================================================
-工廠函式
+# 工廠函式
 # ============================================================================
 
 def create_backtest_engine(

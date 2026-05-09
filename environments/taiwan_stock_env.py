@@ -5,7 +5,7 @@ TaiwanStockTradingEnv - 台股交易環境 (Gym-style)
 
 環境設計:
     - State Space: 52維狀態向量
-    - Action Space: 5類離散動作
+    - Action Space: 9類離散動作
     - Reward Function: 複合獎勵函數
 
 台股特殊規則:
@@ -64,11 +64,17 @@ class TaiwanStockTradingEnv(gym.Env):
     # Gym 環境元數據
     metadata = {'render_modes': ['human', 'rgb_array']}
     
+    ACTION_NAMES = [
+        'HOLD', 'BUY_1000', 'BUY_5000', 'BUY_10000',
+        'SELL_1000', 'SELL_5000', 'SELL_10000',
+        'TARGET_50_PERCENT', 'TARGET_100_PERCENT',
+    ]
+
     def __init__(
         self,
         df: pd.DataFrame,
         initial_balance: float = 1_000_000,
-        max_position: int = 4000,
+        max_position: int = 40000,
         trade_unit: int = 1000,
         price_limit: float = 0.10,
         commission_rate: float = 0.0015,
@@ -77,6 +83,11 @@ class TaiwanStockTradingEnv(gym.Env):
         reward_func=None,
         initial_shares: int = 0,
         initial_avg_cost: float = 0.0,
+        enable_risk_manager: bool = True,
+        crash_window: int = 15,
+        turnover_penalty: float = 0.01,
+        min_hold_days: int = 20,
+        short_hold_penalty: float = 0.02,
     ):
         """
         初始化交易環境
@@ -107,6 +118,11 @@ class TaiwanStockTradingEnv(gym.Env):
         self.commission_rate = commission_rate
         self.tax_rate = tax_rate
         self.lookback_window = lookback_window
+        self.enable_risk_manager = enable_risk_manager
+        self.crash_window = crash_window
+        self.turnover_penalty = turnover_penalty
+        self.min_hold_days = min_hold_days
+        self.short_hold_penalty = short_hold_penalty
         
         # 獎勵函數
         if reward_func is None:
@@ -130,7 +146,9 @@ class TaiwanStockTradingEnv(gym.Env):
         
         # 歷史記錄
         self.trade_history = []        # 交易歷史 [{'action': int, 'price': float, 'pnl': float}, ...]
+        self.consecutive_idle_days = 0   # crash detection: 連續無交易天數
         self.portfolio_value_history = []  # 投資組合價值歷史
+        self.last_buy_step = None
         
         # 計算最大持股所需資金
         # 假設價格上限為 1000 元，4000 股需要約 400萬
@@ -158,14 +176,14 @@ class TaiwanStockTradingEnv(gym.Env):
         )
         
         # =====================================================================
-        # 動作空間定義 (5類離散)
+        # 動作空間定義 (9類離散)
         # =====================================================================
         # 0: HOLD           - 觀望
         # 1: BUY_1000       - 買入 1000 股
         # 2: SELL_1000      - 賣出 1000 股
         # 3: CLOSE_POSITION - 清倉
         # 4: STOP_LOSS      - 停損
-        self.action_space = spaces.Discrete(5)
+        self.action_space = spaces.Discrete(len(self.ACTION_NAMES))
         
         # =====================================================================
         # 預處理數據
@@ -181,6 +199,7 @@ class TaiwanStockTradingEnv(gym.Env):
         
         # 識別特徵欄位
         self._identify_feature_columns()
+        self._prepare_sentiment_features()
         
         # =====================================================================
         # 風險指標初始化
@@ -203,7 +222,7 @@ class TaiwanStockTradingEnv(gym.Env):
         print(f"  - 初始資金: {initial_balance:,.0f} TWD")
         print(f"  - 最大持股: {max_position} 股")
         print(f"  - 狀態維度: {self.state_dim}")
-        print(f"  - 動作空間: 5 類離散動作")
+        print(f"  - 動作空間: {self.action_space.n} 類離散動作")
     
     def _identify_feature_columns(self):
         """
@@ -224,6 +243,9 @@ class TaiwanStockTradingEnv(gym.Env):
         self.price_features = ['close', 'open', 'high', 'low', 'volume', 'turnover']
         
         self.technical_features = [
+            'close_ma120_ratio', 'close_ma240_ratio', 'ma60_ma240_ratio',
+            'momentum_63', 'momentum_126', 'momentum_252',
+            'high_252_position', 'rolling_mdd_63',
             'ma3', 'ma5', 'ma10', 'ma20', 'ma60', 'ma120', 'ma240',
             'ma3_slope', 'ma20_slope', 'ma60_slope',
             'ma_cross_signal',
@@ -234,6 +256,9 @@ class TaiwanStockTradingEnv(gym.Env):
             'williams_r',
             'bb_upper', 'bb_lower', 'bb_width',
             'atr_14',
+            'dmi_plus', 'dmi_minus', 'adx',  # DMI/ADX 趨勢強度
+            'mfi',                             # 金錢流量指標
+            'volume_normalized',               # 標準化成交量 (Z-score)
         ]
         
         self.pattern_features = [
@@ -272,6 +297,43 @@ class TaiwanStockTradingEnv(gym.Env):
         self.tech_features_available = [c for c in self.technical_features if c in available_cols]
         self.pattern_features_available = [c for c in self.pattern_features if c in available_cols]
         self.fund_features_available = [c for c in self.fundamental_features if c in available_cols]
+        self.sentiment_features_available = [c for c in self.sentiment_features if c in available_cols]
+
+    def _prepare_sentiment_features(self) -> None:
+        """Ensure the last 4 state slots contain market/sentiment signals."""
+        if len(self.sentiment_features_available) == len(self.sentiment_features):
+            return
+
+        close = pd.to_numeric(self.df["close"], errors="coerce")
+        if "volume" in self.df:
+            volume = pd.to_numeric(self.df["volume"], errors="coerce")
+        else:
+            volume = pd.Series(0.0, index=self.df.index)
+        returns = close.pct_change()
+
+        if "twse_index_return" not in self.df:
+            self.df["twse_index_return"] = returns.fillna(0.0).clip(-0.2, 0.2)
+
+        if "twse_index_volume_change" not in self.df:
+            vol_change = volume.pct_change()
+            self.df["twse_index_volume_change"] = (
+                vol_change.replace([np.inf, -np.inf], 0.0).fillna(0.0).clip(-5.0, 5.0)
+            )
+
+        if "sector_correlation" not in self.df:
+            rolling_corr = returns.rolling(20, min_periods=5).corr(
+                returns.rolling(5, min_periods=2).mean()
+            )
+            self.df["sector_correlation"] = (
+                rolling_corr.replace([np.inf, -np.inf], 0.0).fillna(0.0).clip(-1.0, 1.0)
+            )
+
+        if "market_volatility" not in self.df:
+            self.df["market_volatility"] = (
+                returns.rolling(20, min_periods=5).std().fillna(0.0).clip(0.0, 1.0)
+            )
+
+        self.sentiment_features_available = self.sentiment_features.copy()
     
     def _create_state(self) -> np.ndarray:
         """
@@ -303,6 +365,7 @@ class TaiwanStockTradingEnv(gym.Env):
         
         # =====================================================================
         # 2. 技術指標特徵 (20維)
+        # 優先使用長週期、比例化特徵，讓 ETF 策略更容易學會長抱/少交易。
         # =====================================================================
         for feature in self.tech_features_available[:20]:  # 最多20個
             value = row.get(feature, 0)
@@ -376,7 +439,11 @@ class TaiwanStockTradingEnv(gym.Env):
         # =====================================================================
         # 如果有加權指數數據，可以計算這些特徵
         # 這裡先用0填充
-        state_list.extend([0.0, 0.0, 0.0, 0.0])
+        for feature in self.sentiment_features[:4]:
+            value = row.get(feature, 0.0)
+            if pd.isna(value):
+                value = 0.0
+            state_list.append(float(value))
         
         # 確保長度為52
         state_array = np.array(state_list[:52], dtype=np.float32)
@@ -416,6 +483,91 @@ class TaiwanStockTradingEnv(gym.Env):
         is_valid = price_change < self.price_limit
         
         return trade_price, is_valid
+
+    def _get_side_trade_price(self, side: str) -> Tuple[float, bool]:
+        row = self.df.iloc[self.current_step]
+        close = row['close']
+        prev_close = self.df.iloc[self.current_step - 1]['close'] if self.current_step > 0 else close
+        trade_price = close * 1.001 if side == 'buy' else close * 0.999
+        price_change = abs(trade_price - prev_close) / prev_close if prev_close else 0.0
+        return trade_price, price_change < self.price_limit
+
+    def _buy_shares(self, shares: int, action: int, label: str) -> Tuple[bool, str]:
+        shares = int(shares // self.trade_unit * self.trade_unit)
+        if shares <= 0:
+            return False, "BUY size too small"
+        if self.position >= self.max_position:
+            return False, "max position reached"
+
+        trade_price, is_valid = self._get_side_trade_price('buy')
+        if not is_valid:
+            return False, "price limit"
+
+        shares = min(shares, self.max_position - self.position)
+        max_affordable = int((self.balance / (trade_price * (1 + self.commission_rate))) // self.trade_unit) * self.trade_unit
+        shares = min(shares, max_affordable)
+        if shares <= 0:
+            return False, "insufficient cash"
+
+        cost = trade_price * shares
+        self.balance -= cost * (1 + self.commission_rate)
+        total_cost_new = self.position * self.avg_cost + cost
+        self.position += shares
+        self.avg_cost = total_cost_new / self.position if self.position > 0 else 0.0
+
+        settlement_step = self.current_step + 2
+        self.pending_shares[settlement_step] = self.pending_shares.get(settlement_step, 0) + shares
+        self.trade_history.append({
+            'step': self.current_step,
+            'action': action,
+            'price': trade_price,
+            'shares': shares,
+            'position': self.position,
+            'pnl': 0,
+            'type': label,
+            'settlement_step': settlement_step,
+        })
+        self.consecutive_idle_days = 0
+        self.last_buy_step = self.current_step
+        return True, f"{label} {shares}@{trade_price:.2f}"
+
+    def _sell_shares(self, shares: int, action: int, label: str) -> Tuple[bool, str]:
+        shares = int(shares // self.trade_unit * self.trade_unit)
+        if shares <= 0:
+            return False, "SELL size too small"
+
+        locked_shares = sum(count for step, count in self.pending_shares.items() if step > self.current_step)
+        sellable_shares = max(0, self.position - locked_shares)
+        shares = min(shares, sellable_shares)
+        shares = int(shares // self.trade_unit * self.trade_unit)
+        if shares <= 0:
+            return False, f"T+2 locked ({locked_shares} shares)"
+
+        trade_price, is_valid = self._get_side_trade_price('sell')
+        if not is_valid:
+            return False, "price limit"
+
+        proceeds = trade_price * shares
+        commission = proceeds * self.commission_rate
+        tax = proceeds * self.tax_rate
+        net_proceeds = proceeds - commission - tax
+        pnl = net_proceeds - (shares * self.avg_cost)
+        self.balance += net_proceeds
+        self.position -= shares
+        if self.position == 0:
+            self.avg_cost = 0.0
+
+        self.trade_history.append({
+            'step': self.current_step,
+            'action': action,
+            'price': trade_price,
+            'shares': shares,
+            'position': self.position,
+            'pnl': pnl,
+            'type': label,
+        })
+        self.consecutive_idle_days = 0
+        return True, f"{label} {shares}@{trade_price:.2f}, PnL={pnl:.0f}"
     
     def _execute_trade(self, action: int) -> Tuple[bool, str]:
         """
@@ -429,224 +581,32 @@ class TaiwanStockTradingEnv(gym.Env):
             - executed: 是否執行成功
             - message: 交易訊息
         """
+        action = int(np.asarray(action).item())
+        if not 0 <= action < self.action_space.n:
+            raise ValueError(f"Invalid action {action}; expected 0-{self.action_space.n - 1}")
         if action == 0:  # HOLD
             return False, "HOLD"
-        
-        trade_price, is_valid = self._get_trade_price(action)
-        
-        # =====================================================================
-        # 買入動作 (BUY_1000)
-        # =====================================================================
-        if action == 1:
-            # 檢查是否已經满倉
-            if self.position >= self.max_position:
-                return False, "已達最大持股"
-            
-            # 檢查是否有足夠資金
-            cost = trade_price * self.trade_unit
-            cost_with_commission = cost * (1 + self.commission_rate)
-            
-            if self.balance < cost_with_commission:
-                return False, "資金不足"
-            
-            # === T+2 交割制度 ===
-            # 當日買入的股票，無法在當日賣出
-            # 需要記錄到 pending_shares，並在 T+2 日才能解除
-            # 買入時：增加 self.position（虛擬持股），但這些股票處於鎖定狀態
-            # 直到 T+2 日才能真正賣出
-            
-            # 執行買入
-            self.balance -= cost
-            self.balance -= cost * self.commission_rate
-            
-            # 更新持股成本
-            total_cost_new = self.position * self.avg_cost + cost
-            self.position += self.trade_unit
-            
-            # === 記錄 T+2 鎖定的股票 ===
-            # 在 current_step + 2 的時候，這些股票才會解除鎖定
-            settlement_step = self.current_step + 2
-            if settlement_step not in self.pending_shares:
-                self.pending_shares[settlement_step] = 0
-            self.pending_shares[settlement_step] += self.trade_unit
-            
-            self.avg_cost = total_cost_new / self.position if self.position > 0 else 0
-            
-            # 記錄交易
-            self.trade_history.append({
-                'step': self.current_step,
-                'action': action,
-                'price': trade_price,
-                'shares': self.trade_unit,
-                'position': self.position,
-                'pnl': 0,  # 平倉時才計算
-                'type': 'BUY',
-                'settlement_step': settlement_step  # T+2 交割日
-            })
-            
-            return True, f"BUY {self.trade_unit}@{trade_price:.2f} (T+2 解鎖)"
-        
-        # =====================================================================
-        # 賣出動作 (SELL_1000)
-        # =====================================================================
-        if action == 2:
-            # 檢查是否有持股
-            if self.position < self.trade_unit:
-                return False, "持股不足"
-            
-            # === T+2 交割制度檢查 ===
-            # 檢查目前有多少股票是 T+2 鎖定的
-            # 只有超過 T+2 鎖定期的股票才能賣出
-            sellable_shares = self.position
-            locked_shares = 0
-            
-            # 計算已鎖定的股票數量（未來 T+2 日才解鎖的股票）
-            for future_step, locked_count in self.pending_shares.items():
-                if future_step > self.current_step:
-                    locked_shares += locked_count
-            
-            # 可賣出股數 = 總持股 - 鎖定股數
-            sellable_shares = self.position - locked_shares
-            
-            if sellable_shares < self.trade_unit:
-                return False, f"T+2 鎖定中，無法賣出 (鎖定: {locked_shares} 股)"
-            
-            # 執行賣出
-            proceeds = trade_price * self.trade_unit
-            commission = proceeds * self.commission_rate
-            tax = proceeds * self.tax_rate
-            net_proceeds = proceeds - commission - tax
-            
-            self.balance += net_proceeds
-            
-            # 更新持股
-            self.position -= self.trade_unit
-            
-            # 如果全數賣出，計算該筆交易 pnl
-            pnl = net_proceeds - (self.trade_unit * self.avg_cost)
-            
-            # 記錄交易
-            self.trade_history.append({
-                'step': self.current_step,
-                'action': action,
-                'price': trade_price,
-                'shares': self.trade_unit,
-                'position': self.position,
-                'pnl': pnl,
-                'type': 'SELL'
-            })
-            
-            return True, f"SELL {self.trade_unit}@{trade_price:.2f}, PnL={pnl:.0f}"
-        
-        # =====================================================================
-        # 清倉動作 (CLOSE_POSITION)
-        # =====================================================================
-        if action == 3:
-            if self.position == 0:
-                return False, "無持股可賣"
-            
-            # === T+2 交割制度檢查 ===
-            # 計算可賣出的股數
-            locked_shares = sum(count for step, count in self.pending_shares.items() if step > self.current_step)
-            sellable_shares = self.position - locked_shares
-            
-            if sellable_shares <= 0:
-                return False, f"全部持股 T+2 鎖定中 (鎖定: {locked_shares} 股)"
-            
-            # 如果有可賣出的股票，先賣出可卖的部分
-            if sellable_shares < self.position:
-                # 部分賣出（受限於 T+2）
-                proceeds = trade_price * sellable_shares
-                commission = proceeds * self.commission_rate
-                tax = proceeds * self.tax_rate
-                net_proceeds = proceeds - commission - tax
-                
-                # 計算 pnl (假設平均成本)
-                pnl_per_share = net_proceeds / sellable_shares - self.avg_cost
-                pnl = pnl_per_share * sellable_shares
-                
-                self.balance += net_proceeds
-                self.position -= sellable_shares
-                # avg_cost 保持不變（因為是按比例減少）
-                
-                self.trade_history.append({
-                    'step': self.current_step,
-                    'action': action,
-                    'price': trade_price,
-                    'shares': sellable_shares,
-                    'position': self.position,
-                    'pnl': pnl,
-                    'type': 'CLOSE_PARTIAL',
-                    'locked_shares': locked_shares
-                })
-                
-                return True, f"CLOSE PARTIAL {sellable_shares}@{trade_price:.2f} (鎖定: {locked_shares})"
-            
-            # 賣出全部持股
-            proceeds = trade_price * self.position
-            commission = proceeds * self.commission_rate
-            tax = proceeds * self.tax_rate
-            net_proceeds = proceeds - commission - tax
-            
-            # 計算 pnl
-            pnl = net_proceeds - (self.position * self.avg_cost)
-            
-            self.balance += net_proceeds
-            self.position = 0
-            self.avg_cost = 0.0
-            
-            self.trade_history.append({
-                'step': self.current_step,
-                'action': action,
-                'price': trade_price,
-                'shares': self.position,
-                'position': 0,
-                'pnl': pnl,
-                'type': 'CLOSE'
-            })
-            
-            return True, f"CLOSE ALL @{trade_price:.2f}, PnL={pnl:.0f}"
-        
-        # =====================================================================
-        # 停損動作 (STOP_LOSS)
-        # =====================================================================
-        if action == 4:
-            if self.position == 0:
-                return False, "無持股"
-            
-            # === T+2 交割制度檢查 ===
-            # 計算可賣出的股數
-            locked_shares = sum(count for step, count in self.pending_shares.items() if step > self.current_step)
-            sellable_shares = self.position - locked_shares
-            
-            if sellable_shares <= 0:
-                return False, f"全部持股 T+2 鎖定中 (鎖定: {locked_shares} 股)"
-            
-            # 停損賣出 (以市價賣出可卖出的部分)
-            proceeds = trade_price * self.position
-            commission = proceeds * self.commission_rate
-            tax = proceeds * self.tax_rate
-            net_proceeds = proceeds - commission - tax
-            
-            # 計算 pnl (負值代表虧損)
-            pnl = net_proceeds - (self.position * self.avg_cost)
-            
-            self.balance += net_proceeds
-            self.position = 0
-            self.avg_cost = 0.0
-            
-            self.trade_history.append({
-                'step': self.current_step,
-                'action': action,
-                'price': trade_price,
-                'shares': self.position,
-                'position': 0,
-                'pnl': pnl,
-                'type': 'STOP_LOSS'
-            })
-            
-            return True, f"STOP_LOSS @{trade_price:.2f}, PnL={pnl:.0f}"
-        
+
+        if action in (1, 2, 3):
+            shares = {1: 1000, 2: 5000, 3: 10000}[action]
+            return self._buy_shares(shares, action, f"BUY_{shares}")
+        if action in (4, 5, 6):
+            shares = {4: 1000, 5: 5000, 6: 10000}[action]
+            return self._sell_shares(shares, action, f"SELL_{shares}")
+        if action in (7, 8):
+            row = self.df.iloc[self.current_step]
+            close = float(row['close'])
+            target_ratio = 0.5 if action == 7 else 1.0
+            portfolio_value = self.balance + self.position * close
+            target_shares = int((portfolio_value * target_ratio / close) // self.trade_unit) * self.trade_unit
+            target_shares = min(target_shares, self.max_position)
+            delta = target_shares - self.position
+            if delta >= self.trade_unit:
+                return self._buy_shares(delta, action, f"TARGET_{int(target_ratio * 100)}_BUY")
+            if delta <= -self.trade_unit:
+                return self._sell_shares(-delta, action, f"TARGET_{int(target_ratio * 100)}_SELL")
+            return False, f"TARGET_{int(target_ratio * 100)}_HOLD"
+
         return False, "Unknown action"
     
     def step(self, action: int) -> Tuple[np.ndarray, float, bool, bool, Dict]:
@@ -669,12 +629,14 @@ class TaiwanStockTradingEnv(gym.Env):
             - truncated: 是否截斷 (人為中斷)
             - info: 額外資訊字典
         """
+        action = int(np.asarray(action).item())
+
         # 取得前一日收盤價 (用於涨跌停計算)
         prev_close = self.df.iloc[self.current_step - 1]['close'] if self.current_step > 0 else 0
-        
-        # 取得目前投資組合價值 (交易前)
-        current_price = self.df.iloc[self.current_step]['close']
-        previous_portfolio_value = self.balance + self.position * current_price
+
+        # 取得目前投資組合價值 (交易前用前一步收盤價)
+        prev_step_price = prev_close if prev_close != 0 else self.df.iloc[0]['close']
+        previous_portfolio_value = self.balance + self.position * prev_step_price
         
         # 執行交易
         executed, message = self._execute_trade(action)
@@ -700,7 +662,7 @@ class TaiwanStockTradingEnv(gym.Env):
             del self.pending_shares[step]
         
         if unlocked_shares > 0:
-            print(f"[T+2 解鎖] Step {self.current_step}: 解鎖 {unlocked_shares} 股")
+            pass  # silenced
         
         # 計算新的收盤價投資組合價值
         new_price = self.df.iloc[min(self.current_step, len(self.df) - 1)]['close']
@@ -720,6 +682,17 @@ class TaiwanStockTradingEnv(gym.Env):
             trade_history=self.trade_history,
             previous_close=prev_close
         )
+
+        if executed and action != 0:
+            reward -= self.turnover_penalty
+            reward_breakdown['turnover_penalty'] = -self.turnover_penalty
+
+        if executed and action in (4, 5, 6, 7, 8) and self.last_buy_step is not None:
+            held_days = self.current_step - self.last_buy_step
+            if held_days < self.min_hold_days:
+                penalty = self.short_hold_penalty * (1.0 - held_days / max(self.min_hold_days, 1))
+                reward -= penalty
+                reward_breakdown['short_hold_penalty'] = -penalty
         
         # 更新風險指標
         if portfolio_value > self.peak_value:
@@ -748,12 +721,14 @@ class TaiwanStockTradingEnv(gym.Env):
         info = {
             'step': self.current_step,
             'action': action,
-            'action_name': ['HOLD', 'BUY_1000', 'SELL_1000', 'CLOSE_POSITION', 'STOP_LOSS'][action],
+            'action_name': self.ACTION_NAMES[action],
             'message': message,
+            'trade_executed': executed,
             'balance': self.balance,
             'position': self.position,
             'avg_cost': self.avg_cost,
             'portfolio_value': portfolio_value,
+            'portfolio_return': (portfolio_value / previous_portfolio_value - 1) if previous_portfolio_value > 0 else 0.0,
             'reward_breakdown': reward_breakdown,
             'max_drawdown': self.max_drawdown,
         }
@@ -761,11 +736,25 @@ class TaiwanStockTradingEnv(gym.Env):
         # =====================================================================
         # 返回下一狀態
         # =====================================================================
+        # ── Crash Detection（Soft Penalty）────────────────────────────────
+        # 漸進式懲罰：每次 CLOSE/idle position 後結算，idle N 天則罰 -0.003*N
+        # 不再是固定 -0.05，避免模型完全停擺
+        self.consecutive_idle_days += 1
+        if (self.consecutive_idle_days >= self.crash_window
+                and self.position > 0
+                and self.enable_risk_manager):
+            # 漸進式 penalty：罰額與 idle 天數成正比（1天=-0.003, 15天=-0.045）
+            idle_days = min(self.consecutive_idle_days, 15)
+            soft_penalty = -0.003 * idle_days
+            reward = reward + soft_penalty  # 加負值 = 減 reward
+            self.consecutive_idle_days = 0   # reset after penalty
+        # ── End Crash Detection ───────────────────────────────────────
+
         if terminated:
             state = np.zeros(self.state_dim, dtype=np.float32)
         else:
             state = self._create_state()
-        
+
         return state, reward, terminated, False, info
     
     def reset(self, seed: Optional[int] = None, options: Optional[Dict] = None) -> Tuple[np.ndarray, Dict]:
@@ -779,6 +768,8 @@ class TaiwanStockTradingEnv(gym.Env):
         Returns:
             (state, info)
         """
+        super().reset(seed=seed)
+
         # 重置狀態
         self.current_step = 0
         self.balance = self.initial_balance
@@ -796,6 +787,10 @@ class TaiwanStockTradingEnv(gym.Env):
         # 清空歷史
         self.trade_history = []
         self.portfolio_value_history = [self.initial_balance]
+        self.last_buy_step = None
+
+        if self.reward_func is not None and hasattr(self.reward_func, 'reset'):
+            self.reward_func.reset()
         
         # 創建初始狀態
         state = self._create_state()

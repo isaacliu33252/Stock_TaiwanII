@@ -38,10 +38,179 @@ except ImportError:
     ALL_TICKERS = ["0050.TW", "0056.TW", "00646.TW", "00679B.TWO",
                    "00713.TW", "00751B.TWO", "00878.TW", "2884.TW"]
     PORTFOLIO_HOLDINGS = {}
-    BACKTEST_START = "2021-01-01"
-    BACKTEST_END = "2024-12-31"
-    TRAIN_START = "2015-01-01"
-    TRAIN_END = "2020-12-31"
+    BACKTEST_START = "2000-01-01"
+    BACKTEST_END = "2010-12-31"
+    TRAIN_START = "1990-01-01"
+    TRAIN_END = "2000-12-31"
+
+
+MARKET_TICKER = "^TWII"
+MARKET_FEATURE_COLUMNS = [
+    "twse_index_return",
+    "twse_index_volume_change",
+    "sector_correlation",
+    "market_volatility",
+]
+MARKET_RAW_COLUMNS = [
+    "twse_index_return_raw",
+    "twse_index_volume_change_raw",
+    "market_volatility_raw",
+]
+
+
+def _normalize_date_column(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    if "datetime" in df.columns and "date" not in df.columns:
+        df["date"] = df["datetime"]
+    if "date" in df.columns:
+        df["date"] = pd.to_datetime(df["date"])
+        if getattr(df["date"].dt, "tz", None) is not None:
+            df["date"] = df["date"].dt.tz_localize(None)
+        df["date"] = df["date"].dt.normalize()
+    return df
+
+
+def _rolling_zscore(series: pd.Series, window: int = 60, min_periods: int = 20) -> pd.Series:
+    values = pd.to_numeric(series, errors="coerce")
+    mean = values.rolling(window, min_periods=min_periods).mean()
+    std = values.rolling(window, min_periods=min_periods).std().replace(0, np.nan)
+    return ((values - mean) / std).replace([np.inf, -np.inf], 0.0).fillna(0.0)
+
+
+def download_market_features(
+    start_date: str,
+    end_date: str,
+    interval: str = "1d",
+    cache_dir: str = None,
+) -> Optional[pd.DataFrame]:
+    """Download TWSE index data and derive market features."""
+    if cache_dir is None:
+        cache_dir = PROJECT_ROOT / "data" / "portfolio_cache"
+    else:
+        cache_dir = Path(cache_dir)
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    safe_start = start_date.replace("-", "")
+    safe_end = end_date.replace("-", "")
+    cache_file = cache_dir / f"TWII_{safe_start}_{safe_end}_{interval}_market_v2.parquet"
+
+    if cache_file.exists():
+        try:
+            market = pd.read_parquet(cache_file)
+            return _normalize_date_column(market)
+        except Exception:
+            pass
+
+    print(f"[Portfolio Data Loader] 下載大盤 {MARKET_TICKER}...", end=" ", flush=True)
+    try:
+        market = yf.Ticker(MARKET_TICKER).history(start=start_date, end=end_date, interval=interval)
+        if market.empty:
+            print("無數據")
+            return None
+
+        market = market.reset_index()
+        market.columns = [c.lower() for c in market.columns]
+        market = _normalize_date_column(market)
+        market = market.rename(columns={"close": "twse_close", "volume": "twse_volume"})
+
+        market["twse_index_return_raw"] = (
+            pd.to_numeric(market["twse_close"], errors="coerce").pct_change().fillna(0.0).clip(-0.2, 0.2)
+        )
+        vol_change = pd.to_numeric(market["twse_volume"], errors="coerce").pct_change()
+        market["twse_index_volume_change_raw"] = (
+            vol_change.replace([np.inf, -np.inf], 0.0).fillna(0.0).clip(-5.0, 5.0)
+        )
+        market["market_volatility_raw"] = (
+            market["twse_index_return_raw"].rolling(20, min_periods=5).std().fillna(0.0).clip(0.0, 1.0)
+        )
+
+        market["twse_index_return"] = (market["twse_index_return_raw"] * 10.0).clip(-2.0, 2.0)
+        market["twse_index_volume_change"] = market["twse_index_volume_change_raw"].clip(-2.0, 2.0)
+        market["market_volatility"] = _rolling_zscore(market["market_volatility_raw"]).clip(-3.0, 3.0)
+
+        out = market[["date"] + MARKET_RAW_COLUMNS + [
+            "twse_index_return",
+            "twse_index_volume_change",
+            "market_volatility",
+        ]].copy()
+        out.to_parquet(cache_file, index=False)
+        print(f"{len(out)} 筆")
+        return out
+    except Exception as e:
+        print(f"失敗: {e}")
+        return None
+
+
+def add_market_features(df: pd.DataFrame, market: Optional[pd.DataFrame]) -> pd.DataFrame:
+    """Merge market features into one stock dataframe."""
+    out = _normalize_date_column(df)
+    if market is None or market.empty:
+        return out
+
+    drop_cols = [c for c in MARKET_FEATURE_COLUMNS + MARKET_RAW_COLUMNS if c in out.columns]
+    if drop_cols:
+        out = out.drop(columns=drop_cols)
+
+    market_cols = ["date"] + MARKET_RAW_COLUMNS + [
+        "twse_index_return",
+        "twse_index_volume_change",
+        "market_volatility",
+    ]
+    out = out.merge(market[market_cols], on="date", how="left")
+    for col in market_cols[1:]:
+        out[col] = pd.to_numeric(out[col], errors="coerce").ffill().fillna(0.0)
+
+    stock_return = pd.to_numeric(out["close"], errors="coerce").pct_change()
+    out["sector_correlation"] = (
+        stock_return.rolling(20, min_periods=5)
+        .corr(out["twse_index_return_raw"])
+        .replace([np.inf, -np.inf], 0.0)
+        .fillna(0.0)
+        .clip(-1.0, 1.0)
+    )
+    return out
+
+
+def add_long_horizon_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Add slow trend/risk features that help ETF holding decisions."""
+    out = _normalize_date_column(df)
+    if "close" not in out.columns:
+        return out
+
+    close = pd.to_numeric(out["close"], errors="coerce")
+    for window in (60, 120, 240):
+        ma_col = f"ma{window}"
+        if ma_col not in out.columns:
+            out[ma_col] = close.rolling(window, min_periods=max(5, window // 4)).mean()
+
+    out["close_ma120_ratio"] = (close / out["ma120"] - 1.0).replace([np.inf, -np.inf], 0.0)
+    out["close_ma240_ratio"] = (close / out["ma240"] - 1.0).replace([np.inf, -np.inf], 0.0)
+    out["ma60_ma240_ratio"] = (out["ma60"] / out["ma240"] - 1.0).replace([np.inf, -np.inf], 0.0)
+    out["momentum_63"] = close.pct_change(63)
+    out["momentum_126"] = close.pct_change(126)
+    out["momentum_252"] = close.pct_change(252)
+
+    rolling_high = close.rolling(252, min_periods=60).max()
+    rolling_low = close.rolling(252, min_periods=60).min()
+    out["high_252_position"] = ((close - rolling_low) / (rolling_high - rolling_low)).replace([np.inf, -np.inf], 0.0)
+
+    rolling_peak_63 = close.rolling(63, min_periods=20).max()
+    out["rolling_mdd_63"] = (close / rolling_peak_63 - 1.0).replace([np.inf, -np.inf], 0.0)
+
+    long_cols = [
+        "close_ma120_ratio",
+        "close_ma240_ratio",
+        "ma60_ma240_ratio",
+        "momentum_63",
+        "momentum_126",
+        "momentum_252",
+        "high_252_position",
+        "rolling_mdd_63",
+    ]
+    for col in long_cols:
+        out[col] = pd.to_numeric(out[col], errors="coerce").fillna(0.0).clip(-3.0, 3.0)
+
+    return out
 
 
 def download_all_stocks(
@@ -81,15 +250,20 @@ def download_all_stocks(
         "00751B.TW": "00751B.TWO",
     }
 
+    market = download_market_features(start_date, end_date, interval=interval, cache_dir=str(cache_dir))
+
     for i, ticker in enumerate(tickers):
-        cache_file = cache_dir / f"{ticker.replace('.', '_')}.parquet"
+        safe_ticker = ticker.replace('.', '_')
+        safe_start = start_date.replace('-', '')
+        safe_end = end_date.replace('-', '')
+        cache_file = cache_dir / f"{safe_ticker}_{safe_start}_{safe_end}_{interval}.parquet"
 
         # 嘗試從快取讀取
         if cache_file.exists():
             try:
                 df = pd.read_parquet(cache_file)
                 print(f"  [{i+1}/{len(tickers)}] {ticker} 從快取載入: {len(df)} 筆")
-                results[ticker] = df
+                results[ticker] = add_long_horizon_features(add_market_features(df, market))
                 continue
             except Exception:
                 pass
@@ -127,7 +301,7 @@ def download_all_stocks(
             df.to_parquet(cache_file, index=False)
 
             print(f"{len(df)} 筆")
-            results[ticker] = df
+            results[ticker] = add_long_horizon_features(add_market_features(df, market))
 
         except Exception as e:
             print(f"失敗: {e}")
@@ -165,59 +339,14 @@ def align_trading_days(stock_data: Dict[str, pd.DataFrame]) -> pd.DataFrame:
 
 def add_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
     """
-    為股票數據添加技術指標
+    為股票數據添加技術指標。
+    
+    統一使用 data/technical_indicators.py 的 TechnicalIndicators 類別，
+    確保計算邏輯一致，避免重複代碼。
     """
-    df = df.copy()
-
-    # 收益率
-    df['returns'] = df['close'].pct_change()
-    df['log_returns'] = np.log(df['close'] / df['close'].shift(1))
-
-    # 移動平均線
-    for window in [5, 20, 60]:
-        df[f'ma{window}'] = df['close'].rolling(window=window).mean()
-
-    # RSI
-    delta = df['close'].diff()
-    gain = delta.clip(lower=0).rolling(window=14).mean()
-    loss = (-delta.clip(upper=0)).rolling(window=14).mean()
-    rs = gain / (loss + 1e-10)
-    df['rsi'] = 100 - (100 / (1 + rs))
-
-    # MACD
-    ema12 = df['close'].ewm(span=12, adjust=False).mean()
-    ema26 = df['close'].ewm(span=26, adjust=False).mean()
-    df['macd'] = ema12 - ema26
-    df['macd_signal'] = df['macd'].ewm(span=9, adjust=False).mean()
-    df['macd_hist'] = df['macd'] - df['macd_signal']
-
-    # Bollinger Bands
-    bb_window = 20
-    df['bb_middle'] = df['close'].rolling(window=bb_window).mean()
-    bb_std = df['close'].rolling(window=bb_window).std(ddof=1)
-    df['bb_upper'] = df['bb_middle'] + 2 * bb_std
-    df['bb_lower'] = df['bb_middle'] - 2 * bb_std
-
-    # ATR
-    high_low = df['high'] - df['low']
-    high_close = np.abs(df['high'] - df['close'].shift())
-    low_close = np.abs(df['low'] - df['close'].shift())
-    tr = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
-    df['atr'] = tr.rolling(window=14).mean()
-
-    # KDJ
-    low_n = df['low'].rolling(window=9).min()
-    high_n = df['high'].rolling(window=9).max()
-    rsv = (df['close'] - low_n) / (high_n - low_n + 1e-10) * 100
-    df['kd_k'] = rsv.ewm(com=2).mean()
-    df['kd_d'] = df['kd_k'].ewm(com=2).mean()
-    df['kd_j'] = 3 * df['kd_k'] - 2 * df['kd_d']
-
-    # 成交量變化
-    df['volume_change'] = df['volume'].pct_change()
-    df['volume_ma5'] = df['volume'].rolling(window=5).mean()
-
-    return df
+    from data.technical_indicators import TechnicalIndicators
+    ti = TechnicalIndicators(df)
+    return ti.calculate_all()
 
 
 def merge_portfolio_data(
@@ -288,8 +417,8 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description='下載投資組合歷史數據')
-    parser.add_argument('--start', type=str, default='2015-01-01')
-    parser.add_argument('--end', type=str, default='2024-12-31')
+    parser.add_argument('--start', type=str, default='2000-01-01')
+    parser.add_argument('--end', type=str, default='2010-12-31')
     parser.add_argument('--mode', type=str, default='all',
                         choices=['all', 'train', 'test'])
     args = parser.parse_args()

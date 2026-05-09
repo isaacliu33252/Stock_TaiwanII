@@ -29,7 +29,7 @@ FeatureEngineer - 特徵工程處理器
 
 import pandas as pd
 import numpy as np
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict, Tuple, Any
 from pathlib import Path
 import warnings
 
@@ -68,6 +68,9 @@ class FeatureEngineer:
         self.lookback_window = lookback_window
         self.df = None
         self.tech_indicators = None
+        # 修正: 加入 scaler 參數儲存，避免資料洩漏（train fit, test transform）
+        self._scaler_params: Dict[str, Any] = {}
+        self._scaler_fitted: bool = False
     
     def process(
         self,
@@ -123,6 +126,8 @@ class FeatureEngineer:
         # Step 6: 標準化
         # =====================================================================
         self._normalize_features()
+        # 標記 scaler 已 fit，之後可用 transform() 處理測試資料
+        self._scaler_fitted = True
         
         print(f"[FeatureEngineer] 完成，共 {len(self.df)} 筆數據，{len(self.df.columns)} 個欄位")
         
@@ -314,6 +319,9 @@ class FeatureEngineer:
         
         對部分特徵進行標準化，使其適合 RL 訓練。
         使用 z-score 標準化或 min-max 正規化。
+        
+        修正: 若已有 fit 的 scaler 參數，則套用該參數（transform 模式），
+        否則直接正規化並儲存參數（向後兼容單一 dataset）。
         """
         print("[FeatureEngineer] Step 6: 特徵標準化...")
         
@@ -321,12 +329,20 @@ class FeatureEngineer:
         # 價格相關欄位 - 使用 min-max 正規化到 [0, 1]
         price_related = ['close', 'open', 'high', 'low']
         
-        for col in price_related:
-            if col in self.df.columns:
-                # 使用歷史最高價正規化
-                max_val = self.df['close'].max()
-                if max_val > 0:
+        if self._scaler_fitted and 'price_max' in self._scaler_params:
+            # Transform 模式：使用 train fit 的參數
+            max_val = self._scaler_params['price_max']
+            for col in price_related:
+                if col in self.df.columns:
                     self.df[col] = self.df[col] / max_val
+        else:
+            # Fit 模式（向後兼容）：從 self.df 計算並儲存
+            max_val = self.df['close'].max()
+            self._scaler_params['price_max'] = max_val
+            for col in price_related:
+                if col in self.df.columns:
+                    if max_val > 0:
+                        self.df[col] = self.df[col] / max_val
         
         # 技術指標 - 使用 z-score 標準化
         # (x - mean) / std，使用 expanding window 避免 lookahead bias
@@ -341,6 +357,48 @@ class FeatureEngineer:
                 self.df[col] = (self.df[col] - expanding_mean) / (expanding_std + 1e-10)
         
         print("  - 特徵標準化完成")
+
+    def fit_transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        在訓練資料上 fit scaler 並 transform
+        
+        Args:
+            df: 訓練資料 DataFrame
+        
+        Returns:
+            標準化後的 DataFrame
+        """
+        self.df = df.copy()
+        self._preprocess_data()
+        self._calculate_technical_indicators()
+        self._clean_data()
+        self._normalize_features()  # 會計算並儲存 scaler params
+        self._scaler_fitted = True
+        print(f"[FeatureEngineer] fit_transform 完成，共 {len(self.df)} 筆，scaler 已儲存")
+        return self.df
+
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        用已 fit 的 scaler 參數 transform 測試/新資料
+        
+        Args:
+            df: 測試或新資料 DataFrame
+        
+        Returns:
+            標準化後的 DataFrame
+        """
+        if not self._scaler_fitted:
+            raise RuntimeError(
+                "[FeatureEngineer] scaler 尚未 fit，請先呼叫 fit_transform() "
+                "或在同一個 DataFrame 上呼叫 process()"
+            )
+        self.df = df.copy()
+        self._preprocess_data()
+        self._calculate_technical_indicators()
+        self._clean_data()
+        self._normalize_features()  # 會使用已儲存的 scaler params
+        print(f"[FeatureEngineer] transform 完成，共 {len(self.df)} 筆")
+        return self.df
     
     def get_feature_columns(self) -> List[str]:
         """

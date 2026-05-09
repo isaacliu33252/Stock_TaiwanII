@@ -89,6 +89,12 @@ def parse_args():
         help='模型儲存目錄 (預設: 自動產生)'
     )
     parser.add_argument(
+        '--model_path',
+        type=str,
+        default=None,
+        help='模型檔案路徑 (.zip)，eval_only 時優先使用此參數'
+    )
+    parser.add_argument(
         '--data_dir', 
         type=str, 
         default='./data',
@@ -388,18 +394,26 @@ def train_agent(agent, args):
     if args.eval_only:
         print("\n[Step 5] 載入已訓練的模型...")
         
-        best_model_path = agent.get_model().save_path if hasattr(agent.get_model(), 'save_path') else None
+        # 修正: 優先使用 --model_path 指定的路徑，避免不可靠的 get_model().save_path
+        model_loaded = False
+        if args.model_path:
+            model_path = Path(args.model_path)
+            if model_path.exists():
+                agent.load(str(model_path))
+                print(f"  - 已載入模型: {model_path}")
+                model_loaded = True
+            else:
+                print(f"[錯誤] 指定的模型檔案不存在: {model_path}")
         
-        # 嘗試載入最佳模型
-        if best_model_path and Path(best_model_path).exists():
-            agent.load(best_model_path)
-        else:
-            # 嘗試找最終模型
+        if not model_loaded:
+            # 嘗試從 agent.model_dir 找 final_model.zip
             final_path = Path(agent.model_dir) / 'final_model.zip'
             if final_path.exists():
                 agent.load(str(final_path))
+                print(f"  - 已載入模型: {final_path}")
+                model_loaded = True
             else:
-                print("[錯誤] 找不到已訓練的模型")
+                print("[錯誤] 找不到已訓練的模型，請使用 --model_path 指定模型檔案")
                 return None
         
     else:

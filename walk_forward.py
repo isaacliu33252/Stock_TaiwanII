@@ -237,7 +237,7 @@ class WalkForwardBacktester:
         from scipy import stats
         t_stat, p_value = stats.ttest_1samp(returns, 0)
 
-        std_ret = float(np.std([r.total_return for r in results]))
+        std_ret = float(np.std([r.total_return for r in results], ddof=1))
 
         return WalkForwardSummary(
             n_windows=len(results),
@@ -310,7 +310,7 @@ class WalkForwardBacktester:
             'n_test_days': n_days,
             'mean_final': float(final_values.mean()),
             'median_final': float(np.median(final_values)),
-            'std_final': float(final_values.std()),
+            'std_final': float(final_values.std(ddof=1)),
             'percentile_2_5': float(np.percentile(final_values, lower_q * 100)),
             'percentile_97_5': float(np.percentile(final_values, upper_q * 100)),
             'prob_loss': float((final_values < init).mean()),
@@ -351,4 +351,4 @@ class WalkForwardBacktester:
         vals = getattr(results[0], attr)
         if vals is None:
             return "N/A"
-        return f"{np.std([getattr(r, attr) for r in results])*100:+.1f}%"
+        return f"{np.std([getattr(r, attr) for r in results], ddof=1)*100:+.1f}%"

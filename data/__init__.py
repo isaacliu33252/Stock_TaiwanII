@@ -30,8 +30,8 @@
     df = ti.calculate_all()
     
     # 建立 RL 狀態特徵
-    from FinRL.data import FeatureEngineering
-    fe = FeatureEngineering()
+    from FinRL.data import FeatureEngineer
+    fe = FeatureEngineer()
     state = fe.build_state(df, position_info)
 """
 
@@ -72,16 +72,8 @@ from FinRL.data.technical_analysis import (
 
 # feature_engineering.py - 52維狀態特徵工程
 from FinRL.data.feature_engineering import (
-    FeatureEngineering,
-    build_state_vector,
-    get_feature_names,
-    # 特徵維度常數
-    PRICE_FEATURES,
-    TECHNICAL_FEATURES,
-    PATTERN_FEATURES,
-    FUNDAMENTAL_FEATURES,
-    POSITION_FEATURES,
-    MARKET_SENTIMENT,
+    FeatureEngineer,
+    engineer_features,
 )
 
 # 便利直接匯入
@@ -104,14 +96,6 @@ __all__ = [
     "TAIndicators",
     "calculate_all_indicators",
     # 特徵工程
-    "FeatureEngineering",
-    "build_state_vector",
-    "get_feature_names",
-    # 特徵常數
-    "PRICE_FEATURES",
-    "TECHNICAL_FEATURES",
-    "PATTERN_FEATURES",
-    "FUNDAMENTAL_FEATURES",
-    "POSITION_FEATURES",
-    "MARKET_SENTIMENT",
+    "FeatureEngineer",
+    "engineer_features",
 ]
