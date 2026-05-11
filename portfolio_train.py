@@ -162,8 +162,8 @@ class PortfolioTrainer:
         tickers: list = None,
         agent_type: str = "ppo",
         timesteps: int = 100_000,
-        data_start: str = "2015-01-01",
-        data_end: str = "2020-12-31"
+        data_start: str = "1990-01-01",
+        data_end: str = "2000-12-31"
     ):
         self.tickers = tickers or ALL_TICKERS
         self.agent_type = agent_type
@@ -286,9 +286,9 @@ if __name__ == "__main__":
                         help='Agent 類型')
     parser.add_argument('--timesteps', type=int, default=100_000,
                         help='每支股票的訓練步數')
-    parser.add_argument('--start', type=str, default='2015-01-01',
+    parser.add_argument('--start', type=str, default='1990-01-01',
                         help='訓練資料開始日期')
-    parser.add_argument('--end', type=str, default='2020-12-31',
+    parser.add_argument('--end', type=str, default='2000-12-31',
                         help='訓練資料結束日期')
     parser.add_argument('--stocks', type=str, default=None,
                         help='指定股票 (逗號分隔，預設全部)')

@@ -100,6 +100,10 @@ def parse_args():
         '--output_dir', type=str, default=RESULTS_DIR,
         help=f'輸出目錄 (預設: {RESULTS_DIR})'
     )
+    parser.add_argument(
+        '--output_uuid', type=str, default=None,
+        help='UUID suffix for isolated output files'
+    )
     
     # 其他設定
     parser.add_argument(
@@ -234,10 +238,17 @@ def load_data(
     # 建立數據載入器
     loader = TaiwanStockDataLoader(cache_dir=cache_dir)
     
-    # 下載數據
+    # 往前延伸足夠多天，避免 TA 計算後資料筆數為零
+    # MA240 需要 240 個 data points (約 1 年交易日)
+    from datetime import datetime, timedelta
+    lookback_days = 600
+    start_dt = datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=lookback_days)
+    extended_start = start_dt.strftime('%Y-%m-%d')
+    
+    # 下載數據（往回延伸）
     df = loader.download_price_data(
         symbol=symbol,
-        start=start_date,
+        start=extended_start,
         end=end_date,
         use_cache=True
     )
@@ -246,14 +257,23 @@ def load_data(
         print(f"[Data] 無法載入數據")
         return None
     
-    print(f"[Data] 取得 {len(df)} 筆資料")
+    print(f"[Data] 取得 {len(df)} 筆資料（擴展下載: {extended_start} ~ {end_date}）")
     
     # 添加技術指標
     print(f"[Data] 計算技術指標...")
     df = add_technical_indicators(df)
     
+    # 取原本指定的日期範圍（避免擴展的資料影響回測）
+    orig_start = start_date
+    orig_end = end_date
+    if 'date' in df.columns:
+        df['ds'] = df['date'].astype(str)
+        df = df[(df['ds'] >= orig_start) & (df['ds'] <= orig_end)].copy()
+        df = df.drop(columns=['ds'])
+    
     print(f"[Data] 技術指標計算完成")
     print(f"       欄位數: {len(df.columns)}")
+    print(f"       有效筆數: {len(df)}")
     
     return df
 
@@ -302,7 +322,8 @@ def generate_reports(
     stock: str,
     agent_type: str,
     output_dir: str,
-    save_plots: bool = True
+    save_plots: bool = True,
+    output_uuid: str = None,
 ):
     """
     產生回測報告和圖表
@@ -327,6 +348,8 @@ def generate_reports(
     
     # 1. 儲存文字結果
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    if output_uuid:
+        timestamp = f"{timestamp}_{output_uuid}"
     result_file = os.path.join(output_dir, f'backtest_{stock}_{agent_type}_{timestamp}.json')
     
     import json
@@ -490,7 +513,8 @@ def main():
         stock=args.stock,
         agent_type=args.agent,
         output_dir=args.output_dir,
-        save_plots=True
+        save_plots=True,
+        output_uuid=args.output_uuid,
     )
     
     # ============================================================

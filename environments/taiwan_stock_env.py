@@ -275,45 +275,45 @@ class TaiwanStockTradingEnv(gym.Env):
     
     def _create_state(self) -> np.ndarray:
         """
-        建立 52 維狀態向量
-        
+        建立 52 維狀態向量（優化版）
+
         狀態向量結構:
             [價格特徵(6) | 技術指標(20) | 型態(8) | 基本面(8) | 部位(6) | 情緒(4)] = 52
-        
+
         Returns:
             numpy array，52維狀態向量
         """
-        state_list = []
-        
+        # 使用預先分配的 numpy array，避免每次 step 都做 list append + np.array 轉換
+        state = np.zeros(52, dtype=np.float32)
+        idx = 0
+
         # =====================================================================
         # 1. 價格特徵 (6維)
         # =====================================================================
         row = self.df.iloc[self.current_step]
-        
+
         # 標準化價格特徵 (除以收盤價，變成比例)
         close = row['close']
-        state_list.extend([
-            row['close'] / close if close != 0 else 0,   # close (normalized)
-            row['open'] / close if close != 0 else 0,     # open
-            row['high'] / close if close != 0 else 0,     # high
-            row['low'] / close if close != 0 else 0,      # low
-            np.log1p(row['volume']) / 20,                  # volume (log scaled)
-            np.log1p(row.get('turnover', 0)) / 25,        # turnover (log scaled)
-        ])
-        
+        if close != 0:
+            state[idx:idx+4] = [row['close'] / close, row['open'] / close,
+                                row['high'] / close, row['low'] / close]
+        idx += 4
+        state[idx] = np.log1p(row['volume']) / 20
+        idx += 1
+        state[idx] = np.log1p(row.get('turnover', 0)) / 25
+        idx += 1
+
         # =====================================================================
         # 2. 技術指標特徵 (20維)
         # =====================================================================
-        for feature in self.tech_features_available[:20]:  # 最多20個
+        for feature in self.tech_features_available[:20]:
             value = row.get(feature, 0)
             if pd.isna(value):
                 value = 0
-            state_list.append(float(value))
-        
-        # 如果不足20個，用0填充
-        while len(state_list) < 6 + 20:
-            state_list.append(0.0)
-        
+            state[idx] = float(value)
+            idx += 1
+        # 不足20個的部分保持為 0（已預先填充）
+
         # =====================================================================
         # 3. 型態特徵 (8維)
         # =====================================================================
@@ -321,11 +321,10 @@ class TaiwanStockTradingEnv(gym.Env):
             value = row.get(feature, 0)
             if pd.isna(value):
                 value = 0
-            state_list.append(float(value))
-        
-        while len(state_list) < 6 + 20 + 8:
-            state_list.append(0.0)
-        
+            state[idx] = float(value)
+            idx += 1
+        # 不足8個的部分保持為 0
+
         # =====================================================================
         # 4. 基本面特徵 (8維) - 填充0因為可能沒有
         # =====================================================================
@@ -333,59 +332,54 @@ class TaiwanStockTradingEnv(gym.Env):
             value = row.get(feature, 0)
             if pd.isna(value):
                 value = 0
-            state_list.append(float(value))
-        
-        while len(state_list) < 6 + 20 + 8 + 8:
-            state_list.append(0.0)
-        
+            state[idx] = float(value)
+            idx += 1
+        # 不足8個的部分保持為 0
+
         # =====================================================================
         # 5. 部位特徵 (6維)
         # =====================================================================
         portfolio_value = self.balance + self.position * close
-        
+
         # 持股狀態 (0-4)
-        position_level = self.position // self.trade_unit  # 0, 1, 2, 3, 4
-        state_list.append(float(position_level))
-        
+        state[idx] = float(self.position // self.trade_unit)
+        idx += 1
+
         # 持股價值/總資產
-        position_value_ratio = (self.position * close) / portfolio_value if portfolio_value > 0 else 0
-        state_list.append(position_value_ratio)
-        
+        if portfolio_value > 0:
+            state[idx] = (self.position * close) / portfolio_value
+        idx += 1
+
         # 未實現盈虧
         unrealized_pnl = 0.0
         if self.position > 0 and self.avg_cost > 0:
             unrealized_pnl = (close - self.avg_cost) / self.avg_cost
-        state_list.append(unrealized_pnl)
-        
+        state[idx] = unrealized_pnl
+        idx += 1
+
         # 最大回撒
-        state_list.append(self.max_drawdown)
-        
+        state[idx] = self.max_drawdown
+        idx += 1
+
         # 距上次交易天數
         days_since_trade = 0
         if self.trade_history:
             last_trade_step = self.trade_history[-1].get('step', 0)
             days_since_trade = self.current_step - last_trade_step
-        state_list.append(float(days_since_trade) / 60)  # 正規化
-        
+        state[idx] = float(days_since_trade) / 60
+        idx += 1
+
         # 現金比例
-        cash_ratio = self.balance / portfolio_value if portfolio_value > 0 else 1.0
-        state_list.append(cash_ratio)
-        
+        if portfolio_value > 0:
+            state[idx] = self.balance / portfolio_value
+        # idx += 1  # 最後一維，不需要再遞增
+
         # =====================================================================
-        # 6. 市場情緒特徵 (4維) - 填充0或計算
+        # 6. 市場情緒特徵 (4維) - 保持為 0（尚未有數據）
         # =====================================================================
-        # 如果有加權指數數據，可以計算這些特徵
-        # 這裡先用0填充
-        state_list.extend([0.0, 0.0, 0.0, 0.0])
-        
-        # 確保長度為52
-        state_array = np.array(state_list[:52], dtype=np.float32)
-        
-        # 如果長度不足，填充0
-        if len(state_array) < 52:
-            state_array = np.pad(state_array, (0, 52 - len(state_array)), 'constant')
-        
-        return state_array
+        # state[52-4:] 已是 0，無需操作
+
+        return state
     
     def _get_trade_price(self, action: int) -> Tuple[float, bool]:
         """

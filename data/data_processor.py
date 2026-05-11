@@ -169,7 +169,8 @@ class DataProcessor:
                 df = df.interpolate()
             
             # 再次檢查並填補剩餘缺失值 (適用於開頭的 NaN)
-            df = df.ffill().bfill()
+            # 修正：先 bfill 再 ffill，確保開頭的 NaN 能被後方值填補
+            df = df.bfill().ffill()
         
         return df
     

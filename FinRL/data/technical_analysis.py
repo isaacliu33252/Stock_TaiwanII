@@ -149,7 +149,7 @@ class TechnicalIndicators:
         
         # 計算移動平均和標準差
         df["BB_middle"] = df["close"].rolling(window=period).mean()
-        df["BB_std"] = df["close"].rolling(window=period).std()
+        df["BB_std"] = df["close"].rolling(window=period).std(ddof=1)
         
         # 計算上下軌
         df["BB_upper"] = df["BB_middle"] + (std * df["BB_std"])

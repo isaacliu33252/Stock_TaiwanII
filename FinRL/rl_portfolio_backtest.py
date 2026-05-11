@@ -241,20 +241,82 @@ class RLPortfolioBacktester:
             else:
                 unrealized = 0.0
 
+            # 52維狀態向量（與 taiwan_stock_env.py 一致）
+            # 結構: [價格(6) | 技術指標(20) | 型態(8) | 基本面(8) | 部位(6) | 情緒(4)] = 52
+            prev_close_val = prev_close if prev_close is not None else close
+            price_norm = close / 1000.0
+
             state = np.array([
-                close / 1000,           # normalize price
-                sellable / 4000,        # sellable position ratio
-                unrealized,              # unrealized pnl
-                0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0, 0.0, 0.0, 0.0,
-                0.0, 0.0,
+                # ── 1. 價格特徵 (6維) ──────────────────────────────
+                price_norm,  # close normalized
+                row.get('open', close) / close if pd.notna(row.get('open')) else 1.0,
+                row.get('high', close) / close if pd.notna(row.get('high')) else 1.0,
+                row.get('low', close) / close if pd.notna(row.get('low')) else 1.0,
+                np.log1p(row.get('volume', 0)) / 20.0,
+                np.log1p(row.get('turnover', 0)) / 25.0,
+
+                # ── 2. 技術指標 (20維) ──────────────────────────────
+                # 與 taiwan_stock_env._create_state() 的 tech_features_available[:20] 完全一致
+                # MA family (7)
+                row.get('ma3', close) / close if pd.notna(row.get('ma3')) else 1.0,
+                row.get('ma5', close) / close if pd.notna(row.get('ma5')) else 1.0,
+                row.get('ma10', close) / close if pd.notna(row.get('ma10')) else 1.0,
+                row.get('ma20', close) / close if pd.notna(row.get('ma20')) else 1.0,
+                row.get('ma60', close) / close if pd.notna(row.get('ma60')) else 1.0,
+                row.get('ma120', close) / close if pd.notna(row.get('ma120')) else 1.0,
+                row.get('ma240', close) / close if pd.notna(row.get('ma240')) else 1.0,
+                # MA slopes (3)
+                row.get('ma3_slope', 0) if pd.notna(row.get('ma3_slope')) else 0.0,
+                row.get('ma20_slope', 0) if pd.notna(row.get('ma20_slope')) else 0.0,
+                row.get('ma60_slope', 0) if pd.notna(row.get('ma60_slope')) else 0.0,
+                # MA cross (1)
+                row.get('ma_cross_signal', 0) if pd.notna(row.get('ma_cross_signal')) else 0.0,
+                # MACD (4)
+                row.get('macd_line', 0) / close if (close > 0 and pd.notna(row.get('macd_line'))) else 0.0,
+                row.get('signal_line', 0) / close if (close > 0 and pd.notna(row.get('signal_line'))) else 0.0,
+                row.get('histogram', 0) / close if (close > 0 and pd.notna(row.get('histogram'))) else 0.0,
+                row.get('histogram_change', 0) / close if (close > 0 and pd.notna(row.get('histogram_change'))) else 0.0,
+                # MACD turn (1)
+                1.0 if (pd.notna(row.get('macd_turn_positive')) and row.get('macd_turn_positive', 0) > 0) else 0.0,
+                # RSI (2)
+                row.get('rsi_14', 50) / 100.0 if pd.notna(row.get('rsi_14')) else 0.5,
+                row.get('rsi_28', 50) / 100.0 if pd.notna(row.get('rsi_28')) else 0.5,
+
+                # ── 3. 型態特徵 (8維) ──────────────────────────────
+                # pattern_features: highest_breakout, lowest_breakdown, volume_spike,
+                #   price_momentum, volatility, consecutive_up_days, consecutive_down_days, gap_up_or_down
+                1.0 if (pd.notna(row.get('highest_breakout')) and row.get('highest_breakout', 0) > 0) else 0.0,
+                1.0 if (pd.notna(row.get('lowest_breakdown')) and row.get('lowest_breakdown', 0) > 0) else 0.0,
+                row.get('volume_spike', 1.0) if pd.notna(row.get('volume_spike')) else 1.0,
+                row.get('price_momentum', 0) if pd.notna(row.get('price_momentum')) else 0.0,
+                row.get('volatility', 0) if pd.notna(row.get('volatility')) else 0.0,
+                row.get('consecutive_up_days', 0) / 10.0 if pd.notna(row.get('consecutive_up_days')) else 0.0,
+                row.get('consecutive_down_days', 0) / 10.0 if pd.notna(row.get('consecutive_down_days')) else 0.0,
+                row.get('gap_up_or_down', 0) if pd.notna(row.get('gap_up_or_down')) else 0.0,
+
+                # ── 4. 基本面特徵 (8維) ────────────────────────────
+                row.get('foreign_net_buy_1d', 0) if pd.notna(row.get('foreign_net_buy_1d')) else 0.0,
+                row.get('foreign_net_buy_3d', 0) if pd.notna(row.get('foreign_net_buy_3d')) else 0.0,
+                row.get('foreign_net_buy_5d', 0) if pd.notna(row.get('foreign_net_buy_5d')) else 0.0,
+                row.get('dealer_net_buy_1d', 0) if pd.notna(row.get('dealer_net_buy_1d')) else 0.0,
+                row.get('investment_trust_net_buy', 0) if pd.notna(row.get('investment_trust_net_buy')) else 0.0,
+                row.get('dividend_yield', 0) if pd.notna(row.get('dividend_yield')) else 0.0,
+                row.get('per', 0) / 100.0 if pd.notna(row.get('per')) else 0.0,
+                row.get('pbr', 0) / 10.0 if pd.notna(row.get('pbr')) else 0.0,
+
+                # ── 5. 部位特徵 (6維) ──────────────────────────────
+                (sellable / 4000.0),  # current_position (0-4 normalized)
+                (sellable * close) / (balance + sellable * close + 1e-10),  # position_value_ratio
+                unrealized,  # unrealized_pnl
+                0.0,  # max_drawdown (simplified)
+                0.0,  # days_since_trade (simplified)
+                balance / (balance + sellable * close + 1e-10),  # cash_ratio
+
+                # ── 6. 市場情緒 (4維) ───────────────────────────────
+                (close - prev_close_val) / prev_close_val if prev_close_val > 0 else 0.0,
+                row.get('volume_spike', 1.0) - 1.0 if pd.notna(row.get('volume_spike')) else 0.0,
+                0.0,  # sector_correlation
+                row.get('volatility', 0) if pd.notna(row.get('volatility')) else 0.0,
             ], dtype=np.float32)
 
             action = agent.predict(state, deterministic=True)
@@ -266,12 +328,14 @@ class RLPortfolioBacktester:
             if action == 1 and balance >= close * trade_unit:   # BUY
                 cost = close * trade_unit * (1 + commission_rate)
                 if balance >= cost:
+                    old_settled = settled_position  # 記錄買入前的庫存
                     balance -= cost
                     # 買入後先進入 pending_shares（T+2 鎖定）
                     settle_step = current_step + 2
                     pending_shares[settle_step] = pending_shares.get(settle_step, 0) + trade_unit
                     settled_position += trade_unit
-                    total_cost_new = settled_position * avg_cost_settled + cost
+                    # 正確的加權平均成本：(舊庫存 × 舊均價 + 新成本) / 新庫存
+                    total_cost_new = old_settled * avg_cost_settled + cost
                     avg_cost_settled = total_cost_new / settled_position if settled_position > 0 else 0.0
                     executed = True
                     msg = f"BUY {trade_unit}@{close:.2f}"

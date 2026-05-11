@@ -144,7 +144,76 @@ class TechnicalIndicators:
         self.df['ma_cross_signal'] = (self.df['ma3'] - self.df['ma20']) / self.df['ma20']
         
         return self.df
-    
+
+    # =========================================================================
+    # Additional MA/Price Ratio Features
+    # =========================================================================
+
+    def calculate_ma_price_ratios(self) -> pd.DataFrame:
+        """
+        計算價格與均線的比率特徵（RL 環境需要的技術指標）
+
+        新增欄位:
+            - close_ma120_ratio: close / ma120 - 1
+            - close_ma240_ratio: close / ma240 - 1
+            - ma60_ma240_ratio: ma60 / ma240 - 1
+        """
+        if 'ma120' not in self.df.columns:
+            self.df['ma120'] = self.df['close'].rolling(window=120).mean()
+        if 'ma240' not in self.df.columns:
+            self.df['ma240'] = self.df['close'].rolling(window=240).mean()
+        if 'ma60' not in self.df.columns:
+            self.df['ma60'] = self.df['close'].rolling(window=60).mean()
+
+        self.df['close_ma120_ratio'] = (self.df['close'] / self.df['ma120'] - 1.0).replace([np.inf, -np.inf], 0.0)
+        self.df['close_ma240_ratio'] = (self.df['close'] / self.df['ma240'] - 1.0).replace([np.inf, -np.inf], 0.0)
+        self.df['ma60_ma240_ratio'] = (self.df['ma60'] / self.df['ma240'] - 1.0).replace([np.inf, -np.inf], 0.0)
+
+        return self.df
+
+    def calculate_momentum_features(self) -> pd.DataFrame:
+        """
+        計算動量特徵（RL 環境需要的技術指標）
+
+        新增欄位:
+            - momentum_21: 21日報酬率
+            - momentum_63: 63日報酬率
+            - momentum_126: 126日報酬率
+            - momentum_252: 252日報酬率
+        """
+        self.df['momentum_21'] = self.df['close'].pct_change(periods=21)
+        self.df['momentum_63'] = self.df['close'].pct_change(periods=63)
+        self.df['momentum_126'] = self.df['close'].pct_change(periods=126)
+        self.df['momentum_252'] = self.df['close'].pct_change(periods=252)
+
+        self.df['momentum_21'] = self.df['momentum_21'].replace([np.inf, -np.inf], 0.0)
+        self.df['momentum_63'] = self.df['momentum_63'].replace([np.inf, -np.inf], 0.0)
+        self.df['momentum_126'] = self.df['momentum_126'].replace([np.inf, -np.inf], 0.0)
+        self.df['momentum_252'] = self.df['momentum_252'].replace([np.inf, -np.inf], 0.0)
+
+        return self.df
+
+    def calculate_position_features(self) -> pd.DataFrame:
+        """
+        計算價格位置特徵（RL 環境需要的技術指標）
+
+        新增欄位:
+            - high_252_position: (close - 252日低點) / (252日高點 - 252日低點)
+            - rolling_mdd_63: 63日滾動最大回撤
+        """
+        close = self.df['close']
+
+        # 252日高點低點位置
+        rolling_high_252 = close.rolling(window=252).max()
+        rolling_low_252 = close.rolling(window=252).min()
+        self.df['high_252_position'] = ((close - rolling_low_252) / (rolling_high_252 - rolling_low_252 + 1e-10)).replace([np.inf, -np.inf], 0.0)
+
+        # 63日滾動最大回撤
+        rolling_peak_63 = close.rolling(window=63).max()
+        self.df['rolling_mdd_63'] = (close / rolling_peak_63 - 1.0).replace([np.inf, -np.inf], 0.0)
+
+        return self.df
+
     # =========================================================================
     # MACD (指數平滑異同移動平均線)
     # =========================================================================
@@ -699,7 +768,19 @@ class TechnicalIndicators:
         # 1. MA 系列
         self.calculate_ma()
         print("  - MA 系列完成")
-        
+
+        # 1b. MA/價格比率特徵（依賴 MA 結果）
+        self.calculate_ma_price_ratios()
+        print("  - MA/價格比率完成")
+
+        # 1c. 動量特徵
+        self.calculate_momentum_features()
+        print("  - 動量特徵完成")
+
+        # 1d. 價格位置特徵
+        self.calculate_position_features()
+        print("  - 價格位置特徵完成")
+
         # 2. MACD
         self.calculate_macd()
         print("  - MACD 完成")
@@ -764,6 +845,9 @@ class TechnicalIndicators:
         
         # MA 系列
         features.extend([
+            'close_ma120_ratio', 'close_ma240_ratio', 'ma60_ma240_ratio',
+            'momentum_21', 'momentum_63', 'momentum_126', 'momentum_252',
+            'high_252_position', 'rolling_mdd_63',
             'ma3', 'ma5', 'ma10', 'ma20', 'ma60', 'ma120', 'ma240',
             'ma3_slope', 'ma20_slope', 'ma60_slope',
             'ma_cross_signal'

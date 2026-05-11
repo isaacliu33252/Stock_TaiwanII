@@ -72,13 +72,13 @@ def parse_args():
     
     # 日期範圍
     parser.add_argument(
-        '--start', type=str, default='2020-01-01',
-        help='回測開始日期 (預設: 2020-01-01)'
+        '--start', type=str, default='2000-01-01',
+        help='回測開始日期 (預設: 2000-01-01)'
     )
     
     parser.add_argument(
-        '--end', type=str, default='2024-12-31',
-        help='回測結束日期 (預設: 2024-12-31)'
+        '--end', type=str, default='2010-12-31',
+        help='回測結束日期 (預設: 2010-12-31)'
     )
     
     # 初始資金

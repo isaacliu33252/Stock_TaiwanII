@@ -29,9 +29,9 @@ from walk_forward import WalkForwardBacktester
 
 def main():
     parser = argparse.ArgumentParser(description='Walk-Forward 投資組合分析')
-    parser.add_argument('--start', type=str, default='2015-01-01',
+    parser.add_argument('--start', type=str, default='2000-01-01',
                         help='資料開始日期')
-    parser.add_argument('--end', type=str, default='2024-01-01',
+    parser.add_argument('--end', type=str, default='2010-12-31',
                         help='資料結束日期（測試期終點）')
     parser.add_argument('--train-years', type=float, default=2.0,
                         help='訓練期長度（年），預設 2 年')

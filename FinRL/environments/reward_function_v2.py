@@ -187,7 +187,7 @@ class RewardFunction:
                 rewards['volatility'] = -self.volatility_penalty
             # 或者與歷史平均比較
             elif len(self._returns_history) >= 20:
-                hist_vol = np.std(self._returns_history) * np.sqrt(252)
+                hist_vol = np.std(self._returns_history, ddof=1) * np.sqrt(252)
                 if volatility > hist_vol * 1.5:
                     rewards['volatility'] = -self.volatility_penalty * 0.5
         
@@ -226,7 +226,7 @@ class RewardFunction:
         if len(downside_returns) == 0:
             return 0.0
         
-        downside_std = np.std(downside_returns)
+        downside_std = np.std(downside_returns, ddof=1)
         if downside_std == 0:
             return 0.0
         
@@ -245,7 +245,7 @@ class RewardFunction:
         daily_rf = risk_free_rate / 252
         excess_return = returns - daily_rf
         mean_excess = np.mean(excess_return)
-        std_excess = np.std(excess_return)
+        std_excess = np.std(excess_return, ddof=1)
         
         if std_excess == 0:
             return 0.0

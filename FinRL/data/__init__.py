@@ -38,43 +38,100 @@
 # 匯出版本資訊
 __version__ = "1.0.0"
 
+# ─────────────────────────────────────────────────────────────────────────────
 # 匯出主要類別和函數
+# 注意：我們使用相對 import 或直接 import，避免 FinRL. 前綴的路徑問題
+# ─────────────────────────────────────────────────────────────────────────────
 
-# data_loader.py - 資料載入
-from FinRL.data.data_loader import (
-    TaiwanStockDataLoader,
-    fetch_stock_data,
-    fetch_institutional_data,
-    fetch_dividend_data,
-    get_trading_dates,
-    is_trading_day,
-    load_taiwan_stock_data,
-)
+# data_loader.py - 資料載入（使用相對 import 或 try/except 避免失敗）
+try:
+    from .data_loader import (
+        TaiwanStockDataLoader,
+        fetch_stock_data,
+        fetch_institutional_data,
+        fetch_dividend_data,
+        get_trading_dates,
+        is_trading_day,
+        load_taiwan_stock_data,
+    )
+except ImportError:
+    # 當 FinRL 未安裝時（直接執行 script），使用本地匯入
+    from data.data_loader import (
+        TaiwanStockDataLoader,
+        fetch_stock_data,
+        fetch_institutional_data,
+        fetch_dividend_data,
+        get_trading_dates,
+        is_trading_day,
+        load_taiwan_stock_data,
+    )
 
 # data_processor.py - 資料處理
-from FinRL.data.data_processor import (
-    DataProcessor,
-    quick_clean,
-    quick_normalize,
-)
+try:
+    from .data_processor import (
+        DataProcessor,
+        quick_clean,
+        quick_normalize,
+    )
+except ImportError:
+    try:
+        from data.data_processor import (
+            DataProcessor,
+            quick_clean,
+            quick_normalize,
+        )
+    except ImportError:
+        DataProcessor = None
+        quick_clean = None
+        quick_normalize = None
 
 # technical_indicators.py - 技術指標計算 (完整版)
-from FinRL.data.technical_indicators import (
-    TechnicalIndicators,
-    add_technical_indicators,
-)
+try:
+    from .technical_indicators import (
+        TechnicalIndicators,
+        add_technical_indicators,
+    )
+except ImportError:
+    try:
+        from data.technical_indicators import (
+            TechnicalIndicators,
+            add_technical_indicators,
+        )
+    except ImportError:
+        TechnicalIndicators = None
+        add_technical_indicators = None
 
 # technical_analysis.py - 技術指標計算 (簡化版，工廠相容)
-from FinRL.data.technical_analysis import (
-    TechnicalIndicators as TAIndicators,
-    calculate_all_indicators,
-)
+try:
+    from .technical_analysis import (
+        TechnicalIndicators as TAIndicators,
+        calculate_all_indicators,
+    )
+except ImportError:
+    try:
+        from data.technical_analysis import (
+            TechnicalIndicators as TAIndicators,
+            calculate_all_indicators,
+        )
+    except ImportError:
+        TAIndicators = None
+        calculate_all_indicators = None
 
 # feature_engineering.py - 52維狀態特徵工程
-from FinRL.data.feature_engineering import (
-    FeatureEngineer,
-    engineer_features,
-)
+try:
+    from .feature_engineering import (
+        FeatureEngineer,
+        engineer_features,
+    )
+except ImportError:
+    try:
+        from data.feature_engineering import (
+            FeatureEngineer,
+            engineer_features,
+        )
+    except ImportError:
+        FeatureEngineer = None
+        engineer_features = None
 
 # 便利直接匯入
 __all__ = [

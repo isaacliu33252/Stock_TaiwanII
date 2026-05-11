@@ -38,10 +38,10 @@ except ImportError:
     ALL_TICKERS = ["0050.TW", "0056.TW", "00646.TW", "00679B.TWO",
                    "00713.TW", "00751B.TWO", "00878.TW", "2884.TW"]
     PORTFOLIO_HOLDINGS = {}
-    BACKTEST_START = "2021-01-01"
-    BACKTEST_END = "2024-12-31"
-    TRAIN_START = "2015-01-01"
-    TRAIN_END = "2020-12-31"
+    BACKTEST_START = "2000-01-01"
+    BACKTEST_END = "2010-12-31"
+    TRAIN_START = "1990-01-01"
+    TRAIN_END = "2000-12-31"
 
 
 def download_all_stocks(
@@ -288,8 +288,8 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description='下載投資組合歷史數據')
-    parser.add_argument('--start', type=str, default='2015-01-01')
-    parser.add_argument('--end', type=str, default='2024-12-31')
+    parser.add_argument('--start', type=str, default='2000-01-01')
+    parser.add_argument('--end', type=str, default='2020-12-31')
     parser.add_argument('--mode', type=str, default='all',
                         choices=['all', 'train', 'test'])
     args = parser.parse_args()

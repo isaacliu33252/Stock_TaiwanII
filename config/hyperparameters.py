@@ -171,8 +171,8 @@ EVALUATION_CONFIG = {
     'n_eval_episodes': 10,                 # 評估 episode 數
     
     # --- 回測設定 ---
-    'backtest_start_date': '2023-01-01',   # 回測開始日期
-    'backtest_end_date': '2024-12-31',    # 回測結束日期
+    'backtest_start_date': '2000-01-01',   # 回測開始日期
+    'backtest_end_date': '2010-12-31',    # 回測結束日期
     
     # --- Benchmark ---
     'benchmark': '0050.TW',                # Benchmark ETF

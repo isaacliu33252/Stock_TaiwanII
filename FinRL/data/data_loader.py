@@ -30,6 +30,14 @@ from datetime import datetime, timedelta
 import time
 import warnings
 
+# 引入統一資料工具（PyArrow 24 相容 + graceful fallback）
+from data.data_utils import (
+    read_parquet_safe,
+    write_parquet_safe,
+    normalize_date_column,
+    CacheValidator,
+)
+
 # 忽略警告
 warnings.filterwarnings('ignore')
 
@@ -467,18 +475,22 @@ class TaiwanStockDataLoader:
         # 生成快取檔名
         cache_file = self.cache_dir / f"{symbol.replace('.', '_')}_{start}_{end}_{interval}.parquet"
         
-        # 檢查快取
+# 檢查快取（使用 read_parquet_safe + CacheValidator）
         if use_cache and cache_file.exists():
-            try:
-                df = pd.read_parquet(cache_file)
-            except AttributeError:
-                # PyArrow 24 + Pandas 3 相容性問題，使用 dataset API 讀取
-                import pyarrow.dataset as pads
-                dataset = pads.dataset(str(cache_file))
-                table = dataset.to_table()
-                df = table.to_pandas(timestamp_as_object=True)
-            print(f"[TaiwanStockDataLoader] 從快取載入 {symbol}: {len(df)} 筆資料")
-            return df
+            stock_validator = CacheValidator(
+                required_columns=['date', 'open', 'high', 'low', 'close', 'volume'],
+                min_rows=10,
+            )
+            df = stock_validator.validate_and_read(
+                cache_file,
+                start_date=start if isinstance(start, str) else str(start)[:10],
+                end_date=end if isinstance(end, str) else str(end)[:10],
+            )
+            if df is not None:
+                print(f"[TaiwanStockDataLoader] 從快取驗證通過 {symbol}: {len(df)} 筆")
+                return df
+            else:
+                print(f"[TaiwanStockDataLoader] 快取無效或過期，將重新下載")
         
         # 下載數據 (使用 yfinance)
         print(f"[TaiwanStockDataLoader] 從 Yahoo Finance 下載 {yf_symbol}...")
@@ -523,9 +535,11 @@ class TaiwanStockDataLoader:
         # 添加股票代碼欄位
         df['symbol'] = symbol
         
-        # 儲存快取
-        df.to_parquet(cache_file)
-        print(f"[TaiwanStockDataLoader] 已儲存快取: {cache_file.name} ({len(df)} 筆資料)")
+        # 儲存快取（使用 write_parquet_safe 避免 PyArrow 24 問題）
+        if write_parquet_safe(df, cache_file):
+            print(f"[TaiwanStockDataLoader] 已儲存快取: {cache_file.name} ({len(df)} 筆資料)")
+        else:
+            print(f"[TaiwanStockDataLoader] 快取寫入失敗: {cache_file.name}")
         
         return df
     
