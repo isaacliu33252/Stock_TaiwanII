@@ -222,9 +222,9 @@ class RewardFunction:
         # 計算 excess return
         excess_return = returns - daily_rf
         
-        # 計算 Sharpe Ratio
+        # 計算 Sharpe Ratio (使用 sample std, ddof=1)
         mean_excess = np.mean(excess_return)
-        std_excess = np.std(excess_return)
+        std_excess = np.std(excess_return, ddof=1)
         
         if std_excess == 0:
             return 0.0
@@ -263,7 +263,7 @@ class RewardFunction:
             return 0.0
         
         mean_return = np.mean(returns)
-        downside_std = np.std(downside_returns)
+        downside_std = np.std(downside_returns, ddof=1)
         
         if downside_std == 0:
             return 0.0

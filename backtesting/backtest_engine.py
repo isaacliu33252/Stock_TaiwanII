@@ -128,18 +128,14 @@ class BacktestEngine:
                 'price': info.get('price', 0),
                 'reward': reward,
             })
-            
-            # 記錄交易
-            if action != 0:  # 非 HOLD 動作
-                self.trade_history.append({
-                    'step': step,
-                    'action': action,
-                    'action_name': ['HOLD', 'BUY_1000', 'SELL_1000', 'CLOSE_POSITION', 'STOP_LOSS'][action],
-                    'price': info.get('price', 0),
-                    'position': info.get('position', 0),
-                    'message': info.get('message', ''),
-                    'portfolio_value': info.get('portfolio_value', 0),
-                })
+
+            # 從環境的交易歷史同步完整的交易記錄（含 pnl、shares、commission、tax）
+            # 修正: 不再自行建立不完整的 trade_history，改为同步 env 的完整記錄
+            if hasattr(env, 'trade_history') and env.trade_history:
+                existing_indices = set(t.get('step', -1) for t in self.trade_history)
+                for trade in env.trade_history:
+                    if trade.get('step', -1) not in existing_indices:
+                        self.trade_history.append(trade)
             
             step += 1
             

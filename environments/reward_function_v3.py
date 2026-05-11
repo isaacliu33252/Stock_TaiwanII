@@ -58,6 +58,15 @@ class DynamicRewardShaper:
         volatility_penalty: float = 0.1,
         min_trade_reward: float = 0.0,
         trade_reward: float = 0.001,        # 交易獎勵（降低抑制過度交易）
+<<<<<<< HEAD
+=======
+        trend_bull_bonus: float = 0.10,      # 多頭趨勢 bonus（MA5>MA20 且持倉中）
+        trend_bear_penalty: float = 0.08,   # 空頭趨勢 penalty（MA5<MA20 且空手）
+
+        benchmark_weight: float = 1.25,
+        underperform_penalty: float = 0.35,
+        cash_miss_penalty: float = 0.02,
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
 
         # 動態調整參數
         init_reward_scale: float = 1.5,     # 初期 reward 放大倍數
@@ -79,6 +88,14 @@ class DynamicRewardShaper:
         self.volatility_penalty = volatility_penalty
         self.min_trade_reward = min_trade_reward
         self.trade_reward = trade_reward
+<<<<<<< HEAD
+=======
+        self.trend_bull_bonus = trend_bull_bonus
+        self.trend_bear_penalty = trend_bear_penalty
+        self.benchmark_weight = benchmark_weight
+        self.underperform_penalty = underperform_penalty
+        self.cash_miss_penalty = cash_miss_penalty
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         self.init_reward_scale = init_reward_scale
         self.final_reward_scale = final_reward_scale
         self.momentum_window = momentum_window
@@ -86,17 +103,33 @@ class DynamicRewardShaper:
 
         # 內部狀態
         self._returns_history: List[float] = []
+<<<<<<< HEAD
+=======
+        self._price_history: List[float] = []   # 用於 MA trend 計算
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         self._portfolio_peak: float = 0.0
         self._rolling_rewards: List[float] = []  # 用於計算 momentum
         self._total_steps: int = 0
         self._current_step: int = 0  # 內部追蹤 step
+<<<<<<< HEAD
+=======
+        self._ma_window_short: int = 5    # MA 短期視窗
+        self._ma_window_long: int = 20   # MA 長期視窗
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         
     def reset(self):
         """重置內部狀態"""
         self._returns_history = []
+<<<<<<< HEAD
         self._portfolio_peak = 0.0
         self._rolling_rewards = []
         self._total_steps = 0
+=======
+        self._price_history = []
+        self._portfolio_peak = 0.0
+        self._rolling_rewards = []
+        self._current_step = 0
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
     
     def set_total_steps(self, total_steps: int):
         """設定總訓練步數（用於計算 training_progress）"""
@@ -217,7 +250,25 @@ class DynamicRewardShaper:
             portfolio_return = 0.0
         # 放寬 clamp：±20%（比 v2 的 ±10% 更寬）
         portfolio_return = np.clip(portfolio_return, -0.20, 0.20)
+<<<<<<< HEAD
         rewards['capital'] = portfolio_return
+=======
+        if previous_close is not None and previous_close > 0:
+            benchmark_return = (close_price - previous_close) / previous_close
+        elif daily_return is not None:
+            benchmark_return = daily_return
+        else:
+            benchmark_return = 0.0
+        benchmark_return = np.clip(benchmark_return, -0.20, 0.20)
+
+        excess_return = np.clip(portfolio_return - benchmark_return, -0.20, 0.20)
+        rewards['capital'] = portfolio_return * 0.25
+        rewards['benchmark_excess'] = excess_return * self.benchmark_weight
+        rewards['benchmark_underperform'] = min(excess_return, 0.0) * self.underperform_penalty
+        rewards['cash_miss'] = 0.0
+        if position == 0 and action == 0 and benchmark_return > 0.003:
+            rewards['cash_miss'] = -min(benchmark_return * self.cash_miss_penalty * 10.0, 0.02)
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         
         # 記錄歷史
         self._returns_history.append(portfolio_return)
@@ -250,6 +301,7 @@ class DynamicRewardShaper:
             rewards['calmar'] = -0.015  # 減輕懲罰
         
         # =================================================================
+<<<<<<< HEAD
         # 4. 持有獎勵（降低，避免躺平）
         # =================================================================
         rewards['holding'] = 0.0
@@ -261,29 +313,101 @@ class DynamicRewardShaper:
         
         # 現金懲罰：激勵模型不要持有大量現金
         # 當趨勢好轉時，有倉位者應加分
+=======
+        # 持有獎勵（核心問題修復：平原/小虧也要獎勵，不能只靠 unrealized_pnl）
+        rewards['holding'] = 0.0
+        if position > 0 and action == 0 and avg_cost > 0:
+            unrealized_pnl = (close_price - avg_cost) / avg_cost
+            unrealized_pnl_clipped = np.clip(unrealized_pnl, -1.0, 1.0)
+            # 主要：根據趨勢方向給予不同的持有獎勵/懲罰
+            if len(self._returns_history) >= 10:
+                recent_trend = np.mean(self._returns_history[-5:])
+                older_trend = np.mean(self._returns_history[-10:-5])
+                trend_improving = recent_trend > older_trend
+                if unrealized_pnl > 0:
+                    # 獲利持仓：強烈獎勵
+                    rewards['holding'] = unrealized_pnl_clipped * self.holding_bonus * 2.0
+                elif trend_improving:
+                    # 趨勢向上但持仓虧損：不要懲罰，維持現有持仓
+                    rewards['holding'] = unrealized_pnl_clipped * self.holding_bonus * 0.5
+                else:
+                    # 趨勢向下且持仓虧損：輕微懲罰
+                    rewards['holding'] = unrealized_pnl_clipped * self.holding_bonus * 1.5
+            else:
+                # 訓練初期：，只要有持仓就給基礎獎勵
+                rewards['holding'] = self.holding_bonus * 0.5
+
+        # 現金懲罰：趨勢確認向上的多頭市場，空手要懲罰
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         if len(self._returns_history) >= 10:
             recent_trend = np.mean(self._returns_history[-5:])
             older_trend = np.mean(self._returns_history[-10:-5])
             trend_improving = recent_trend > older_trend
+<<<<<<< HEAD
             
             if trend_improving and position == 0 and action == 0:
                 # 趨勢轉多但空手，輕微懲罰
                 rewards['holding'] = -0.003
         
+=======
+            trend_strong = recent_trend > 0.002  # 日報酬均值 > 0.2% 視為明顯多頭
+
+            if trend_strong and position == 0 and action == 0:
+                # 明確多頭但空手，大幅懲罰
+                rewards['holding'] = -0.01
+            elif trend_improving and position == 0 and action == 0:
+                # 趨勢轉多但空手，輕微懲罰
+                rewards['holding'] = -0.003
+
+        # =================================================================
+        # 11. MA 趨勢追蹤 bonus（核心新功能）
+        # MA5 > MA20 → 多頭市場 → 持倉者 bonus
+        # MA5 < MA20 → 空頭市場 → 空手者 penalty
+        # =================================================================
+        rewards['ma_trend'] = 0.0
+        self._price_history.append(close_price)
+        if len(self._price_history) > max(self._ma_window_long, 30):
+            self._price_history = self._price_history[-max(self._ma_window_long, 30):]
+
+        if len(self._price_history) >= self._ma_window_long:
+            ma_short = np.mean(self._price_history[-self._ma_window_short:])
+            ma_long  = np.mean(self._price_history[-self._ma_window_long:])
+            if ma_short > ma_long:
+                # 多頭格局（MA5 > MA20）
+                if position > 0 and action == 0:
+                    # 持倉中且未交易 → 趨勢確認，獎勵持有
+                    rewards['ma_trend'] = self.trend_bull_bonus
+            else:
+                # 空頭格局（MA5 < MA20）
+                if position == 0 and action == 0:
+                    # 空手且未交易 → 空頭確認，獎勵空手
+                    rewards['ma_trend'] = -self.trend_bear_penalty
+
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         # =================================================================
         # 5. 交易獎勵（engagement bonus）
         # =================================================================
         rewards['trade'] = 0.0
+<<<<<<< HEAD
         if action in [1, 2, 3]:  # BUY, SELL, CLOSE
             rewards['trade'] = self.trade_reward  # 可調整的交易獎勵
         
+=======
+        if action in [1, 2, 3, 4, 5, 6, 7, 8]:
+            rewards['trade'] = self.trade_reward - self.trade_penalty
+
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         # =================================================================
         # 6. 停損懲罰
         # =================================================================
         rewards['stop_loss'] = 0.0
+<<<<<<< HEAD
         if action == 4:
             rewards['stop_loss'] = -self.stop_loss_penalty
         
+=======
+
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         # =================================================================
         # 7. 勝率獎勵
         # =================================================================
@@ -292,13 +416,18 @@ class DynamicRewardShaper:
             wins = sum(1 for t in trade_history if t.get('pnl', 0) > 0)
             win_rate = wins / len(trade_history)
             rewards['win_rate'] = (win_rate - 0.5) * self.win_rate_bonus
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         # =================================================================
         # 8. 最大回撤懲罰（訓練前期放寬）
         # =================================================================
         rewards['drawdown'] = 0.0
         risk_level = self._get_risk_level(max_drawdown)
         progress = min(self._current_step / max(self._total_steps, 1), 1.0) if self._total_steps > 0 else 0.0
+<<<<<<< HEAD
         
         # 訓練前期（<30%）：回撤懲罰減半，專注探索
         dd_penalty_scale = 1.0 if progress > 0.3 else 0.5
@@ -311,6 +440,20 @@ class DynamicRewardShaper:
             elif max_drawdown > 0.30:
                 rewards['drawdown'] -= 0.10
         
+=======
+
+        # 訓練前期（<30%）：回撤懲罰減半，專注探索
+        dd_penalty_scale = 1.0 if progress > 0.3 else 0.5
+        rewards['drawdown'] = -max_drawdown * self.drawdown_penalty * dd_penalty_scale
+
+        # 訓練後期（>70%）：若 MDD 超標，加大懲罰
+        if progress > 0.7:
+            if max_drawdown > 0.30:
+                rewards['drawdown'] -= 0.10
+            elif max_drawdown > 0.20:
+                rewards['drawdown'] -= 0.05
+
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         # =================================================================
         # 9. 波動度懲罰
         # =================================================================
@@ -322,7 +465,11 @@ class DynamicRewardShaper:
                 hist_vol = np.std(self._returns_history, ddof=1) * np.sqrt(252)  # Sample std
                 if volatility > hist_vol * 1.5:
                     rewards['volatility'] = -self.volatility_penalty * 0.5
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         # =================================================================
         # 10. 台股涨跌停 Bonus/Penalty
         # =================================================================
@@ -334,15 +481,24 @@ class DynamicRewardShaper:
                     rewards['limit_up_down'] = 0.02
                 else:
                     rewards['limit_up_down'] = -0.02
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         # =================================================================
         # 計算總獎勵（動態塑形前）
         # =================================================================
         # 內部 step 計數器前進（每次 step 就是下一步）
         self._current_step += 1
         total_reward = sum(rewards.values())
+<<<<<<< HEAD
         total_reward = np.clip(total_reward, -1.0, 1.0)
         
+=======
+        total_reward = np.clip(total_reward, -1.5, 1.5)  # 適度放寬：原 -1~1 太嚴格
+
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         # =================================================================
         # Dynamic Reward Shaping
         # =================================================================
@@ -351,7 +507,11 @@ class DynamicRewardShaper:
             total_reward, risk_level, momentum
         )
         shaped_reward = np.clip(shaped_reward, -1.5, 1.5)  # 動態塑形後的 clip
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         # 加入診斷資訊
         rewards['_diagnostic'] = {
             'reward_scale': self._get_reward_scale(),
@@ -359,8 +519,16 @@ class DynamicRewardShaper:
             'risk_level': risk_level,
             'progress': progress,
             'shaped': shaped_reward,
+<<<<<<< HEAD
         }
         
+=======
+            'portfolio_return': float(portfolio_return),
+            'benchmark_return': float(benchmark_return),
+            'excess_return': float(excess_return),
+        }
+
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
         return shaped_reward, rewards
     
     def _calculate_sortino_ratio(self, returns: np.ndarray, target: float = 0.0) -> float:

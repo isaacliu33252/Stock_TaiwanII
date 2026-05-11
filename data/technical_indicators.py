@@ -144,7 +144,76 @@ class TechnicalIndicators:
         self.df['ma_cross_signal'] = (self.df['ma3'] - self.df['ma20']) / self.df['ma20']
         
         return self.df
-    
+
+    # =========================================================================
+    # Additional MA/Price Ratio Features
+    # =========================================================================
+
+    def calculate_ma_price_ratios(self) -> pd.DataFrame:
+        """
+        計算價格與均線的比率特徵（RL 環境需要的技術指標）
+
+        新增欄位:
+            - close_ma120_ratio: close / ma120 - 1
+            - close_ma240_ratio: close / ma240 - 1
+            - ma60_ma240_ratio: ma60 / ma240 - 1
+        """
+        if 'ma120' not in self.df.columns:
+            self.df['ma120'] = self.df['close'].rolling(window=120).mean()
+        if 'ma240' not in self.df.columns:
+            self.df['ma240'] = self.df['close'].rolling(window=240).mean()
+        if 'ma60' not in self.df.columns:
+            self.df['ma60'] = self.df['close'].rolling(window=60).mean()
+
+        self.df['close_ma120_ratio'] = (self.df['close'] / self.df['ma120'] - 1.0).replace([np.inf, -np.inf], 0.0)
+        self.df['close_ma240_ratio'] = (self.df['close'] / self.df['ma240'] - 1.0).replace([np.inf, -np.inf], 0.0)
+        self.df['ma60_ma240_ratio'] = (self.df['ma60'] / self.df['ma240'] - 1.0).replace([np.inf, -np.inf], 0.0)
+
+        return self.df
+
+    def calculate_momentum_features(self) -> pd.DataFrame:
+        """
+        計算動量特徵（RL 環境需要的技術指標）
+
+        新增欄位:
+            - momentum_21: 21日報酬率
+            - momentum_63: 63日報酬率
+            - momentum_126: 126日報酬率
+            - momentum_252: 252日報酬率
+        """
+        self.df['momentum_21'] = self.df['close'].pct_change(periods=21)
+        self.df['momentum_63'] = self.df['close'].pct_change(periods=63)
+        self.df['momentum_126'] = self.df['close'].pct_change(periods=126)
+        self.df['momentum_252'] = self.df['close'].pct_change(periods=252)
+
+        self.df['momentum_21'] = self.df['momentum_21'].replace([np.inf, -np.inf], 0.0)
+        self.df['momentum_63'] = self.df['momentum_63'].replace([np.inf, -np.inf], 0.0)
+        self.df['momentum_126'] = self.df['momentum_126'].replace([np.inf, -np.inf], 0.0)
+        self.df['momentum_252'] = self.df['momentum_252'].replace([np.inf, -np.inf], 0.0)
+
+        return self.df
+
+    def calculate_position_features(self) -> pd.DataFrame:
+        """
+        計算價格位置特徵（RL 環境需要的技術指標）
+
+        新增欄位:
+            - high_252_position: (close - 252日低點) / (252日高點 - 252日低點)
+            - rolling_mdd_63: 63日滾動最大回撤
+        """
+        close = self.df['close']
+
+        # 252日高點低點位置
+        rolling_high_252 = close.rolling(window=252).max()
+        rolling_low_252 = close.rolling(window=252).min()
+        self.df['high_252_position'] = ((close - rolling_low_252) / (rolling_high_252 - rolling_low_252 + 1e-10)).replace([np.inf, -np.inf], 0.0)
+
+        # 63日滾動最大回撤
+        rolling_peak_63 = close.rolling(window=63).max()
+        self.df['rolling_mdd_63'] = (close / rolling_peak_63 - 1.0).replace([np.inf, -np.inf], 0.0)
+
+        return self.df
+
     # =========================================================================
     # MACD (指數平滑異同移動平均線)
     # =========================================================================
@@ -432,8 +501,9 @@ class TechnicalIndicators:
         
         # === 計算布林通道寬度 (標準化) ===
         # 寬度越大表示波動率越高
-        self.df['bb_width'] = (self.df['bb_upper'] - self.df['bb_lower']) / self.df['bb_middle']
-        
+        # 避免除以零：用 + 1e-10
+        self.df['bb_width'] = (self.df['bb_upper'] - self.df['bb_lower']) / (self.df['bb_middle'] + 1e-10)
+
         return self.df
     
     # =========================================================================
@@ -474,7 +544,95 @@ class TechnicalIndicators:
             self.df['atr_14'] = tr.rolling(window=period).mean()
         
         return self.df
-    
+
+    # =========================================================================
+    # DMI/ADX (趨向指標)
+    # =========================================================================
+
+    def calculate_dmi_adx(self, period: int = 14) -> pd.DataFrame:
+        """
+        計算 DMI (Directional Movement Index) 和 ADX (Average Directional Index)
+
+        DMI 判斷趨勢方向：
+        - +DI > -DI → 多頭趨勢
+        - -DI > +DI → 空頭趨勢
+        - ADX > 25 → 趨勢明確（可用順勢策略）
+        - ADX < 20 → 盤整（適用逆勢策略）
+
+        新增欄位:
+            - dmi_plus: +DI 趨向指標
+            - dmi_minus: -DI 趨向指標
+            - adx: ADX 平均趨向指標
+        """
+        high = self.df['high'].values
+        low = self.df['low'].values
+        close = self.df['close'].values
+
+        if TALIB_AVAILABLE:
+            self.df['dmi_plus'] = talib.PLUS_DM(high, low, timeperiod=period)
+            self.df['dmi_minus'] = talib.MINUS_DM(high, low, timeperiod=period)
+            self.df['adx'] = talib.ADX(high, low, close, timeperiod=period)
+        else:
+            # 手動計算 DMI
+            high_diff = self.df['high'].diff()
+            low_diff = -self.df['low'].diff()
+
+            # +DM: 僅在順向移動時取正向值
+            plus_dm = high_diff.where((high_diff > low_diff) & (high_diff > 0), 0.0)
+            # -DM: 僅在負向移動時取正向值
+            minus_dm = low_diff.where((low_diff > high_diff) & (low_diff > 0), 0.0)
+
+            # 標準化（使用 ATR）
+            atr = self.df['atr_14'] if 'atr_14' in self.df.columns else self.calculate_atr(period).df['atr_14']
+            self.df['dmi_plus'] = 100 * plus_dm.rolling(window=period).sum() / (atr + 1e-10)
+            self.df['dmi_minus'] = 100 * minus_dm.rolling(window=period).sum() / (atr + 1e-10)
+
+            # ADX: (|+/−DI| 之間的差) / (總和) * 100
+            di_sum = self.df['dmi_plus'] + self.df['dmi_minus']
+            dx = 100 * abs(self.df['dmi_plus'] - self.df['dmi_minus']) / (di_sum + 1e-10)
+            self.df['adx'] = dx.rolling(window=period).mean()
+
+        return self.df
+
+    # =========================================================================
+    # MFI (金錢流量指標)
+    # =========================================================================
+
+    def calculate_mfi(self, period: int = 14) -> pd.DataFrame:
+        """
+        計算 MFI (Money Flow Index)
+
+        MFI 類似 RSI，但使用成交量加權：
+        - MFI > 80 → 過熱（可能回調）
+        - MFI < 20 → 賣超（可能反彈）
+        - MFI 與價格背離 → 反轉信號
+
+        新增欄位:
+            - mfi: 金錢流量指標
+        """
+        high = self.df['high'].values
+        low = self.df['low'].values
+        close = self.df['close'].values
+        volume = self.df['volume'].values
+
+        if TALIB_AVAILABLE:
+            self.df['mfi'] = talib.MFI(high, low, close, volume, timeperiod=period)
+        else:
+            # 典型價格
+            typical_price = (self.df['high'] + self.df['low'] + self.df['close']) / 3.0
+            # 原始金錢流量
+            money_flow = typical_price * self.df['volume']
+            # 正/負金錢流量
+            positive_flow = money_flow.where(typical_price > typical_price.shift(1), 0.0)
+            negative_flow = money_flow.where(typical_price < typical_price.shift(1), 0.0)
+            # 比率
+            positive_sum = positive_flow.rolling(window=period).sum()
+            negative_sum = negative_flow.rolling(window=period).sum()
+            mfi_ratio = positive_sum / (negative_sum + 1e-10)
+            self.df['mfi'] = 100 - (100 / (1 + mfi_ratio))
+
+        return self.df
+
     # =========================================================================
     # 成交量指標
     # =========================================================================
@@ -597,8 +755,10 @@ class TechnicalIndicators:
             5. 威廉指標
             6. Bollinger Bands
             7. ATR
-            8. 成交量指標
-            9. 價格型態特徵
+            8. DMI/ADX
+            9. MFI
+            10. 成交量指標
+            11. 價格型態特徵
         
         Note:
             某些指標需要前面的指標結果，所以必須按順序計算
@@ -608,7 +768,19 @@ class TechnicalIndicators:
         # 1. MA 系列
         self.calculate_ma()
         print("  - MA 系列完成")
-        
+
+        # 1b. MA/價格比率特徵（依賴 MA 結果）
+        self.calculate_ma_price_ratios()
+        print("  - MA/價格比率完成")
+
+        # 1c. 動量特徵
+        self.calculate_momentum_features()
+        print("  - 動量特徵完成")
+
+        # 1d. 價格位置特徵
+        self.calculate_position_features()
+        print("  - 價格位置特徵完成")
+
         # 2. MACD
         self.calculate_macd()
         print("  - MACD 完成")
@@ -632,12 +804,20 @@ class TechnicalIndicators:
         # 7. ATR
         self.calculate_atr()
         print("  - ATR 完成")
-        
-        # 8. 成交量指標
+
+        # 8. DMI/ADX
+        self.calculate_dmi_adx()
+        print("  - DMI/ADX 完成")
+
+        # 9. MFI
+        self.calculate_mfi()
+        print("  - MFI 完成")
+
+        # 10. 成交量指標
         self.calculate_volume_indicators()
         print("  - 成交量指標完成")
-        
-        # 9. 價格型態特徵
+
+        # 11. 價格型態特徵
         self.calculate_pattern_features()
         print("  - 價格型態特徵完成")
         
@@ -665,6 +845,9 @@ class TechnicalIndicators:
         
         # MA 系列
         features.extend([
+            'close_ma120_ratio', 'close_ma240_ratio', 'ma60_ma240_ratio',
+            'momentum_21', 'momentum_63', 'momentum_126', 'momentum_252',
+            'high_252_position', 'rolling_mdd_63',
             'ma3', 'ma5', 'ma10', 'ma20', 'ma60', 'ma120', 'ma240',
             'ma3_slope', 'ma20_slope', 'ma60_slope',
             'ma_cross_signal'
@@ -690,7 +873,13 @@ class TechnicalIndicators:
         
         # ATR
         features.append('atr_14')
-        
+
+        # DMI/ADX
+        features.extend(['dmi_plus', 'dmi_minus', 'adx'])
+
+        # MFI
+        features.append('mfi')
+
         # 成交量
         features.extend(['volume_ma5', 'volume_spike', 'volume_normalized'])
         

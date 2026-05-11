@@ -6,7 +6,7 @@
 # === 核心框架 (必裝) ===
 finrl==0.4.0                    # FinRL 深度強化學習框架
 gymnasium==0.29.1               # Gymnasium 環境介面 (新版 gym)
-stable-baselines3==2.2.1       # SB3 強化學習演算法 (PPO/A2C)
+stable-baselines3==2.2.1       # SB3 強化學習演算法 (PPO/A2C/DQN)
 torch==2.2.0                    # PyTorch 深度學習框架
 tensorboard==2.16.2             # TensorBoard 訓練視覺化
 

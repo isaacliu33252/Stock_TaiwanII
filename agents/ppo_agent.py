@@ -364,9 +364,9 @@ class PPOAgent:
         
         # 計算績效指標
         mean_reward = np.mean(episode_rewards)
-        std_reward = np.std(episode_rewards)
+        std_reward = np.std(episode_rewards, ddof=1)
         mean_return = np.mean(episode_returns)
-        std_return = np.std(episode_returns)
+        std_return = np.std(episode_returns, ddof=1)
         positive_episodes = sum(1 for r in episode_returns if r > 0)
         
         results = {

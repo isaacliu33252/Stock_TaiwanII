@@ -300,10 +300,17 @@ class RiskManager:
         daily_rf = self.risk_free_rate / 252
         excess = returns - daily_rf
         
+<<<<<<< HEAD
         if np.std(excess) == 0:
             return 0.0
         
         return (np.mean(excess) / np.std(excess)) * np.sqrt(252)
+=======
+        if np.std(excess, ddof=1) == 0:
+            return 0.0
+        
+        return (np.mean(excess) / np.std(excess, ddof=1)) * np.sqrt(252)
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
     
     def calculate_sortino(self) -> float:
         """計算 Sortino Ratio"""
@@ -313,10 +320,17 @@ class RiskManager:
         returns = np.array(self._history_returns)
         downside = returns[returns < 0]
         
+<<<<<<< HEAD
         if len(downside) == 0 or np.std(downside) == 0:
             return 0.0
         
         return (np.mean(returns) / np.std(downside)) * np.sqrt(252)
+=======
+        if len(downside) == 0 or np.std(downside, ddof=1) == 0:
+            return 0.0
+        
+        return (np.mean(returns) / np.std(downside, ddof=1)) * np.sqrt(252)
+>>>>>>> 639e2d5a2887c27e5f4df627d9ee5f5bec2a6600
     
     def get_summary(self) -> dict:
         """取得風控摘要"""
