@@ -1,0 +1,49 @@
+{
+  "input_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/data/news/liberty_times/ltn_mainstream_202002_20260520_merged.jsonl",
+  "output_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/data/news/liberty_times/ltn_mainstream_202002_20260520_market.jsonl",
+  "total_input_rows": 13546,
+  "kept_rows": 3283,
+  "drop_rows": 10263,
+  "keep_ratio": 0.24235936807913774,
+  "date_start": "2020-02-01",
+  "date_end": "2026-05-20",
+  "category_counts": {
+    "財經": 2633,
+    "財經週報": 267,
+    "地產": 110,
+    "評論": 74,
+    "政治": 63,
+    "國際": 62,
+    "3C": 29,
+    "生活": 23,
+    "汽車": 11,
+    "軍武": 6,
+    "消費": 3,
+    "娛樂": 1,
+    "時尚": 1
+  },
+  "reason_counts": {
+    "strong_category": 2900,
+    "market_core": 1346,
+    "sector_tech": 1303,
+    "macro_policy": 1005,
+    "weak_category": 381,
+    "etf_ticker": 105
+  },
+  "strong_categories": [
+    "財經",
+    "財經週報"
+  ],
+  "weak_categories": [
+    "3C",
+    "國際",
+    "地產",
+    "政治",
+    "汽車",
+    "消費",
+    "焦點",
+    "生活",
+    "評論",
+    "軍武"
+  ]
+}
