@@ -1,0 +1,413 @@
+{
+  "experiment": "group_a_leverage_cap_dual_objective_compare_20260524",
+  "generated_at": "2026-05-24T22:17:40",
+  "payload_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_runtime_payload_opt_20260524.json",
+  "model_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/models/portfolio/group_a_microopt_b060_p030_20260521_233524.zip",
+  "shared_feature_cols": [
+    "llm_sentiment_score",
+    "llm_sentiment_confidence",
+    "llm_risk_off_score",
+    "llm_news_intensity"
+  ],
+  "base_env_kwargs": {
+    "profile_name": "default",
+    "turnover_penalty": 0.0005,
+    "equal_benchmark_weight": 0.3,
+    "blend_benchmark_weight": 2.2,
+    "underperform_0050_weight": 0.05,
+    "leveraged_benchmark_weight": 1.0,
+    "drawdown_penalty_weight": 0.2,
+    "deep_drawdown_penalty_weight": 0.0,
+    "deep_drawdown_threshold": 1.0,
+    "concentration_penalty_weight": 0.3,
+    "concentration_threshold": 0.65,
+    "min_rebalance_days": 5,
+    "leverage_cap": 0.3,
+    "inverse_cap": 0.3,
+    "stress_gate_enabled": false,
+    "start_allocation": "blend50",
+    "group_a_action_schema": "triplet_v3_cash50",
+    "inverse_m_state_only": true,
+    "inverse_max_holding_days": 5,
+    "enable_pva_features": true,
+    "enable_pva_sigmoid": true,
+    "pva_weight": 0.3,
+    "pva_j_state_weight": 0.17,
+    "pva_m_state_weight": 1.0,
+    "pva_drift_threshold": 0.05,
+    "pva_target_vol": 0.012,
+    "pva_min_leverage_scale": 0.4,
+    "pva_inverse_hedge_budget": 0.3,
+    "pva_s_state_drift_boost": 0.0,
+    "pva_s_state_max_weight": 0.3,
+    "pva_buy_dip_strength": 0.8,
+    "dca_monthly_amounts": {
+      "0050.TW": 5000.0
+    },
+    "dca_day": 20,
+    "dividend_mode": "cash",
+    "sentiment_gate_enabled": true,
+    "sentiment_risk_off_threshold": 0.1,
+    "sentiment_severe_threshold": 0.15,
+    "sentiment_min_confidence": 0.4,
+    "sentiment_min_intensity": 0.0,
+    "sentiment_risk_off_inverse_floor": 0.15,
+    "sentiment_severe_inverse_floor": 0.3,
+    "sentiment_positive_min_confidence": 0.3,
+    "sentiment_positive_threshold": 0.1,
+    "sentiment_positive_max_risk_off_score": 0.1,
+    "sentiment_positive_leverage_boost": 0.0
+  },
+  "recent_window": {
+    "start": "2024-01-02",
+    "end": "2026-05-21"
+  },
+  "crash_window": {
+    "start": "2007-07-01",
+    "end": "2010-12-31"
+  },
+  "leverage_caps_tested": [
+    0.2,
+    0.25,
+    0.3
+  ],
+  "baseline_cap30": {
+    "leverage_cap": 0.3,
+    "env_overrides": {
+      "leverage_cap": 0.3
+    },
+    "recent_real_2024_2026": {
+      "final_value": 3736958.176684952,
+      "total_invested_capital": 1145000.0,
+      "net_profit": 2591958.176684952,
+      "contribution_return": 2.263718931602578,
+      "annual_return": 0.7874270019031864,
+      "sharpe": 2.357115896345936,
+      "max_drawdown": -0.22036531759356898,
+      "volatility": 0.2515862703530257,
+      "num_trades": 99,
+      "dca_purchase_count": 29,
+      "dca_total_contributions": 145000.0,
+      "pva_sigmoid_count": 54,
+      "final_weights": {
+        "0050.TW": 0.5006082005283845,
+        "00631L.TW": 0.24601803364076905,
+        "00632R.TW": 0.0
+      },
+      "delta_vs_cap30": {
+        "final_value": 0.0,
+        "contribution_return": 0.0,
+        "sharpe": 0.0,
+        "max_drawdown": 0.0
+      }
+    },
+    "crash_proxy_2008": {
+      "final_value": 1439564.6555873523,
+      "total_invested_capital": 1210000.0,
+      "net_profit": 229564.65558735235,
+      "contribution_return": 0.189722855857316,
+      "annual_return": 0.11103402176169386,
+      "sharpe": 0.4537601770228353,
+      "max_drawdown": -0.5417551942834042,
+      "volatility": 0.26578644116100136,
+      "num_trades": 147,
+      "dca_purchase_count": 42,
+      "dca_total_contributions": 210000.0,
+      "pva_sigmoid_count": 90,
+      "final_weights": {
+        "0050.TW": 0.7460341787868159,
+        "00631L.TW": 0.25396582121318406,
+        "00632R.TW": 0.0
+      },
+      "delta_vs_cap30": {
+        "final_value": 0.0,
+        "contribution_return": 0.0,
+        "sharpe": 0.0,
+        "max_drawdown": 0.0
+      }
+    }
+  },
+  "best_recent_real": {
+    "leverage_cap": 0.3,
+    "env_overrides": {
+      "leverage_cap": 0.3
+    },
+    "recent_real_2024_2026": {
+      "final_value": 3736958.176684952,
+      "total_invested_capital": 1145000.0,
+      "net_profit": 2591958.176684952,
+      "contribution_return": 2.263718931602578,
+      "annual_return": 0.7874270019031864,
+      "sharpe": 2.357115896345936,
+      "max_drawdown": -0.22036531759356898,
+      "volatility": 0.2515862703530257,
+      "num_trades": 99,
+      "dca_purchase_count": 29,
+      "dca_total_contributions": 145000.0,
+      "pva_sigmoid_count": 54,
+      "final_weights": {
+        "0050.TW": 0.5006082005283845,
+        "00631L.TW": 0.24601803364076905,
+        "00632R.TW": 0.0
+      },
+      "delta_vs_cap30": {
+        "final_value": 0.0,
+        "contribution_return": 0.0,
+        "sharpe": 0.0,
+        "max_drawdown": 0.0
+      }
+    },
+    "crash_proxy_2008": {
+      "final_value": 1439564.6555873523,
+      "total_invested_capital": 1210000.0,
+      "net_profit": 229564.65558735235,
+      "contribution_return": 0.189722855857316,
+      "annual_return": 0.11103402176169386,
+      "sharpe": 0.4537601770228353,
+      "max_drawdown": -0.5417551942834042,
+      "volatility": 0.26578644116100136,
+      "num_trades": 147,
+      "dca_purchase_count": 42,
+      "dca_total_contributions": 210000.0,
+      "pva_sigmoid_count": 90,
+      "final_weights": {
+        "0050.TW": 0.7460341787868159,
+        "00631L.TW": 0.25396582121318406,
+        "00632R.TW": 0.0
+      },
+      "delta_vs_cap30": {
+        "final_value": 0.0,
+        "contribution_return": 0.0,
+        "sharpe": 0.0,
+        "max_drawdown": 0.0
+      }
+    }
+  },
+  "best_crash_proxy": {
+    "leverage_cap": 0.2,
+    "env_overrides": {
+      "leverage_cap": 0.2
+    },
+    "recent_real_2024_2026": {
+      "final_value": 3554678.116591763,
+      "total_invested_capital": 1145000.0,
+      "net_profit": 2409678.116591763,
+      "contribution_return": 2.1045223725692255,
+      "annual_return": 0.7484783673781132,
+      "sharpe": 2.391414736267412,
+      "max_drawdown": -0.20320170163319964,
+      "volatility": 0.23729321359403602,
+      "num_trades": 99,
+      "dca_purchase_count": 29,
+      "dca_total_contributions": 145000.0,
+      "pva_sigmoid_count": 50,
+      "final_weights": {
+        "0050.TW": 0.4998433366598294,
+        "00631L.TW": 0.1964860574601928,
+        "00632R.TW": 0.0
+      },
+      "delta_vs_cap30": {
+        "final_value": -182280.06009318866,
+        "contribution_return": -0.1591965590333526,
+        "sharpe": 0.03429883992147609,
+        "max_drawdown": 0.017163615960369333
+      }
+    },
+    "crash_proxy_2008": {
+      "final_value": 1521037.1517558214,
+      "total_invested_capital": 1210000.0,
+      "net_profit": 311037.1517558214,
+      "contribution_return": 0.2570554973188607,
+      "annual_return": 0.12885130019872526,
+      "sharpe": 0.5359332752215695,
+      "max_drawdown": -0.5065605058714459,
+      "volatility": 0.24467356196744522,
+      "num_trades": 147,
+      "dca_purchase_count": 42,
+      "dca_total_contributions": 210000.0,
+      "pva_sigmoid_count": 86,
+      "final_weights": {
+        "0050.TW": 0.8302686921854137,
+        "00631L.TW": 0.16973130781458629,
+        "00632R.TW": 0.0
+      },
+      "delta_vs_cap30": {
+        "final_value": 81472.49616846908,
+        "contribution_return": 0.06733264146154469,
+        "sharpe": 0.08217309819873425,
+        "max_drawdown": 0.035194688411958386
+      }
+    }
+  },
+  "variants": [
+    {
+      "leverage_cap": 0.2,
+      "env_overrides": {
+        "leverage_cap": 0.2
+      },
+      "recent_real_2024_2026": {
+        "final_value": 3554678.116591763,
+        "total_invested_capital": 1145000.0,
+        "net_profit": 2409678.116591763,
+        "contribution_return": 2.1045223725692255,
+        "annual_return": 0.7484783673781132,
+        "sharpe": 2.391414736267412,
+        "max_drawdown": -0.20320170163319964,
+        "volatility": 0.23729321359403602,
+        "num_trades": 99,
+        "dca_purchase_count": 29,
+        "dca_total_contributions": 145000.0,
+        "pva_sigmoid_count": 50,
+        "final_weights": {
+          "0050.TW": 0.4998433366598294,
+          "00631L.TW": 0.1964860574601928,
+          "00632R.TW": 0.0
+        },
+        "delta_vs_cap30": {
+          "final_value": -182280.06009318866,
+          "contribution_return": -0.1591965590333526,
+          "sharpe": 0.03429883992147609,
+          "max_drawdown": 0.017163615960369333
+        }
+      },
+      "crash_proxy_2008": {
+        "final_value": 1521037.1517558214,
+        "total_invested_capital": 1210000.0,
+        "net_profit": 311037.1517558214,
+        "contribution_return": 0.2570554973188607,
+        "annual_return": 0.12885130019872526,
+        "sharpe": 0.5359332752215695,
+        "max_drawdown": -0.5065605058714459,
+        "volatility": 0.24467356196744522,
+        "num_trades": 147,
+        "dca_purchase_count": 42,
+        "dca_total_contributions": 210000.0,
+        "pva_sigmoid_count": 86,
+        "final_weights": {
+          "0050.TW": 0.8302686921854137,
+          "00631L.TW": 0.16973130781458629,
+          "00632R.TW": 0.0
+        },
+        "delta_vs_cap30": {
+          "final_value": 81472.49616846908,
+          "contribution_return": 0.06733264146154469,
+          "sharpe": 0.08217309819873425,
+          "max_drawdown": 0.035194688411958386
+        }
+      }
+    },
+    {
+      "leverage_cap": 0.25,
+      "env_overrides": {
+        "leverage_cap": 0.25
+      },
+      "recent_real_2024_2026": {
+        "final_value": 3618299.638442564,
+        "total_invested_capital": 1145000.0,
+        "net_profit": 2473299.638442564,
+        "contribution_return": 2.160087020473855,
+        "annual_return": 0.7621969399320145,
+        "sharpe": 2.332423002292629,
+        "max_drawdown": -0.2202082217345975,
+        "volatility": 0.24773381346070852,
+        "num_trades": 99,
+        "dca_purchase_count": 29,
+        "dca_total_contributions": 145000.0,
+        "pva_sigmoid_count": 53,
+        "final_weights": {
+          "0050.TW": 0.5006299929509386,
+          "00631L.TW": 0.2460072979239418,
+          "00632R.TW": 0.0
+        },
+        "delta_vs_cap30": {
+          "final_value": -118658.53824238805,
+          "contribution_return": -0.10363191112872316,
+          "sharpe": -0.02469289405330688,
+          "max_drawdown": 0.00015709585897147327
+        }
+      },
+      "crash_proxy_2008": {
+        "final_value": 1426392.4837567902,
+        "total_invested_capital": 1210000.0,
+        "net_profit": 216392.48375679017,
+        "contribution_return": 0.17883676343536378,
+        "annual_return": 0.10808651068064057,
+        "sharpe": 0.44636441671584953,
+        "max_drawdown": -0.5388719648909845,
+        "volatility": 0.26205408089432686,
+        "num_trades": 147,
+        "dca_purchase_count": 42,
+        "dca_total_contributions": 210000.0,
+        "pva_sigmoid_count": 88,
+        "final_weights": {
+          "0050.TW": 0.7879561377304346,
+          "00631L.TW": 0.2120438622695654,
+          "00632R.TW": 0.0
+        },
+        "delta_vs_cap30": {
+          "final_value": -13172.171830562176,
+          "contribution_return": -0.01088609242195221,
+          "sharpe": -0.007395760306985744,
+          "max_drawdown": 0.002883229392419695
+        }
+      }
+    },
+    {
+      "leverage_cap": 0.3,
+      "env_overrides": {
+        "leverage_cap": 0.3
+      },
+      "recent_real_2024_2026": {
+        "final_value": 3736958.176684952,
+        "total_invested_capital": 1145000.0,
+        "net_profit": 2591958.176684952,
+        "contribution_return": 2.263718931602578,
+        "annual_return": 0.7874270019031864,
+        "sharpe": 2.357115896345936,
+        "max_drawdown": -0.22036531759356898,
+        "volatility": 0.2515862703530257,
+        "num_trades": 99,
+        "dca_purchase_count": 29,
+        "dca_total_contributions": 145000.0,
+        "pva_sigmoid_count": 54,
+        "final_weights": {
+          "0050.TW": 0.5006082005283845,
+          "00631L.TW": 0.24601803364076905,
+          "00632R.TW": 0.0
+        },
+        "delta_vs_cap30": {
+          "final_value": 0.0,
+          "contribution_return": 0.0,
+          "sharpe": 0.0,
+          "max_drawdown": 0.0
+        }
+      },
+      "crash_proxy_2008": {
+        "final_value": 1439564.6555873523,
+        "total_invested_capital": 1210000.0,
+        "net_profit": 229564.65558735235,
+        "contribution_return": 0.189722855857316,
+        "annual_return": 0.11103402176169386,
+        "sharpe": 0.4537601770228353,
+        "max_drawdown": -0.5417551942834042,
+        "volatility": 0.26578644116100136,
+        "num_trades": 147,
+        "dca_purchase_count": 42,
+        "dca_total_contributions": 210000.0,
+        "pva_sigmoid_count": 90,
+        "final_weights": {
+          "0050.TW": 0.7460341787868159,
+          "00631L.TW": 0.25396582121318406,
+          "00632R.TW": 0.0
+        },
+        "delta_vs_cap30": {
+          "final_value": 0.0,
+          "contribution_return": 0.0,
+          "sharpe": 0.0,
+          "max_drawdown": 0.0
+        }
+      }
+    }
+  ],
+  "note": "Recent-real comparison uses cached real 2024-2026 Group A data with market/LLM features. Crash comparison uses TWII-based synthetic proxy data for 2008 stress testing."
+}

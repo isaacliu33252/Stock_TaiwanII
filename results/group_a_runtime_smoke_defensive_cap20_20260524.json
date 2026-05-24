@@ -1,0 +1,156 @@
+{
+  "experiment": "group_a_runtime_opt_sweep",
+  "source_result_json": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_runtime_payload_defensive_cap20_20260524.json",
+  "model_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/models/portfolio/group_a_microopt_b060_p030_20260521_233524.zip",
+  "window": {
+    "train_start": "2024-01-01",
+    "download_end": "2026-05-22",
+    "backtest_start": "2024-01-02",
+    "backtest_end": "2026-05-21"
+  },
+  "baseline": {
+    "final_value": 3682144.742788247,
+    "annual_return": 0.7740498601833339,
+    "sharpe_ratio": 2.4522520855918533,
+    "max_drawdown": -0.200002552751839,
+    "volatility": 0.23734334287257144,
+    "num_trades": 99,
+    "fees_paid_estimate": 51317.0933250635,
+    "pva_sigmoid_count": 49,
+    "dca_purchase_count": 29,
+    "dca_total_contributions": 145000.0,
+    "total_invested_capital": 1145000.0,
+    "net_profit": 2537144.742788247,
+    "final_weights": {
+      "0050.TW": 0.5019403313962529,
+      "00631L.TW": 0.20377322834379197,
+      "00632R.TW": 0.0
+    }
+  },
+  "grids": {
+    "pva_weight": [
+      0.32
+    ],
+    "pva_j_state_weight": [
+      0.19
+    ],
+    "pva_drift_threshold": [
+      0.05
+    ],
+    "pva_min_leverage_scale": [
+      0.4
+    ],
+    "pva_buy_dip_strength": [
+      0.95
+    ],
+    "dca_day": [
+      20
+    ]
+  },
+  "best": {
+    "final_value": 3682144.742788247,
+    "annual_return": 0.7740498601833339,
+    "sharpe_ratio": 2.4522520855918533,
+    "max_drawdown": -0.200002552751839,
+    "volatility": 0.23734334287257144,
+    "num_trades": 99,
+    "fees_paid_estimate": 51317.0933250635,
+    "pva_sigmoid_count": 49,
+    "dca_purchase_count": 29,
+    "dca_total_contributions": 145000.0,
+    "total_invested_capital": 1145000.0,
+    "net_profit": 2537144.742788247,
+    "final_weights": {
+      "0050.TW": 0.5019403313962529,
+      "00631L.TW": 0.20377322834379197,
+      "00632R.TW": 0.0
+    },
+    "overrides": {
+      "pva_weight": 0.32,
+      "pva_j_state_weight": 0.19,
+      "pva_drift_threshold": 0.05,
+      "pva_min_leverage_scale": 0.4,
+      "pva_buy_dip_strength": 0.95,
+      "dca_day": 20
+    },
+    "delta_final_value": 0.0,
+    "delta_sharpe": 0.0,
+    "delta_max_drawdown": 0.0,
+    "delta_trades": 0,
+    "eligible": true,
+    "eligibility_reason": "candidate",
+    "score": 0.0
+  },
+  "top": [
+    {
+      "final_value": 3682144.742788247,
+      "annual_return": 0.7740498601833339,
+      "sharpe_ratio": 2.4522520855918533,
+      "max_drawdown": -0.200002552751839,
+      "volatility": 0.23734334287257144,
+      "num_trades": 99,
+      "fees_paid_estimate": 51317.0933250635,
+      "pva_sigmoid_count": 49,
+      "dca_purchase_count": 29,
+      "dca_total_contributions": 145000.0,
+      "total_invested_capital": 1145000.0,
+      "net_profit": 2537144.742788247,
+      "final_weights": {
+        "0050.TW": 0.5019403313962529,
+        "00631L.TW": 0.20377322834379197,
+        "00632R.TW": 0.0
+      },
+      "overrides": {
+        "pva_weight": 0.32,
+        "pva_j_state_weight": 0.19,
+        "pva_drift_threshold": 0.05,
+        "pva_min_leverage_scale": 0.4,
+        "pva_buy_dip_strength": 0.95,
+        "dca_day": 20
+      },
+      "delta_final_value": 0.0,
+      "delta_sharpe": 0.0,
+      "delta_max_drawdown": 0.0,
+      "delta_trades": 0,
+      "eligible": true,
+      "eligibility_reason": "candidate",
+      "score": 0.0
+    }
+  ],
+  "runs": [
+    {
+      "final_value": 3682144.742788247,
+      "annual_return": 0.7740498601833339,
+      "sharpe_ratio": 2.4522520855918533,
+      "max_drawdown": -0.200002552751839,
+      "volatility": 0.23734334287257144,
+      "num_trades": 99,
+      "fees_paid_estimate": 51317.0933250635,
+      "pva_sigmoid_count": 49,
+      "dca_purchase_count": 29,
+      "dca_total_contributions": 145000.0,
+      "total_invested_capital": 1145000.0,
+      "net_profit": 2537144.742788247,
+      "final_weights": {
+        "0050.TW": 0.5019403313962529,
+        "00631L.TW": 0.20377322834379197,
+        "00632R.TW": 0.0
+      },
+      "overrides": {
+        "pva_weight": 0.32,
+        "pva_j_state_weight": 0.19,
+        "pva_drift_threshold": 0.05,
+        "pva_min_leverage_scale": 0.4,
+        "pva_buy_dip_strength": 0.95,
+        "dca_day": 20
+      },
+      "delta_final_value": 0.0,
+      "delta_sharpe": 0.0,
+      "delta_max_drawdown": 0.0,
+      "delta_trades": 0,
+      "eligible": true,
+      "eligibility_reason": "candidate",
+      "score": 0.0
+    }
+  ]
+}

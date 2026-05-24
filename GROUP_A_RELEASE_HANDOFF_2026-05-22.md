@@ -1,5 +1,7 @@
 # Group A Release Handoff
 
+> Historical note (superseded on 2026-05-24): this file documents the earlier `finalcheck_overlay` release candidate built around `pva_j_state_weight = 0.05`. The latest recommended handoff is [`GROUP_A_LATEST_HANDOFF_2026-05-24.md`](GROUP_A_LATEST_HANDOFF_2026-05-24.md), and the current primary runtime payload is [`results/group_a_runtime_payload_primary_20260524.json`](results/group_a_runtime_payload_primary_20260524.json).
+
 Date: 2026-05-22
 Status: Release candidate prepared for GitHub handoff
 Scope: Group A only

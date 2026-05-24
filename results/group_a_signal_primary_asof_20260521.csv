@@ -1,0 +1,4 @@
+﻿date,ticker,latest_price,current_shares,current_weight,strategy_weight,planned_target_weight,target_weight,planned_target_shares,target_shares,delta_shares,weight_diff,action_hint,signal_status
+2026-05-21,0050.TW,95.8499984741211,89,1.0,0.5019403313962529,0.8826480813238972,1.0,79,89,0,0.0,hold,hold
+2026-05-21,00631L.TW,31.579999923706055,0,0.0,0.20377322834379197,0.11735191867610287,0.0,32,0,0,0.0,hold,hold
+2026-05-21,00632R.TW,11.289999961853027,0,0.0,0.0,0.0,0.0,0,0,0,0.0,hold,hold

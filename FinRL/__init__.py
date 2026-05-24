@@ -1,31 +1,83 @@
-"""
-FinRL 台股量化交易系統 (FinRL Taiwan Stock Trading System)
-================================================================================
-本系統基於深度強化學習 (Deep Reinforcement Learning) 設計，用於台股自動化交易。
+"""FinRL Taiwan package exports.
 
-主要模組:
-    - data: 數據處理與特徵工程
-    - environments: Gym-style 交易環境
-    - agents: PPO/A2C 代理模型
-    - backtesting: 回測與績效評估
-    - results: 訓練結果與模型儲存
-
-台股特殊規則:
-    - 涨跌停 10% 限制
-    - T+2 交割制度
-    - 最小交易單位 1000 股
-    - 交易時間 09:00-13:30
-
-版本: v1.0.0
-作者: FinRL量化交易專家
+The data utilities are used by lightweight runtime and signal scripts. Keep
+heavy optional modules lazy enough that missing backtesting-only dependencies do
+not block those workflows.
 """
 
 __version__ = "1.0.0"
 __author__ = "FinRL Taiwan Team"
 
-# 匯入主要模組，方便快速引用
+from . import agents
 from . import data
 from . import environments
-from . import agents
-from . import backtesting
 from . import results
+
+try:
+    from . import backtesting
+    from .backtesting import (
+        BacktestConfig,
+        BacktestResult,
+        FinRLXBacktestEngine,
+        GroupABridgeConfig,
+        GroupABridgeResult,
+        run_group_a_finrlx_backtest,
+    )
+
+    BacktestEngine = FinRLXBacktestEngine
+except ImportError:
+    backtesting = None
+    BacktestConfig = BacktestResult = FinRLXBacktestEngine = BacktestEngine = None
+    GroupABridgeConfig = GroupABridgeResult = run_group_a_finrlx_backtest = None
+
+try:
+    from . import strategies
+    from .strategies import (
+        BaseStrategy,
+        GroupAFinRLXConfig,
+        GroupAFinRLXStrategy,
+        RLCachedStrategy,
+        RLPortfolioConfig,
+        RLPortfolioStrategy,
+        StrategyConfig,
+        StrategyResult,
+    )
+except ImportError:
+    strategies = None
+    BaseStrategy = GroupAFinRLXConfig = GroupAFinRLXStrategy = RLCachedStrategy = RLPortfolioConfig = RLPortfolioStrategy = None
+    StrategyConfig = StrategyResult = None
+
+from .environments import (
+    ActionMode,
+    ContinuousActionSpec,
+    DynamicRewardShaper,
+    TaiwanStockTradingEnv,
+)
+
+__all__ = [
+    "data",
+    "environments",
+    "agents",
+    "backtesting",
+    "results",
+    "strategies",
+    "TaiwanStockTradingEnv",
+    "ActionMode",
+    "ContinuousActionSpec",
+    "DynamicRewardShaper",
+    "BaseStrategy",
+    "GroupAFinRLXConfig",
+    "GroupAFinRLXStrategy",
+    "RLPortfolioConfig",
+    "RLPortfolioStrategy",
+    "RLCachedStrategy",
+    "StrategyConfig",
+    "StrategyResult",
+    "BacktestEngine",
+    "BacktestConfig",
+    "BacktestResult",
+    "FinRLXBacktestEngine",
+    "GroupABridgeConfig",
+    "GroupABridgeResult",
+    "run_group_a_finrlx_backtest",
+]

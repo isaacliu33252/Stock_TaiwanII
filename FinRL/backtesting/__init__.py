@@ -41,6 +41,16 @@ from FinRL.backtesting.backtest import (
     calculate_sortino_ratio,
     calculate_annual_return,
 )
+from FinRL.backtesting.backtest_engine import (
+    BacktestEngine as FinRLXBacktestEngine,
+    BacktestConfig,
+    BacktestResult,
+)
+from FinRL.backtesting.group_a_bridge import (
+    GroupABridgeConfig,
+    GroupABridgeResult,
+    run_group_a_finrlx_backtest,
+)
 
 # 匯出績效指標模組
 from FinRL.backtesting.performance_metrics import (
@@ -57,6 +67,12 @@ from FinRL.backtesting.performance_metrics import (
 __all__ = [
     # 主要類別
     "BacktestEngine",
+    "FinRLXBacktestEngine",
+    "BacktestConfig",
+    "BacktestResult",
+    "GroupABridgeConfig",
+    "GroupABridgeResult",
+    "run_group_a_finrlx_backtest",
     
     # 績效指標計算函式
     "calculate_sharpe_ratio",
