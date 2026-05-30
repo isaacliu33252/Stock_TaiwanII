@@ -1,0 +1,4 @@
+﻿date,ticker,latest_price,current_shares,current_weight,strategy_weight,planned_target_weight,target_weight,planned_target_shares,target_shares,delta_shares,weight_diff,action_hint,signal_status
+2026-05-28,0050.TW,100.5,0,0.0,0.5,0.5821351968854384,0.5821351968854384,5792,5792,5792,0.5821351968854384,buy,rebalance
+2026-05-28,00631L.TW,34.470001220703125,0,0.0,0.5000000000000001,0.11786480311456168,0.11786480311456168,3419,3419,3419,0.11786480311456168,buy,rebalance
+2026-05-28,00632R.TW,10.729999542236328,0,0.0,0.0,0.0,0.0,0,0,0,0.0,hold,rebalance

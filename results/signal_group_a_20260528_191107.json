@@ -1,0 +1,285 @@
+{
+  "group": "group_a",
+  "result_json": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_backtest_20250101_20260525_20260526_193252.json",
+  "model_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/models/portfolio/group_a_oos_2020_2024_cap20_llm_pva_tripletv4_inst_localregime_20260526.zip",
+  "workbook": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/taiwan_stock_20260516_group.xlsx",
+  "signal_mode": "live_start",
+  "override_holdings_source": "override_holdings_json",
+  "holdings_row_label": "override_holdings_json",
+  "requested_as_of_date": "2026-05-28",
+  "actual_data_date": "2026-05-28",
+  "stale_days": 0,
+  "signal_status": "rebalance",
+  "signal_reason": "pva_overlay_s",
+  "guard_reasons": [],
+  "group_a_action_schema": "triplet_v4",
+  "group_b_action_schema": null,
+  "latest_action": 7,
+  "action_label": "rebalance_to_0050_50_00631L_20_cash_30",
+  "base_target_label": "0050 50% / 00631L 20% / cash 30%",
+  "candidate_target_label": "0050 58.2% / 00631L 11.8% / cash 30%",
+  "effective_target_label": "0050 58.2% / 00631L 11.8% / cash 30%",
+  "strategy_portfolio_value": 1000000.0,
+  "strategy_drawdown": 0.0,
+  "relative_vs_0050_bh": 0.0,
+  "current_holdings_market_value": 0.0,
+  "current_cash": 1000000.0,
+  "current_cash_weight": 1.0,
+  "current_total_portfolio_value": 1000000.0,
+  "reference_state_weights": {
+    "0050.TW": 0.5,
+    "00631L.TW": 0.5000000000000001,
+    "00632R.TW": 0.0
+  },
+  "reference_state_cash_weight": 0.0,
+  "latest_prices": {
+    "0050.TW": 100.5,
+    "00631L.TW": 34.470001220703125,
+    "00632R.TW": 10.729999542236328
+  },
+  "current_shares": {
+    "0050.TW": 0,
+    "00631L.TW": 0,
+    "00632R.TW": 0
+  },
+  "current_weights": {
+    "0050.TW": 0.0,
+    "00631L.TW": 0.0,
+    "00632R.TW": 0.0
+  },
+  "strategy_weights": {
+    "0050.TW": 0.5,
+    "00631L.TW": 0.5000000000000001,
+    "00632R.TW": 0.0
+  },
+  "planned_target_weights": {
+    "0050.TW": 0.5821351968854384,
+    "00631L.TW": 0.11786480311456168,
+    "00632R.TW": 0.0
+  },
+  "planned_target_shares": {
+    "0050.TW": 5792,
+    "00631L.TW": 3419,
+    "00632R.TW": 0
+  },
+  "target_weights": {
+    "0050.TW": 0.5821351968854384,
+    "00631L.TW": 0.11786480311456168,
+    "00632R.TW": 0.0
+  },
+  "target_cash_weight": 0.29999999999999993,
+  "target_shares": {
+    "0050.TW": 5792,
+    "00631L.TW": 3419,
+    "00632R.TW": 0
+  },
+  "decision": {
+    "date": "2026-05-28",
+    "step_idx": 336,
+    "action": 7,
+    "action_label": "rebalance_to_0050_50_00631L_20_cash_30",
+    "base_target_label": "0050 50% / 00631L 20% / cash 30%",
+    "candidate_target_label": "0050 58.2% / 00631L 11.8% / cash 30%",
+    "effective_target_label": "0050 58.2% / 00631L 11.8% / cash 30%",
+    "current_weights": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.5000000000000001,
+      "00632R.TW": 0.0
+    },
+    "current_cash_weight": 0.0,
+    "base_target_weights": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.2,
+      "00632R.TW": 0.0
+    },
+    "candidate_target_weights": {
+      "0050.TW": 0.5821351968854384,
+      "00631L.TW": 0.11786480311456168,
+      "00632R.TW": 0.0
+    },
+    "candidate_target_cash_weight": 0.29999999999999993,
+    "effective_target_weights": {
+      "0050.TW": 0.5821351968854384,
+      "00631L.TW": 0.11786480311456168,
+      "00632R.TW": 0.0
+    },
+    "effective_target_cash_weight": 0.29999999999999993,
+    "candidate_source": "pva_risk_scale",
+    "candidate_reason": "pva_overlay_s",
+    "reason": "pva_overlay_s",
+    "sjm_state": "S",
+    "sjm_details": {
+      "p": 0.30621263656504216,
+      "v": 0.26574304872169785,
+      "a": 0.005326382056781709,
+      "p_z": 2.053106618146996,
+      "v_z": 0.9231581514401503,
+      "a_z": -0.34569736834369297,
+      "state": "S"
+    },
+    "pva_allowed": true,
+    "pva_state_weight": 0.32,
+    "pva_drift": 0.46427039377087675,
+    "pva_details": {
+      "sjm": {
+        "p": 0.30621263656504216,
+        "v": 0.26574304872169785,
+        "a": 0.005326382056781709,
+        "p_z": 2.053106618146996,
+        "v_z": 0.9231581514401503,
+        "a_z": -0.34569736834369297,
+        "state": "S"
+      },
+      "policy": "continuous_risk_scaling",
+      "raw_pva_weights": {
+        "0050.TW": 0.5821351968854384,
+        "00631L.TW": 0.11786480311456168,
+        "00632R.TW": 0.0
+      },
+      "risk_metrics": {
+        "blend_weight": 0.32,
+        "risk_score": 0.45119441578352987,
+        "realized_vol_20": 0.018779619260040473,
+        "downside_vol_20": 0.006382941546967415,
+        "drawdown_20": 0.019990277823991542,
+        "vol_scale": 0.6389905904819786,
+        "regime_scale": 0.8772751189068799,
+        "leverage_scale": 0.6389905904819786,
+        "dip_accumulation_signal": 0.2556796509716268,
+        "extra_spot_shift": 0.009933314981834028,
+        "hedge_signal": 0.0,
+        "spot_redeploy_floor": 0.03728509473868173,
+        "available_inverse_budget": 0.044850102146756596,
+        "inverse_cooldown_active": false,
+        "base_blend_weight": 0.32,
+        "effective_blend_weight": 0.32,
+        "pva_drift": 0.46427039377087675,
+        "pva_drift_threshold": 0.05,
+        "pva_s_state_drift_boost": 0.0,
+        "pva_s_state_max_weight": 0.32,
+        "s_state_drift_boost_applied": false,
+        "s_state_drift_ratio": 0.0
+      },
+      "base_target_weights": {
+        "0050.TW": 0.5,
+        "00631L.TW": 0.2,
+        "00632R.TW": 0.0
+      }
+    },
+    "candidate_turnover": 0.46427039377087675,
+    "days_since_last_rebalance": 252,
+    "cooldown_remaining": 0,
+    "can_trade_now": true,
+    "needs_rebalance": true,
+    "execute_trade": true,
+    "inverse_rule": {
+      "force_rebalance": false,
+      "reason": null,
+      "holding_inverse": false,
+      "current_inverse_weight": 0.0,
+      "inverse_holding_days": 0,
+      "inverse_cooldown_active": false,
+      "override_active": false
+    },
+    "risk_gate": {
+      "source": "none",
+      "reason": null,
+      "allow_inverse_override": false,
+      "force_rebalance": false,
+      "positive_leverage_boost": 0.0,
+      "local_regime_gate": {
+        "enabled": true,
+        "risk_off_score_threshold": 2,
+        "severe_score_threshold": 3,
+        "risk_off_clear_days": 3,
+        "severe_clear_days": 4,
+        "recovery_ma60_ratio": 1.01,
+        "recovery_momentum_21": 0.01,
+        "recovery_drawdown_20": -0.03,
+        "recovery_twse_return_5d": 0.0,
+        "risk_off_template": "0050_only",
+        "severe_template": "0050_70_00632R_30"
+      },
+      "hard_crash_gate": {
+        "enabled": false,
+        "risk_off_cash_floor": 0.3,
+        "risk_off_inverse_floor": 0.15,
+        "severe_cash_floor": 0.5,
+        "severe_inverse_floor": 0.3
+      },
+      "market_margin_gate": {
+        "enabled": false,
+        "risk_off_margin_flow_threshold": -0.02,
+        "severe_margin_flow_threshold": -0.035,
+        "risk_off_short_flow_threshold": 0.1,
+        "severe_short_flow_threshold": 0.16,
+        "risk_off_margin_growth_z_threshold": -0.75,
+        "severe_margin_growth_z_threshold": -1.25,
+        "risk_off_short_growth_z_threshold": 0.75,
+        "severe_short_growth_z_threshold": 1.5,
+        "risk_off_cash_floor": 0.0,
+        "risk_off_inverse_floor": 0.0,
+        "severe_cash_floor": 0.2,
+        "severe_inverse_floor": 0.1
+      },
+      "local_regime": {
+        "enabled": true,
+        "available": true,
+        "active": false,
+        "risk_off": false,
+        "severe": false,
+        "state": "normal",
+        "raw_risk_off": false,
+        "raw_severe": false,
+        "risk_score": 1.0,
+        "severe_score": 0.0,
+        "recovery_streak": 0.0,
+        "0050_close_ma60_ratio": 1.1799929577309312,
+        "0050_close_ma120_ratio": 1.3062126365650422,
+        "0050_drawdown_20": -0.019990277823991542,
+        "0050_drawdown_60": -0.019990277823991542,
+        "0050_momentum_21": 0.09239130434663867,
+        "0050_momentum_63": 0.26574304872169785,
+        "0050_volatility_20_z": 1.2026051071320496,
+        "twse_index_return_5d_raw": 0.05483027709796029,
+        "market_volatility_raw": 0.017914598034527322
+      },
+      "market_stress": {
+        "risk_off": false,
+        "severe": false,
+        "score": 0.0
+      },
+      "market_margin_regime": {
+        "enabled": false,
+        "available": false,
+        "active": false,
+        "risk_off": false,
+        "severe": false,
+        "risk_score": 0.0,
+        "severe_score": 0.0,
+        "group_a_market_margin_flow_to_balance_5d": 0.0,
+        "group_a_market_short_flow_to_balance_5d": 0.0,
+        "group_a_market_margin_balance_growth_z_20d": 0.0,
+        "group_a_market_short_balance_growth_z_20d": 0.0,
+        "group_a_market_short_margin_balance_ratio": 0.0
+      },
+      "llm_sentiment": {
+        "enabled": true,
+        "available": true,
+        "active": false,
+        "risk_off": false,
+        "severe": false,
+        "positive": false,
+        "composite_score": 0.0,
+        "negative_score": -0.0,
+        "positive_score": 0.0,
+        "positive_composite_score": 0.0,
+        "confidence": 0.0,
+        "risk_off_score": 0.0,
+        "news_intensity": 0.0,
+        "sentiment_score": 0.0
+      }
+    }
+  },
+  "output_csv": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/signal_group_a_20260528_191107.csv"
+}
