@@ -1,0 +1,2986 @@
+{
+  "experiment": "group_a_Golden1_0531_rsi_overlay_dual_objective_sweep",
+  "generated_at": "2026-05-31T23:51:08",
+  "baseline": {
+    "name": "Golden1_0531",
+    "overrides": {},
+    "recent_oos": {
+      "final_value": 2058975.6126707823,
+      "annual_return": 0.7272598058479529,
+      "sharpe": 2.3039333646587554,
+      "max_drawdown": -0.2499394997432657,
+      "volatility": 0.2414884529333029,
+      "num_trades": 63,
+      "fees_paid_estimate": 21338.36127829527,
+      "pva_sigmoid_count": 24,
+      "dca_total_contributions": 85000.0
+    },
+    "crash_proxy_2008": {
+      "final_value": 1494398.9167680847,
+      "annual_return": 0.12310207758054026,
+      "sharpe": 0.572420273408017,
+      "max_drawdown": -0.38020210269783533,
+      "volatility": 0.20432317734021896,
+      "num_trades": 310,
+      "fees_paid_estimate": 77500.49511974027,
+      "pva_sigmoid_count": 43,
+      "dca_total_contributions": 210000.0
+    },
+    "delta_vs_Golden1_0531": {
+      "recent_oos": {
+        "final_value": 0.0,
+        "annual_return": 0.0,
+        "sharpe": 0.0,
+        "max_drawdown": 0.0,
+        "volatility": 0.0,
+        "num_trades": 0,
+        "fees_paid_estimate": 0.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 0.0,
+        "annual_return": 0.0,
+        "sharpe": 0.0,
+        "max_drawdown": 0.0,
+        "volatility": 0.0,
+        "num_trades": 0,
+        "fees_paid_estimate": 0.0
+      }
+    },
+    "dual_objective_eligible": true
+  },
+  "grids": {
+    "rsi_overlay_oversold_threshold": [
+      25.0,
+      30.0,
+      35.0
+    ],
+    "rsi_overlay_overbought_threshold": [
+      65.0,
+      70.0,
+      75.0
+    ],
+    "rsi_overlay_oversold_0050_boost": [
+      0.05,
+      0.1
+    ],
+    "rsi_overlay_overbought_leverage_scale": [
+      0.25,
+      0.5,
+      0.75
+    ]
+  },
+  "eligible_count": 0,
+  "best_shadow_candidate": null,
+  "ranked": [
+    {
+      "name": "Golden1_0531",
+      "overrides": {},
+      "recent_oos": {
+        "final_value": 2058975.6126707823,
+        "annual_return": 0.7272598058479529,
+        "sharpe": 2.3039333646587554,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2414884529333029,
+        "num_trades": 63,
+        "fees_paid_estimate": 21338.36127829527,
+        "pva_sigmoid_count": 24,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1494398.9167680847,
+        "annual_return": 0.12310207758054026,
+        "sharpe": 0.572420273408017,
+        "max_drawdown": -0.38020210269783533,
+        "volatility": 0.20432317734021896,
+        "num_trades": 310,
+        "fees_paid_estimate": 77500.49511974027,
+        "pva_sigmoid_count": 43,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": 0.0,
+          "annual_return": 0.0,
+          "sharpe": 0.0,
+          "max_drawdown": 0.0,
+          "volatility": 0.0,
+          "num_trades": 0,
+          "fees_paid_estimate": 0.0
+        },
+        "crash_proxy_2008": {
+          "final_value": 0.0,
+          "annual_return": 0.0,
+          "sharpe": 0.0,
+          "max_drawdown": 0.0,
+          "volatility": 0.0,
+          "num_trades": 0,
+          "fees_paid_estimate": 0.0
+        }
+      },
+      "dual_objective_eligible": true
+    },
+    {
+      "name": "rsi_os25_ob75_boost0.10_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2038967.6229843292,
+        "annual_return": 0.714542905418706,
+        "sharpe": 2.294156701101954,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23903215205244846,
+        "num_trades": 63,
+        "fees_paid_estimate": 20855.173077878175,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1443272.6657152756,
+        "annual_return": 0.11186029534230135,
+        "sharpe": 0.5273419945990303,
+        "max_drawdown": -0.3800576771402371,
+        "volatility": 0.2017538894761155,
+        "num_trades": 310,
+        "fees_paid_estimate": 75540.9763112382,
+        "pva_sigmoid_count": 35,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -20007.989686453016,
+          "annual_return": -0.012716900429246891,
+          "sharpe": -0.009776663556801513,
+          "max_drawdown": 0.0,
+          "volatility": -0.0024563008808544395,
+          "num_trades": 0,
+          "fees_paid_estimate": -483.1882004170948
+        },
+        "crash_proxy_2008": {
+          "final_value": -51126.25105280918,
+          "annual_return": -0.011241782238238907,
+          "sharpe": -0.04507827880898674,
+          "max_drawdown": 0.00014442555759824893,
+          "volatility": -0.002569287864103459,
+          "num_trades": 0,
+          "fees_paid_estimate": -1959.5188085020636
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob75_boost0.10_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2038967.6229843292,
+        "annual_return": 0.714542905418706,
+        "sharpe": 2.294156701101954,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23903215205244846,
+        "num_trades": 63,
+        "fees_paid_estimate": 20855.173077878175,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1441521.4212337881,
+        "annual_return": 0.11147024550684725,
+        "sharpe": 0.5255348459312146,
+        "max_drawdown": -0.3800576771402371,
+        "volatility": 0.2017961494420037,
+        "num_trades": 310,
+        "fees_paid_estimate": 75327.52475517335,
+        "pva_sigmoid_count": 35,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -20007.989686453016,
+          "annual_return": -0.012716900429246891,
+          "sharpe": -0.009776663556801513,
+          "max_drawdown": 0.0,
+          "volatility": -0.0024563008808544395,
+          "num_trades": 0,
+          "fees_paid_estimate": -483.1882004170948
+        },
+        "crash_proxy_2008": {
+          "final_value": -52877.49553429661,
+          "annual_return": -0.011631832073693005,
+          "sharpe": -0.046885427476802466,
+          "max_drawdown": 0.00014442555759824893,
+          "volatility": -0.002527027898215267,
+          "num_trades": 0,
+          "fees_paid_estimate": -2172.9703645669215
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob75_boost0.10_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2038967.6229843292,
+        "annual_return": 0.714542905418706,
+        "sharpe": 2.294156701101954,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23903215205244846,
+        "num_trades": 63,
+        "fees_paid_estimate": 20855.173077878175,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1441088.0833221301,
+        "annual_return": 0.11137367735932013,
+        "sharpe": 0.524951550847631,
+        "max_drawdown": -0.3800576771402371,
+        "volatility": 0.20189261962274802,
+        "num_trades": 310,
+        "fees_paid_estimate": 76066.18788219188,
+        "pva_sigmoid_count": 34,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -20007.989686453016,
+          "annual_return": -0.012716900429246891,
+          "sharpe": -0.009776663556801513,
+          "max_drawdown": 0.0,
+          "volatility": -0.0024563008808544395,
+          "num_trades": 0,
+          "fees_paid_estimate": -483.1882004170948
+        },
+        "crash_proxy_2008": {
+          "final_value": -53310.8334459546,
+          "annual_return": -0.011728400221220125,
+          "sharpe": -0.047468722560386034,
+          "max_drawdown": 0.00014442555759824893,
+          "volatility": -0.0024305577174709436,
+          "num_trades": 0,
+          "fees_paid_estimate": -1434.3072375483898
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob75_boost0.05_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2036727.9579651428,
+        "annual_return": 0.713117509721936,
+        "sharpe": 2.291971692319225,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2388811894380409,
+        "num_trades": 63,
+        "fees_paid_estimate": 20848.131437419786,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1443272.6657152756,
+        "annual_return": 0.11186029534230135,
+        "sharpe": 0.5273419945990303,
+        "max_drawdown": -0.3800576771402371,
+        "volatility": 0.2017538894761155,
+        "num_trades": 310,
+        "fees_paid_estimate": 75540.9763112382,
+        "pva_sigmoid_count": 35,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -22247.654705639463,
+          "annual_return": -0.014142296126016918,
+          "sharpe": -0.011961672339530605,
+          "max_drawdown": 0.0,
+          "volatility": -0.0026072634952619966,
+          "num_trades": 0,
+          "fees_paid_estimate": -490.2298408754832
+        },
+        "crash_proxy_2008": {
+          "final_value": -51126.25105280918,
+          "annual_return": -0.011241782238238907,
+          "sharpe": -0.04507827880898674,
+          "max_drawdown": 0.00014442555759824893,
+          "volatility": -0.002569287864103459,
+          "num_trades": 0,
+          "fees_paid_estimate": -1959.5188085020636
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob75_boost0.05_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2036727.9579651428,
+        "annual_return": 0.713117509721936,
+        "sharpe": 2.291971692319225,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2388811894380409,
+        "num_trades": 63,
+        "fees_paid_estimate": 20848.131437419786,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1442517.9692933843,
+        "annual_return": 0.11169224518161802,
+        "sharpe": 0.5265591844107755,
+        "max_drawdown": -0.3800576771402371,
+        "volatility": 0.2017747191544469,
+        "num_trades": 310,
+        "fees_paid_estimate": 75331.30270112869,
+        "pva_sigmoid_count": 35,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -22247.654705639463,
+          "annual_return": -0.014142296126016918,
+          "sharpe": -0.011961672339530605,
+          "max_drawdown": 0.0,
+          "volatility": -0.0026072634952619966,
+          "num_trades": 0,
+          "fees_paid_estimate": -490.2298408754832
+        },
+        "crash_proxy_2008": {
+          "final_value": -51880.9474747004,
+          "annual_return": -0.011409832398922237,
+          "sharpe": -0.045861088997241506,
+          "max_drawdown": 0.00014442555759824893,
+          "volatility": -0.002548458185772068,
+          "num_trades": 0,
+          "fees_paid_estimate": -2169.1924186115793
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob75_boost0.05_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2036727.9579651428,
+        "annual_return": 0.713117509721936,
+        "sharpe": 2.291971692319225,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2388811894380409,
+        "num_trades": 63,
+        "fees_paid_estimate": 20848.131437419786,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1440525.0903478316,
+        "annual_return": 0.11124818510032486,
+        "sharpe": 0.5244606147069436,
+        "max_drawdown": -0.3800576771402371,
+        "volatility": 0.20184952150998828,
+        "num_trades": 310,
+        "fees_paid_estimate": 75793.72921651267,
+        "pva_sigmoid_count": 34,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -22247.654705639463,
+          "annual_return": -0.014142296126016918,
+          "sharpe": -0.011961672339530605,
+          "max_drawdown": 0.0,
+          "volatility": -0.0026072634952619966,
+          "num_trades": 0,
+          "fees_paid_estimate": -490.2298408754832
+        },
+        "crash_proxy_2008": {
+          "final_value": -53873.82642025314,
+          "annual_return": -0.0118538924802154,
+          "sharpe": -0.04795965870107344,
+          "max_drawdown": 0.00014442555759824893,
+          "volatility": -0.002473655830230681,
+          "num_trades": 0,
+          "fees_paid_estimate": -1706.7659032275988
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob70_boost0.10_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2019141.584913879,
+        "annual_return": 0.701911675485295,
+        "sharpe": 2.278531528169297,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.237234746095124,
+        "num_trades": 63,
+        "fees_paid_estimate": 20614.395330096708,
+        "pva_sigmoid_count": 11,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1438710.0602664328,
+        "annual_return": 0.11084337368596464,
+        "sharpe": 0.5243367968930475,
+        "max_drawdown": -0.3790205116821718,
+        "volatility": 0.20079200907033573,
+        "num_trades": 310,
+        "fees_paid_estimate": 74364.84700287096,
+        "pva_sigmoid_count": 29,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -39834.02775690332,
+          "annual_return": -0.025348130362657928,
+          "sharpe": -0.025401836489458596,
+          "max_drawdown": 0.0,
+          "volatility": -0.004253706838178911,
+          "num_trades": 0,
+          "fees_paid_estimate": -723.9659481985618
+        },
+        "crash_proxy_2008": {
+          "final_value": -55688.85650165193,
+          "annual_return": -0.012258703894575618,
+          "sharpe": -0.04808347651496958,
+          "max_drawdown": 0.0011815910156635079,
+          "volatility": -0.003531168269883228,
+          "num_trades": 0,
+          "fees_paid_estimate": -3135.6481168693135
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob70_boost0.10_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2019141.584913879,
+        "annual_return": 0.701911675485295,
+        "sharpe": 2.278531528169297,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.237234746095124,
+        "num_trades": 63,
+        "fees_paid_estimate": 20614.395330096708,
+        "pva_sigmoid_count": 11,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1436725.2921564383,
+        "annual_return": 0.1104002892589151,
+        "sharpe": 0.5222853141817393,
+        "max_drawdown": -0.3790205116821718,
+        "volatility": 0.20083209569895602,
+        "num_trades": 310,
+        "fees_paid_estimate": 74357.95462579605,
+        "pva_sigmoid_count": 28,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -39834.02775690332,
+          "annual_return": -0.025348130362657928,
+          "sharpe": -0.025401836489458596,
+          "max_drawdown": 0.0,
+          "volatility": -0.004253706838178911,
+          "num_trades": 0,
+          "fees_paid_estimate": -723.9659481985618
+        },
+        "crash_proxy_2008": {
+          "final_value": -57673.6246116464,
+          "annual_return": -0.012701788321625163,
+          "sharpe": -0.05013495922627775,
+          "max_drawdown": 0.0011815910156635079,
+          "volatility": -0.0034910816412629386,
+          "num_trades": 0,
+          "fees_paid_estimate": -3142.5404939442233
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob70_boost0.10_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2019141.584913879,
+        "annual_return": 0.701911675485295,
+        "sharpe": 2.278531528169297,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.237234746095124,
+        "num_trades": 63,
+        "fees_paid_estimate": 20614.395330096708,
+        "pva_sigmoid_count": 11,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1437388.732954415,
+        "annual_return": 0.11054844578209311,
+        "sharpe": 0.5228615371416091,
+        "max_drawdown": -0.3790205116821718,
+        "volatility": 0.20088785753176588,
+        "num_trades": 310,
+        "fees_paid_estimate": 73840.02053457874,
+        "pva_sigmoid_count": 29,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -39834.02775690332,
+          "annual_return": -0.025348130362657928,
+          "sharpe": -0.025401836489458596,
+          "max_drawdown": 0.0,
+          "volatility": -0.004253706838178911,
+          "num_trades": 0,
+          "fees_paid_estimate": -723.9659481985618
+        },
+        "crash_proxy_2008": {
+          "final_value": -57010.18381366972,
+          "annual_return": -0.012553631798447151,
+          "sharpe": -0.04955873626640794,
+          "max_drawdown": 0.0011815910156635079,
+          "volatility": -0.0034353198084530745,
+          "num_trades": 0,
+          "fees_paid_estimate": -3660.47458516153
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob70_boost0.05_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2016924.053626434,
+        "annual_return": 0.7004970081050625,
+        "sharpe": 2.2763336490949166,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23708241018004347,
+        "num_trades": 63,
+        "fees_paid_estimate": 20607.774234139673,
+        "pva_sigmoid_count": 11,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1438710.0602664328,
+        "annual_return": 0.11084337368596464,
+        "sharpe": 0.5243367968930475,
+        "max_drawdown": -0.3790205116821718,
+        "volatility": 0.20079200907033573,
+        "num_trades": 310,
+        "fees_paid_estimate": 74364.84700287096,
+        "pva_sigmoid_count": 29,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -42051.55904434831,
+          "annual_return": -0.026762797742890365,
+          "sharpe": -0.027599715563838778,
+          "max_drawdown": 0.0,
+          "volatility": -0.004406042753259426,
+          "num_trades": 0,
+          "fees_paid_estimate": -730.5870441555962
+        },
+        "crash_proxy_2008": {
+          "final_value": -55688.85650165193,
+          "annual_return": -0.012258703894575618,
+          "sharpe": -0.04808347651496958,
+          "max_drawdown": 0.0011815910156635079,
+          "volatility": -0.003531168269883228,
+          "num_trades": 0,
+          "fees_paid_estimate": -3135.6481168693135
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob70_boost0.05_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2016924.053626434,
+        "annual_return": 0.7004970081050625,
+        "sharpe": 2.2763336490949166,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23708241018004347,
+        "num_trades": 63,
+        "fees_paid_estimate": 20607.774234139673,
+        "pva_sigmoid_count": 11,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1437717.6762114356,
+        "annual_return": 0.11062188583600174,
+        "sharpe": 0.5233120376996335,
+        "max_drawdown": -0.3790205116821718,
+        "volatility": 0.20081158041996472,
+        "num_trades": 310,
+        "fees_paid_estimate": 74361.40081433352,
+        "pva_sigmoid_count": 28,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -42051.55904434831,
+          "annual_return": -0.026762797742890365,
+          "sharpe": -0.027599715563838778,
+          "max_drawdown": 0.0,
+          "volatility": -0.004406042753259426,
+          "num_trades": 0,
+          "fees_paid_estimate": -730.5870441555962
+        },
+        "crash_proxy_2008": {
+          "final_value": -56681.240556649165,
+          "annual_return": -0.012480191744538516,
+          "sharpe": -0.04910823570838352,
+          "max_drawdown": 0.0011815910156635079,
+          "volatility": -0.0035115969202542396,
+          "num_trades": 0,
+          "fees_paid_estimate": -3139.0943054067466
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob70_boost0.05_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2016924.053626434,
+        "annual_return": 0.7004970081050625,
+        "sharpe": 2.2763336490949166,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23708241018004347,
+        "num_trades": 63,
+        "fees_paid_estimate": 20607.774234139673,
+        "pva_sigmoid_count": 11,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1436826.7697823416,
+        "annual_return": 0.11042295392256851,
+        "sharpe": 0.522366255844853,
+        "max_drawdown": -0.3790205116821718,
+        "volatility": 0.20084555721775407,
+        "num_trades": 310,
+        "fees_paid_estimate": 73569.74695013864,
+        "pva_sigmoid_count": 29,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -42051.55904434831,
+          "annual_return": -0.026762797742890365,
+          "sharpe": -0.027599715563838778,
+          "max_drawdown": 0.0,
+          "volatility": -0.004406042753259426,
+          "num_trades": 0,
+          "fees_paid_estimate": -730.5870441555962
+        },
+        "crash_proxy_2008": {
+          "final_value": -57572.146985743195,
+          "annual_return": -0.012679123657971747,
+          "sharpe": -0.05005401756316408,
+          "max_drawdown": 0.0011815910156635079,
+          "volatility": -0.003477620122464886,
+          "num_trades": 0,
+          "fees_paid_estimate": -3930.748169601633
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob65_boost0.10_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2001403.1403379466,
+        "annual_return": 0.6905848668606633,
+        "sharpe": 2.266137929238032,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23538977521352733,
+        "num_trades": 63,
+        "fees_paid_estimate": 19923.658237235,
+        "pva_sigmoid_count": 7,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1443353.579519036,
+        "annual_return": 0.11187830891486783,
+        "sharpe": 0.5308849703368821,
+        "max_drawdown": -0.37949117911085833,
+        "volatility": 0.1996285011719717,
+        "num_trades": 310,
+        "fees_paid_estimate": 72753.85487924048,
+        "pva_sigmoid_count": 24,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -57572.47233283566,
+          "annual_return": -0.036674938987289574,
+          "sharpe": -0.0377954354207235,
+          "max_drawdown": 0.0,
+          "volatility": -0.006098677719775569,
+          "num_trades": 0,
+          "fees_paid_estimate": -1414.703041060271
+        },
+        "crash_proxy_2008": {
+          "final_value": -51045.33724904875,
+          "annual_return": -0.011223768665672429,
+          "sharpe": -0.041535303071134955,
+          "max_drawdown": 0.000710923586976997,
+          "volatility": -0.004694676168247258,
+          "num_trades": 0,
+          "fees_paid_estimate": -4746.640240499793
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob65_boost0.10_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2001403.1403379466,
+        "annual_return": 0.6905848668606633,
+        "sharpe": 2.266137929238032,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23538977521352733,
+        "num_trades": 63,
+        "fees_paid_estimate": 19923.658237235,
+        "pva_sigmoid_count": 7,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1441601.9836517014,
+        "annual_return": 0.11148819634205864,
+        "sharpe": 0.5290563969889706,
+        "max_drawdown": -0.37949117911085833,
+        "volatility": 0.19967120809924613,
+        "num_trades": 310,
+        "fees_paid_estimate": 72541.98756655278,
+        "pva_sigmoid_count": 24,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -57572.47233283566,
+          "annual_return": -0.036674938987289574,
+          "sharpe": -0.0377954354207235,
+          "max_drawdown": 0.0,
+          "volatility": -0.006098677719775569,
+          "num_trades": 0,
+          "fees_paid_estimate": -1414.703041060271
+        },
+        "crash_proxy_2008": {
+          "final_value": -52796.933116383385,
+          "annual_return": -0.011613881238481616,
+          "sharpe": -0.04336387641904649,
+          "max_drawdown": 0.000710923586976997,
+          "volatility": -0.004651969240972831,
+          "num_trades": 0,
+          "fees_paid_estimate": -4958.50755318749
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob65_boost0.10_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 2001403.1403379466,
+        "annual_return": 0.6905848668606633,
+        "sharpe": 2.266137929238032,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23538977521352733,
+        "num_trades": 63,
+        "fees_paid_estimate": 19923.658237235,
+        "pva_sigmoid_count": 7,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1445200.9156370969,
+        "annual_return": 0.11228938006068478,
+        "sharpe": 0.532595458566775,
+        "max_drawdown": -0.37949117911085833,
+        "volatility": 0.19971390208805753,
+        "num_trades": 310,
+        "fees_paid_estimate": 72649.54086142295,
+        "pva_sigmoid_count": 24,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -57572.47233283566,
+          "annual_return": -0.036674938987289574,
+          "sharpe": -0.0377954354207235,
+          "max_drawdown": 0.0,
+          "volatility": -0.006098677719775569,
+          "num_trades": 0,
+          "fees_paid_estimate": -1414.703041060271
+        },
+        "crash_proxy_2008": {
+          "final_value": -49198.00113098789,
+          "annual_return": -0.010812697519855474,
+          "sharpe": -0.03982481484124201,
+          "max_drawdown": 0.000710923586976997,
+          "volatility": -0.004609275252161427,
+          "num_trades": 0,
+          "fees_paid_estimate": -4850.954258317317
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob65_boost0.05_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1999205.2632401632,
+        "annual_return": 0.6891797251087479,
+        "sharpe": 2.2639278990054184,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23523610219388602,
+        "num_trades": 63,
+        "fees_paid_estimate": 19917.20163461271,
+        "pva_sigmoid_count": 7,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1443353.579519036,
+        "annual_return": 0.11187830891486783,
+        "sharpe": 0.5308849703368821,
+        "max_drawdown": -0.37949117911085833,
+        "volatility": 0.1996285011719717,
+        "num_trades": 310,
+        "fees_paid_estimate": 72753.85487924048,
+        "pva_sigmoid_count": 24,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -59770.34943061904,
+          "annual_return": -0.03808008073920499,
+          "sharpe": -0.04000546565333707,
+          "max_drawdown": 0.0,
+          "volatility": -0.006252350739416879,
+          "num_trades": 0,
+          "fees_paid_estimate": -1421.1596436825603
+        },
+        "crash_proxy_2008": {
+          "final_value": -51045.33724904875,
+          "annual_return": -0.011223768665672429,
+          "sharpe": -0.041535303071134955,
+          "max_drawdown": 0.000710923586976997,
+          "volatility": -0.004694676168247258,
+          "num_trades": 0,
+          "fees_paid_estimate": -4746.640240499793
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob65_boost0.05_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1999205.2632401632,
+        "annual_return": 0.6891797251087479,
+        "sharpe": 2.2639278990054184,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23523610219388602,
+        "num_trades": 63,
+        "fees_paid_estimate": 19917.20163461271,
+        "pva_sigmoid_count": 7,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1442598.572630047,
+        "annual_return": 0.11171019631168355,
+        "sharpe": 0.5300926026809476,
+        "max_drawdown": -0.37949117911085833,
+        "volatility": 0.19964955113652144,
+        "num_trades": 310,
+        "fees_paid_estimate": 72545.44835725815,
+        "pva_sigmoid_count": 24,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -59770.34943061904,
+          "annual_return": -0.03808008073920499,
+          "sharpe": -0.04000546565333707,
+          "max_drawdown": 0.0,
+          "volatility": -0.006252350739416879,
+          "num_trades": 0,
+          "fees_paid_estimate": -1421.1596436825603
+        },
+        "crash_proxy_2008": {
+          "final_value": -51800.344138037646,
+          "annual_return": -0.011391881268856707,
+          "sharpe": -0.042327670727069444,
+          "max_drawdown": 0.000710923586976997,
+          "volatility": -0.004673626203697517,
+          "num_trades": 0,
+          "fees_paid_estimate": -4955.046762482118
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob65_boost0.05_lev0.75",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.75,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1999205.2632401632,
+        "annual_return": 0.6891797251087479,
+        "sharpe": 2.2639278990054184,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23523610219388602,
+        "num_trades": 63,
+        "fees_paid_estimate": 19917.20163461271,
+        "pva_sigmoid_count": 7,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1444637.9592596916,
+        "annual_return": 0.11216415002256386,
+        "sharpe": 0.532105719116153,
+        "max_drawdown": -0.37949117911085833,
+        "volatility": 0.19966914074801806,
+        "num_trades": 310,
+        "fees_paid_estimate": 72380.74671399813,
+        "pva_sigmoid_count": 24,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -59770.34943061904,
+          "annual_return": -0.03808008073920499,
+          "sharpe": -0.04000546565333707,
+          "max_drawdown": 0.0,
+          "volatility": -0.006252350739416879,
+          "num_trades": 0,
+          "fees_paid_estimate": -1421.1596436825603
+        },
+        "crash_proxy_2008": {
+          "final_value": -49760.9575083931,
+          "annual_return": -0.010937927557976401,
+          "sharpe": -0.040314554291864035,
+          "max_drawdown": 0.000710923586976997,
+          "volatility": -0.0046540365922009,
+          "num_trades": 0,
+          "fees_paid_estimate": -5119.748405742139
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob75_boost0.10_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1997240.2626707314,
+        "annual_return": 0.6879231472722884,
+        "sharpe": 2.25934905024404,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23539566568991604,
+        "num_trades": 63,
+        "fees_paid_estimate": 21217.77733320341,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1443912.1069892417,
+        "annual_return": 0.11200263245900488,
+        "sharpe": 0.5285476977154435,
+        "max_drawdown": -0.3799132515826393,
+        "volatility": 0.20135905102135387,
+        "num_trades": 310,
+        "fees_paid_estimate": 75914.5759876504,
+        "pva_sigmoid_count": 37,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -61735.35000005085,
+          "annual_return": -0.039336658575664485,
+          "sharpe": -0.04458431441471555,
+          "max_drawdown": 0.0,
+          "volatility": -0.006092787243386855,
+          "num_trades": 0,
+          "fees_paid_estimate": -120.5839450918611
+        },
+        "crash_proxy_2008": {
+          "final_value": -50486.809778843075,
+          "annual_return": -0.011099445121535378,
+          "sharpe": -0.04387257569257352,
+          "max_drawdown": 0.0002888511151960538,
+          "volatility": -0.0029641263188650846,
+          "num_trades": 0,
+          "fees_paid_estimate": -1585.919132089868
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob75_boost0.10_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1997240.2626707314,
+        "annual_return": 0.6879231472722884,
+        "sharpe": 2.25934905024404,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23539566568991604,
+        "num_trades": 63,
+        "fees_paid_estimate": 21217.77733320341,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1442160.0449229756,
+        "annual_return": 0.11161252340242389,
+        "sharpe": 0.526736484449847,
+        "max_drawdown": -0.3799132515826393,
+        "volatility": 0.20140140018262537,
+        "num_trades": 310,
+        "fees_paid_estimate": 75701.06030900717,
+        "pva_sigmoid_count": 37,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -61735.35000005085,
+          "annual_return": -0.039336658575664485,
+          "sharpe": -0.04458431441471555,
+          "max_drawdown": 0.0,
+          "volatility": -0.006092787243386855,
+          "num_trades": 0,
+          "fees_paid_estimate": -120.5839450918611
+        },
+        "crash_proxy_2008": {
+          "final_value": -52238.871845109155,
+          "annual_return": -0.011489554178116368,
+          "sharpe": -0.045683788958170046,
+          "max_drawdown": 0.0002888511151960538,
+          "volatility": -0.0029217771575935914,
+          "num_trades": 0,
+          "fees_paid_estimate": -1799.4348107331025
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob75_boost0.10_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1997240.2626707314,
+        "annual_return": 0.6879231472722884,
+        "sharpe": 2.25934905024404,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23539566568991604,
+        "num_trades": 63,
+        "fees_paid_estimate": 21217.77733320341,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1458649.0587147006,
+        "annual_return": 0.1152706717413845,
+        "sharpe": 0.543364762827333,
+        "max_drawdown": -0.3799132515826393,
+        "volatility": 0.2012174515555511,
+        "num_trades": 310,
+        "fees_paid_estimate": 75884.69449075949,
+        "pva_sigmoid_count": 38,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -61735.35000005085,
+          "annual_return": -0.039336658575664485,
+          "sharpe": -0.04458431441471555,
+          "max_drawdown": 0.0,
+          "volatility": -0.006092787243386855,
+          "num_trades": 0,
+          "fees_paid_estimate": -120.5839450918611
+        },
+        "crash_proxy_2008": {
+          "final_value": -35749.858053384116,
+          "annual_return": -0.007831405839155758,
+          "sharpe": -0.029055510580684007,
+          "max_drawdown": 0.0002888511151960538,
+          "volatility": -0.003105725784667862,
+          "num_trades": 0,
+          "fees_paid_estimate": -1615.8006289807818
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob75_boost0.05_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1995047.177255569,
+        "annual_return": 0.6865203586592452,
+        "sharpe": 2.257135194817584,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23524197183885667,
+        "num_trades": 63,
+        "fees_paid_estimate": 21210.69243210851,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1443912.1069892417,
+        "annual_return": 0.11200263245900488,
+        "sharpe": 0.5285476977154435,
+        "max_drawdown": -0.3799132515826393,
+        "volatility": 0.20135905102135387,
+        "num_trades": 310,
+        "fees_paid_estimate": 75914.5759876504,
+        "pva_sigmoid_count": 37,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -63928.43541521323,
+          "annual_return": -0.0407394471887077,
+          "sharpe": -0.046798169841171244,
+          "max_drawdown": 0.0,
+          "volatility": -0.006246481094446227,
+          "num_trades": 0,
+          "fees_paid_estimate": -127.66884618675977
+        },
+        "crash_proxy_2008": {
+          "final_value": -50486.809778843075,
+          "annual_return": -0.011099445121535378,
+          "sharpe": -0.04387257569257352,
+          "max_drawdown": 0.0002888511151960538,
+          "volatility": -0.0029641263188650846,
+          "num_trades": 0,
+          "fees_paid_estimate": -1585.919132089868
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob75_boost0.05_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1995047.177255569,
+        "annual_return": 0.6865203586592452,
+        "sharpe": 2.257135194817584,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23524197183885667,
+        "num_trades": 63,
+        "fees_paid_estimate": 21210.69243210851,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1443157.047675865,
+        "annual_return": 0.11183455443442836,
+        "sharpe": 0.5277630880299679,
+        "max_drawdown": -0.3799132515826393,
+        "volatility": 0.20137992425865142,
+        "num_trades": 310,
+        "fees_paid_estimate": 75704.60421489149,
+        "pva_sigmoid_count": 37,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -63928.43541521323,
+          "annual_return": -0.0407394471887077,
+          "sharpe": -0.046798169841171244,
+          "max_drawdown": 0.0,
+          "volatility": -0.006246481094446227,
+          "num_trades": 0,
+          "fees_paid_estimate": -127.66884618675977
+        },
+        "crash_proxy_2008": {
+          "final_value": -51241.86909221974,
+          "annual_return": -0.011267523146111902,
+          "sharpe": -0.04465718537804919,
+          "max_drawdown": 0.0002888511151960538,
+          "volatility": -0.0029432530815675373,
+          "num_trades": 0,
+          "fees_paid_estimate": -1795.890904848784
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob75_boost0.05_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1995047.177255569,
+        "annual_return": 0.6865203586592452,
+        "sharpe": 2.257135194817584,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23524197183885667,
+        "num_trades": 63,
+        "fees_paid_estimate": 21210.69243210851,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1445197.997730758,
+        "annual_return": 0.11228873105981663,
+        "sharpe": 0.5297603663012607,
+        "max_drawdown": -0.3799132515826393,
+        "volatility": 0.20139933559057208,
+        "num_trades": 310,
+        "fees_paid_estimate": 75540.89789935203,
+        "pva_sigmoid_count": 37,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -63928.43541521323,
+          "annual_return": -0.0407394471887077,
+          "sharpe": -0.046798169841171244,
+          "max_drawdown": 0.0,
+          "volatility": -0.006246481094446227,
+          "num_trades": 0,
+          "fees_paid_estimate": -127.66884618675977
+        },
+        "crash_proxy_2008": {
+          "final_value": -49200.919037326705,
+          "annual_return": -0.010813346520723632,
+          "sharpe": -0.04265990710675638,
+          "max_drawdown": 0.0002888511151960538,
+          "volatility": -0.0029238417496468827,
+          "num_trades": 0,
+          "fees_paid_estimate": -1959.597220388241
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob75_boost0.10_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1971107.1994623316,
+        "annual_return": 0.6711828438598035,
+        "sharpe": 2.2374875110132075,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2329798417665307,
+        "num_trades": 63,
+        "fees_paid_estimate": 21894.807266169646,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1424205.2742348076,
+        "annual_return": 0.10759521159286356,
+        "sharpe": 0.5107813212769962,
+        "max_drawdown": -0.3797688260250421,
+        "volatility": 0.20009301936787247,
+        "num_trades": 310,
+        "fees_paid_estimate": 76238.93948506807,
+        "pva_sigmoid_count": 37,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -87868.41320845066,
+          "annual_return": -0.056076961988149376,
+          "sharpe": -0.06644585364554789,
+          "max_drawdown": 0.0,
+          "volatility": -0.008508611166772206,
+          "num_trades": 0,
+          "fees_paid_estimate": 556.4459878743764
+        },
+        "crash_proxy_2008": {
+          "final_value": -70193.64253327716,
+          "annual_return": -0.015506865987676699,
+          "sharpe": -0.061638952131020885,
+          "max_drawdown": 0.000433276672793248,
+          "volatility": -0.004230157972346493,
+          "num_trades": 0,
+          "fees_paid_estimate": -1261.5556346722005
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob75_boost0.10_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1971107.1994623316,
+        "annual_return": 0.6711828438598035,
+        "sharpe": 2.2374875110132075,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2329798417665307,
+        "num_trades": 63,
+        "fees_paid_estimate": 21894.807266169646,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1422477.5367250233,
+        "annual_return": 0.1072067414139719,
+        "sharpe": 0.5089622127661664,
+        "max_drawdown": -0.3797688260250421,
+        "volatility": 0.2001356124510582,
+        "num_trades": 310,
+        "fees_paid_estimate": 76027.51651595088,
+        "pva_sigmoid_count": 37,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -87868.41320845066,
+          "annual_return": -0.056076961988149376,
+          "sharpe": -0.06644585364554789,
+          "max_drawdown": 0.0,
+          "volatility": -0.008508611166772206,
+          "num_trades": 0,
+          "fees_paid_estimate": 556.4459878743764
+        },
+        "crash_proxy_2008": {
+          "final_value": -71921.38004306145,
+          "annual_return": -0.015895336166568352,
+          "sharpe": -0.06345806064185067,
+          "max_drawdown": 0.000433276672793248,
+          "volatility": -0.00418756488916075,
+          "num_trades": 0,
+          "fees_paid_estimate": -1472.9786037893937
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob75_boost0.10_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1971107.1994623316,
+        "annual_return": 0.6711828438598035,
+        "sharpe": 2.2374875110132075,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2329798417665307,
+        "num_trades": 63,
+        "fees_paid_estimate": 21894.807266169646,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1426027.6709091999,
+        "annual_return": 0.10800460230786268,
+        "sharpe": 0.5124964533039583,
+        "max_drawdown": -0.3797688260250421,
+        "volatility": 0.20017822535202678,
+        "num_trades": 310,
+        "fees_paid_estimate": 76139.41909050451,
+        "pva_sigmoid_count": 37,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -87868.41320845066,
+          "annual_return": -0.056076961988149376,
+          "sharpe": -0.06644585364554789,
+          "max_drawdown": 0.0,
+          "volatility": -0.008508611166772206,
+          "num_trades": 0,
+          "fees_paid_estimate": 556.4459878743764
+        },
+        "crash_proxy_2008": {
+          "final_value": -68371.24585888488,
+          "annual_return": -0.015097475272677574,
+          "sharpe": -0.05992382010405872,
+          "max_drawdown": 0.000433276672793248,
+          "volatility": -0.004144951988192175,
+          "num_trades": 0,
+          "fees_paid_estimate": -1361.076029235759
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob75_boost0.05_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1968943.4306982472,
+        "annual_return": 0.6697943662411814,
+        "sharpe": 2.235255549058272,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2328242288626233,
+        "num_trades": 63,
+        "fees_paid_estimate": 21887.33509213976,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1424205.2742348076,
+        "annual_return": 0.10759521159286356,
+        "sharpe": 0.5107813212769962,
+        "max_drawdown": -0.3797688260250421,
+        "volatility": 0.20009301936787247,
+        "num_trades": 310,
+        "fees_paid_estimate": 76238.93948506807,
+        "pva_sigmoid_count": 37,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -90032.1819725351,
+          "annual_return": -0.05746543960677153,
+          "sharpe": -0.06867781560048325,
+          "max_drawdown": 0.0,
+          "volatility": -0.0086642240706796,
+          "num_trades": 0,
+          "fees_paid_estimate": 548.9738138444918
+        },
+        "crash_proxy_2008": {
+          "final_value": -70193.64253327716,
+          "annual_return": -0.015506865987676699,
+          "sharpe": -0.061638952131020885,
+          "max_drawdown": 0.000433276672793248,
+          "volatility": -0.004230157972346493,
+          "num_trades": 0,
+          "fees_paid_estimate": -1261.5556346722005
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob75_boost0.05_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1968943.4306982472,
+        "annual_return": 0.6697943662411814,
+        "sharpe": 2.235255549058272,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2328242288626233,
+        "num_trades": 63,
+        "fees_paid_estimate": 21887.33509213976,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1423460.7485123673,
+        "annual_return": 0.10742785109058217,
+        "sharpe": 0.5099935242584047,
+        "max_drawdown": -0.3797688260250421,
+        "volatility": 0.2001140144461023,
+        "num_trades": 310,
+        "fees_paid_estimate": 76031.17816366066,
+        "pva_sigmoid_count": 37,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -90032.1819725351,
+          "annual_return": -0.05746543960677153,
+          "sharpe": -0.06867781560048325,
+          "max_drawdown": 0.0,
+          "volatility": -0.0086642240706796,
+          "num_trades": 0,
+          "fees_paid_estimate": 548.9738138444918
+        },
+        "crash_proxy_2008": {
+          "final_value": -70938.1682557175,
+          "annual_return": -0.015674226489958087,
+          "sharpe": -0.062426749149612326,
+          "max_drawdown": 0.000433276672793248,
+          "volatility": -0.004209162894116658,
+          "num_trades": 0,
+          "fees_paid_estimate": -1469.3169560796086
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob75_boost0.05_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 75.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1968943.4306982472,
+        "annual_return": 0.6697943662411814,
+        "sharpe": 2.235255549058272,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2328242288626233,
+        "num_trades": 63,
+        "fees_paid_estimate": 21887.33509213976,
+        "pva_sigmoid_count": 17,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1425472.528360767,
+        "annual_return": 0.10787993221133263,
+        "sharpe": 0.5120034479466047,
+        "max_drawdown": -0.3797688260250421,
+        "volatility": 0.20013356787123365,
+        "num_trades": 310,
+        "fees_paid_estimate": 75869.98913788983,
+        "pva_sigmoid_count": 37,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -90032.1819725351,
+          "annual_return": -0.05746543960677153,
+          "sharpe": -0.06867781560048325,
+          "max_drawdown": 0.0,
+          "volatility": -0.0086642240706796,
+          "num_trades": 0,
+          "fees_paid_estimate": 548.9738138444918
+        },
+        "crash_proxy_2008": {
+          "final_value": -68926.38840731769,
+          "annual_return": -0.01522214536920763,
+          "sharpe": -0.06041682546141236,
+          "max_drawdown": 0.000433276672793248,
+          "volatility": -0.004189609468985306,
+          "num_trades": 0,
+          "fees_paid_estimate": -1630.5059818504378
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob70_boost0.10_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1958273.1289960607,
+        "annual_return": 0.6629418581847091,
+        "sharpe": 2.226530756288439,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23178228260869096,
+        "num_trades": 63,
+        "fees_paid_estimate": 21087.738591318324,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1420550.569057351,
+        "annual_return": 0.10677307973216599,
+        "sharpe": 0.5101357407094941,
+        "max_drawdown": -0.3779927093338502,
+        "volatility": 0.19815799231421866,
+        "num_trades": 310,
+        "fees_paid_estimate": 72827.24803816156,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -100702.48367472156,
+          "annual_return": -0.06431794766324384,
+          "sharpe": -0.07740260837031654,
+          "max_drawdown": 0.0,
+          "volatility": -0.009706170324611935,
+          "num_trades": 0,
+          "fees_paid_estimate": -250.62268697694526
+        },
+        "crash_proxy_2008": {
+          "final_value": -73848.34771073377,
+          "annual_return": -0.01632899784837427,
+          "sharpe": -0.062284532698522965,
+          "max_drawdown": 0.0022093933639851238,
+          "volatility": -0.006165185026000303,
+          "num_trades": 0,
+          "fees_paid_estimate": -4673.247081578709
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob70_boost0.10_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1958273.1289960607,
+        "annual_return": 0.6629418581847091,
+        "sharpe": 2.226530756288439,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23178228260869096,
+        "num_trades": 63,
+        "fees_paid_estimate": 21087.738591318324,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1418827.4913446656,
+        "annual_return": 0.10638494887359973,
+        "sharpe": 0.5082982044630495,
+        "max_drawdown": -0.3779927093338502,
+        "volatility": 0.1982009887227094,
+        "num_trades": 310,
+        "fees_paid_estimate": 72618.55096785647,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -100702.48367472156,
+          "annual_return": -0.06431794766324384,
+          "sharpe": -0.07740260837031654,
+          "max_drawdown": 0.0,
+          "volatility": -0.009706170324611935,
+          "num_trades": 0,
+          "fees_paid_estimate": -250.62268697694526
+        },
+        "crash_proxy_2008": {
+          "final_value": -75571.4254234191,
+          "annual_return": -0.01671712870694053,
+          "sharpe": -0.06412206894496753,
+          "max_drawdown": 0.0022093933639851238,
+          "volatility": -0.006122188617509572,
+          "num_trades": 0,
+          "fees_paid_estimate": -4881.944151883799
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob70_boost0.10_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1958273.1289960607,
+        "annual_return": 0.6629418581847091,
+        "sharpe": 2.226530756288439,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23178228260869096,
+        "num_trades": 63,
+        "fees_paid_estimate": 21087.738591318324,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1422367.118096944,
+        "annual_return": 0.1071819031240373,
+        "sharpe": 0.5118645211133226,
+        "max_drawdown": -0.3779927093338502,
+        "volatility": 0.19824403849391503,
+        "num_trades": 310,
+        "fees_paid_estimate": 72727.79054787461,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -100702.48367472156,
+          "annual_return": -0.06431794766324384,
+          "sharpe": -0.07740260837031654,
+          "max_drawdown": 0.0,
+          "volatility": -0.009706170324611935,
+          "num_trades": 0,
+          "fees_paid_estimate": -250.62268697694526
+        },
+        "crash_proxy_2008": {
+          "final_value": -72031.7986711408,
+          "annual_return": -0.015920174456502956,
+          "sharpe": -0.060555752294694454,
+          "max_drawdown": 0.0022093933639851238,
+          "volatility": -0.0060791388463039275,
+          "num_trades": 0,
+          "fees_paid_estimate": -4772.704571865659
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob70_boost0.05_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1956123.5282355421,
+        "annual_return": 0.6615602785668697,
+        "sharpe": 2.2242890602341325,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23162572274757368,
+        "num_trades": 63,
+        "fees_paid_estimate": 21081.074287026746,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1420550.569057351,
+        "annual_return": 0.10677307973216599,
+        "sharpe": 0.5101357407094941,
+        "max_drawdown": -0.3779927093338502,
+        "volatility": 0.19815799231421866,
+        "num_trades": 310,
+        "fees_paid_estimate": 72827.24803816156,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -102852.08443524013,
+          "annual_return": -0.06569952728108319,
+          "sharpe": -0.07964430442462289,
+          "max_drawdown": 0.0,
+          "volatility": -0.009862730185729224,
+          "num_trades": 0,
+          "fees_paid_estimate": -257.2869912685237
+        },
+        "crash_proxy_2008": {
+          "final_value": -73848.34771073377,
+          "annual_return": -0.01632899784837427,
+          "sharpe": -0.062284532698522965,
+          "max_drawdown": 0.0022093933639851238,
+          "volatility": -0.006165185026000303,
+          "num_trades": 0,
+          "fees_paid_estimate": -4673.247081578709
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob70_boost0.05_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1956123.5282355421,
+        "annual_return": 0.6615602785668697,
+        "sharpe": 2.2242890602341325,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23162572274757368,
+        "num_trades": 63,
+        "fees_paid_estimate": 21081.074287026746,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1419808.1042389716,
+        "annual_return": 0.10660587732098281,
+        "sharpe": 0.5093399592841795,
+        "max_drawdown": -0.3779927093338502,
+        "volatility": 0.19817918708702684,
+        "num_trades": 310,
+        "fees_paid_estimate": 72621.99526816553,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -102852.08443524013,
+          "annual_return": -0.06569952728108319,
+          "sharpe": -0.07964430442462289,
+          "max_drawdown": 0.0,
+          "volatility": -0.009862730185729224,
+          "num_trades": 0,
+          "fees_paid_estimate": -257.2869912685237
+        },
+        "crash_proxy_2008": {
+          "final_value": -74590.81252911314,
+          "annual_return": -0.016496200259557448,
+          "sharpe": -0.06308031412383752,
+          "max_drawdown": 0.0022093933639851238,
+          "volatility": -0.006143990253192122,
+          "num_trades": 0,
+          "fees_paid_estimate": -4878.499851574743
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob70_boost0.05_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1956123.5282355421,
+        "annual_return": 0.6615602785668697,
+        "sharpe": 2.2242890602341325,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.23162572274757368,
+        "num_trades": 63,
+        "fees_paid_estimate": 21081.074287026746,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1421814.0034996152,
+        "annual_return": 0.10705746126257076,
+        "sharpe": 0.5113683110325907,
+        "max_drawdown": -0.3779927093338502,
+        "volatility": 0.1981989432364991,
+        "num_trades": 310,
+        "fees_paid_estimate": 72460.36610210643,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -102852.08443524013,
+          "annual_return": -0.06569952728108319,
+          "sharpe": -0.07964430442462289,
+          "max_drawdown": 0.0,
+          "volatility": -0.009862730185729224,
+          "num_trades": 0,
+          "fees_paid_estimate": -257.2869912685237
+        },
+        "crash_proxy_2008": {
+          "final_value": -72584.9132684695,
+          "annual_return": -0.016044616317969496,
+          "sharpe": -0.061051962375426316,
+          "max_drawdown": 0.0022093933639851238,
+          "volatility": -0.006124234103719872,
+          "num_trades": 0,
+          "fees_paid_estimate": -5040.129017633837
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob65_boost0.10_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1931257.9728021782,
+        "annual_return": 0.6455518479083728,
+        "sharpe": 2.206450184900746,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2288114250833269,
+        "num_trades": 63,
+        "fees_paid_estimate": 20055.848121343348,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1433103.6992735243,
+        "annual_return": 0.10959067325755556,
+        "sharpe": 0.526818207832255,
+        "max_drawdown": -0.37766533122732016,
+        "volatility": 0.1958369850414398,
+        "num_trades": 310,
+        "fees_paid_estimate": 71500.55122728347,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -127717.63986860402,
+          "annual_return": -0.08170795793958008,
+          "sharpe": -0.09748317975800935,
+          "max_drawdown": 0.0,
+          "volatility": -0.012677027849975986,
+          "num_trades": 0,
+          "fees_paid_estimate": -1282.5131569519217
+        },
+        "crash_proxy_2008": {
+          "final_value": -61295.217494560406,
+          "annual_return": -0.0135114043229847,
+          "sharpe": -0.045602065575762074,
+          "max_drawdown": 0.0025367714705151756,
+          "volatility": -0.008486192298779172,
+          "num_trades": 0,
+          "fees_paid_estimate": -5999.943892456795
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob65_boost0.10_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1931257.9728021782,
+        "annual_return": 0.6455518479083728,
+        "sharpe": 2.206450184900746,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2288114250833269,
+        "num_trades": 63,
+        "fees_paid_estimate": 20055.848121343348,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1431364.9789602165,
+        "annual_return": 0.10920146112241502,
+        "sharpe": 0.5249534081763648,
+        "max_drawdown": -0.37766533122732016,
+        "volatility": 0.19588050250249195,
+        "num_trades": 310,
+        "fees_paid_estimate": 71290.13660899045,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -127717.63986860402,
+          "annual_return": -0.08170795793958008,
+          "sharpe": -0.09748317975800935,
+          "max_drawdown": 0.0,
+          "volatility": -0.012677027849975986,
+          "num_trades": 0,
+          "fees_paid_estimate": -1282.5131569519217
+        },
+        "crash_proxy_2008": {
+          "final_value": -63033.937807868235,
+          "annual_return": -0.013900616458125237,
+          "sharpe": -0.04746686523165222,
+          "max_drawdown": 0.0025367714705151756,
+          "volatility": -0.00844267483772701,
+          "num_trades": 0,
+          "fees_paid_estimate": -6210.358510749822
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob65_boost0.10_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1931257.9728021782,
+        "annual_return": 0.6455518479083728,
+        "sharpe": 2.206450184900746,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2288114250833269,
+        "num_trades": 63,
+        "fees_paid_estimate": 20055.848121343348,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1434936.9905725224,
+        "annual_return": 0.11000069161862491,
+        "sharpe": 0.5285581279746264,
+        "max_drawdown": -0.37766533122732016,
+        "volatility": 0.19592404420343368,
+        "num_trades": 310,
+        "fees_paid_estimate": 71399.18928084437,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -127717.63986860402,
+          "annual_return": -0.08170795793958008,
+          "sharpe": -0.09748317975800935,
+          "max_drawdown": 0.0,
+          "volatility": -0.012677027849975986,
+          "num_trades": 0,
+          "fees_paid_estimate": -1282.5131569519217
+        },
+        "crash_proxy_2008": {
+          "final_value": -59461.92619556235,
+          "annual_return": -0.013101385961915346,
+          "sharpe": -0.04386214543339062,
+          "max_drawdown": 0.0025367714705151756,
+          "volatility": -0.00839913313678528,
+          "num_trades": 0,
+          "fees_paid_estimate": -6101.305838895903
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob65_boost0.05_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1929138.3666997142,
+        "annual_return": 0.6441849353210269,
+        "sharpe": 2.2041882756516844,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22865256588351326,
+        "num_trades": 63,
+        "fees_paid_estimate": 20049.409591329346,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1433103.6992735243,
+        "annual_return": 0.10959067325755556,
+        "sharpe": 0.526818207832255,
+        "max_drawdown": -0.37766533122732016,
+        "volatility": 0.1958369850414398,
+        "num_trades": 310,
+        "fees_paid_estimate": 71500.55122728347,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -129837.24597106804,
+          "annual_return": -0.08307487052692597,
+          "sharpe": -0.09974508900707102,
+          "max_drawdown": 0.0,
+          "volatility": -0.012835887049789635,
+          "num_trades": 0,
+          "fees_paid_estimate": -1288.9516869659237
+        },
+        "crash_proxy_2008": {
+          "final_value": -61295.217494560406,
+          "annual_return": -0.0135114043229847,
+          "sharpe": -0.045602065575762074,
+          "max_drawdown": 0.0025367714705151756,
+          "volatility": -0.008486192298779172,
+          "num_trades": 0,
+          "fees_paid_estimate": -5999.943892456795
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob65_boost0.05_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1929138.3666997142,
+        "annual_return": 0.6441849353210269,
+        "sharpe": 2.2041882756516844,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22865256588351326,
+        "num_trades": 63,
+        "fees_paid_estimate": 20049.409591329346,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1432354.3901004684,
+        "annual_return": 0.10942298176580434,
+        "sharpe": 0.526010209867911,
+        "max_drawdown": -0.37766533122732016,
+        "volatility": 0.1958584358000316,
+        "num_trades": 310,
+        "fees_paid_estimate": 71293.61181221892,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -129837.24597106804,
+          "annual_return": -0.08307487052692597,
+          "sharpe": -0.09974508900707102,
+          "max_drawdown": 0.0,
+          "volatility": -0.012835887049789635,
+          "num_trades": 0,
+          "fees_paid_estimate": -1288.9516869659237
+        },
+        "crash_proxy_2008": {
+          "final_value": -62044.52666761633,
+          "annual_return": -0.01367909581473592,
+          "sharpe": -0.04641006354010602,
+          "max_drawdown": 0.0025367714705151756,
+          "volatility": -0.008464741540187365,
+          "num_trades": 0,
+          "fees_paid_estimate": -6206.883307521348
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob65_boost0.05_lev0.50",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.5,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1929138.3666997142,
+        "annual_return": 0.6441849353210269,
+        "sharpe": 2.2041882756516844,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22865256588351326,
+        "num_trades": 63,
+        "fees_paid_estimate": 20049.409591329346,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1434378.5697343887,
+        "annual_return": 0.1098758394232604,
+        "sharpe": 0.528060885715104,
+        "max_drawdown": -0.37766533122732016,
+        "volatility": 0.19587841644166332,
+        "num_trades": 310,
+        "fees_paid_estimate": 71131.40831833742,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -129837.24597106804,
+          "annual_return": -0.08307487052692597,
+          "sharpe": -0.09974508900707102,
+          "max_drawdown": 0.0,
+          "volatility": -0.012835887049789635,
+          "num_trades": 0,
+          "fees_paid_estimate": -1288.9516869659237
+        },
+        "crash_proxy_2008": {
+          "final_value": -60020.347033696016,
+          "annual_return": -0.013226238157279857,
+          "sharpe": -0.04435938769291303,
+          "max_drawdown": 0.0025367714705151756,
+          "volatility": -0.008444760898555642,
+          "num_trades": 0,
+          "fees_paid_estimate": -6369.086801402853
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob70_boost0.10_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1914505.7132115876,
+        "annual_return": 0.6347384903001161,
+        "sharpe": 2.186155043657557,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22780865667701167,
+        "num_trades": 63,
+        "fees_paid_estimate": 21662.88502380784,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1398886.9684004914,
+        "annual_return": 0.10186868594894483,
+        "sharpe": 0.49075236339339806,
+        "max_drawdown": -0.37697028316933373,
+        "volatility": 0.19611508519957016,
+        "num_trades": 310,
+        "fees_paid_estimate": 73324.09907303288,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -144469.89945919462,
+          "annual_return": -0.09252131554783682,
+          "sharpe": -0.11777832100119845,
+          "max_drawdown": 0.0,
+          "volatility": -0.013679796256291232,
+          "num_trades": 0,
+          "fees_paid_estimate": 324.5237455125716
+        },
+        "crash_proxy_2008": {
+          "final_value": -95511.94836759334,
+          "annual_return": -0.021233391631595433,
+          "sharpe": -0.08166791001461898,
+          "max_drawdown": 0.0032318195285016005,
+          "volatility": -0.008208092140648798,
+          "num_trades": 0,
+          "fees_paid_estimate": -4176.396046707392
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob70_boost0.10_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1914505.7132115876,
+        "annual_return": 0.6347384903001161,
+        "sharpe": 2.186155043657557,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22780865667701167,
+        "num_trades": 63,
+        "fees_paid_estimate": 21662.88502380784,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1397190.6837534544,
+        "annual_return": 0.10148239252937996,
+        "sharpe": 0.4888994418227922,
+        "max_drawdown": -0.37697028316933373,
+        "volatility": 0.1961585016050165,
+        "num_trades": 310,
+        "fees_paid_estimate": 73118.20128740159,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -144469.89945919462,
+          "annual_return": -0.09252131554783682,
+          "sharpe": -0.11777832100119845,
+          "max_drawdown": 0.0,
+          "volatility": -0.013679796256291232,
+          "num_trades": 0,
+          "fees_paid_estimate": 324.5237455125716
+        },
+        "crash_proxy_2008": {
+          "final_value": -97208.23301463039,
+          "annual_return": -0.021619685051160298,
+          "sharpe": -0.08352083158522483,
+          "max_drawdown": 0.0032318195285016005,
+          "volatility": -0.008164675735202465,
+          "num_trades": 0,
+          "fees_paid_estimate": -4382.293832338677
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob70_boost0.10_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1914505.7132115876,
+        "annual_return": 0.6347384903001161,
+        "sharpe": 2.186155043657557,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22780865667701167,
+        "num_trades": 63,
+        "fees_paid_estimate": 21662.88502380784,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1400673.543856755,
+        "annual_return": 0.1022751812710665,
+        "sharpe": 0.49250295358797586,
+        "max_drawdown": -0.37697028316933373,
+        "volatility": 0.1962020378465777,
+        "num_trades": 310,
+        "fees_paid_estimate": 73228.58743419666,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -144469.89945919462,
+          "annual_return": -0.09252131554783682,
+          "sharpe": -0.11777832100119845,
+          "max_drawdown": 0.0,
+          "volatility": -0.013679796256291232,
+          "num_trades": 0,
+          "fees_paid_estimate": 324.5237455125716
+        },
+        "crash_proxy_2008": {
+          "final_value": -93725.37291132985,
+          "annual_return": -0.020826896309473764,
+          "sharpe": -0.07991731982004119,
+          "max_drawdown": 0.0032318195285016005,
+          "volatility": -0.008121139493641266,
+          "num_trades": 0,
+          "fees_paid_estimate": -4271.907685543614
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob70_boost0.05_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1912405.1080402187,
+        "annual_return": 0.633380957487468,
+        "sharpe": 2.1838794911686192,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2276487973270586,
+        "num_trades": 63,
+        "fees_paid_estimate": 21656.236958208043,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1398886.9684004914,
+        "annual_return": 0.10186868594894483,
+        "sharpe": 0.49075236339339806,
+        "max_drawdown": -0.37697028316933373,
+        "volatility": 0.19611508519957016,
+        "num_trades": 310,
+        "fees_paid_estimate": 73324.09907303288,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -146570.50463056355,
+          "annual_return": -0.09387884836048488,
+          "sharpe": -0.12005387349013619,
+          "max_drawdown": 0.0,
+          "volatility": -0.013839655606244311,
+          "num_trades": 0,
+          "fees_paid_estimate": 317.8756799127732
+        },
+        "crash_proxy_2008": {
+          "final_value": -95511.94836759334,
+          "annual_return": -0.021233391631595433,
+          "sharpe": -0.08166791001461898,
+          "max_drawdown": 0.0032318195285016005,
+          "volatility": -0.008208092140648798,
+          "num_trades": 0,
+          "fees_paid_estimate": -4176.396046707392
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob70_boost0.05_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1912405.1080402187,
+        "annual_return": 0.633380957487468,
+        "sharpe": 2.1838794911686192,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2276487973270586,
+        "num_trades": 63,
+        "fees_paid_estimate": 21656.236958208043,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1398156.1213045141,
+        "annual_return": 0.10170229163653266,
+        "sharpe": 0.48995017959008086,
+        "max_drawdown": -0.37697028316933373,
+        "volatility": 0.1961364889167512,
+        "num_trades": 310,
+        "fees_paid_estimate": 73121.86419487603,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -146570.50463056355,
+          "annual_return": -0.09387884836048488,
+          "sharpe": -0.12005387349013619,
+          "max_drawdown": 0.0,
+          "volatility": -0.013839655606244311,
+          "num_trades": 0,
+          "fees_paid_estimate": 317.8756799127732
+        },
+        "crash_proxy_2008": {
+          "final_value": -96242.79546357063,
+          "annual_return": -0.0213997859440076,
+          "sharpe": -0.08247009381793619,
+          "max_drawdown": 0.0032318195285016005,
+          "volatility": -0.008186688423467758,
+          "num_trades": 0,
+          "fees_paid_estimate": -4378.630924864236
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob70_boost0.05_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 70.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1912405.1080402187,
+        "annual_return": 0.633380957487468,
+        "sharpe": 2.1838794911686192,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.2276487973270586,
+        "num_trades": 63,
+        "fees_paid_estimate": 21656.236958208043,
+        "pva_sigmoid_count": 15,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1400129.85069987,
+        "annual_return": 0.10215151508548215,
+        "sharpe": 0.4919993544969246,
+        "max_drawdown": -0.37697028316933373,
+        "volatility": 0.1961564724674514,
+        "num_trades": 310,
+        "fees_paid_estimate": 72963.66348231348,
+        "pva_sigmoid_count": 32,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -146570.50463056355,
+          "annual_return": -0.09387884836048488,
+          "sharpe": -0.12005387349013619,
+          "max_drawdown": 0.0,
+          "volatility": -0.013839655606244311,
+          "num_trades": 0,
+          "fees_paid_estimate": 317.8756799127732
+        },
+        "crash_proxy_2008": {
+          "final_value": -94269.06606821483,
+          "annual_return": -0.02095056249505811,
+          "sharpe": -0.08042091891109243,
+          "max_drawdown": 0.0032318195285016005,
+          "volatility": -0.00816670487276755,
+          "num_trades": 0,
+          "fees_paid_estimate": -4536.831637426789
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob65_boost0.10_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1874873.51645802,
+        "annual_return": 0.609064250950764,
+        "sharpe": 2.1534774750128913,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22344905480808677,
+        "num_trades": 63,
+        "fees_paid_estimate": 20146.56551778564,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1418069.8268434824,
+        "annual_return": 0.10621417551313961,
+        "sharpe": 0.5161740210967429,
+        "max_drawdown": -0.3771156184611709,
+        "volatility": 0.19284337808362914,
+        "num_trades": 310,
+        "fees_paid_estimate": 71796.352413921,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -184102.09621276218,
+          "annual_return": -0.11819555489718891,
+          "sharpe": -0.1504558896458641,
+          "max_drawdown": 0.0,
+          "volatility": -0.018039398125216127,
+          "num_trades": 0,
+          "fees_paid_estimate": -1191.7957605096308
+        },
+        "crash_proxy_2008": {
+          "final_value": -76329.0899246023,
+          "annual_return": -0.01688790206740065,
+          "sharpe": -0.056246252311274114,
+          "max_drawdown": 0.0030864842366644107,
+          "volatility": -0.011479799256589818,
+          "num_trades": 0,
+          "fees_paid_estimate": -5704.142705819264
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob65_boost0.10_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1874873.51645802,
+        "annual_return": 0.609064250950764,
+        "sharpe": 2.1534774750128913,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22344905480808677,
+        "num_trades": 63,
+        "fees_paid_estimate": 20146.56551778564,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1416349.8922778214,
+        "annual_return": 0.10582627091091745,
+        "sharpe": 0.5142815187281297,
+        "max_drawdown": -0.3771156184611709,
+        "volatility": 0.192887549892698,
+        "num_trades": 310,
+        "fees_paid_estimate": 71587.61001583382,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -184102.09621276218,
+          "annual_return": -0.11819555489718891,
+          "sharpe": -0.1504558896458641,
+          "max_drawdown": 0.0,
+          "volatility": -0.018039398125216127,
+          "num_trades": 0,
+          "fees_paid_estimate": -1191.7957605096308
+        },
+        "crash_proxy_2008": {
+          "final_value": -78049.02449026331,
+          "annual_return": -0.017275806669622806,
+          "sharpe": -0.05813875467988738,
+          "max_drawdown": 0.0030864842366644107,
+          "volatility": -0.011435627447520968,
+          "num_trades": 0,
+          "fees_paid_estimate": -5912.885103906447
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob65_boost0.10_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.1,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1874873.51645802,
+        "annual_return": 0.609064250950764,
+        "sharpe": 2.1534774750128913,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22344905480808677,
+        "num_trades": 63,
+        "fees_paid_estimate": 20146.56551778564,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1419882.511687403,
+        "annual_return": 0.10662263661416582,
+        "sharpe": 0.5179406215975831,
+        "max_drawdown": -0.3771156184611709,
+        "volatility": 0.1929317966852051,
+        "num_trades": 310,
+        "fees_paid_estimate": 71698.47836957681,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -184102.09621276218,
+          "annual_return": -0.11819555489718891,
+          "sharpe": -0.1504558896458641,
+          "max_drawdown": 0.0,
+          "volatility": -0.018039398125216127,
+          "num_trades": 0,
+          "fees_paid_estimate": -1191.7957605096308
+        },
+        "crash_proxy_2008": {
+          "final_value": -74516.40508068167,
+          "annual_return": -0.016479440966374437,
+          "sharpe": -0.054479651810433904,
+          "max_drawdown": 0.0030864842366644107,
+          "volatility": -0.011391380655013855,
+          "num_trades": 0,
+          "fees_paid_estimate": -5802.016750163457
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os25_ob65_boost0.05_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 25.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1872816.9040329247,
+        "annual_return": 0.6077283688333655,
+        "sharpe": 2.151168914192493,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22328566288160964,
+        "num_trades": 63,
+        "fees_paid_estimate": 20140.249087030945,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1418069.8268434824,
+        "annual_return": 0.10621417551313961,
+        "sharpe": 0.5161740210967429,
+        "max_drawdown": -0.3771156184611709,
+        "volatility": 0.19284337808362914,
+        "num_trades": 310,
+        "fees_paid_estimate": 71796.352413921,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -186158.70863785758,
+          "annual_return": -0.11953143701458746,
+          "sharpe": -0.1527644504662624,
+          "max_drawdown": 0.0,
+          "volatility": -0.018202790051693257,
+          "num_trades": 0,
+          "fees_paid_estimate": -1198.1121912643248
+        },
+        "crash_proxy_2008": {
+          "final_value": -76329.0899246023,
+          "annual_return": -0.01688790206740065,
+          "sharpe": -0.056246252311274114,
+          "max_drawdown": 0.0030864842366644107,
+          "volatility": -0.011479799256589818,
+          "num_trades": 0,
+          "fees_paid_estimate": -5704.142705819264
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os30_ob65_boost0.05_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 30.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1872816.9040329247,
+        "annual_return": 0.6077283688333655,
+        "sharpe": 2.151168914192493,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22328566288160964,
+        "num_trades": 63,
+        "fees_paid_estimate": 20140.249087030945,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1417328.7748195291,
+        "annual_return": 0.10604708374451821,
+        "sharpe": 0.5153542208704984,
+        "max_drawdown": -0.3771156184611709,
+        "volatility": 0.19286515300974247,
+        "num_trades": 310,
+        "fees_paid_estimate": 71591.32393412369,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -186158.70863785758,
+          "annual_return": -0.11953143701458746,
+          "sharpe": -0.1527644504662624,
+          "max_drawdown": 0.0,
+          "volatility": -0.018202790051693257,
+          "num_trades": 0,
+          "fees_paid_estimate": -1198.1121912643248
+        },
+        "crash_proxy_2008": {
+          "final_value": -77070.1419485556,
+          "annual_return": -0.017054993836022048,
+          "sharpe": -0.05706605253751862,
+          "max_drawdown": 0.0030864842366644107,
+          "volatility": -0.01145802433047649,
+          "num_trades": 0,
+          "fees_paid_estimate": -5909.171185616578
+        }
+      },
+      "dual_objective_eligible": false
+    },
+    {
+      "name": "rsi_os35_ob65_boost0.05_lev0.25",
+      "overrides": {
+        "rsi_overlay_oversold_threshold": 35.0,
+        "rsi_overlay_overbought_threshold": 65.0,
+        "rsi_overlay_oversold_0050_boost": 0.05,
+        "rsi_overlay_overbought_leverage_scale": 0.25,
+        "rsi_overlay_enabled": true
+      },
+      "recent_oos": {
+        "final_value": 1872816.9040329247,
+        "annual_return": 0.6077283688333655,
+        "sharpe": 2.151168914192493,
+        "max_drawdown": -0.2499394997432657,
+        "volatility": 0.22328566288160964,
+        "num_trades": 63,
+        "fees_paid_estimate": 20140.249087030945,
+        "pva_sigmoid_count": 8,
+        "dca_total_contributions": 85000.0
+      },
+      "crash_proxy_2008": {
+        "final_value": 1419330.6986707933,
+        "annual_return": 0.10649833317409851,
+        "sharpe": 0.517435854986495,
+        "max_drawdown": -0.3771156184611709,
+        "volatility": 0.192885459943102,
+        "num_trades": 310,
+        "fees_paid_estimate": 71432.46507477699,
+        "pva_sigmoid_count": 26,
+        "dca_total_contributions": 210000.0
+      },
+      "delta_vs_Golden1_0531": {
+        "recent_oos": {
+          "final_value": -186158.70863785758,
+          "annual_return": -0.11953143701458746,
+          "sharpe": -0.1527644504662624,
+          "max_drawdown": 0.0,
+          "volatility": -0.018202790051693257,
+          "num_trades": 0,
+          "fees_paid_estimate": -1198.1121912643248
+        },
+        "crash_proxy_2008": {
+          "final_value": -75068.21809729142,
+          "annual_return": -0.016603744406441745,
+          "sharpe": -0.05498441842152202,
+          "max_drawdown": 0.0030864842366644107,
+          "volatility": -0.011437717397116964,
+          "num_trades": 0,
+          "fees_paid_estimate": -6068.030044963278
+        }
+      },
+      "dual_objective_eligible": false
+    }
+  ],
+  "note": "Golden1_0531 remains frozen. RSI overlay candidates are shadow-only."
+}
