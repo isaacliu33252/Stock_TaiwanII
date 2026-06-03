@@ -1,0 +1,103 @@
+{
+  "release_name": "Golden1_0531",
+  "release_date": "2026-05-31",
+  "status": "production_implementation_release",
+  "scope": "group_a",
+  "entrypoint": "run_group_a_combined_signal.py",
+  "release_handoff_md": "GROUP_A_GOLDEN1_0531_RELEASE.md",
+  "model_checkpoint": "models/portfolio/group_a_oos_2020_2024_cap20_llm_pva_tripletv4_inst_localregime_20260526.zip",
+  "strategy_payload": "results/group_a_backtest_20250101_20260525_20260526_193252.json",
+  "stable_bundle": "results/group_a_combined_bundle_latest.json",
+  "stable_signal_json": "results/group_a_combined_live_latest.json",
+  "stable_signal_csv": "results/group_a_combined_live_latest.csv",
+  "execution_history_workbook": "Group_A_history.xlsx",
+  "strategy_stack": {
+    "profile": "default",
+    "action_schema": "triplet_v4",
+    "institutional_features": true,
+    "llm_sentiment": true,
+    "pva_sigmoid_overlay": true,
+    "local_regime_gate": true,
+    "hard_crash_gate": false,
+    "margin_features": false,
+    "margin_shared_features": false,
+    "market_margin_gate": false,
+    "market_margin_shared_features": false
+  },
+  "exposure_caps": {
+    "00631L.TW": 0.2,
+    "00632R.TW": 0.3
+  },
+  "pva_runtime_config": {
+    "pva_weight": 0.32,
+    "pva_j_state_weight": 0.19,
+    "pva_m_state_weight": 1.0,
+    "pva_drift_threshold": 0.05,
+    "pva_target_vol": 0.012,
+    "pva_min_leverage_scale": 0.4,
+    "pva_inverse_hedge_budget": 0.3,
+    "pva_s_state_drift_boost": 0.0,
+    "pva_s_state_max_weight": 0.32,
+    "pva_buy_dip_strength": 0.95
+  },
+  "latest_operational_snapshot": {
+    "requested_as_of_date": "2026-06-01",
+    "actual_data_date": "2026-05-29",
+    "signal_status": "rebalance",
+    "signal_reason": "pva_overlay_j",
+    "current_shares": {
+      "0050.TW": 89,
+      "00631L.TW": 0,
+      "00632R.TW": 0
+    },
+    "target_weights": {
+      "0050.TW": 0.5892429147842065,
+      "00631L.TW": 0.11075708521579347,
+      "00632R.TW": 0.0,
+      "cash": 0.3
+    },
+    "target_shares": {
+      "0050.TW": 5643,
+      "00631L.TW": 3026,
+      "00632R.TW": 0
+    }
+  },
+  "three_month_trial": {
+    "trial_start": "2026-06-01",
+    "review_date": "2026-08-31",
+    "starting_value_before_initial_rebalance_fees": 1009380.6001358032,
+    "estimated_initial_buy_fees": 993.4701631547928,
+    "estimated_post_rebalance_starting_value": 1008387.1299726485,
+    "scheduled_dca": {
+      "ticker": "0050.TW",
+      "monthly_amount": 5000.0,
+      "months": 3,
+      "estimated_total_external_contributions": 15000.0
+    },
+    "forecast_method": {
+      "base": "OOS annual return converted to a three-month compounded return",
+      "distribution_reference": "rolling calendar three-month returns from the Golden1_0531 OOS equity curve",
+      "oos_annual_return": 0.7272598058479529,
+      "base_three_month_return": 0.14640855085406734,
+      "historical_rolling_median_return": 0.1952497714778758,
+      "historical_rolling_10th_percentile_return": -0.14800803809306734,
+      "historical_rolling_75th_percentile_return": 0.23653877397142054,
+      "historical_worst_return": -0.23235045222711992
+    },
+    "forecast_values": {
+      "stress_10th_percentile_without_dca": 859137.73,
+      "stress_10th_percentile_with_dca": 873371.36,
+      "flat_without_dca": 1008387.13,
+      "flat_with_dca": 1023387.13,
+      "base_without_dca": 1156023.63,
+      "base_with_dca": 1171733.45,
+      "historical_median_without_dca": 1205274.49,
+      "historical_median_with_dca": 1221212.07,
+      "historical_75th_percentile_without_dca": 1246909.79,
+      "historical_75th_percentile_with_dca": 1263036.72,
+      "historical_worst_without_dca": 774087.92
+    },
+    "operational_target_total_value_with_scheduled_dca": 1171733.45,
+    "note": "Planning estimate only. Review actual ending value, external contributions, fees, drawdown, rebalance count, and defensive gate activations on 2026-08-31."
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "candidate_name": "Golden1_0531_shadow_pva036_j015",
+  "created_date": "2026-05-31",
+  "status": "shadow_only",
+  "production_release_unchanged": "Golden1_0531",
+  "base_payload": "results/group_a_backtest_20250101_20260525_20260526_193252.json",
+  "model_checkpoint": "models/portfolio/group_a_oos_2020_2024_cap20_llm_pva_tripletv4_inst_localregime_20260526.zip",
+  "runtime_overrides": {
+    "pva_weight": 0.36,
+    "pva_j_state_weight": 0.15,
+    "pva_drift_threshold": 0.05,
+    "pva_min_leverage_scale": 0.4,
+    "pva_buy_dip_strength": 0.95,
+    "dca_day": 20
+  },
+  "recent_oos_20250102_20260525": {
+    "final_value": 2061509.3630507058,
+    "annual_return": 0.7288680857226688,
+    "sharpe": 2.3078818142834217,
+    "max_drawdown": -0.24990898198743144,
+    "volatility": 0.24147843784393247,
+    "num_trades": 63,
+    "fees_paid_estimate": 21286.14833669045
+  },
+  "twii_proxy_2008": {
+    "final_value": 1494175.4604637998,
+    "annual_return": 0.1230535428702213,
+    "sharpe": 0.5723261503012482,
+    "max_drawdown": -0.3801940331310473,
+    "volatility": 0.20425744135929183,
+    "num_trades": 310,
+    "fees_paid_estimate": 78140.25118407933
+  },
+  "evidence": {
+    "pva_micro_sweep": "results/group_a_Golden1_0531_pva_micro_sweep_20260531.json",
+    "dual_objective_validation": "results/group_a_Golden1_0531_dual_objective_20260531.json",
+    "local_regime_sweep": "results/group_a_Golden1_0531_local_regime_sweep_20260531.json",
+    "report": "GROUP_A_GOLDEN1_0531_IMPROVEMENT_EXPERIMENT.md"
+  },
+  "decision": "Retain as a shadow candidate through the 2026-08-31 Golden1_0531 production trial. Do not promote during the trial because the improvement is marginal."
+}
