@@ -315,8 +315,11 @@ class RiskManager:
         
         if len(downside) == 0 or np.std(downside, ddof=1) == 0:
             return 0.0
-        
-        return (np.mean(returns) / np.std(downside, ddof=1)) * np.sqrt(252)
+
+        downside_std_daily = np.std(downside, ddof=1)
+        downside_std_annual = downside_std_daily * np.sqrt(252)
+        ann_return = np.mean(returns) * 252
+        return (ann_return - self.risk_free_rate) / downside_std_annual
     
     def get_summary(self) -> dict:
         """取得風控摘要"""

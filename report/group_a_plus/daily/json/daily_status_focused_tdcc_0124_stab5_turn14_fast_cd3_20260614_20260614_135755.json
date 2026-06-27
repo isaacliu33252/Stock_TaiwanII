@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-06-14T13:57:55",
+  "check_date": "2026-06-14",
+  "overall_status": "warn",
+  "profile": "focused_tdcc_0124_stab5_turn14_fast_cd3",
+  "baseline": "GROUP_A_PLUS_CURRENT_BASELINE.json",
+  "source_paths": {
+    "latest_group_a_signal": "results/signal_group_a_20260613_004617.json",
+    "latest_group_a_plus_final_signal": "results/group_a_plus_final_signal_20260613_6p12data.json",
+    "clean_payload": "results/group_a_payload_clean_cashdiv_dca8000_20260612.json",
+    "stress_test_result": "results/group_a_plus_a15_turnover_fine_stress_20260614.json",
+    "strict_cost_result": "results/group_a_plus_a15_turnover_fine_replay_20260614.json"
+  },
+  "checks": [
+    {
+      "name": "required_files",
+      "status": "ok",
+      "detail": "all required files present"
+    },
+    {
+      "name": "data_freshness",
+      "status": "warn",
+      "detail": "0 business days stale, 2 calendar days stale"
+    },
+    {
+      "name": "signal_guard",
+      "status": "ok",
+      "detail": "cooldown_4d"
+    },
+    {
+      "name": "group_a_plus_cash_constraint",
+      "status": "ok",
+      "detail": "cash_after_cost=47"
+    },
+    {
+      "name": "overlay_regime",
+      "status": "ok",
+      "detail": "regime=risk_on, 00679B_weight=0.00%"
+    }
+  ],
+  "signal": {
+    "signal_status": "hold",
+    "signal_reason": "cooldown_4d",
+    "actual_data_date": "2026-06-12",
+    "requested_as_of_date": "2026-06-12",
+    "business_stale_days": 0,
+    "calendar_stale_days": 2
+  },
+  "group_a_plus": {
+    "overlay_regime": "risk_on",
+    "overlay_00679b_weight": 0.0,
+    "cash_after_cost": 47.08491853946589,
+    "target_shares": {
+      "0050.TW": 1439,
+      "00631L.TW": 0,
+      "00632R.TW": 0,
+      "00679B.TWO": 4830
+    }
+  }
+}

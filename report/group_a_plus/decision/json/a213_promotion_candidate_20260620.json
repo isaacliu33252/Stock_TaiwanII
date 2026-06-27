@@ -1,0 +1,72 @@
+{
+  "strategy_id": "a213_cash30_recovery_ramp",
+  "status": "activated_via_schema_v2",
+  "generated_at": "2026-06-20",
+  "base_strategy": "switch_risk_ma75_dd11_total6_hold5_eg0175_xg020",
+  "rules": {
+    "warmup_calendar_days": 180,
+    "entry_and_formal_exit": "unchanged A20.7",
+    "defensive_weights": {
+      "0050.TW": 0.6,
+      "00631L.TW": 0.1,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.3
+    },
+    "recovery_trigger": "while defensive: ma_gap >= 0 and exit_momentum_5d > 0",
+    "recovery_target": "current A20.7 defensive weights",
+    "recovery_is_one_shot_per_defense_episode": true
+  },
+  "execution_assumptions": {
+    "commission_rate": 0.001425,
+    "slippage_rate": 0.0005,
+    "non_bond_etf_sell_tax": 0.001,
+    "bond_etf_sell_tax_through_2026": 0.0,
+    "returns_include_local_ohlcv_dividends": true
+  },
+  "matched_baseline_evidence": {
+    "train_2020_2024": {
+      "baseline_final": 2563518.033214696,
+      "candidate_final": 2573394.232140849,
+      "delta_final": 9876.198926152661,
+      "delta_sharpe": 0.010361446169248167,
+      "delta_mdd": 0.0,
+      "core_stress_passes": "4/4",
+      "latency_matrix_joint_passes": "16/16",
+      "latency_worst_delta_final": 10.367164791096002
+    },
+    "validation_2025_2026": {
+      "baseline_final": 2368995.027916272,
+      "candidate_final": 2376415.332039814,
+      "delta_final": 7420.304123541806,
+      "delta_sharpe": 0.06999257074213183,
+      "delta_mdd": 0.021685768211032297,
+      "core_stress_passes": "4/4",
+      "latency_matrix_joint_passes": "16/16",
+      "latency_worst_delta_final": 5815.569677376188
+    },
+    "long_2020_2026": {
+      "baseline_final": 5976422.245074547,
+      "candidate_final": 6018238.801659688,
+      "delta_final": 41816.55658514146,
+      "delta_sharpe": 0.02035140681939196,
+      "delta_mdd": 0.0,
+      "core_stress_passes": "4/4",
+      "latency_matrix_joint_passes": "16/16",
+      "latency_worst_delta_final": 19368.49914351199
+    }
+  },
+  "runner": {
+    "module": "group_a_plus.runners.a213",
+    "compatibility_script": "group_a_plus_a213_runner.py"
+  },
+  "evidence_files": [
+    "results/group_a_plus_defensive_basket_recovery_train_20260620.json",
+    "results/group_a_plus_defensive_basket_recovery_recent_20260620.json",
+    "results/group_a_plus_defensive_basket_recovery_long_20260620.json",
+    "results/group_a_plus_runner_a213_train_20260620.json",
+    "results/group_a_plus_runner_a213_recent_20260620.json",
+    "results/group_a_plus_runner_a213_long_20260620.json"
+  ],
+  "activation_note": "Activated through report/group_a_plus/latest/strategy.json. The legacy price-only switch pointer remains unchanged for two-regime consumers."
+}

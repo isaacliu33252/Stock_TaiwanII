@@ -19,6 +19,8 @@ _TICKER_MAP = {
     "00751B": "00751B.TWO",
     "00878": "00878.TW",
     "2884":  "2884.TW",
+    "00632R": "00632R.TW",
+    "00631L": "00631L.TW",
 }
 
 # 名字對照表
@@ -31,7 +33,15 @@ _NAME_MAP = {
     "00751B": "元大AAA至A公司債",
     "00878": "國泰永續高股息",
     "2884":  "玉山金",
+    "00632R": "元大台灣50反1",
+    "00631L": "元大台灣50正2",
 }
+
+
+def _safe_int_shares(value: object) -> int:
+    if value is None or pd.isna(value):
+        return 0
+    return int(float(value))
 
 def _load_holdings() -> dict:
     """從 Excel 檔讀取持股資料，自動對應 Yahoo Finance 代碼。"""
@@ -42,7 +52,7 @@ def _load_holdings() -> dict:
     for col in df.columns[1:]:  # 跳過第一欄（標籤欄）
         # 從欄位名解析代碼（如 "元大台灣50 \n0050" → "0050"）
         code = col.split("\n")[-1].strip()
-        shares = int(row[col])
+        shares = _safe_int_shares(row[col])
 
         yf_ticker = _TICKER_MAP.get(code, code + ".TW")
         holdings[yf_ticker] = {
@@ -62,8 +72,10 @@ ALL_TICKERS = list(PORTFOLIO_HOLDINGS.keys())
 # 等權重初始配置
 INITIAL_WEIGHTS = None
 
-# 最小交易單位 (台股 = 1000股/張)
-TRADE_UNIT = 1000
+# 最小交易單位
+TRADE_UNIT = 20
+MIN_TRADE_SHARES = 20
+MIN_COMMISSION_FEE = 1.0
 
 # 是否為 ETF
 ETF_TICKERS = [t for t in ALL_TICKERS if t != "2884.TW"]
@@ -89,6 +101,6 @@ BACKTEST_START = "2021-01-01"
 BACKTEST_END = "2024-12-31"
 COMMISSION_RATE = 0.001425
 TRANSACTION_TAX_RATE = 0.003
-ETF_TAX_RATE = 0.001
+ETF_TAX_RATE = 0.003
 RISK_FREE_RATE = 0.02
 BENCHMARK_TICKER = "0050.TW"

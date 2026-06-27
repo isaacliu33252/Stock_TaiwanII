@@ -1,0 +1,188 @@
+{
+  "success": true,
+  "data": {
+    "signal_version": 2,
+    "generated_at": "2026-06-21T16:05:52",
+    "strategy_id": "a215_cash40_mw80",
+    "strategy_status": "shadow",
+    "requested_as_of_date": "2026-06-22",
+    "actual_data_date": "2026-06-18",
+    "business_stale_days": 1,
+    "calendar_stale_days": 4,
+    "max_business_stale_days": 3,
+    "execution_allowed": false,
+    "execution_guard_reasons": [
+      "strategy status is shadow; shadow signals are non-executable"
+    ],
+    "base_regime": "golden1",
+    "execution_regime": "golden1",
+    "regime_reason": "A20.7 formal defensive state is inactive",
+    "last_transition_date": "2025-06-09",
+    "strategy_transition_today": false,
+    "action": "hold_or_align_to_target",
+    "target_weights": {
+      "0050.TW": 0.6,
+      "00631L.TW": 0.2,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.19999999999999996
+    },
+    "target_values": {
+      "0050.TW": 600000.0,
+      "00631L.TW": 200000.0,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 199999.99999999994
+    },
+    "reference_target_shares_before_cost": {
+      "0050.TW": 5591,
+      "00631L.TW": 5217,
+      "00632R.TW": 0,
+      "00679B.TWO": 0
+    },
+    "reference_target_market_values": {
+      "0050.TW": 599914.3170623779,
+      "00631L.TW": 199967.6195526123,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0
+    },
+    "estimated_cash_after_rounding_before_cost": 200118.06338500977,
+    "latest_prices": {
+      "0050.TW": 107.30000305175781,
+      "00631L.TW": 38.33000183105469,
+      "00632R.TW": 10.029999732971191,
+      "00679B.TWO": 27.040000915527344
+    },
+    "portfolio_value_input": 1000000.0,
+    "latest_features": {
+      "ma_gap": 0.2132862562054989,
+      "drawdown": -0.0027880615856646918,
+      "exit_momentum_5d": 0.0746119648621486,
+      "chip_score": 0,
+      "derivative_score": 2,
+      "total_risk_score": 2,
+      "tail_risk_score": 0
+    },
+    "data_freshness": {
+      "ohlcv_by_ticker": {
+        "0050.TW": "2026-06-18",
+        "00631L.TW": "2026-06-18",
+        "00632R.TW": "2026-06-18",
+        "00679B.TWO": "2026-06-18"
+      },
+      "latest_prices": {
+        "0050.TW": 107.30000305175781,
+        "00631L.TW": 38.33000183105469,
+        "00632R.TW": 10.029999732971191,
+        "00679B.TWO": 27.040000915527344
+      },
+      "optional_sources": {
+        "institutional_0050": {
+          "table": "institutional_data",
+          "exists": true,
+          "latest_date": "2026-06-18",
+          "business_stale_days": 1,
+          "max_business_stale_days": 3,
+          "status": "ok"
+        },
+        "margin_0050": {
+          "table": "margin_data",
+          "exists": true,
+          "latest_date": "2026-06-17",
+          "business_stale_days": 2,
+          "max_business_stale_days": 3,
+          "status": "ok"
+        },
+        "market_margin": {
+          "table": "market_margin_data",
+          "exists": true,
+          "latest_date": "2026-06-17",
+          "business_stale_days": 2,
+          "max_business_stale_days": 3,
+          "status": "ok"
+        },
+        "tdcc_0050": {
+          "table": "shareholding_distribution",
+          "exists": true,
+          "latest_date": "2026-06-12",
+          "business_stale_days": 5,
+          "max_business_stale_days": 10,
+          "status": "ok"
+        },
+        "foreign_shareholding_0050": {
+          "table": "foreign_shareholding_data",
+          "exists": true,
+          "latest_date": "2026-06-17",
+          "business_stale_days": 2,
+          "max_business_stale_days": 3,
+          "status": "ok"
+        },
+        "short_balance_0050": {
+          "table": "short_sale_balance_data",
+          "exists": true,
+          "latest_date": "2026-06-17",
+          "business_stale_days": 2,
+          "max_business_stale_days": 3,
+          "status": "ok"
+        },
+        "securities_lending_0050": {
+          "table": "securities_lending_data",
+          "exists": true,
+          "latest_date": "2026-06-18",
+          "business_stale_days": 1,
+          "max_business_stale_days": 3,
+          "status": "ok"
+        },
+        "day_trading_0050": {
+          "table": "day_trading_data",
+          "exists": true,
+          "latest_date": "2026-06-18",
+          "business_stale_days": 1,
+          "max_business_stale_days": 3,
+          "status": "ok"
+        },
+        "dealer_tx": {
+          "table": "dealer_futures_data",
+          "exists": true,
+          "latest_date": "2026-06-17",
+          "business_stale_days": 2,
+          "max_business_stale_days": 3,
+          "status": "ok"
+        },
+        "dealer_txo": {
+          "table": "dealer_options_data",
+          "exists": true,
+          "latest_date": "2026-06-17",
+          "business_stale_days": 2,
+          "max_business_stale_days": 3,
+          "status": "ok"
+        },
+        "foreign_tx_oi": {
+          "table": "derivative_institutional_data",
+          "exists": true,
+          "latest_date": "2026-06-18",
+          "business_stale_days": 1,
+          "max_business_stale_days": 3,
+          "status": "ok"
+        },
+        "foreign_txo_oi": {
+          "table": "derivative_institutional_data",
+          "exists": true,
+          "latest_date": "2026-06-18",
+          "business_stale_days": 1,
+          "max_business_stale_days": 3,
+          "status": "ok"
+        }
+      }
+    },
+    "manifest": "report/group_a_plus/shadow/a215_strategy.json"
+  },
+  "metadata": {
+    "script": "group_a_plus.operations.daily_signal",
+    "timestamp": "2026-06-21T16:05:52",
+    "output_type": "OutputType.DICT",
+    "version": "1.0.0",
+    "execution_time_ms": 782
+  },
+  "error": null
+}

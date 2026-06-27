@@ -162,8 +162,10 @@ class GroupAFinRLXStrategy(BaseStrategy):
             DEFAULT_INITIAL_CASH,
             PortfolioEnv,
             _align_panel,
+            attach_institutional_features_db_first,
             attach_market_features_db_first,
             load_stock_data_db_first,
+            payload_uses_group_a_institutional_features,
         )
 
         if not self.cfg.result_json:
@@ -205,6 +207,8 @@ class GroupAFinRLXStrategy(BaseStrategy):
         else:
             stock_data = load_stock_data_db_first(tickers, train_start, download_end)
 
+        if payload_uses_group_a_institutional_features(payload):
+            stock_data = attach_institutional_features_db_first(stock_data, tickers, train_start, download_end)
         if shared_feature_cols:
             stock_data = attach_market_features_db_first(
                 stock_data,

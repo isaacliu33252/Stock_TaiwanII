@@ -15,20 +15,24 @@ from gymnasium import spaces
 from stable_baselines3 import SAC, TD3
 from stable_baselines3.common.noise import NormalActionNoise
 
-PROJECT_ROOT = Path(__file__).parent
-sys.path.insert(0, str(PROJECT_ROOT))
+PROJECT_ROOT = Path(__file__).resolve().parent
+WORKSPACE_ROOT = PROJECT_ROOT.parent
+for path in (WORKSPACE_ROOT, PROJECT_ROOT):
+    if str(path) not in sys.path:
+        sys.path.insert(0, str(path))
 
-from portfolio_config import COMMISSION_RATE, ETF_TAX_RATE
-from portfolio_data_loader import download_all_stocks
-from portfolio_train_v2 import calculate_backtest_metrics
+from FinRL.backtesting.backtest_engine import BacktestConfig, BacktestEngine as FinRLXBacktestEngine
+from FinRL.portfolio_config import COMMISSION_RATE, ETF_TAX_RATE
+from FinRL.portfolio_data_loader import download_all_stocks
+from FinRL.strategies.base_strategy import StrategyResult
 
 
 TICKERS = ["0050.TW", "0056.TW", "00713.TW", "00878.TW"]
-TRAIN_START = "2009-01-01"
+TRAIN_START = "2020-01-01"
 TRAIN_END = "2023-12-31"
 BACKTEST_START = "2024-01-01"
-BACKTEST_END = "2026-05-08"
-DOWNLOAD_END = "2026-05-09"
+BACKTEST_END = "2026-05-15"
+DOWNLOAD_END = "2026-05-22"
 INITIAL_CASH = 1_000_000
 SEED = 42
 
@@ -92,6 +96,176 @@ def dividends(panel: pd.DataFrame) -> np.ndarray:
         col = f"{ticker}_dividends"
         cols.append(panel[col] if col in panel else pd.Series(0.0, index=panel.index))
     return pd.concat(cols, axis=1).to_numpy(dtype=float)
+
+
+def total_return_price_frame(panel: pd.DataFrame) -> pd.DataFrame:
+    px = prices(panel)
+    div = dividends(panel)
+    total_return_px = np.zeros_like(px, dtype=float)
+    total_return_px[0] = px[0]
+    for idx in range(1, len(panel)):
+        prev_close = np.where(px[idx - 1] > 0, px[idx - 1], np.nan)
+        gross = np.divide(
+            px[idx] + div[idx],
+            prev_close,
+            out=np.ones(len(TICKERS), dtype=float),
+            where=~np.isnan(prev_close),
+        )
+        gross = np.nan_to_num(gross, nan=1.0, posinf=1.0, neginf=1.0)
+        total_return_px[idx] = total_return_px[idx - 1] * gross
+
+    return pd.DataFrame(
+        total_return_px,
+        index=pd.to_datetime(panel["date"]),
+        columns=TICKERS,
+    ).sort_index()
+
+
+def _to_native(value):
+    if isinstance(value, pd.Timestamp):
+        return str(value.date())
+    if isinstance(value, (np.floating, float)):
+        return float(value)
+    if isinstance(value, (np.integer, int)):
+        return int(value)
+    if isinstance(value, (np.bool_, bool)):
+        return bool(value)
+    return value
+
+
+def _series_to_list(series: pd.Series) -> list[float]:
+    return [float(v) for v in series.astype(float).tolist()]
+
+
+def _frame_to_records(frame: pd.DataFrame) -> list[dict]:
+    if frame.empty:
+        return []
+    local = frame.reset_index()
+    for col in local.columns:
+        if pd.api.types.is_datetime64_any_dtype(local[col]):
+            local[col] = pd.to_datetime(local[col]).dt.strftime("%Y-%m-%d")
+    return [
+        {key: _to_native(val) for key, val in row.items()}
+        for row in local.to_dict(orient="records")
+    ]
+
+
+def _weight_history_frame(panel: pd.DataFrame, weight_history: list[list[float]]) -> pd.DataFrame:
+    if not weight_history:
+        return pd.DataFrame(columns=TICKERS)
+    dates = pd.to_datetime(panel["date"]).reset_index(drop=True)
+    usable = min(len(dates), len(weight_history))
+    return pd.DataFrame(
+        np.asarray(weight_history[:usable], dtype=float),
+        index=pd.DatetimeIndex(dates.iloc[:usable]),
+        columns=TICKERS,
+    ).sort_index()
+
+
+def _rebalance_weight_frame(
+    full_weights: pd.DataFrame,
+    rebalance_indices: list[int],
+) -> pd.DataFrame:
+    if full_weights.empty:
+        return pd.DataFrame(columns=TICKERS)
+    clean_indices = sorted({int(i) for i in rebalance_indices if 0 <= int(i) < len(full_weights)})
+    if not clean_indices:
+        clean_indices = [0]
+    return full_weights.iloc[clean_indices].groupby(level=0).last().sort_index()
+
+
+def _backtest_engine(panel: pd.DataFrame) -> FinRLXBacktestEngine:
+    start_date = str(pd.Timestamp(panel["date"].min()).date())
+    end_date = str(pd.Timestamp(panel["date"].max()).date())
+    return FinRLXBacktestEngine(
+        BacktestConfig(
+            start_date=start_date,
+            end_date=end_date,
+            initial_capital=INITIAL_CASH,
+            benchmark_tickers=["0050.TW"],
+            tax_rate=ETF_TAX_RATE,
+            brokerage_fee=COMMISSION_RATE,
+            min_brokerage_fee=20.0,
+        )
+    )
+
+
+def _static_strategy_result(
+    panel: pd.DataFrame,
+    weights: np.ndarray,
+    strategy_name: str,
+) -> StrategyResult:
+    price_frame = total_return_price_frame(panel)
+    target = pd.DataFrame(
+        [normalize_weights(weights)],
+        index=pd.DatetimeIndex([price_frame.index[0]]),
+        columns=TICKERS,
+    )
+    return StrategyResult(
+        strategy_name=strategy_name,
+        weights=target,
+        metadata={"prices": price_frame},
+    )
+
+
+def _env_strategy_result(env: "ContinuousPortfolioEnv", strategy_name: str) -> tuple[StrategyResult, pd.DataFrame]:
+    price_frame = total_return_price_frame(env.panel)
+    full_weights = _weight_history_frame(env.panel, env.weight_history)
+    rebalance_weights = _rebalance_weight_frame(full_weights, env.rebalance_indices)
+    result = StrategyResult(
+        strategy_name=strategy_name,
+        weights=rebalance_weights,
+        metadata={
+            "prices": price_frame,
+            "weights_daily": full_weights,
+        },
+    )
+    return result, full_weights
+
+
+def _payload_from_backtest(
+    backtest_result,
+    *,
+    full_weights: pd.DataFrame | None = None,
+    holding_time_stats: dict | None = None,
+    num_rebalances: int | None = None,
+    dividend_cash_received: float | None = None,
+    env_fees_paid_estimate: float | None = None,
+) -> dict:
+    equity = backtest_result.portfolio_values.astype(float)
+    weights_frame = full_weights if full_weights is not None and not full_weights.empty else backtest_result.weights_history
+    weights_frame = weights_frame.reindex(columns=TICKERS).fillna(0.0) if not weights_frame.empty else pd.DataFrame(columns=TICKERS)
+    trades = backtest_result.trades.copy()
+    total_fees = float(trades["fees"].sum()) if not trades.empty and "fees" in trades else 0.0
+    final_weights = {ticker: 0.0 for ticker in TICKERS}
+    if not weights_frame.empty:
+        final_weights = {
+            ticker: float(weights_frame.iloc[-1].get(ticker, 0.0))
+            for ticker in TICKERS
+        }
+
+    payload = {
+        "final_value": float(equity.iloc[-1]) if not equity.empty else float(INITIAL_CASH),
+        "metrics": {key: _to_native(val) for key, val in backtest_result.metrics.items()},
+        "equity_curve": _series_to_list(equity),
+        "equity_dates": [str(pd.Timestamp(idx).date()) for idx in equity.index],
+        "weight_history": weights_frame.to_numpy(dtype=float).tolist(),
+        "weight_dates": [str(pd.Timestamp(idx).date()) for idx in weights_frame.index],
+        "final_weights": final_weights,
+        "trades": _frame_to_records(trades),
+        "num_rebalances": int(num_rebalances) if num_rebalances is not None else int(trades.index.normalize().nunique()) if not trades.empty else 0,
+        "fees_paid_estimate": total_fees,
+        "holding_time_stats": holding_time_stats or {},
+    }
+    if dividend_cash_received is not None:
+        payload["dividend_cash_received"] = float(dividend_cash_received)
+    if env_fees_paid_estimate is not None:
+        payload["env_fees_paid_estimate"] = float(env_fees_paid_estimate)
+    return payload
+
+
+def _run_strategy_backtest(strategy_result: StrategyResult, panel: pd.DataFrame):
+    return _backtest_engine(panel).run(strategy_result)
 
 
 def _holding_segments(mask: np.ndarray) -> list[int]:
@@ -169,6 +343,41 @@ def normalize_weights(weights: np.ndarray) -> np.ndarray:
     return w / total
 
 
+def cap_and_normalize_weights(weights: np.ndarray, max_weight: float) -> np.ndarray:
+    """Project long-only weights to sum to one while respecting max_weight."""
+    max_weight = float(max_weight)
+    n_assets = len(weights)
+    if max_weight <= 0 or max_weight * n_assets < 1.0:
+        return np.ones(n_assets, dtype=float) / n_assets
+    if max_weight >= 1.0:
+        return normalize_weights(weights)
+
+    base = normalize_weights(weights)
+    capped = np.zeros(n_assets, dtype=float)
+    free = np.ones(n_assets, dtype=bool)
+    remaining = 1.0
+
+    for _ in range(n_assets):
+        free_total = float(base[free].sum())
+        if free_total <= 0:
+            capped[free] = remaining / int(free.sum())
+            break
+
+        proposed = base[free] / free_total * remaining
+        over_local = proposed > max_weight
+        if not np.any(over_local):
+            capped[free] = proposed
+            break
+
+        free_indices = np.flatnonzero(free)
+        capped_indices = free_indices[over_local]
+        capped[capped_indices] = max_weight
+        free[capped_indices] = False
+        remaining = max(0.0, 1.0 - float(capped.sum()))
+
+    return normalize_weights(capped)
+
+
 def enforce_min_weight(weights: np.ndarray, min_weight: float) -> np.ndarray:
     """Long-only weights with a per-asset minimum, then renormalized."""
     min_weight = float(min_weight)
@@ -187,43 +396,50 @@ def buy_and_hold_curve(panel: pd.DataFrame, weights: np.ndarray, include_dividen
     div = dividends(panel)
     w = normalize_weights(weights)
     shares = INITIAL_CASH * w / px[0]
-    cash = 0.0
-    curve = []
-    for i in range(len(panel)):
-        if include_dividends:
-            cash += float(np.dot(shares, div[i]))
-        curve.append(float(cash + np.dot(shares, px[i])))
-    return curve
+    equity = px @ shares
+    if include_dividends:
+        equity = equity + np.cumsum(div @ shares)
+    return equity.astype(float).tolist()
 
 
-def estimate_mvo_weights(train_panel: pd.DataFrame, risk_free_rate: float = 0.02, max_weight: float = 0.80) -> dict:
+def estimate_mvo_weights(
+    train_panel: pd.DataFrame,
+    risk_free_rate: float = 0.02,
+    max_weight: float = 0.80,
+    seed: int = SEED,
+    random_samples: int = 25_000,
+) -> dict:
     """Long-only random-search MVO, robust enough without scipy dependency."""
-    rng = np.random.default_rng(SEED)
+    rng = np.random.default_rng(seed)
     returns = total_return_matrix(train_panel)[1:]
     mu = returns.mean(axis=0) * 252.0
     cov = np.cov(returns.T) * 252.0
     cov = np.nan_to_num(cov, nan=0.0, posinf=0.0, neginf=0.0)
     cov += np.eye(len(TICKERS)) * 1e-8
 
-    candidates = [
+    anchor_candidates = np.asarray([
         np.ones(len(TICKERS)) / len(TICKERS),
         np.array([1.0, 0.0, 0.0, 0.0]),
         np.array([0.0, 1.0, 0.0, 0.0]),
         np.array([0.0, 0.0, 1.0, 0.0]),
         np.array([0.0, 0.0, 0.0, 1.0]),
-    ]
-    candidates.extend(rng.dirichlet(np.ones(len(TICKERS)), size=25_000))
+    ], dtype=float)
+    random_candidates = rng.dirichlet(np.ones(len(TICKERS)), size=int(random_samples))
+    candidates = np.vstack([anchor_candidates, random_candidates])
+    candidates = np.vstack([cap_and_normalize_weights(row, max_weight) for row in candidates])
 
-    best_w = candidates[0]
-    best_sharpe = -np.inf
-    for weights in candidates:
-        weights = normalize_weights(np.minimum(weights, max_weight))
-        ret = float(weights @ mu)
-        vol = float(np.sqrt(weights @ cov @ weights))
-        sharpe = (ret - risk_free_rate) / vol if vol > 0 else -np.inf
-        if sharpe > best_sharpe:
-            best_sharpe = sharpe
-            best_w = weights
+    annual_returns = candidates @ mu
+    annual_variances = np.einsum("ij,jk,ik->i", candidates, cov, candidates)
+    annual_volatility = np.sqrt(np.maximum(annual_variances, 0.0))
+    sharpe = np.divide(
+        annual_returns - risk_free_rate,
+        annual_volatility,
+        out=np.full_like(annual_returns, -np.inf),
+        where=annual_volatility > 0,
+    )
+    best_idx = int(np.argmax(sharpe))
+    best_w = candidates[best_idx]
+    best_sharpe = float(sharpe[best_idx])
 
     return {
         "weights": {ticker: float(weight) for ticker, weight in zip(TICKERS, best_w)},
@@ -266,6 +482,15 @@ class ContinuousPortfolioEnv(gym.Env):
         self.feature_cols = []
         for ticker in TICKERS:
             self.feature_cols.extend([f"{ticker}_{c}" for c in FEATURE_COLUMNS if f"{ticker}_{c}" in self.panel.columns])
+        if self.feature_cols:
+            self.feature_array = np.nan_to_num(
+                self.panel[self.feature_cols].to_numpy(dtype=np.float32),
+                nan=0.0,
+                posinf=10.0,
+                neginf=-10.0,
+            )
+        else:
+            self.feature_array = np.empty((len(self.panel), 0), dtype=np.float32)
         obs_dim = len(self.feature_cols) + len(TICKERS) + 6
         self.observation_space = spaces.Box(low=-10.0, high=10.0, shape=(obs_dim,), dtype=np.float32)
         self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(len(TICKERS),), dtype=np.float32)
@@ -278,8 +503,7 @@ class ContinuousPortfolioEnv(gym.Env):
         return self.shares * self.price_array[idx] / value
 
     def _get_obs(self) -> np.ndarray:
-        row = self.panel.iloc[self.step_idx]
-        features = row[self.feature_cols].to_numpy(dtype=float) if self.feature_cols else np.array([], dtype=float)
+        features = self.feature_array[self.step_idx]
         value = max(self._portfolio_value(self.step_idx), 1.0)
         peak = max(self.peak_value, value, 1.0)
         state = np.array(
@@ -415,23 +639,20 @@ def run_policy(model, env: ContinuousPortfolioEnv) -> dict:
         action, _ = model.predict(obs, deterministic=True)
         obs, _, terminated, truncated, _ = env.step(action)
         done = terminated or truncated
-    return env_result(env)
+    return env_result(env, strategy_name=model.__class__.__name__)
 
 
-def env_result(env: ContinuousPortfolioEnv) -> dict:
-    metrics = calculate_backtest_metrics(env.equity_curve, initial_value=INITIAL_CASH)
-    final_weights = {ticker: float(weight) for ticker, weight in zip(TICKERS, env.weight_history[-1])}
-    return {
-        "final_value": float(env.equity_curve[-1]),
-        "metrics": metrics,
-        "equity_curve": env.equity_curve,
-        "weight_history": env.weight_history,
-        "holding_time_stats": calculate_holding_time_stats(env.panel, env.weight_history, env.rebalance_indices),
-        "final_weights": final_weights,
-        "num_rebalances": int(env.trade_count),
-        "fees_paid_estimate": float(env.fees_paid),
-        "dividend_cash_received": float(env.dividend_cash_received),
-    }
+def env_result(env: ContinuousPortfolioEnv, strategy_name: str) -> dict:
+    strategy_result, full_weights = _env_strategy_result(env, strategy_name)
+    backtest_result = _run_strategy_backtest(strategy_result, env.panel)
+    return _payload_from_backtest(
+        backtest_result,
+        full_weights=full_weights,
+        holding_time_stats=calculate_holding_time_stats(env.panel, env.weight_history, env.rebalance_indices),
+        num_rebalances=int(env.trade_count),
+        dividend_cash_received=float(env.dividend_cash_received),
+        env_fees_paid_estimate=float(env.fees_paid),
+    )
 
 
 def make_chart(payload: dict, output_prefix: Path) -> tuple[str, str]:
@@ -499,18 +720,20 @@ def main() -> None:
     result_dir.mkdir(parents=True, exist_ok=True)
     model_dir.mkdir(parents=True, exist_ok=True)
 
-    mvo = estimate_mvo_weights(train_panel, max_weight=args.max_mvo_weight)
+    mvo = estimate_mvo_weights(train_panel, max_weight=args.max_mvo_weight, seed=args.seed)
     mvo_weights = np.array([mvo["weights"][ticker] for ticker in TICKERS], dtype=float)
-    mvo_curve = buy_and_hold_curve(test_panel, mvo_weights, include_dividends=True)
-    equal_curve = buy_and_hold_curve(test_panel, np.ones(len(TICKERS)) / len(TICKERS), include_dividends=True)
-    bh_0050_curve = buy_and_hold_curve(test_panel, np.array([1.0, 0.0, 0.0, 0.0]), include_dividends=True)
-    mvo_payload = {
-        "weights": mvo["weights"],
-        "train_estimates": mvo,
-        "final_value": float(mvo_curve[-1]),
-        "metrics": calculate_backtest_metrics(mvo_curve, initial_value=INITIAL_CASH),
-        "equity_curve": mvo_curve,
-    }
+    mvo_result = _run_strategy_backtest(_static_strategy_result(test_panel, mvo_weights, "MVO"), test_panel)
+    equal_result = _run_strategy_backtest(
+        _static_strategy_result(test_panel, np.ones(len(TICKERS)) / len(TICKERS), "EqualBH"),
+        test_panel,
+    )
+    bh_0050_result = _run_strategy_backtest(
+        _static_strategy_result(test_panel, np.array([1.0, 0.0, 0.0, 0.0]), "0050BH"),
+        test_panel,
+    )
+    mvo_payload = _payload_from_backtest(mvo_result)
+    mvo_payload["weights"] = mvo["weights"]
+    mvo_payload["train_estimates"] = mvo
 
     outputs = {"mvo": mvo_payload}
 
@@ -547,9 +770,9 @@ def main() -> None:
             outputs[algo_name] = result
 
     curves = {
-        "MVO total return": mvo_curve,
-        "Equal B&H total return": equal_curve,
-        "0050 B&H total return": bh_0050_curve,
+        "MVO total return": outputs["mvo"]["equity_curve"],
+        "Equal B&H total return": _series_to_list(equal_result.portfolio_values),
+        "0050 B&H total return": _series_to_list(bh_0050_result.portfolio_values),
     }
     if "sac" in outputs:
         curves["SAC continuous"] = outputs["sac"]["equity_curve"]
@@ -558,7 +781,7 @@ def main() -> None:
 
     chart_payload = {
         "title": "MVO / SAC / TD3 Continuous Portfolio Backtest",
-        "dates": [str(pd.Timestamp(d).date()) for d in test_panel["date"]],
+        "dates": outputs["mvo"]["equity_dates"],
         "curves": curves,
     }
     prefix = result_dir / (
@@ -588,12 +811,16 @@ def main() -> None:
         "min_weight": float(args.min_weight),
         "benchmarks": {
             "equal_bh_total": {
-                "final_value": float(equal_curve[-1]),
-                "metrics": calculate_backtest_metrics(equal_curve, initial_value=INITIAL_CASH),
+                "final_value": float(equal_result.portfolio_values.iloc[-1]),
+                "metrics": {key: _to_native(val) for key, val in equal_result.metrics.items()},
+                "equity_dates": [str(pd.Timestamp(idx).date()) for idx in equal_result.portfolio_values.index],
+                "equity_curve": _series_to_list(equal_result.portfolio_values),
             },
             "0050_bh_total": {
-                "final_value": float(bh_0050_curve[-1]),
-                "metrics": calculate_backtest_metrics(bh_0050_curve, initial_value=INITIAL_CASH),
+                "final_value": float(bh_0050_result.portfolio_values.iloc[-1]),
+                "metrics": {key: _to_native(val) for key, val in bh_0050_result.metrics.items()},
+                "equity_dates": [str(pd.Timestamp(idx).date()) for idx in bh_0050_result.portfolio_values.index],
+                "equity_curve": _series_to_list(bh_0050_result.portfolio_values),
             },
         },
         "results": outputs,

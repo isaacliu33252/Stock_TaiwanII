@@ -1,0 +1,10 @@
+{
+  "strategy_name": "Golden1_0531_tdcc_destination_primary_00632r_hold10_overlay",
+  "status": "shadow_candidate",
+  "base_strategy": "Golden1_0531_tdcc_v1_destination_primary",
+  "overlay_type": "post_target_inverse_hold_limit",
+  "ticker": "00632R.TW",
+  "max_holding_calendar_days": 10,
+  "release_to": "0050.TW",
+  "note": "This is a post-target overlay. It is not the same as PortfolioEnv inverse_max_holding_days; the focused replay showed the env parameter change from 5 to 10 did not change the 2024-2026 result, while this post-target hold-limit overlay improved Group A with unchanged MDD."
+}

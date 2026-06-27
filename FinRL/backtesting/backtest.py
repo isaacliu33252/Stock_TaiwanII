@@ -249,9 +249,10 @@ def calculate_sortino_ratio(returns: np.ndarray, target: float = 0.0) -> float:
     if downside_std == 0:
         return 0.0
     
-    # 年化索提諾比率
+    # Sortino Ratio (annualized): (日均報酬 - 目標) / 下行標準差 * sqrt(252)
+    # 分子：日均超額報酬；分母：日均下行標準差；乘以 sqrt(252) 完成年化
     mean_return = np.mean(returns)
-    sortino = (mean_return * np.sqrt(252)) / (downside_std * np.sqrt(252))
+    sortino = (mean_return - target) / downside_std * np.sqrt(252)
     
     return sortino
 
@@ -539,8 +540,8 @@ class BacktestEngine:
         # =========================================================
         if self.verbose:
             print(f"[步驟4] 交易記錄完成")
-            buys = sum(1 for t in self.trade_history if t.get('action') == 1)
-            sells = sum(1 for t in self.trade_history if t.get('action') == 2)
+            buys = sum(1 for t in self.trade_history if t.get('action') in [1, 2, 3])
+            sells = sum(1 for t in self.trade_history if t.get('action') in [4, 5, 6])
             print(f"        買入次數: {buys}, 賣出次數: {sells}")
         
         # =========================================================
@@ -623,8 +624,8 @@ class BacktestEngine:
         
         # 交易次數統計
         total_trades = len(self.trade_history)
-        buy_trades = sum(1 for t in self.trade_history if t.get('action') == 1)
-        sell_trades = sum(1 for t in self.trade_history if t.get('action') == 2)
+        buy_trades = sum(1 for t in self.trade_history if t.get('action') in [1, 2, 3])
+        sell_trades = sum(1 for t in self.trade_history if t.get('action') in [4, 5, 6])
         
         # ============================================================
         # 其他指標
@@ -703,8 +704,8 @@ class BacktestEngine:
         if len(self.trade_history) < 2:
             return 0.0
         
-        buy_trades = [t for t in self.trade_history if t.get('action') == 1]
-        
+        buy_trades = [t for t in self.trade_history if t.get('action') in [1, 2, 3]]
+
         if not buy_trades:
             return 0.0
         
@@ -715,7 +716,8 @@ class BacktestEngine:
             # 找對應的賣出交易
             for j in range(i + 1, len(self.trade_history)):
                 sell_trade = self.trade_history[j]
-                if sell_trade.get('action') in [2, 3]:  # SELL or CLOSE
+                # TaiwanStockTradingEnv discrete sell actions: 4=SELL_1000, 5=SELL_5000, 6=SELL_10000
+                if sell_trade.get('action') in [4, 5, 6]:
                     sell_step = sell_trade.get('step', 0)
                     holding_periods.append(sell_step - buy_step)
                     break

@@ -31,12 +31,20 @@ import time
 import warnings
 
 # 引入統一資料工具（PyArrow 24 相容 + graceful fallback）
-from data.data_utils import (
-    read_parquet_safe,
-    write_parquet_safe,
-    normalize_date_column,
-    CacheValidator,
-)
+try:
+    from .data_utils import (
+        read_parquet_safe,
+        write_parquet_safe,
+        normalize_date_column,
+        CacheValidator,
+    )
+except ImportError:
+    from data.data_utils import (
+        read_parquet_safe,
+        write_parquet_safe,
+        normalize_date_column,
+        CacheValidator,
+    )
 
 # 忽略警告
 warnings.filterwarnings('ignore')
@@ -45,6 +53,12 @@ warnings.filterwarnings('ignore')
 # =============================================================================
 # 便利函數
 # =============================================================================
+
+
+def _inclusive_history_end(value: Union[str, datetime]) -> str:
+    """yfinance history() treats end as exclusive; move it forward one day."""
+    return (pd.Timestamp(value).normalize() + timedelta(days=1)).strftime("%Y-%m-%d")
+
 
 def fetch_stock_data(
     symbol: str,
@@ -94,7 +108,11 @@ def fetch_stock_data(
     
     try:
         ticker = yf.Ticker(yf_symbol)
-        df = ticker.history(start=start_date, end=end_date, interval=interval)
+        df = ticker.history(
+            start=start_date,
+            end=_inclusive_history_end(end_date),
+            interval=interval,
+        )
         
         if df.empty:
             print(f"[fetch_stock_data] {symbol} 無數據")
@@ -458,21 +476,33 @@ class TaiwanStockDataLoader:
     ) -> pd.DataFrame:
         """
         下載個股歷史股價數據
-        
+
         Args:
             symbol: 股票代碼 (例如 '2330' 或 '2330.TW')
             start: 開始日期
             end: 結束日期
             interval: K線週期 ('1d', '1wk', '1mo')
-            use_cache: 是否使用快取
-        
+            use_cache: 是否使用快取（已廢棄，現在從 DuckDB 資料庫取得）
+
         Returns:
             包含 OHLCV 數據的 DataFrame
         """
-        # 格式化代碼
+        # ── Step 1: 從 DuckDB 資料庫取得（無網路）────────────────────────────
+        if use_cache:
+            try:
+                from FinRL.data import stock_db
+                db_df = stock_db.query_ohlcv(symbol, str(start)[:10], str(end)[:10])
+                if not db_df.empty:
+                    print(f"[TaiwanStockDataLoader] 從 DuckDB 資料庫取得 {symbol}: {len(db_df)} 筆")
+                    # 轉成標準備欄位格式（與原本一致）
+                    out = db_df.rename(columns={"dt": "date"}).copy()
+                    out["date"] = pd.to_datetime(out["date"])
+                    return out
+            except Exception as e:
+                print(f"[TaiwanStockDataLoader] DuckDB 查詢失敗，改用快取: {e}")
+
+        # ── Step 2: 從 parquet 快取取得 ──────────────────────────────────────
         yf_symbol = self.format_symbol(symbol)
-        
-        # 生成快取檔名
         cache_file = self.cache_dir / f"{symbol.replace('.', '_')}_{start}_{end}_{interval}.parquet"
         
 # 檢查快取（使用 read_parquet_safe + CacheValidator）
@@ -497,7 +527,11 @@ class TaiwanStockDataLoader:
         
         def _download():
             ticker = yf.Ticker(yf_symbol)
-            df = ticker.history(start=start, end=end, interval=interval)
+            df = ticker.history(
+                start=start,
+                end=_inclusive_history_end(end),
+                interval=interval,
+            )
             return df
         
         try:

@@ -126,7 +126,7 @@
     "note": "Signals use day-t data, trades execute at next trading day's open, and performance is marked at next close."
   },
   "group_a_dca_config": {
-    "dca_day": 20,
+    "dca_day": 26,
     "monthly_amounts": {
       "0050.TW": 5000.0
     },

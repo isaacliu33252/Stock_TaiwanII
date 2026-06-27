@@ -1,0 +1,64 @@
+{
+  "strategy_name": "GroupA_meta_ensemble_real_v1",
+  "status": "shadow_candidate",
+  "base_strategy": "Golden1_0531",
+  "tdcc_overlay": "Golden1_0531_tdcc_v1",
+  "models": {
+    "ppo": "Golden1_0531 released PPO",
+    "a2c": "models/portfolio/group_a_a2c_shadow_20260603_110247.zip",
+    "sac": "models/portfolio/group_a_sac_shadow_20260603_110247.zip",
+    "rule_based": "deterministic regime risk-control sleeve"
+  },
+  "selected_allocator_profile": "ppo_dominant_tdcc_cap",
+  "selected_signal_profile": "adaptive_momcash_price_severe12_vote_bearfilter_recovery_defense22",
+  "selected_signal_sweep": "results/group_a_meta_real_vote_tune_sweep_20250101_20260606_llmfilled.json",
+  "selected_allocator_sweep": "results/group_a_meta_real_allocator_sweep_20260603_optimized.json",
+  "allocator_profiles": {
+    "ppo_dominant_tdcc_cap": {
+      "risk_on": {
+        "ppo": 0.85,
+        "a2c": 0.0,
+        "sac": 0.1,
+        "rule_based": 0.05
+      },
+      "neutral": {
+        "ppo": 0.9,
+        "a2c": 0.0,
+        "sac": 0.0,
+        "rule_based": 0.1
+      },
+      "risk_off": {
+        "ppo": 0.85,
+        "a2c": 0.0,
+        "sac": 0.0,
+        "rule_based": 0.15
+      }
+    }
+  },
+  "latest_backtest": {
+    "window": "2025-01-02_to_2026-06-02_llmfilled",
+    "final_value": 2237637.31,
+    "sharpe_ratio": 2.8383,
+    "max_drawdown": -0.16726,
+    "num_rebalances": 68,
+    "final_cash_weight": 0.1497,
+    "final_00631l_weight": 0.080132,
+    "delta_final_vs_base": 77263.22,
+    "delta_final_vs_tdcc": 162187.84,
+    "control_counts": {
+      "momentum_cash": 42,
+      "conditional_inverse": 8,
+      "severe_inverse": 9,
+      "recovery": 71,
+      "regime_vote": 11,
+      "bear_defense": 11
+    }
+  },
+  "promotion_decision": "do_not_promote",
+  "promotion_blockers": [
+    "Vote-filtered recovery plus bear defense is newly selected and needs live shadow observation before any production promotion.",
+    "The profile improves 2025-2026, 2022, and 2020 replay windows, but still needs live stability checks around regime changes.",
+    "SAC continuous-weight retrain underperformed out-of-sample and is not selected.",
+    "A2C shadow model is useful as a check but did not improve final value enough to justify production weight."
+  ]
+}

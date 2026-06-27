@@ -1,0 +1,232 @@
+{
+  "name": "GroupA+ focused_tdcc_0124_stab5_turn12_fast_cd3",
+  "description": "Group A LLM meta strategy。A20（2026-06-18）：重驗 A16 後的平衡型改善。A16 0135_stab2_turn14 在單一近期 replay 中最佳，但 multi-window stress guardrail 較弱。A20 回到 TDCC bands 0/1/2/4、stability_days=5，並把 risk_off/severe turnover cap 降到 12%。此設定讓近期 replay final 高於 A16，同時修復 stress min-Sharpe 轉負與 worst-window final drag 較弱的問題。維持不使用 second-stage pause、不使用 VIX/turbulence。外層控制沿用 FinRL-Trading 風格：fast risk-off、00631L stop/cooldown、signal audit metadata。A20.1 switch layer 加入 total_risk_score>=6 確認條件，在 2026-06-18 最新資料重跑下維持同一切換事件並改善防誤觸語義。A20.2 參考 Applied Quantitative Finance 的 VaR 與局部波動狀態概念，新增 tail_risk_score 候選診斷；重跑後 tail1 會延後 2025-02-27 防守切換並降低績效，因此不升級為 recommended。A20.3 參考 Nonlinear Optimization with Financial Applications 的 downside risk 與 worst-case analysis，新增 downside_deviation、Sortino、worst_daily_return、worst_20d_return 評估欄位；重跑後 recommended 仍為 risk_ma90_dd12_total6_hold5。A20.4 參考 Quantitative Finance for Physicists - An Introduction 的 coherent risk / Expected Tail Loss，新增 value_at_risk_5pct 與 expected_tail_loss_5pct；ETL 較佳的短週期防守規則總報酬明顯較低，因此正式 recommended 不變。A20.5 依第 11 章補齊 VaR 模型檢驗與波動率加權歷史模擬，新增 Kupiec test、VaR breach ratio、volatility-weighted VaR/ETL；5% VaR breach ratio 為 5.13%，Kupiec p-value 0.913，模型覆蓋率未見明顯偏誤。A20.6 最新 2025~2026 fine sweep 後，switch layer 由 risk_ma90_dd12_total6_hold5 微調為 risk_ma80_dd11_total6_hold5_eg015_xg015。A20.7 二次 refine 固定 total_risk_score>=6，進一步微調為 risk_ma75_dd11_total6_hold5_eg0175_xg020；維持 2025-02-25 進防守，但提早至 2025-06-05 退出，final、Sharpe、Sortino 再小幅改善，MDD 持平。",
+  "status": "promotion_candidate",
+  "base_strategy": "GroupA_meta_ensemble_real_v1",
+  "base_signal_json": "results/group_a_meta_ensemble_shadow_live_latest.json",
+  "base_signal_sweep": "results/group_a_meta_real_vote_tune_sweep_20250101_20260606_llmfilled.json",
+  "overlay": {
+    "type": "defensive_bond_sleeve",
+    "ticker": "00679B.TWO",
+    "name": "元大美債20年",
+    "default_current_shares": 10000,
+    "target_policy": "static",
+    "reference_static_mix": {
+      "group_a_weight": 0.8,
+      "00679b_weight": 0.2
+    },
+    "dynamic_weight_bands": {
+      "risk_on": 0.00,
+      "caution": 0.01,
+      "risk_off": 0.02,
+      "severe": 0.04
+    },
+    "regime_stability_consecutive_days": 5
+  },
+  "leverage_control": {
+    "ticker": "00631L.TW",
+    "release_to": "cash",
+    "_comment": "2026-06-11 cap sweep winner. risk_on cap=20% stays above the observed bull-market max. caution cap=18% avoids the 15% drag seen in zero_overhead. risk_off/severe cap=0% removes 00631L during stress.",
+    "max_weight_by_regime": {
+      "risk_on": 0.20,
+      "caution": 0.18,
+      "risk_off": 0.00,
+      "severe": 0.00
+    }
+  },
+  "execution_control": {
+    "default_turnover_penalty_by_regime": {
+      "risk_on": 0.0,
+      "caution": 0.0,
+      "risk_off": 0.0,
+      "severe": 0.0
+    },
+    "live_turnover_penalty_by_regime": {
+      "risk_on": 0.0,
+      "caution": 0.0,
+      "risk_off": 0.0,
+      "severe": 0.0
+    },
+    "buy_fraction_by_regime": {
+      "risk_on": 1.0,
+      "caution": 1.0,
+      "risk_off": 1.0,
+      "severe": 1.0
+    },
+    "sell_fraction_by_regime": {
+      "risk_on": 1.0,
+      "caution": 1.0,
+      "risk_off": 1.0,
+      "severe": 1.0
+    },
+    "defensive_sleeve_sell_fraction_by_regime": {
+      "risk_on": 1.0,
+      "caution": 1.0,
+      "risk_off": 1.0,
+      "severe": 1.0
+    },
+    "max_turnover_ratio_by_regime": {
+      "risk_on": 1.0,
+      "caution": 1.0,
+      "risk_off": 0.12,
+      "severe": 0.12
+    }
+  },
+  "fast_risk_off_control": {
+    "_comment": "FinRL-Trading import #1. Daily emergency overlay using 0050 as TW market proxy. Conservative default avoids ordinary bull-market pullbacks; if triggered, force risk_off, cap 00631L to 0%, and keep at least 30% cash for a short cooldown window.",
+    "enabled": true,
+    "reference_ticker": "0050.TW",
+    "lookback_days": 3,
+    "drawdown_threshold": -0.05,
+    "duration_days": 3,
+    "override_regime": "risk_off",
+    "cap_ticker": "00631L.TW",
+    "cap_weight": 0.0,
+    "cash_floor": 0.30
+  },
+  "leverage_stop_cooldown": {
+    "_comment": "FinRL-Trading import #2. Position-level 00631L guard. Conservative default only triggers on larger leverage damage, avoiding the 2025-2026 false-positive drag seen with -10% trailing / -8% short-term settings.",
+    "enabled": true,
+    "ticker": "00631L.TW",
+    "lookback_days": 20,
+    "trailing_stop_pct": -0.15,
+    "absolute_lookback_days": 5,
+    "absolute_stop_pct": -0.12,
+    "cooldown_days": 3,
+    "cap_weight": 0.0
+  },
+  "signal_audit": {
+    "_comment": "FinRL-Trading import #3. Emit regime, risk overlay, leverage cap, execution, and cost metadata in every GroupA+ JSON output.",
+    "enabled": true,
+    "include_risk_overlay_report": true,
+    "include_execution_report": true,
+    "include_cost_report": true
+  },
+  "second_stage_control": {
+    "_comment": "DISABLED — causes false pauses in bull markets. No benefit in backtest.",
+    "reference_ticker": "0050.TW",
+    "pause_on_break_reference_low": false,
+    "break_low_buffer": 0.0,
+    "price_tolerance": 0.01,
+    "pause_on_open_gap_down": false,
+    "pause_open_gap_down_pct": -0.015,
+    "release_fraction_by_trigger": {
+      "close_above_reference_close": 1.0,
+      "intraday_recovery": 1.0,
+      "hold_deferred_buys": 1.0
+    }
+  },
+  "vix_regime_control": {
+    "_comment": "DISABLED — VIX upgrade causes false risk_off during volatile bull markets.",
+    "enabled": false,
+    "source": "yfinance ^VIX",
+    "lookback_days": 1,
+    "threshold_risk_off": 25.0,
+    "threshold_severe": 35.0
+  },
+  "turbulence_control": {
+    "_comment": "DISABLED — turbulence upgrade causes false risk_off/severe during volatile bull markets.",
+    "enabled": false,
+    "override_regime": true,
+    "lookback_window": 252,
+    "min_history": 60,
+    "threshold_risk_off": 50.0,
+    "threshold_severe": 100.0
+  },
+  "latest_reference": {
+    "as_of_date": "2026-06-17",
+    "actual_data_date": "2026-06-17",
+    "clean_payload": "results/group_a_payload_clean_cashdiv_dca8000_20260612.json",
+    "latest_group_a_signal": "results/signal_group_a_20260617_230855.json",
+    "latest_group_a_plus_final_signal": "results/group_a_plus_final_signal_a20_20260617.json",
+    "latest_group_a_plus_policy_signal": "results/group_a_plus_policy_signal_20260618_104659.json",
+    "stress_test_result": "results/group_a_plus_a20_turn10_12_stress_20260618.json",
+    "strict_cost_result": "results/group_a_plus_a20_turn10_12_replay_20260618.json",
+    "backtest_result": "results/group_a_plus_a20_turn10_12_replay_20260618.json",
+    "policy_backtest_result": "results/group_a_plus_policy_signal_backtest_a20_pipeline.json",
+    "switch_policy_result": "results/group_a_plus_switch_policy_backtest_latest_ma75_risk6_confirm_20260618.json",
+    "switch_sweep_result": "results/group_a_plus_switch_sweep_a20_20260618.json",
+    "variant_tested": "focused_tdcc_0124_stab5_turn12_fast_cd3"
+  },
+  "backtest_summary": {
+    "variant": "focused_tdcc_0124_stab5_turn12_fast_cd3",
+    "base_final": 2207967,
+    "plus_final": 2291456,
+    "drag": 0.0378,
+    "drag_absolute": 83489,
+    "sharpe_base": 2.7675,
+    "sharpe_plus": 2.9231,
+    "sharpe_delta": 0.1556,
+    "mdd_base": -0.1686,
+    "mdd_plus": -0.1586,
+    "vol_base": 0.2198,
+    "vol_plus": 0.2173,
+    "vol_reduction": 0.0025,
+    "num_rebalances": 75,
+    "total_cap_events": 0,
+    "cap_regimes": "tdcc_stability_filtered",
+    "promotion_gate": "promotion_candidate",
+    "a20_notes": "A20（2026-06-18）：重驗 A16 後確認 0135_stab2_turn14 能改善近期 replay，但 stress guardrail 較弱。A20 選用 0124_stab5_turn12_fast_cd3：相對 A16，近期 final +1,390，stress worst final 改善約 10,517，stress min Sharpe delta 由 -0.0013 改善到 +0.0230。代價是近期 Sharpe -0.0104、MDD -0.118pp。"
+  },
+  "recommended_profile": {
+    "name": "focused_tdcc_0124_stab5_turn12_fast_cd3",
+    "selection_basis": "A20（2026-06-18）：重驗 A16 並完成 turn10/11/12 replay + multi-window stress 後選定。相對 A16，近期 replay final +1,390，同時修復 A16 stress min-Sharpe 轉負問題，並改善 worst-window final drag。這是平衡型防守候選，不是單純追求最高報酬的 profile。",
+    "risk_off_controls": {
+      "00679b_weight": 0.02,
+      "00679b_caution_weight": 0.01,
+      "00679b_severe_weight": 0.04,
+      "regime_stability_consecutive_days": 5,
+      "buy_fraction": 1.0,
+      "defensive_sleeve_sell_fraction": 1.0,
+      "max_turnover_ratio": 0.12,
+      "fast_risk_off_duration_days": 3,
+      "00631l_max_weight_risk_on": 0.20,
+      "00631l_max_weight_caution": 0.18,
+      "00631l_max_weight_risk_off": 0.00,
+      "00631l_max_weight_severe": 0.00
+    },
+    "promotion_gate": "promotion_candidate"
+  },
+  "promotion_gate": {
+    "_comment": "Thresholds for deciding whether a GroupA+ variant is promoted to production.",
+    "promotion_max_final_drag_pct": -0.10,
+    "promotion_min_sharpe_delta": -0.05,
+    "risk_control_max_final_drag_pct": -0.15,
+    "risk_control_min_volatility_reduction": 0.01,
+    "risk_control_min_sharpe_delta": -0.05,
+    "retrain_min_volatility_reduction": 0.02,
+    "retrain_max_final_drag_pct": -0.20
+  },
+  "notes": [
+    "A20（2026-06-18）：重驗 A16 並跑完 replay/stress 後，選定 focused_tdcc_0124_stab5_turn12_fast_cd3。近期 replay：final=2,291,456、Sharpe=2.9231、MDD=-15.86%、vol=21.73%。相對 A16：final +1,390、Sharpe -0.0104、MDD -0.118pp、vol +0.100pp。Stress aggregate：positive final 4/5、avg final delta +54,330、worst final delta -18,627、min Sharpe delta +0.0230。",
+    "A16 重驗（2026-06-18）：focused_tdcc_0135_stab2_turn14_fast_cd3 仍是單一近期 replay 最佳 variant，但 stress min Sharpe delta 小幅轉負（-0.0013），worst final delta 較弱（-29,143）。A16 保留為 return-seeking research，不作為 balanced production default。",
+    "A15→A16（2026-06-17，修正後）：Direction 1+2 combined。stability_days 5→2、bands 0124→0135。相對 A15：final +3,801、Sharpe +0.0151、vol -0.076pp、MDD +0.030pp。Direction 3（00632R inverse）已寫入，但 2025-2026 replay severe regime=0，因此未實際啟用。",
+    "Direction 3 implementation: backtest_group_a_plus_overlay.py _add_focused_inverse_variants() + _group_a_plus_target() inverse_control block. Sweep 00632R severe_inverse_weight 3-10%.",
+    "cap_guard_optimized design (2026-06-11) — current default",
+    "2026-06-11 cap sweep tested risk_on 18%-25%, caution 12%-22%, risk_off 0%-20%, severe 0%-8%. Best return/score used risk_on>=20%, caution>=18%, risk_off=0%, severe not binding.",
+    "Previous configs: v3 (TDCC removed but VIX/turbulence/second_stage still caused -8.5% drag), v4 (VIX/turbulence/second_stage off but 8% cap caused -220K drag)",
+    "Key discovery: ALL overlay mechanisms failed due to bull market (2025-2026). The only meaningful control is leverage cap.",
+    "Old risk_on cap=8% was wrong — base 00631L mean=10.7%, max=19.5%. Capping at 8% during bull market = -200K drag.",
+    "New risk_on cap=20% = never binds in observed replay. caution cap=18% avoids the drag from the previous 15% cap. risk_off cap=0%, severe cap=0%.",
+    "VIX, turbulence, and second_stage remain disabled. TDCC bond sleeve is re-enabled with stability_days=5 and 0/1/2/4 bands.",
+    "Latest focused stability sweep result: +1.16% vs base approximation, +0.1024 Sharpe, MDD improves by 0.53pp, vol reduces by 0.53pp. Promotion gate: PASS.",
+    "Next step: use this as the live GroupA+ config and refresh the cap sweep after the next material regime change.",
+    "2026-06-12: TDCC re-enabled per user request. Initial dynamic_weight_bands: risk_on=0%, caution=1%, risk_off=2%, severe=4%. TDCC backtest (2024-01 to 2026-06): Sharpe +0.106, MDD -26.42% (vs -28.15% no TDCC), vol lower, trades -36. Annual return -3.2% (61.05% vs 64.25%) but long-term複利 benefit expected.",
+    "2026-06-12: A1 槓桿 stop 靈敏度調整——trailing -20%→-15%, absolute -15%→-12%, cooldown 5→3天。理由：5年低點 -15.3% 只差 0.3% 未觸發，市場反彈後槓桿來不及重新進場。",
+    "2026-06-12: A2 00679B 動態區間擴容——caution 1%→2%, risk_off 2%→5%, severe 4%→8%。risk_on 維持 0%。預期 Sharpe 改善，換取長期複利。",
+    "2026-06-12: A3 TDCC stability sweep 完成。focused_tdcc_0258_stab3 最佳：final=2,233,527, Sharpe=2.8699, MDD=-16.33%, vol=21.45%。正式設定 regime_stability_consecutive_days=3。",
+    "2026-06-12: A4 execution turnover sweep 完成。focused_tdcc_0258_stab3_turn15 為 2025-2026 replay 最佳：final=2,280,348, Sharpe=2.9280, MDD=-15.64%, vol=21.56%。",
+    "2026-06-12: A5 2008 turnover stress sweep 完成。turn12 較 turn15 犧牲近期 final 約 2,188，但 2008 proxy final +4,452、MDD +0.53pp、Sharpe +0.0019。",
+    "2026-06-13: A6 multi-window turnover review 完成。turn08 的 worst-window final drag 較好（-12,073 vs turn12 -24,645），但 turn12 的 2025-2026 strict-cost final、Sharpe、MDD、volatility 與 balanced score 較佳。正式設定切回 turn12；turn08 保留為 tail-risk fallback。",
+    "2026-06-13: A7 full cap review 完成。turn15 strict-cost final 最高，但 stress guardrail fail（worst-window final drag -29,866、min Sharpe delta 轉負），因此 turn15 只保留為 return-seeking research；turn12 是通過 guardrail 的最高分正式 profile。",
+    "2026-06-13: A8 stability/turnover hybrid review 完成。stab5_turn15 通過 guardrail，近期 replay final 幾乎持平於 stab3_turn12（-341）但 Sharpe/MDD/vol 較佳；multi-window worst final drag 改善至 -20,356（stab3_turn12 為 -24,645）。正式 profile 升級為 focused_tdcc_0258_stab5_turn15。",
+    "2026-06-13: A9 TDCC band review 完成。focused_tdcc_0235_stab5_turn15 相對 A8 近期 final +320、stress avg final delta +2,585、stress min Sharpe delta +0.0209；代價是近期 Sharpe/MDD/vol 小幅回吐、worst final drag 小幅變差 263。正式 profile 升級為 focused_tdcc_0235_stab5_turn15；A8 保留為近期風控 fallback。",
+    "2026-06-14: A10 TDCC band fine sweep 完成。focused_tdcc_0124_stab5_turn15 相對 A9 近期 final +26、近期成本 -349、stress avg final delta +1,683、stress min Sharpe delta +0.0024；代價是近期 Sharpe/MDD/vol 小幅回吐、worst final drag 小幅變差 138。正式 profile 升級為 focused_tdcc_0124_stab5_turn15；A9 保留為平衡 Sharpe/MDD fallback。",
+    "2026-06-14: A11 0124 stability/turnover sweep 完成但不升級。stab2_turn10/12 的近期 final 較高，但 stress worst final drag 明顯變差；0258_stab2_turn08/10 壓力較穩但近期 final 犧牲太大。A10 focused_tdcc_0124_stab5_turn15 仍是正式 baseline。",
+    "2026-06-14: A12 leverage stop/cooldown sweep 完成但不升級。正式 A10 profile 與 stop_disabled/stop_loose/stop_base 結果相同；更緊的 stop_fast 近期 final 下降約 10,805。維持現行 -15% trailing、-12% absolute、3 日 cooldown。",
+    "2026-06-14: A13 fast risk-off sweep 完成。fast_cd3 將 fast risk-off duration 由 5 日縮短為 3 日，近期 final +5,770、Sharpe +0.0029，stress avg final delta +2,633，且近期 MDD、stress worst final drag、stress min Sharpe 不變。正式 profile 升級為 focused_tdcc_0124_stab5_turn15_fast_cd3。",
+    "2026-06-14: A14 low-bond/fast-cash check 完成但不升級。0113/0114_stab5_turn15_fast_cd3 可將 stress avg final delta 由 57,089 提高至 59,036，但近期 final/Sharpe 低於 A13，且 worst final drag 與 min Sharpe delta 略差。0123/0125 與 fast_cash20/25 無足夠增益。維持 focused_tdcc_0124_stab5_turn15_fast_cd3。",
+    "2026-06-14: A15 turnover fine sweep 完成並升級。turn14 相對 A13/turn15 近期 final +2,642、Sharpe +0.0023，stress worst final drag 改善 630、min Sharpe delta 改善 0.0034；代價是 stress avg final delta -1,052、近期 MDD/vol 小幅回吐。正式 profile 升級為 focused_tdcc_0124_stab5_turn14_fast_cd3；turn13 保留為 return-seeking research，turn15 保留為 stress-average fallback。",
+    "2026-06-14: A16 turn14 fast risk-off check 完成但不升級。fast_loose 與 A15 結果相同；fast_tight、fast_cd2、fast_cash20、fast_cash25 均降低近期 final/Sharpe。fast_cash25 僅讓 stress avg final delta +81，worst final drag 與 min Sharpe 不變，不足以抵銷近期 replay drag。維持 focused_tdcc_0124_stab5_turn14_fast_cd3。"
+  ]
+}

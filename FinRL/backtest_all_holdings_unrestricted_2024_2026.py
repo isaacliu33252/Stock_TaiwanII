@@ -32,9 +32,9 @@ from portfolio_train_v2 import calculate_backtest_metrics
 
 
 BACKTEST_START = "2024-01-01"
-BACKTEST_END = "2026-05-08"
+BACKTEST_END = "2026-05-15"
 DOWNLOAD_START = "2020-01-01"
-DOWNLOAD_END = "2026-05-09"
+DOWNLOAD_END = "2026-05-22"
 BENCHMARK_TICKER = "0050.TW"
 MODEL_PATH = PROJECT_ROOT / "models" / "portfolio" / "portfolio_all_holdings_2020_2023_ppo"
 

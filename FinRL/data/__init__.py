@@ -54,6 +54,7 @@ try:
         is_trading_day,
         load_taiwan_stock_data,
     )
+    from . import stock_db
 except ImportError:
     # 當 FinRL 未安裝時（直接執行 script），使用本地匯入
     from data.data_loader import (
@@ -65,6 +66,7 @@ except ImportError:
         is_trading_day,
         load_taiwan_stock_data,
     )
+    from data import stock_db
 
 # data_processor.py - 資料處理
 try:
@@ -135,6 +137,8 @@ except ImportError:
 
 # 便利直接匯入
 __all__ = [
+    # 資料庫 (DuckDB)
+    "stock_db",
     # 資料載入
     "TaiwanStockDataLoader",
     "fetch_stock_data",

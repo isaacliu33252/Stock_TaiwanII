@@ -2,6 +2,7 @@
 """雙組訓練：Group A (0050+00631L+00632R) + Group B (高股息/S&P500/美債) → Group A 預設回測 2024-2026"""
 
 import argparse
+import duckdb
 import json
 import re
 import sys
@@ -24,7 +25,7 @@ from portfolio_config import COMMISSION_RATE, ETF_TAX_RATE, TRANSACTION_TAX_RATE
 from portfolio_train_v2 import calculate_backtest_metrics
 from build_llm_sentiment_features import prepare_llm_sentiment_path
 from FinRL.data.data_utils import read_parquet_safe
-from FinRL.data.stock_db import query_ohlcv
+from FinRL.data.stock_db import DB_PATH, query_ohlcv
 from FinRL.portfolio_data_loader import (
     LLM_SENTIMENT_COLUMNS,
     MARKET_FEATURE_COLUMNS,
@@ -44,7 +45,7 @@ DEFAULT_DOWNLOAD_END = "2026-05-09"
 DEFAULT_WORKBOOK = PROJECT_ROOT / "taiwan_stock_20260516_group.xlsx"
 
 # Group A: 0050 + 00631L + 00632R，預設訓練 2020-2023 / 回測 2024-2026
-DEFAULT_GROUP_A_TICKERS = ["0050.TW", "00631L.TW", "00632R.TW"]
+DEFAULT_GROUP_A_TICKERS = ["0050.TW", "00631L.TW", "00632R.TW", "00679B.TWO"]
 DEFAULT_GROUP_A_TRAIN_START = "2020-01-01"
 DEFAULT_GROUP_A_TRAIN_END = "2023-12-31"
 DEFAULT_GROUP_A_MODEL_NAME = "group_a_3tickers_2020_2023"
@@ -55,12 +56,45 @@ DEFAULT_GROUP_A_INVERSE_MAX_HOLD_DAYS = 5
 DEFAULT_GROUP_A_PVA_TARGET_VOL = 0.012
 DEFAULT_GROUP_A_PVA_MIN_LEVERAGE_SCALE = 0.35
 DEFAULT_GROUP_A_PVA_INVERSE_HEDGE_BUDGET = 0.30
+DEFAULT_GROUP_A_PVA_WEIGHT = 0.0
+DEFAULT_GROUP_A_PVA_DRIFT_THRESHOLD = 0.0
+DEFAULT_GROUP_A_PVA_BUY_DIP_STRENGTH = 0.0
+DEFAULT_GROUP_A_PVA_J_STATE_WEIGHT = 0.0
+DEFAULT_GROUP_A_PVA_M_STATE_WEIGHT = 0.0
+DEFAULT_GROUP_A_PVA_S_STATE_MAX_WEIGHT = 1.0
+DEFAULT_GROUP_A_PVA_S_STATE_DRIFT_BOOST = 0.0
 DEFAULT_GROUP_A_SENTIMENT_RISK_OFF_THRESHOLD = 0.10
 DEFAULT_GROUP_A_SENTIMENT_SEVERE_THRESHOLD = 0.15
 DEFAULT_GROUP_A_SENTIMENT_MIN_CONFIDENCE = 0.40
 DEFAULT_GROUP_A_SENTIMENT_MIN_INTENSITY = 0.0
 DEFAULT_GROUP_A_SENTIMENT_RISK_OFF_INVERSE_FLOOR = 0.15
 DEFAULT_GROUP_A_SENTIMENT_SEVERE_INVERSE_FLOOR = 0.30
+DEFAULT_GROUP_A_SENTIMENT_POSITIVE_THRESHOLD = 0.20
+DEFAULT_GROUP_A_SENTIMENT_POSITIVE_MIN_CONFIDENCE = 0.50
+DEFAULT_GROUP_A_SENTIMENT_POSITIVE_MAX_RISK_OFF_SCORE = 0.05
+DEFAULT_GROUP_A_SENTIMENT_POSITIVE_LEVERAGE_BOOST = 0.0
+DEFAULT_GROUP_A_LOCAL_REGIME_GATE_RISK_OFF_SCORE_THRESHOLD = 2
+DEFAULT_GROUP_A_LOCAL_REGIME_GATE_SEVERE_SCORE_THRESHOLD = 3
+DEFAULT_GROUP_A_LOCAL_REGIME_GATE_RISK_OFF_CLEAR_DAYS = 3
+DEFAULT_GROUP_A_LOCAL_REGIME_GATE_SEVERE_CLEAR_DAYS = 4
+DEFAULT_GROUP_A_LOCAL_REGIME_GATE_RECOVERY_MA60_RATIO = 1.01
+DEFAULT_GROUP_A_LOCAL_REGIME_GATE_RECOVERY_MOMENTUM_21 = 0.01
+DEFAULT_GROUP_A_LOCAL_REGIME_GATE_RECOVERY_DRAWDOWN_20 = -0.03
+DEFAULT_GROUP_A_LOCAL_REGIME_GATE_RECOVERY_TWSE_RETURN_5D = 0.0
+DEFAULT_GROUP_A_LOCAL_REGIME_GATE_RISK_OFF_TEMPLATE = "0050_only"
+DEFAULT_GROUP_A_LOCAL_REGIME_GATE_SEVERE_TEMPLATE = "0050_70_00632R_30"
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_RISK_OFF_MARGIN_FLOW_THRESHOLD = 0.0
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_RISK_OFF_SHORT_FLOW_THRESHOLD = 0.0
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_RISK_OFF_MARGIN_GROWTH_Z_THRESHOLD = 0.0
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_RISK_OFF_SHORT_GROWTH_Z_THRESHOLD = 0.0
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_RISK_OFF_CASH_FLOOR = 0.0
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_RISK_OFF_INVERSE_FLOOR = 0.0
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_SEVERE_MARGIN_FLOW_THRESHOLD = 0.0
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_SEVERE_SHORT_FLOW_THRESHOLD = 0.0
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_SEVERE_MARGIN_GROWTH_Z_THRESHOLD = 0.0
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_SEVERE_SHORT_GROWTH_Z_THRESHOLD = 0.0
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_SEVERE_CASH_FLOOR = 0.0
+DEFAULT_GROUP_A_MARKET_MARGIN_GATE_SEVERE_INVERSE_FLOOR = 0.0
 
 # Group B: 多檔訓練（2020-2024）
 DEFAULT_GROUP_B_TICKERS = [
@@ -187,6 +221,63 @@ GROUP_A_PROFILE_PRESETS = {
     },
 }
 
+GROUP_B_PROFILE_PRESETS = {
+    "balanced": {
+        "env": {
+            "profile_name": "balanced",
+            "turnover_penalty": 0.0005,
+            "equal_benchmark_weight": 0.3,
+            "blend_benchmark_weight": 2.2,
+            "underperform_0050_weight": 0.05,
+            "leveraged_benchmark_weight": 1.0,
+            "drawdown_penalty_weight": 0.2,
+            "deep_drawdown_penalty_weight": 0.0,
+            "deep_drawdown_threshold": 1.0,
+            "concentration_penalty_weight": 0.3,
+            "concentration_threshold": 0.65,
+            "min_rebalance_days": 5,
+            "leverage_cap": 0.30,
+            "inverse_cap": 0.30,
+            "stress_gate_enabled": False,
+            "start_allocation": "equal_weight",
+        },
+        "ppo": {
+            "learning_rate": 3e-4,
+            "n_steps": 1024,
+            "gamma": 0.99,
+            "gae_lambda": 0.95,
+            "ent_coef": 0.08,
+        },
+    },
+    "defensive": {
+        "env": {
+            "profile_name": "defensive",
+            "turnover_penalty": 0.0025,
+            "equal_benchmark_weight": 0.15,
+            "blend_benchmark_weight": 0.0,
+            "underperform_0050_weight": 0.2,
+            "leveraged_benchmark_weight": 0.25,
+            "drawdown_penalty_weight": 1.25,
+            "deep_drawdown_penalty_weight": 2.0,
+            "deep_drawdown_threshold": 0.10,
+            "concentration_penalty_weight": 0.0,
+            "concentration_threshold": 1.0,
+            "min_rebalance_days": 15,
+            "leverage_cap": 0.30,
+            "inverse_cap": 0.30,
+            "stress_gate_enabled": True,
+            "start_allocation": "equal_weight",
+        },
+        "ppo": {
+            "learning_rate": 2e-4,
+            "n_steps": 1024,
+            "gamma": 0.99,
+            "gae_lambda": 0.95,
+            "ent_coef": 0.02,
+        },
+    },
+}
+
 
 # ==============================================================================
 # 通用工具
@@ -213,8 +304,27 @@ def _resolve_group_a_profile(profile_name: str) -> dict:
     }
 
 
+def _resolve_group_b_profile(profile_name: str) -> dict:
+    preset = GROUP_B_PROFILE_PRESETS.get(profile_name)
+    if preset is None:
+        supported = ", ".join(sorted(GROUP_B_PROFILE_PRESETS))
+        raise ValueError(f"Unsupported Group B profile: {profile_name}. Choices: {supported}")
+    return {
+        "name": profile_name,
+        "env": dict(preset["env"]),
+        "ppo": dict(preset["ppo"]),
+    }
+
+
 def _compute_features(df: pd.DataFrame) -> pd.DataFrame:
-    """計算投資組合環境所需的技術特徵"""
+    """計算投資組合環境所需的技術特徵（保留額外欄位如 DB 特徵）"""
+    # 保留非標準欄位（如 attach_* 函式傳入的 institutional/margin/chip 欄位）
+    extra_cols = {c: df[c].copy() for c in df.columns
+                  if c not in ("date", "open", "high", "low", "close", "volume",
+                                "turnover", "dividends", "close_ma120_ratio",
+                                "close_ma240_ratio", "ma60_ma240_ratio",
+                                "momentum_21", "momentum_63", "momentum_126",
+                                "momentum_252", "rolling_mdd_63")}
     df = df.copy()
     close = df["close"]
     df["close_ma120_ratio"] = close / (close.rolling(120).mean() + 1e-10)
@@ -229,6 +339,10 @@ def _compute_features(df: pd.DataFrame) -> pd.DataFrame:
     rolling_max = close.rolling(63).max()
     rolling_min = close.rolling(63).min()
     df["rolling_mdd_63"] = (close - rolling_max) / (rolling_max - rolling_min + 1e-10)
+    # Restore extra columns (DB features) that were present before computing
+    for c, series in extra_cols.items():
+        if c not in df.columns:
+            df[c] = series
     return df
 
 
@@ -288,9 +402,21 @@ def _align_panel(
             available_shared_cols = [c for c in shared_feature_cols if c in df.columns]
             if available_shared_cols:
                 shared_part = df[["date"] + available_shared_cols].copy()
-        cols = ["date", "open", "close"] + [c for c in FEATURE_COLUMNS if c in df.columns]
+        # Base columns + standard features + unprefixed DB columns (from attach_*)
+        # NOTE: attach_* produces unprefixed cols (foreign_net_buy_ratio_5d, etc.)
+        # _compute_features preserves them. _align_panel will add ticker prefix here.
+        base = ["date", "open", "close", "dividends"]
+        std_feats = [c for c in FEATURE_COLUMNS if c in df.columns]
+        # Also include unprefixed DB feature columns (no ticker prefix yet)
+        db_feats = [c for c in df.columns if c not in base and c not in std_feats
+                    and not c.startswith(f"{ticker}_")]
+        cols = base + std_feats + db_feats
+        cols = list(dict.fromkeys(cols))  # deduplicate while preserving order
         part = df[cols].copy()
-        part = part.rename(columns={c: f"{ticker}_{c}" for c in cols if c != "date"})
+        # Drop any 'ticker' column leaked from attach_chip_distribution_features_db_first
+        if "ticker" in part.columns:
+            part = part.drop(columns=["ticker"])
+        part = part.rename(columns={c: f"{ticker}_{c}" for c in part.columns if c != "date"})
         frames.append(part)
 
     panel = frames[0]
@@ -350,10 +476,14 @@ DEFAULT_ACTION_LABELS = {
 GROUP_A_ACTION_SCHEMA_LEGACY_V1 = "legacy_v1"
 GROUP_A_ACTION_SCHEMA_TRIPLET_V2 = "triplet_v2"
 GROUP_A_ACTION_SCHEMA_TRIPLET_V3_CASH50 = "triplet_v3_cash50"
+GROUP_A_ACTION_SCHEMA_TRIPLET_V4 = "triplet_v4"
+GROUP_A_ACTION_SCHEMA_TRIPLET_V4_PLUS = "triplet_v4_plus"
 GROUP_A_ACTION_SCHEMA_CHOICES = (
     GROUP_A_ACTION_SCHEMA_LEGACY_V1,
     GROUP_A_ACTION_SCHEMA_TRIPLET_V2,
     GROUP_A_ACTION_SCHEMA_TRIPLET_V3_CASH50,
+    GROUP_A_ACTION_SCHEMA_TRIPLET_V4,
+    GROUP_A_ACTION_SCHEMA_TRIPLET_V4_PLUS,
 )
 
 
@@ -392,6 +522,84 @@ GROUP_A_CONSERVATIVE_ACTION_LABELS = {
     3: "rebalance_to_0050_70_00632R_30",
     4: "rebalance_to_0050_70_00631L_30",
 }
+
+
+# Group A+ (triplet_v4_plus): 0050/00631L/00632R + 00679B — 00679B is fixed/rule-based (min 10%).
+# Actions 0-8 mirror triplet_v4; _apply_00679b_floor enforces the 00679B floor post-action.
+GROUP_A_TRIPLET_V4_ACTION_LABELS = {
+    0: "hold_current_weights",
+    1: "rebalance_to_0050_100",
+    2: "rebalance_to_0050_85_00631L_15",
+    3: "rebalance_to_0050_70_00631L_30",
+    4: "rebalance_to_0050_100",
+    5: "rebalance_to_0050_70_00631L_20_cash_10",
+    6: "rebalance_to_0050_60_00631L_20_cash_20",
+    7: "rebalance_to_0050_50_00631L_20_cash_30",
+    8: "rebalance_to_0050_70_00632R_30",
+}
+
+
+GROUP_A_TRIPLET_V4_PLUS_ACTION_LABELS = {
+    0: "hold_00679b_min",
+    1: "rebalance_to_0050_100_00679b_min",
+    2: "rebalance_to_0050_85_00631L_15_00679b_min",
+    3: "rebalance_to_0050_70_00631L_30_00679b_min",
+    4: "rebalance_to_0050_100_00679b_min",
+    5: "rebalance_to_0050_70_00631L_20_cash_10_00679b_min",
+    6: "rebalance_to_0050_60_00631L_20_cash_20_00679b_min",
+    7: "rebalance_to_0050_50_00631L_20_cash_30_00679b_min",
+    8: "rebalance_to_0050_70_00632R_30_00679b_min",
+}
+
+GROUP_B_ACTION_SCHEMA_CORE6_CASH20_V1 = "core6_cash20_v1"
+
+GROUP_A_INSTITUTIONAL_FEATURE_COLUMNS: tuple[str, ...] = (
+    "foreign_net_buy",
+    "investment_trust_net_buy",
+    "dealer_net_buy",
+    "institutional_total_net_buy",
+)
+
+GROUP_B_INSTITUTIONAL_FEATURE_COLUMNS: tuple[str, ...] = GROUP_A_INSTITUTIONAL_FEATURE_COLUMNS
+
+GROUP_A_MARGIN_FEATURE_COLUMNS: tuple[str, ...] = (
+    "margin_buy", "margin_sell", "margin_repayment",
+    "margin_limit", "margin_balance", "margin_prev_balance",
+    "offset_loan_short",
+    "short_buy", "short_sell", "short_repayment",
+    "short_limit", "short_balance", "short_prev_balance",
+)
+
+GROUP_B_MARGIN_FEATURE_COLUMNS: tuple[str, ...] = GROUP_A_MARGIN_FEATURE_COLUMNS
+
+GROUP_A_MARGIN_SHARED_FEATURE_COLUMNS: tuple[str, ...] = (
+    "margin_balance_utilization",
+    "short_balance_utilization",
+    "margin_short_ratio",
+    "margin_net_flow_5d",
+    "short_net_flow_5d",
+    "margin_balance_growth_z",
+    "short_balance_growth_z",
+)
+
+GROUP_A_MARKET_MARGIN_SHARED_FEATURE_COLUMNS: tuple[str, ...] = (
+    "group_a_market_margin_balance_utilization",
+    "group_a_market_short_balance_utilization",
+    "group_a_market_short_margin_balance_ratio",
+    "group_a_market_margin_flow_to_balance_5d",
+    "group_a_market_short_flow_to_balance_5d",
+    "group_a_market_margin_balance_growth_z_20d",
+    "group_a_market_short_balance_growth_z_20d",
+)
+
+GROUP_A_LOCAL_REGIME_SHARED_FEATURE_COLUMNS: tuple[str, ...] = (
+    "0050_close_ma60_ratio",
+    "0050_drawdown_20",
+    "0050_drawdown_60",
+    "0050_volatility_20_z",
+    "twse_index_return_5d_raw",
+    "market_volatility_raw",
+)
 
 
 def _weights_to_dict(tickers: list[str], weights: np.ndarray) -> dict[str, float]:
@@ -444,8 +652,32 @@ def infer_group_a_action_schema(
         return GROUP_A_ACTION_SCHEMA_LEGACY_V1
     if "cash50" in model_key or "cash_buffer" in model_key or "cashbuf" in model_key:
         return GROUP_A_ACTION_SCHEMA_TRIPLET_V3_CASH50
+    if "triplet_v4_plus" in model_key or "tripletv4_plus" in model_key:
+        return GROUP_A_ACTION_SCHEMA_TRIPLET_V4_PLUS
+    if "triplet_v4" in model_key or "tripletv4" in model_key:
+        return GROUP_A_ACTION_SCHEMA_TRIPLET_V4
 
     return GROUP_A_ACTION_SCHEMA_TRIPLET_V2
+
+
+def infer_group_b_action_schema(
+    payload: dict | None = None,
+    *,
+    model_name: str | None = None,
+    action_schema: str | None = None,
+) -> str:
+    explicit = action_schema
+    if payload:
+        explicit = (
+            explicit
+            or payload.get("group_b_action_schema")
+            or payload.get("group_b", {}).get("action_schema")
+        )
+        if model_name is None:
+            model_name = payload.get("group_b", {}).get("model_name")
+
+    normalized = str(explicit or "").strip().lower()
+    return normalized or "default"
 
 
 def _resolve_model_checkpoint(path_or_name: str | None) -> Path | None:
@@ -483,6 +715,10 @@ def _action_labels_for_context(
             return GROUP_A_LEGACY_ACTION_LABELS
         if schema == GROUP_A_ACTION_SCHEMA_TRIPLET_V3_CASH50:
             return GROUP_A_CASH50_ACTION_LABELS
+        if schema == GROUP_A_ACTION_SCHEMA_TRIPLET_V4_PLUS:
+            return GROUP_A_TRIPLET_V4_PLUS_ACTION_LABELS
+        if schema == GROUP_A_ACTION_SCHEMA_TRIPLET_V4:
+            return GROUP_A_TRIPLET_V4_ACTION_LABELS
         return GROUP_A_DEFAULT_ACTION_LABELS
     return DEFAULT_ACTION_LABELS
 
@@ -676,6 +912,44 @@ def load_stock_data_db_first(tickers: list[str], start: str, end: str) -> dict[s
     return results
 
 
+def query_margin_data(ticker: str, start: str, end: str) -> pd.DataFrame:
+    """Query per-ticker margin/short-selling raw data from DuckDB."""
+    con = duckdb.connect(str(DB_PATH), read_only=True)
+    try:
+        return con.execute(
+            """
+            SELECT dt, margin_buy, margin_sell, margin_repayment,
+                   margin_limit, margin_balance, margin_prev_balance,
+                   offset_loan_short,
+                   short_buy, short_sell, short_repayment,
+                   short_limit, short_balance, short_prev_balance
+            FROM margin_data
+            WHERE ticker = ? AND dt BETWEEN ? AND ?
+            ORDER BY dt
+            """,
+            [ticker, pd.Timestamp(start).date(), pd.Timestamp(end).date()],
+        ).fetchdf()
+    finally:
+        con.close()
+
+
+def query_market_margin_data(start: str, end: str) -> pd.DataFrame:
+    """Query market-wide margin/short-selling data from DuckDB."""
+    con = duckdb.connect(str(DB_PATH), read_only=True)
+    try:
+        return con.execute(
+            """
+            SELECT *
+            FROM market_margin_data
+            WHERE dt BETWEEN ? AND ?
+            ORDER BY dt
+            """,
+            [pd.Timestamp(start).date(), pd.Timestamp(end).date()],
+        ).fetchdf()
+    finally:
+        con.close()
+
+
 def _effective_common_start(
     stock_data: dict[str, pd.DataFrame],
     tickers: list[str],
@@ -750,6 +1024,469 @@ def attach_market_features_db_first(
     return enriched
 
 
+def attach_institutional_features_db_first(
+    stock_data: dict[str, pd.DataFrame],
+    tickers: list[str],
+    start: str,
+    end: str,
+) -> dict[str, pd.DataFrame]:
+    con = duckdb.connect(str(DB_PATH), read_only=True)
+    try:
+        inst = con.execute(
+            """
+            SELECT ticker, dt, foreign_net_buy, investment_trust_net_buy,
+                   dealer_net_buy, institutional_total_net_buy
+            FROM institutional_data
+            WHERE ticker IN ({tickers}) AND dt BETWEEN ? AND ?
+            ORDER BY ticker, dt
+            """.format(tickers=", ".join(["?"] * len(tickers))),
+            [*tickers, pd.Timestamp(start).date(), pd.Timestamp(end).date()],
+        ).fetchdf()
+    finally:
+        con.close()
+    if inst.empty:
+        return stock_data
+
+    enriched: dict[str, pd.DataFrame] = {}
+    for ticker, df in stock_data.items():
+        out = df.copy()
+        if ticker in tickers:
+            part = inst[inst["ticker"] == ticker].copy()
+            if not part.empty:
+                part["date"] = pd.to_datetime(part["dt"]).dt.tz_localize(None)
+                part = part.sort_values("date")
+                volume = out[["date", "volume"]].copy()
+                volume["date"] = pd.to_datetime(volume["date"]).dt.tz_localize(None)
+                part = part.merge(volume, on="date", how="left")
+                vol5 = part["volume"].rolling(5, min_periods=1).sum().replace(0.0, np.nan)
+                vol20 = part["volume"].rolling(20, min_periods=1).sum().replace(0.0, np.nan)
+                part["foreign_net_buy_ratio_5d"] = part["foreign_net_buy"].rolling(5, min_periods=1).sum() / vol5
+                part["investment_trust_net_buy_ratio_5d"] = part["investment_trust_net_buy"].rolling(5, min_periods=1).sum() / vol5
+                part["dealer_net_buy_ratio_5d"] = part["dealer_net_buy"].rolling(5, min_periods=1).sum() / vol5
+                part["institutional_total_net_buy_ratio_20d"] = (
+                    part["institutional_total_net_buy"].rolling(20, min_periods=1).sum() / vol20
+                )
+                cols = [
+                    "date",
+                    "foreign_net_buy_ratio_5d",
+                    "investment_trust_net_buy_ratio_5d",
+                    "dealer_net_buy_ratio_5d",
+                    "institutional_total_net_buy_ratio_20d",
+                ]
+                out = out.merge(part[cols], on="date", how="left")
+                out[cols[1:]] = out[cols[1:]].replace([np.inf, -np.inf], 0.0).fillna(0.0)
+        enriched[ticker] = out
+    return enriched
+
+
+def attach_margin_features_db_first(
+    stock_data: dict[str, pd.DataFrame],
+    tickers: list[str],
+    start: str,
+    end: str,
+) -> dict[str, pd.DataFrame]:
+    """
+    Attach per-ticker margin/short-selling features from DuckDB margin_data.
+    Features:
+      - margin_balance_utilization: margin_balance / margin_limit
+      - short_balance_utilization:  short_balance  / short_limit
+      - margin_short_ratio: short_balance / margin_balance  (券資比核心)
+      - margin_net_flow_5d: 5-day net margin flow / prev_balance
+      - short_net_flow_5d:  5-day net short flow  / prev_balance
+      - margin_balance_growth_z: rolling z-score of margin_balance diff(20)
+      - short_balance_growth_z:  rolling z-score of short_balance  diff(20)
+    """
+    con = duckdb.connect(str(DB_PATH), read_only=True)
+    try:
+        # margin_data ticker col is e.g. "0050.TW" — normalize to match stock_data keys
+        raw = con.execute(
+            """
+            SELECT ticker, dt,
+                   margin_buy, margin_sell, margin_repayment,
+                   margin_limit, margin_balance, margin_prev_balance,
+                   short_buy, short_sell, short_repayment,
+                   short_limit, short_balance, short_prev_balance
+            FROM margin_data
+            WHERE ticker IN ({tickers}) AND dt BETWEEN ? AND ?
+            ORDER BY ticker, dt
+            """.format(tickers=", ".join(["?"] * len(tickers))),
+            [*tickers, pd.Timestamp(start).date(), pd.Timestamp(end).date()],
+        ).fetchdf()
+    finally:
+        con.close()
+
+    if raw.empty:
+        return stock_data
+
+    raw["date"] = pd.to_datetime(raw["dt"]).dt.tz_localize(None)
+
+    # margin_data ticker keys (e.g. "0050.TW") already match stock_data keys
+    enriched: dict[str, pd.DataFrame] = {}
+    for ticker, df in stock_data.items():
+        out = df.copy()
+        part = raw[raw["ticker"] == ticker].copy()
+        if part.empty:
+            enriched[ticker] = out
+            continue
+
+        part = part.sort_values("date")
+
+        # Utilisation ratios
+        part["margin_balance_utilization"] = (
+            part["margin_balance"] / part["margin_limit"].replace(0.0, np.nan)
+        )
+        part["short_balance_utilization"] = (
+            part["short_balance"] / part["short_limit"].replace(0.0, np.nan)
+        )
+
+        # 券資比核心: short_balance / margin_balance (融券餘額/融資餘額)
+        part["margin_short_ratio"] = (
+            part["short_balance"] / part["margin_balance"].replace(0.0, np.nan)
+        )
+
+        # 5-day net flow / average prev balance
+        margin_flow = (
+            part["margin_buy"] - part["margin_sell"] - part["margin_repayment"]
+        )
+        short_flow = (
+            part["short_sell"] - part["short_buy"] - part["short_repayment"]
+        )
+        part["margin_net_flow_5d"] = (
+            margin_flow.rolling(5, min_periods=1).sum()
+            / part["margin_prev_balance"].rolling(5, min_periods=1).mean().replace(0.0, np.nan)
+        )
+        part["short_net_flow_5d"] = (
+            short_flow.rolling(5, min_periods=1).sum()
+            / part["short_prev_balance"].rolling(5, min_periods=1).mean().replace(0.0, np.nan)
+        )
+
+        # Z-score of 20-day balance change
+        part["margin_balance_growth_z"] = _rolling_zscore(
+            part["margin_balance"].diff(20), 252, 20
+        )
+        part["short_balance_growth_z"] = _rolling_zscore(
+            part["short_balance"].diff(20), 252, 20
+        )
+
+        cols = [
+            "date",
+            "margin_balance_utilization",
+            "short_balance_utilization",
+            "margin_short_ratio",
+            "margin_net_flow_5d",
+            "short_net_flow_5d",
+            "margin_balance_growth_z",
+            "short_balance_growth_z",
+        ]
+        out = out.merge(part[cols], on="date", how="left")
+        out[cols[1:]] = out[cols[1:]].replace([np.inf, -np.inf], 0.0).fillna(0.0)
+        enriched[ticker] = out
+
+    return enriched
+
+
+def attach_chip_distribution_features_db_first(
+    stock_data: dict[str, pd.DataFrame],
+    tickers: list[str],
+    start: str,
+    end: str,
+) -> dict[str, pd.DataFrame]:
+    """
+    Attach TDCC-based chip-distribution features per ticker from shareholding_distribution.
+
+    FinGenius chip_analysis equivalent features:
+      - chip_level_1_2_pct:   % held by smallest 2 levels (retail / 散戶)
+      - chip_level_3_5_pct:   % held by mid-low levels (一般散戶/中實戶)
+      - chip_level_6_10_pct:  % held by mid levels (大戶/主力)
+      - chip_level_11_plus_pct: % held by top levels (機構/法人)
+      - chip_concentration:   ratio of top-2-levels / bottom-2-levels  (主力集中度)
+      - chip_herfindahl_3:     Herfindahl index over levels 1-3 (散戶集中度)
+      - chip_herfindahl_10:    Herfindahl index over levels 1-10 (整體集中度)
+      - chip_retail_dominance: True if level_1_2_pct > 60 (散戶主導判斷)
+    """
+    # Normalize stock_data ticker keys for shareholding query (uses "0050" not "0050.TW")
+    ticker_map = {t: t.replace(".TW", "").replace(".TWO", "") for t in stock_data.keys()}
+    query_tickers = list(ticker_map.values())
+
+    con = duckdb.connect(str(DB_PATH), read_only=True)
+    try:
+        raw = con.execute(
+            """
+            SELECT stock_id, dt, holding_level, percent
+            FROM shareholding_distribution
+            WHERE stock_id IN ({tickers}) AND dt BETWEEN ? AND ?
+            ORDER BY stock_id, dt, holding_level
+            """.format(tickers=", ".join(["?"] * len(query_tickers))),
+            [*query_tickers, pd.Timestamp(start).date(), pd.Timestamp(end).date()],
+        ).fetchdf()
+    finally:
+        con.close()
+
+    if raw.empty:
+        return stock_data
+
+    raw["date"] = pd.to_datetime(raw["dt"]).dt.tz_localize(None)
+
+    # Pivot: one column per holding_level
+    pivot = raw.pivot_table(index=["stock_id", "date"], columns="holding_level", values="percent", aggfunc="sum")
+    pivot.columns = [f"chip_level_{int(c)}" for c in pivot.columns]
+    pivot = pivot.reset_index()
+
+    # Compute aggregate buckets
+    level_cols = [f"chip_level_{i}" for i in range(1, 18)]
+    existing = [c for c in level_cols if c in pivot.columns]
+
+    pivot["chip_level_1_2_pct"] = pivot[[c for c in existing if c in ["chip_level_1", "chip_level_2"]]].sum(axis=1)
+    pivot["chip_level_3_5_pct"] = pivot[[c for c in existing if c in ["chip_level_3", "chip_level_4", "chip_level_5"]]].sum(axis=1)
+    pivot["chip_level_6_10_pct"] = pivot[[c for c in existing if c in [f"chip_level_{i}" for i in range(6, 11)]]].sum(axis=1)
+    pivot["chip_level_11_plus_pct"] = pivot[[c for c in existing if int(c.split("_")[-1]) >= 11]].sum(axis=1)
+
+    # Concentration: top-2 vs bottom-2
+    bottom2 = pivot[[c for c in existing if int(c.split("_")[-1]) <= 2]].sum(axis=1).replace(0, np.nan)
+    top2 = pivot[[c for c in existing if int(c.split("_")[-1]) >= 11]].sum(axis=1).replace(0, np.nan)
+    pivot["chip_concentration"] = top2 / bottom2
+
+    # Herfindahl indices
+    def _herfindahl(series_list: list) -> pd.Series:
+        total = pd.concat(series_list, axis=1).sum(axis=1).replace(0, np.nan)
+        hs = pd.concat(series_list, axis=1).fillna(0).div(total, axis=0) ** 2
+        return hs.sum(axis=1)
+
+    l1_3 = [pivot[c] for c in existing if int(c.split("_")[-1]) <= 3 if c in pivot.columns]
+    l1_10 = [pivot[c] for c in existing if int(c.split("_")[-1]) <= 10 if c in pivot.columns]
+    pivot["chip_herfindahl_3"] = _herfindahl(l1_3)
+    pivot["chip_herfindahl_10"] = _herfindahl(l1_10)
+
+    # Retail dominance flag
+    pivot["chip_retail_dominance"] = (pivot["chip_level_1_2_pct"] > 60).astype(int)
+
+    feature_cols = [
+        "stock_id", "date",
+        "chip_level_1_2_pct",
+        "chip_level_3_5_pct",
+        "chip_level_6_10_pct",
+        "chip_level_11_plus_pct",
+        "chip_concentration",
+        "chip_herfindahl_3",
+        "chip_herfindahl_10",
+        "chip_retail_dominance",
+    ]
+    chip_df = pivot[feature_cols].copy()
+    chip_df = chip_df.rename(columns={"stock_id": "ticker", "dt": "date"})
+
+    # shareholding uses "0050", stock_data uses "0050.TW" — normalize
+    ticker_map = {t: t.replace(".TW", "").replace(".TWO", "") for t in stock_data.keys()}
+
+    enriched: dict[str, pd.DataFrame] = {}
+    for ticker, df in stock_data.items():
+        out = df.copy()
+        share_ticker = ticker_map[ticker]
+        part = chip_df[chip_df["ticker"] == share_ticker].copy()
+        if part.empty:
+            enriched[ticker] = out
+            continue
+        part = part.sort_values("date")
+        out = out.merge(part, on="date", how="left")
+        chip_cols = [c for c in out.columns if c.startswith("chip_")]
+        out[chip_cols] = out[chip_cols].replace([np.inf, -np.inf], 0.0).fillna(0.0)
+        enriched[ticker] = out
+
+    return enriched
+
+
+def attach_group_a_margin_shared_features_db_first(
+    stock_data: dict[str, pd.DataFrame],
+    tickers: list[str],
+    start: str,
+    end: str,
+) -> dict[str, pd.DataFrame]:
+    enriched: dict[str, pd.DataFrame] = {}
+    for ticker, df in stock_data.items():
+        out = df.copy()
+        if ticker in tickers:
+            part = query_margin_data(ticker, start, end)
+            if not part.empty:
+                part["date"] = pd.to_datetime(part["dt"]).dt.tz_localize(None)
+                part = part.sort_values("date")
+                part["margin_balance_utilization"] = (
+                    part["margin_balance"] / part["margin_limit"].replace(0.0, np.nan)
+                )
+                part["short_balance_utilization"] = (
+                    part["short_balance"] / part["short_limit"].replace(0.0, np.nan)
+                )
+                part["margin_short_ratio"] = (
+                    part["short_balance"] / part["margin_balance"].replace(0.0, np.nan)
+                )
+                margin_flow = part["margin_buy"] - part["margin_sell"] - part["margin_repayment"]
+                short_flow = part["short_sell"] - part["short_buy"] - part["short_repayment"]
+                part["margin_net_flow_5d"] = (
+                    margin_flow.rolling(5, min_periods=1).sum()
+                    / part["margin_prev_balance"].rolling(5, min_periods=1).mean().replace(0.0, np.nan)
+                )
+                part["short_net_flow_5d"] = (
+                    short_flow.rolling(5, min_periods=1).sum()
+                    / part["short_prev_balance"].rolling(5, min_periods=1).mean().replace(0.0, np.nan)
+                )
+                part["margin_balance_growth_z"] = _rolling_zscore(part["margin_balance"].diff(20), 252, 20)
+                part["short_balance_growth_z"] = _rolling_zscore(part["short_balance"].diff(20), 252, 20)
+                cols = ["date", *GROUP_A_MARGIN_SHARED_FEATURE_COLUMNS]
+                out = out.merge(part[cols], on="date", how="left")
+                shared_cols = list(GROUP_A_MARGIN_SHARED_FEATURE_COLUMNS)
+                out[shared_cols] = out[shared_cols].replace([np.inf, -np.inf], 0.0).fillna(0.0)
+        enriched[ticker] = out
+    return enriched
+
+
+def attach_group_a_market_margin_shared_features_db_first(
+    stock_data: dict[str, pd.DataFrame],
+    tickers: list[str],
+    start: str,
+    end: str,
+) -> dict[str, pd.DataFrame]:
+    data = query_market_margin_data(start, end)
+    if data.empty:
+        return stock_data
+
+    data = data.copy()
+    data["date"] = pd.to_datetime(data["dt"]).dt.tz_localize(None)
+    margin_limit = data["margin_limit"].replace(0.0, np.nan)
+    short_limit = data["short_limit"].replace(0.0, np.nan)
+    margin_balance = data["margin_balance"].replace(0.0, np.nan)
+    short_balance = data["short_balance"].replace(0.0, np.nan)
+    data["group_a_market_margin_balance_utilization"] = data["margin_balance"] / margin_limit
+    data["group_a_market_short_balance_utilization"] = data["short_balance"] / short_limit
+    data["group_a_market_short_margin_balance_ratio"] = data["short_balance"] / margin_balance
+    data["group_a_market_margin_flow_to_balance_5d"] = (
+        (data["margin_buy"] - data["margin_sell"] - data["margin_repayment"]).rolling(5, min_periods=1).sum()
+        / data["margin_prev_balance"].rolling(5, min_periods=1).mean().replace(0.0, np.nan)
+    )
+    data["group_a_market_short_flow_to_balance_5d"] = (
+        (data["short_sell"] - data["short_buy"] - data["short_repayment"]).rolling(5, min_periods=1).sum()
+        / data["short_prev_balance"].rolling(5, min_periods=1).mean().replace(0.0, np.nan)
+    )
+    data["group_a_market_margin_balance_growth_z_20d"] = _rolling_zscore(data["margin_balance"].diff(20), 252, 20)
+    data["group_a_market_short_balance_growth_z_20d"] = _rolling_zscore(data["short_balance"].diff(20), 252, 20)
+    cols = [
+        "date",
+        "group_a_market_margin_balance_utilization",
+        "group_a_market_short_balance_utilization",
+        "group_a_market_short_margin_balance_ratio",
+        "group_a_market_margin_flow_to_balance_5d",
+        "group_a_market_short_flow_to_balance_5d",
+        "group_a_market_margin_balance_growth_z_20d",
+        "group_a_market_short_balance_growth_z_20d",
+    ]
+    data = data[cols].replace([np.inf, -np.inf], 0.0).fillna(0.0)
+    enriched: dict[str, pd.DataFrame] = {}
+    for ticker, df in stock_data.items():
+        out = df.copy()
+        if ticker in tickers:
+            out = out.merge(data, on="date", how="left")
+            out[cols[1:]] = out[cols[1:]].ffill().fillna(0.0)
+        enriched[ticker] = out
+    return enriched
+
+
+def attach_group_a_taifex_futures_features_db_first(
+    stock_data: dict[str, pd.DataFrame],
+    tickers: list[str],
+    start: str,
+    end: str,
+) -> dict[str, pd.DataFrame]:
+    from taifex_futures_data import query_taifex_futures_features
+
+    features = query_taifex_futures_features(start, end)
+    if features.empty:
+        return stock_data
+    features = features.copy()
+    features["date"] = pd.to_datetime(features["dt"]).dt.tz_localize(None)
+    features = features.sort_values("date")
+    features["tx_regular_last_return_5d"] = features["tx_regular_last"].pct_change(5).replace([np.inf, -np.inf], 0.0)
+    features["tx_regular_settlement_return_5d"] = (
+        features["tx_regular_settlement"].pct_change(5).replace([np.inf, -np.inf], 0.0)
+    )
+    features["tx_after_hours_basis_ratio"] = (
+        features["tx_after_hours_basis"] / features["tx_regular_last"].replace(0.0, np.nan)
+    )
+    features["tx_fini_open_interest_net_z_20d"] = _rolling_zscore(features["tx_fini_open_interest_net"], 20, 5)
+    features["tx_fini_trading_volume_net_z_20d"] = _rolling_zscore(features["tx_fini_trading_volume_net"], 20, 5)
+    features["tx_regular_open_interest_z_20d"] = _rolling_zscore(features["tx_regular_open_interest"], 20, 5)
+    cols = [
+        "date",
+        "tx_regular_last_return_5d",
+        "tx_regular_settlement_return_5d",
+        "tx_after_hours_return",
+        "tx_after_hours_basis_ratio",
+        "tx_fini_open_interest_net_z_20d",
+        "tx_fini_trading_volume_net_z_20d",
+        "tx_regular_open_interest_z_20d",
+    ]
+    features = features[cols].replace([np.inf, -np.inf], 0.0).fillna(0.0)
+    enriched: dict[str, pd.DataFrame] = {}
+    for ticker, df in stock_data.items():
+        out = df.copy()
+        if ticker in tickers:
+            out = out.merge(features, on="date", how="left")
+            out[cols[1:]] = out[cols[1:]].ffill().fillna(0.0)
+        enriched[ticker] = out
+    return enriched
+
+
+def payload_uses_group_a_institutional_features(payload: dict | None) -> bool:
+    payload = payload or {}
+    cfg = payload.get("group_a_institutional_config", {}) or {}
+    return bool(payload.get("group_a_use_institutional_features", False) or cfg.get("enabled", False))
+
+
+def payload_uses_group_a_margin_features(payload: dict | None) -> bool:
+    payload = payload or {}
+    cfg = payload.get("group_a_margin_config", {}) or {}
+    return bool(payload.get("group_a_use_margin_features", False) or cfg.get("enabled", False))
+
+
+def payload_uses_group_a_chip_distribution_features(payload: dict | None) -> bool:
+    payload = payload or {}
+    cfg = payload.get("group_a_chip_distribution_config", {}) or {}
+    return bool(payload.get("group_a_use_chip_distribution_features", False) or cfg.get("enabled", False))
+
+
+def payload_uses_group_a_margin_shared_features(payload: dict | None) -> bool:
+    payload = payload or {}
+    cfg = payload.get("group_a_margin_shared_config", {}) or {}
+    return bool(payload.get("group_a_use_margin_shared_features", False) or cfg.get("enabled", False))
+
+
+def payload_uses_group_a_market_margin_shared_features(payload: dict | None) -> bool:
+    payload = payload or {}
+    cfg = payload.get("group_a_market_margin_shared_config", {}) or {}
+    gate_cfg = payload.get("group_a_market_margin_gate_config", {}) or {}
+    return bool(
+        payload.get("group_a_use_market_margin_shared_features", False)
+        or cfg.get("enabled", False)
+        or cfg.get("observation_enabled", False)
+        or cfg.get("feature_columns")
+        or gate_cfg.get("enabled", False)
+    )
+
+
+def payload_uses_group_a_taifex_futures_features(payload: dict | None) -> bool:
+    payload = payload or {}
+    cfg = payload.get("group_a_taifex_futures_config", {}) or {}
+    return bool(payload.get("group_a_use_taifex_futures_features", False) or cfg.get("enabled", False))
+
+
+def payload_uses_group_b_institutional_features(payload: dict | None) -> bool:
+    payload = payload or {}
+    cfg = payload.get("group_b_institutional_config", {}) or {}
+    return bool(payload.get("group_b_use_institutional_features", False) or cfg.get("enabled", False))
+
+
+def payload_uses_group_b_margin_features(payload: dict | None) -> bool:
+    payload = payload or {}
+    cfg = payload.get("group_b_margin_config", {}) or {}
+    return bool(payload.get("group_b_use_margin_features", False) or cfg.get("enabled", False))
+
+
 # ==============================================================================
 # 投資組合 Gym 環境（支援任意檔數）
 # ==============================================================================
@@ -803,6 +1540,9 @@ class PortfolioEnv(gym.Env):
         sentiment_min_intensity: float = DEFAULT_GROUP_A_SENTIMENT_MIN_INTENSITY,
         sentiment_risk_off_inverse_floor: float = DEFAULT_GROUP_A_SENTIMENT_RISK_OFF_INVERSE_FLOOR,
         sentiment_severe_inverse_floor: float = DEFAULT_GROUP_A_SENTIMENT_SEVERE_INVERSE_FLOOR,
+        dividend_mode: str = "reinvest_weights",
+        local_regime_gate_enabled: bool = False,
+        **extra_env_kwargs,
     ):
         super().__init__()
         self.panel = panel.reset_index(drop=True)
@@ -835,6 +1575,10 @@ class PortfolioEnv(gym.Env):
             dtype=float,
         )
         self.dca_day = max(int(dca_day), 1)
+        allowed_dividend_modes = {"cash", "reinvest_0050", "reinvest_weights"}
+        self.dividend_mode = str(dividend_mode)
+        if self.dividend_mode not in allowed_dividend_modes:
+            raise ValueError(f"Unsupported dividend_mode: {self.dividend_mode}")
         self.enable_pva_features = bool(enable_pva_features or enable_pva_sigmoid)
         self.enable_pva_sigmoid = bool(enable_pva_sigmoid)
         self.pva_weight = float(pva_weight)
@@ -847,6 +1591,7 @@ class PortfolioEnv(gym.Env):
         self.inverse_m_state_only = bool(inverse_m_state_only)
         self.inverse_max_holding_days = max(int(inverse_max_holding_days), 0)
         self.sentiment_gate_enabled = bool(sentiment_gate_enabled)
+        self.local_regime_gate_enabled = bool(local_regime_gate_enabled)
         self.sentiment_risk_off_threshold = max(float(sentiment_risk_off_threshold), 0.0)
         self.sentiment_severe_threshold = max(
             float(sentiment_severe_threshold),
@@ -866,6 +1611,17 @@ class PortfolioEnv(gym.Env):
         )
         self.close_price_array = _prices(self.panel, self.tickers, field="close")
         self.open_price_array = _prices(self.panel, self.tickers, field="open")
+        self.dividend_array = np.column_stack(
+            [
+                pd.to_numeric(
+                    self.panel.get(f"{ticker}_dividends", pd.Series(0.0, index=self.panel.index)),
+                    errors="coerce",
+                )
+                .fillna(0.0)
+                .to_numpy(dtype=float)
+                for ticker in self.tickers
+            ]
+        )
         self.tax_rates = np.array([ETF_TAX_RATE] * len(tickers), dtype=float)
         self.group_a_triplet = {"0050.TW", "00631L.TW", "00632R.TW"}.issubset(set(self.tickers))
         self.group_a_index_map = (
@@ -947,7 +1703,7 @@ class PortfolioEnv(gym.Env):
             self.feature_cols.extend(
                 [f"{ticker}_{c}" for c in FEATURE_COLUMNS if f"{ticker}_{c}" in self.panel.columns]
             )
-        obs_dim = len(self.feature_cols) + len(self.shared_feature_cols) + len(self.pva_feature_cols) + 5
+        obs_dim = len(self.feature_cols) + len(self.shared_feature_cols) + len(self.pva_feature_cols) + 7
         self.observation_space = spaces.Box(low=-10.0, high=10.0, shape=(obs_dim,), dtype=np.float32)
         action_labels = _action_labels_for_context(
             self.profile_name,
@@ -1066,6 +1822,30 @@ class PortfolioEnv(gym.Env):
                     # becomes 50% 0050 / 25% 00631L / 25% cash before cap adjustments.
                     return raw_w({"0050.TW": 0.50, "00631L.TW": min(self.leverage_cap, 0.25)})
                 return w({"0050.TW": 0.85, "00631L.TW": min(self.leverage_cap, 0.15)})
+            if self.group_a_action_schema == GROUP_A_ACTION_SCHEMA_TRIPLET_V4:
+                if action == 0:
+                    return self.weights.copy()
+                if action == 1:
+                    return w({"0050.TW": 1.0})
+                if action == 2:
+                    return w({"0050.TW": 0.85, "00631L.TW": min(self.leverage_cap, 0.15)})
+                if action == 3:
+                    return w({"0050.TW": 0.70, "00631L.TW": min(self.leverage_cap, 0.30)})
+                if action == 4:
+                    return w({"0050.TW": 1.0})
+                if action == 5:
+                    return raw_w({"0050.TW": 0.70, "00631L.TW": min(self.leverage_cap, 0.20)})
+                if action == 6:
+                    return raw_w({"0050.TW": 0.60, "00631L.TW": min(self.leverage_cap, 0.20)})
+                if action == 7:
+                    return raw_w({"0050.TW": 0.50, "00631L.TW": min(self.leverage_cap, 0.20)})
+                if action == 8:
+                    return w({"0050.TW": 0.70, "00632R.TW": min(self.inverse_cap, 0.30)})
+                return w({"0050.TW": 1.0})
+            if self.group_a_action_schema == GROUP_A_ACTION_SCHEMA_TRIPLET_V4_PLUS:
+                # Mirror triplet_v4, then enforce 00679B minimum floor.
+                base = self._triplet_v4_weights(int(action))
+                return self._apply_00679b_floor(base)
             if action == 0:
                 return self.weights.copy()
             if action == 1:
@@ -1117,6 +1897,65 @@ class PortfolioEnv(gym.Env):
 
         return w({"0050.TW": 1.0}) if "0050.TW" in t else np.ones(n, dtype=float) / n
 
+    def _triplet_v4_weights(self, action: int) -> np.ndarray:
+        """Compute triplet_v4 target weights for a given action (used by triplet_v4_plus)."""
+        t = self.tickers
+        w = lambda d: _weights_for(t, d)
+        raw_w = lambda d: _raw_weights_for(t, d)
+        if action == 0:
+            return self.weights.copy()
+        if action == 1:
+            return w({"0050.TW": 1.0})
+        if action == 2:
+            return w({"0050.TW": 0.85, "00631L.TW": min(self.leverage_cap, 0.15)})
+        if action == 3:
+            return w({"0050.TW": 0.70, "00631L.TW": min(self.leverage_cap, 0.30)})
+        if action == 4:
+            return w({"0050.TW": 1.0})
+        if action == 5:
+            return raw_w({"0050.TW": 0.70, "00631L.TW": min(self.leverage_cap, 0.20)})
+        if action == 6:
+            return raw_w({"0050.TW": 0.60, "00631L.TW": min(self.leverage_cap, 0.20)})
+        if action == 7:
+            return raw_w({"0050.TW": 0.50, "00631L.TW": min(self.leverage_cap, 0.20)})
+        if action == 8:
+            return w({"0050.TW": 0.70, "00632R.TW": min(self.inverse_cap, 0.30)})
+        return w({"0050.TW": 1.0})
+
+    def _apply_00679b_floor(self, base_weights: np.ndarray) -> np.ndarray:
+        """
+        Enforce 00679B minimum weight floor (0.10) on a triplet_v4_plus target weight array.
+        If 00679B weight would be below 10%, redistribute the deficit proportionally to 0050/00631L.
+        """
+        SIXTY79B = "00679B.TWO"
+        FLOOR = 0.10
+        result = base_weights.copy()
+        idx_679b = None
+        for i, ticker in enumerate(self.tickers):
+            if ticker == SIXTY79B:
+                idx_679b = i
+                break
+        if idx_679b is None:
+            return result  # 00679B not in universe, pass through
+        if result[idx_679b] >= FLOOR:
+            return result
+        deficit = FLOOR - result[idx_679b]
+        result[idx_679b] = FLOOR
+        # Redistribute deficit proportionally among 0050 and 00631L (skip 00632R and 00679B)
+        redistributable = [
+            i for i, ticker in enumerate(self.tickers)
+            if ticker not in (SIXTY79B, "00632R.TW") and result[i] > 0
+        ]
+        if redistributable:
+            total = sum(result[i] for i in redistributable)
+            for i in redistributable:
+                result[i] -= deficit * (result[i] / total)
+        result = np.clip(result, 0, None)
+        s = result.sum()
+        if s > 0:
+            result /= s
+        return result
+
     def _market_stress_snapshot(self) -> dict[str, float | bool]:
         if not self.stress_gate_enabled or not self.group_a_triplet:
             return {"risk_off": False, "severe": False, "score": 0.0}
@@ -1147,9 +1986,41 @@ class PortfolioEnv(gym.Env):
             "dji_return_1d_lag1": return_1d,
         }
 
+    def _local_regime_snapshot(self) -> dict[str, float | bool]:
+        base = {"risk_off": False, "severe": False, "state": "normal", "score": 0.0}
+        if not self.local_regime_gate_enabled or not self.group_a_triplet:
+            return base
+        row = self.panel.iloc[self.step_idx]
+        ma60_ratio = float(row.get("0050_close_ma60_ratio", 1.0))
+        drawdown_20 = float(row.get("0050_drawdown_20", 0.0))
+        drawdown_60 = float(row.get("0050_drawdown_60", 0.0))
+        volatility_20_z = float(row.get("0050_volatility_20_z", 0.0))
+        twse_return_5d = float(row.get("twse_index_return_5d_raw", 0.0))
+        score = (
+            int(ma60_ratio < 0.97)
+            + int(drawdown_20 < -0.08)
+            + int(drawdown_60 < -0.12)
+            + int(volatility_20_z > 1.5)
+            + int(twse_return_5d < -0.05)
+        )
+        risk_off = score >= 2
+        severe = score >= 3
+        state = "severe" if severe else "risk_off" if risk_off else "normal"
+        return {
+            "risk_off": risk_off,
+            "severe": severe,
+            "state": state,
+            "score": float(score),
+            "0050_close_ma60_ratio": ma60_ratio,
+            "0050_drawdown_20": drawdown_20,
+            "0050_drawdown_60": drawdown_60,
+            "0050_volatility_20_z": volatility_20_z,
+            "twse_index_return_5d_raw": twse_return_5d,
+        }
+
     def _llm_sentiment_snapshot(self) -> dict[str, float | bool]:
         base = {
-            "enabled": bool(self.sentiment_gate_enabled and self.group_a_triplet),
+            "enabled": bool(self.sentiment_gate_enabled),
             "available": False,
             "active": False,
             "risk_off": False,
@@ -1161,7 +2032,7 @@ class PortfolioEnv(gym.Env):
             "news_intensity": 0.0,
             "sentiment_score": 0.0,
         }
-        if not self.sentiment_gate_enabled or not self.group_a_triplet:
+        if not self.sentiment_gate_enabled:
             return base
 
         row = self.panel.iloc[self.step_idx]
@@ -1224,7 +2095,34 @@ class PortfolioEnv(gym.Env):
             "llm_sentiment": self._llm_sentiment_snapshot(),
         }
         if not self.group_a_triplet:
-            return target_weights, gate_info
+            stress = gate_info["market_stress"]
+            sentiment = gate_info["llm_sentiment"]
+            if not (bool(stress.get("severe")) or bool(stress.get("risk_off"))
+                    or bool(sentiment.get("severe")) or bool(sentiment.get("risk_off"))):
+                return target_weights, gate_info
+
+            _group_b_def = {"00679B.TWO", "00751B.TWO"}
+            def_indices = [i for i, t in enumerate(self.tickers) if t in _group_b_def]
+
+            def _rotate_to_defensive(tw: np.ndarray, def_total: float) -> np.ndarray:
+                rotated = np.zeros_like(tw)
+                n = len(def_indices)
+                if n > 0:
+                    per = def_total / n
+                    for idx in def_indices:
+                        rotated[idx] = per
+                return rotated
+
+            if bool(stress.get("severe")) or bool(sentiment.get("severe")):
+                src = "market_stress" if bool(stress.get("severe")) else "llm_sentiment"
+                rsn = "market_stress_severe" if bool(stress.get("severe")) else "llm_sentiment_severe"
+                gate_info.update({"source": src, "reason": rsn, "allow_inverse_override": False})
+                return _rotate_to_defensive(target_weights, 0.70), gate_info
+
+            src = "market_stress" if bool(stress.get("risk_off")) else "llm_sentiment"
+            rsn = "market_stress_risk_off" if bool(stress.get("risk_off")) else "llm_sentiment_risk_off"
+            gate_info.update({"source": src, "reason": rsn, "allow_inverse_override": False})
+            return _rotate_to_defensive(target_weights, 0.50), gate_info
 
         capped = self._apply_group_a_exposure_cap(target_weights)
         stress = gate_info["market_stress"]
@@ -1339,20 +2237,109 @@ class PortfolioEnv(gym.Env):
         self.dca_purchase_history.extend(history_items)
         return float(fees)
 
-    def _sjm_state(self) -> tuple[str, dict[str, float | str]]:
-        if not self.group_a_triplet:
-            return "S", {"p": 0.0, "v": 0.0, "a": 0.0, "p_z": 0.0, "v_z": 0.0, "a_z": 0.0, "state": "S"}
+    def _apply_dividend_if_due(self, idx: int, prices: np.ndarray) -> float:
+        if idx <= 0 or idx >= len(self.dividend_array):
+            return 0.0
+        dividends = self.dividend_array[idx]
+        gross_by_ticker = self.shares * dividends
+        total_dividend = float(gross_by_ticker.sum())
+        if total_dividend <= 0:
+            return 0.0
 
+        current_date_str = self.date_strings[idx]
+        credits = {
+            ticker: float(amount)
+            for ticker, amount in zip(self.tickers, gross_by_ticker)
+            if float(amount) > 0.0
+        }
+        self.cash += total_dividend
+        self.total_dividend_credited += total_dividend
+        self.dividend_credited_history.append(
+            {
+                "date": current_date_str,
+                "step_idx": int(idx),
+                "credits": credits,
+                "total": total_dividend,
+                "cash_after": float(self.cash),
+            }
+        )
+
+        if self.dividend_mode == "cash":
+            value_after = max(self._portfolio_value(prices), 1.0)
+            self.weights = self.shares * prices / value_after
+            return 0.0
+
+        if self.dividend_mode == "reinvest_0050" and "0050.TW" in self.tickers:
+            target_weights = np.zeros(len(self.tickers), dtype=float)
+            target_weights[self.tickers.index("0050.TW")] = 1.0
+        else:
+            value = max(self._portfolio_value(prices), 1.0)
+            current_weights = self.shares * prices / value
+            target_weights = current_weights / max(float(current_weights.sum()), 1e-12)
+
+        fees = 0.0
+        purchases = {}
+        for i, target_weight in enumerate(target_weights):
+            cash_contribution = total_dividend * float(target_weight)
+            if cash_contribution <= 0:
+                continue
+            buy_value = min(cash_contribution / (1.0 + self.commission_rate), self.cash / (1.0 + self.commission_rate))
+            if buy_value <= 0:
+                continue
+            fee = buy_value * self.commission_rate
+            self.cash -= buy_value + fee
+            shares_bought = buy_value / prices[i]
+            self.shares[i] += shares_bought
+            fees += fee
+            purchases[self.tickers[i]] = {
+                "cash_contribution": float(buy_value + fee),
+                "buy_value": float(buy_value),
+                "fee": float(fee),
+                "price": float(prices[i]),
+                "shares_bought": float(shares_bought),
+            }
+
+        self.dividend_reinvestment_fees += fees
+        if purchases:
+            self.dividend_reinvestment_history.append(
+                {
+                    "date": current_date_str,
+                    "step_idx": int(idx),
+                    "mode": self.dividend_mode,
+                    "total_dividend": total_dividend,
+                    "fees": float(fees),
+                    "purchases": purchases,
+                }
+            )
+
+        value_after = max(self._portfolio_value(prices), 1.0)
+        self.weights = self.shares * prices / value_after
+        return float(fees)
+
+    def _sjm_state(self) -> tuple[str, dict[str, float | str]]:
         row = self.panel.iloc[self.step_idx]
-        state_code = int(float(row.get("0050_sjm_state_code", 0.0)))
+        if self.group_a_triplet:
+            state_code = int(float(row.get("0050_sjm_state_code", 0.0)))
+            state = "M" if state_code < 0 else "J" if state_code > 0 else "S"
+            return state, {
+                "p": float(row.get("0050_pva_p", 0.0)),
+                "v": float(row.get("0050_pva_v", 0.0)),
+                "a": float(row.get("0050_pva_a", 0.0)),
+                "p_z": float(row.get("0050_pva_p_z", 0.0)),
+                "v_z": float(row.get("0050_pva_v_z", 0.0)),
+                "a_z": float(row.get("0050_pva_a_z", 0.0)),
+                "state": state,
+            }
+        # Group B: use group_b_pva_* columns
+        state_code = int(float(row.get("group_b_sjm_state_code", 0.0)))
         state = "M" if state_code < 0 else "J" if state_code > 0 else "S"
         return state, {
-            "p": float(row.get("0050_pva_p", 0.0)),
-            "v": float(row.get("0050_pva_v", 0.0)),
-            "a": float(row.get("0050_pva_a", 0.0)),
-            "p_z": float(row.get("0050_pva_p_z", 0.0)),
-            "v_z": float(row.get("0050_pva_v_z", 0.0)),
-            "a_z": float(row.get("0050_pva_a_z", 0.0)),
+            "p": float(row.get("group_b_pva_p", 0.0)),
+            "v": float(row.get("group_b_pva_v", 0.0)),
+            "a": float(row.get("group_b_pva_a", 0.0)),
+            "p_z": float(row.get("group_b_pva_p_z", 0.0)),
+            "v_z": float(row.get("group_b_pva_v_z", 0.0)),
+            "a_z": float(row.get("group_b_pva_a_z", 0.0)),
             "state": state,
         }
 
@@ -1371,11 +2358,92 @@ class PortfolioEnv(gym.Env):
     ) -> tuple[np.ndarray, dict]:
         base_weights = _clip_weights_array(self._apply_group_a_exposure_cap(base_target_weights))
         if not self.group_a_triplet:
-            return base_weights, {
+            # Group B PVA risk scaling: scale risk ETFs, redistribute to defensive + cash reserve
+            _group_b_risk = {"0056.TW", "00646.TW", "00713.TW", "00878.TW"}
+            _group_b_defensive = {"00679B.TWO", "00751B.TWO"}
+            risk_indices = [i for i, t in enumerate(self.tickers) if t in _group_b_risk]
+            defensive_indices = [i for i, t in enumerate(self.tickers) if t in _group_b_defensive]
+
+            realized_vol = float(self.pva_realized_vol_20[self.step_idx])
+            downside_vol = float(self.pva_downside_vol_20[self.step_idx])
+            drawdown_20 = float(abs(min(0.0, self.pva_drawdown_20[self.step_idx])))
+            blend_weight = self._pva_state_blend_weight(sjm_state)
+            p_z = float(sjm_details.get("p_z", 0.0))
+            v_z = float(sjm_details.get("v_z", 0.0))
+            a_z = float(sjm_details.get("a_z", 0.0))
+
+            regime_pressure = (
+                0.40 * _sigmoid(-p_z)
+                + 0.35 * _sigmoid(-v_z)
+                + 0.25 * _sigmoid(-a_z)
+            )
+            vol_pressure = max(realized_vol / max(self.pva_target_vol, 1e-6) - 1.0, 0.0)
+            downside_pressure = max(downside_vol / max(self.pva_target_vol, 1e-6) - 0.5, 0.0)
+            drawdown_pressure = min(drawdown_20 / 0.08, 1.0)
+            state_pressure = {"M": 1.0, "S": 0.35, "J": 0.10}.get(sjm_state, 0.35)
+            risk_score = float(np.clip(
+                0.40 * regime_pressure
+                + 0.25 * _sigmoid(2.0 * vol_pressure)
+                + 0.20 * _sigmoid(2.0 * downside_pressure)
+                + 0.10 * drawdown_pressure
+                + 0.05 * state_pressure,
+                0.0, 1.0,
+            ))
+            vol_scale = float(np.clip(
+                self.pva_target_vol / max(realized_vol, 1e-6),
+                self.pva_min_leverage_scale, 1.0,
+            ))
+            regime_scale = float(np.clip(
+                1.0 - 0.85 * blend_weight * risk_score,
+                self.pva_min_leverage_scale, 1.0,
+            ))
+            leverage_scale = float(min(vol_scale, regime_scale))
+
+            scaled_weights = base_weights.copy()
+            freed_budget = 0.0
+            for idx in risk_indices:
+                original = float(base_weights[idx])
+                scaled = original * leverage_scale
+                scaled_weights[idx] = scaled
+                freed_budget += original - scaled
+
+            # In M state: hold a cash reserve (analogous to Group A inverse hedge)
+            cash_reserve = 0.0
+            hedge_signal = 0.0
+            if sjm_state == "M":
+                hedge_signal = float(np.clip(
+                    0.60 * risk_score + 0.40 * _sigmoid(2.5 * vol_pressure),
+                    0.0, 1.0,
+                ))
+                cash_reserve = min(
+                    self.pva_inverse_hedge_budget * blend_weight * hedge_signal,
+                    freed_budget,
+                )
+            to_defensive = freed_budget - cash_reserve
+            if defensive_indices and to_defensive > 0:
+                per_defensive = to_defensive / len(defensive_indices)
+                for idx in defensive_indices:
+                    scaled_weights[idx] += per_defensive
+
+            scaled_weights = _clip_weights_array(scaled_weights)
+            return scaled_weights, {
                 "sjm": sjm_details,
-                "policy": "disabled",
-                "raw_pva_weights": {ticker: float(w) for ticker, w in zip(self.tickers, base_weights)},
-                "risk_metrics": {},
+                "policy": "continuous_risk_scaling",
+                "raw_pva_weights": {ticker: float(w) for ticker, w in zip(self.tickers, scaled_weights)},
+                "risk_metrics": {
+                    "blend_weight": float(blend_weight),
+                    "risk_score": float(risk_score),
+                    "realized_vol_20": float(realized_vol),
+                    "downside_vol_20": float(downside_vol),
+                    "drawdown_20": float(drawdown_20),
+                    "vol_scale": float(vol_scale),
+                    "regime_scale": float(regime_scale),
+                    "leverage_scale": float(leverage_scale),
+                    "hedge_signal": float(hedge_signal),
+                    "cash_reserve": float(cash_reserve),
+                    "inverse_cooldown_active": False,
+                },
+                "base_target_weights": {ticker: float(w) for ticker, w in zip(self.tickers, base_weights)},
             }
 
         idx_0050 = self.group_a_index_map["0050.TW"]
@@ -1482,7 +2550,15 @@ class PortfolioEnv(gym.Env):
         allow_inverse_override: bool = False,
     ) -> tuple[np.ndarray, dict]:
         if not self.group_a_triplet:
-            return target_weights, {"force_rebalance": False, "reason": None}
+            return target_weights, {
+                "force_rebalance": False,
+                "reason": None,
+                "holding_inverse": False,
+                "current_inverse_weight": 0.0,
+                "inverse_holding_days": 0,
+                "inverse_cooldown_active": False,
+                "override_active": False,
+            }
 
         current_inverse_weight = self._current_inverse_weight()
         holding_inverse = current_inverse_weight > 1e-6
@@ -1529,7 +2605,7 @@ class PortfolioEnv(gym.Env):
         }
 
     def _pva_overlay_allowed(self) -> tuple[bool, str, dict]:
-        if not self.enable_pva_sigmoid or not self.group_a_triplet:
+        if not self.enable_pva_sigmoid:
             return False, "S", {"p": 0.0, "v": 0.0, "a": 0.0, "p_z": 0.0, "v_z": 0.0, "a_z": 0.0, "state": "S"}
         sjm_state, sjm_details = self._sjm_state()
         return True, sjm_state, sjm_details
@@ -1562,6 +2638,7 @@ class PortfolioEnv(gym.Env):
             extra.append(value / max(float(self.bh_0050_curve[self.step_idx]), 1.0) - 1.0)
         else:
             extra.append(0.0)
+        extra.extend([0.0, 0.0])
 
         state = np.array(extra, dtype=float)
         obs = np.concatenate([features, shared_features, pva_features, state])
@@ -1613,6 +2690,9 @@ class PortfolioEnv(gym.Env):
             self.weights = _weights_for(self.tickers, {"0050.TW": 0.50, "00631L.TW": 0.50})
         else:
             self.weights = np.ones(len(self.tickers), dtype=float) / len(self.tickers)
+        initial_prices = self.close_price_array[self.step_idx]
+        self.shares = self.initial_cash * self.weights / initial_prices
+        self.cash = 0.0
 
         self.last_rebalance_idx = -10**9
         self.trade_count = 0
@@ -1623,6 +2703,10 @@ class PortfolioEnv(gym.Env):
         self.dca_purchase_count = 0
         self.dca_purchase_history = []
         self.dca_executed_months = set()
+        self.total_dividend_credited = 0.0
+        self.dividend_credited_history = []
+        self.dividend_reinvestment_fees = 0.0
+        self.dividend_reinvestment_history = []
         self.pva_sigmoid_count = 0
         self.pva_sigmoid_history = []
         self.sjm_state_history = []
@@ -1733,6 +2817,9 @@ class PortfolioEnv(gym.Env):
         dca_fees = self._apply_dca_if_due(self.step_idx, execution_prices)
         if dca_fees > 0:
             self.fees_paid += dca_fees
+        dividend_fees = self._apply_dividend_if_due(self.step_idx, execution_prices)
+        if dividend_fees > 0:
+            self.fees_paid += dividend_fees
         close_prices = self.close_price_array[self.step_idx]
         value_after = self._mark_weights(close_prices)
         if self.group_a_triplet and self._current_inverse_weight() <= 1e-6:
@@ -2132,6 +3219,13 @@ def _backtest_group(
             "max_holding_days": int(env.inverse_max_holding_days),
             "forced_exit_count": int(env.inverse_forced_exit_count),
         },
+        "dividend_credited_history": env.dividend_credited_history,
+        "total_dividend_credited": float(env.total_dividend_credited),
+        "dividend_config": {
+            "mode": str(env.dividend_mode),
+        },
+        "dividend_reinvestment_fees": float(env.dividend_reinvestment_fees),
+        "dividend_reinvestment_history": env.dividend_reinvestment_history,
         "dca_purchase_history": env.dca_purchase_history,
         "pva_sigmoid_history": env.pva_sigmoid_history,
         "inverse_forced_exit_history": env.inverse_forced_exit_history,
@@ -2269,6 +3363,21 @@ def main():
         "--group-a-enable-pva-sigmoid",
         action="store_true",
         help="Apply Group A PVA/SJM continuous risk scaling during training and backtest",
+    )
+    parser.add_argument(
+        "--group-a-use-institutional-features",
+        action="store_true",
+        help="Attach institutional (外资/投信/自營) net-buy ratio features to Group A training data",
+    )
+    parser.add_argument(
+        "--group-a-use-margin-features",
+        action="store_true",
+        help="Attach margin/short-selling (融券/券資比) features to Group A training data",
+    )
+    parser.add_argument(
+        "--group-a-use-chip-distribution-features",
+        action="store_true",
+        help="Attach TDCC chip-distribution (散戶/主力持倉分佈) features to Group A training data",
     )
     parser.add_argument(
         "--group-a-pva-weight",
@@ -2463,6 +3572,38 @@ def main():
 
     print(f"\n統一載入資料（DB 優先）: {args.train_start} ~ {download_end}")
     stock_data = load_stock_data_db_first(all_tickers, args.train_start, download_end)
+
+    # ── Group A per-ticker DB features (institutional / margin / chip) ──
+    # All three attach functions do in-place merge that replaces the dataframe.
+    # To combine them, call all first (no prefix), then do ONE rename pass at the end.
+    INSTITUTIONAL_COLS = [
+        "foreign_net_buy_ratio_5d", "investment_trust_net_buy_ratio_5d",
+        "dealer_net_buy_ratio_5d", "institutional_total_net_buy_ratio_20d",
+    ]
+    MARGIN_COLS = [
+        "margin_balance_utilization", "short_balance_utilization",
+        "margin_short_ratio", "margin_net_flow_5d", "short_net_flow_5d",
+        "margin_balance_growth_z", "short_balance_growth_z",
+    ]
+    CHIP_COLS = [
+        "chip_level_1_2_pct", "chip_level_3_5_pct", "chip_level_6_10_pct",
+        "chip_level_11_plus_pct", "chip_concentration",
+        "chip_herfindahl_3", "chip_herfindahl_10", "chip_retail_dominance",
+    ]
+    ALL_NEW_COLS = INSTITUTIONAL_COLS + MARGIN_COLS + CHIP_COLS
+
+    if args.group_filter in {"both", "group_a"}:
+        effective_a_start = args.train_start
+        attach_fn_map = [
+            (args.group_a_use_institutional_features, attach_institutional_features_db_first, INSTITUTIONAL_COLS),
+            (args.group_a_use_margin_features, attach_margin_features_db_first, MARGIN_COLS),
+            (args.group_a_use_chip_distribution_features, attach_chip_distribution_features_db_first, CHIP_COLS),
+        ]
+        # Attach each feature set in order. _align_panel will add ticker prefix
+        for flag, attach_fn, feature_cols in attach_fn_map:
+            if flag:
+                stock_data = attach_fn(stock_data, group_a_tickers, effective_a_start, download_end)
+
     if group_a_shared_feature_cols and args.group_filter in {"both", "group_a"}:
         stock_data = attach_market_features_db_first(
             stock_data,

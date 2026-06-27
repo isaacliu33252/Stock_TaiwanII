@@ -147,24 +147,32 @@ python3 optimize_portfolio_grid.py \
   --ppo-verbose 0
 ```
 
-## 實作建議
+## 已實作工具
 
 第一階段只做 signal-only，不做自動下單。
 
-建議新增：
+已新增：
 
 ```text
 generate_signal.py
+walk_forward_portfolio_4etf.py
 ```
 
-最小功能：
+`generate_signal.py` 目前功能：
 
 1. 下載最新 `0050.TW`、`0056.TW`、`00713.TW`、`00878.TW` 資料。
 2. 使用同一套 feature pipeline。
 3. 載入最佳參數訓練出的 PPO model。
-4. 根據最新 observation 輸出目標權重。
+4. 重播同一套環境狀態，套用 cooldown、range-harvest、PVA/SJM overlay。
 5. 合併目前持倉，輸出建議差異。
-6. 只輸出 CSV，不下單。
+6. 輸出 CSV/JSON，不下單。
+
+`walk_forward_portfolio_4etf.py` 目前功能：
+
+1. 用同一個 4 ETF PPO 環境做 rolling walk-forward。
+2. 每個視窗重新訓練並在下一個 test window 回測。
+3. 輸出每個 window 的 Sharpe、MDD、交易次數、是否打贏等權與 0050 B&H。
+4. 產出 JSON/CSV 彙總，方便驗證泛化能力。
 
 建議輸出格式：
 
@@ -256,4 +264,3 @@ paper trading 帳本至少記錄：
 ```text
 DCA + 低頻 PPO 權重建議 + PVA 恐慌態輔助 + 人工確認
 ```
-

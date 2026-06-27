@@ -23,9 +23,14 @@ FinRL 台股量化交易系統 (FinRL Taiwan Stock Trading System)
 __version__ = "1.0.0"
 __author__ = "FinRL Taiwan Team"
 
-# 匯入主要模組，方便快速引用
-from . import data
-from . import environments
-from . import agents
-from . import backtesting
-from . import results
+__all__ = ["data", "environments", "agents", "backtesting", "results"]
+
+# Only eager-import subpackages when this file is imported as a real package.
+# Pytest can also collect this root __init__.py as a standalone module, where
+# relative imports have no parent package and would fail before tests run.
+if __package__:
+    from . import agents
+    from . import backtesting
+    from . import data
+    from . import environments
+    from . import results

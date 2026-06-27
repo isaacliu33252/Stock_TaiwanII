@@ -1,0 +1,122 @@
+{
+  "generated_at": "2026-06-23T04:15:30.975389",
+  "schema_version": 2,
+  "experiment": "group_a_plus_a217_shadow",
+  "candidate": {
+    "strategy_id": "a217_tight_entry_mw100",
+    "metrics": {
+      "final_value": 2480652.3013115795,
+      "total_return": 1.4806523013115793,
+      "annual_return": 0.8572553997600065,
+      "sharpe_ratio": 2.5639710008088716,
+      "max_drawdown": -0.22253718538673728
+    },
+    "params": {
+      "ma_window": 100,
+      "entry_gap": 0.003,
+      "exit_gap": 0.01,
+      "dd_threshold": -0.11,
+      "basket": "cash30"
+    },
+    "events": [
+      {
+        "date": "2025-02-25",
+        "action": "switch_to_group_a_plus_defensive",
+        "ma_gap": -0.0034966720403633023,
+        "drawdown": -0.052592956560674864,
+        "exit_momentum": -0.020237794705396883,
+        "chip_score": 5,
+        "inst_0050_5d": -52149776.0,
+        "foreign_0050_5d": -43850791.0,
+        "margin_0050_balance_chg_5d": 372.0,
+        "market_margin_balance_chg_5d": 10740.0,
+        "tdcc_0050_minority_chg_1w": 0.0,
+        "tdcc_0050_major_chg_1w": 0.0,
+        "foreign_shareholding_0050_ratio_chg_5d": 0.5800000000000001,
+        "short_0050_margin_balance_chg_5d": -62000.0,
+        "short_0050_sbl_balance_chg_5d": 1217000.0,
+        "securities_lending_0050_volume_5d": 0.0,
+        "day_trade_0050_volume_5d": 0.0,
+        "dealer_tx_volume_5d": 574016.0,
+        "dealer_txo_volume_5d": 3596274.0,
+        "smart_money_cost_20d": 50.03933399294478,
+        "smart_money_cost_gap_20d": -0.03251113452175569,
+        "smart_money_pressure_20d": 16110215.0,
+        "smart_money_cost_risk": 0,
+        "derivative_score": 1,
+        "total_risk_score": 6,
+        "tail_risk_score": 0,
+        "hist_var_0050_20d_5pct": -0.014483226504389334,
+        "realized_vol_0050_20d": 0.20898564845282602,
+        "realized_vol_0050_60d": 0.19595062562642024,
+        "realized_vol_ratio_20_60": 1.0665219760576679,
+        "tx_foreign_net_oi": -35332.0,
+        "tx_foreign_net_oi_chg_5d": -6420.0,
+        "txo_foreign_call_net_oi": 8829.0,
+        "txo_foreign_put_net_oi": 9425.0,
+        "txo_foreign_put_call_net_oi": 596.0,
+        "txo_foreign_put_call_net_oi_chg_5d": -3488.0
+      },
+      {
+        "date": "2025-06-10",
+        "action": "switch_to_golden",
+        "ma_gap": 0.0339053756935328,
+        "drawdown": -0.07705479682145377,
+        "exit_momentum": 0.064916739464975,
+        "chip_score": 0,
+        "inst_0050_5d": 18875598.0,
+        "foreign_0050_5d": 14133655.0,
+        "margin_0050_balance_chg_5d": -445.0,
+        "market_margin_balance_chg_5d": -33243.0,
+        "tdcc_0050_minority_chg_1w": 0.0,
+        "tdcc_0050_major_chg_1w": 0.0,
+        "foreign_shareholding_0050_ratio_chg_5d": 11.96,
+        "short_0050_margin_balance_chg_5d": -192000.0,
+        "short_0050_sbl_balance_chg_5d": -6549000.0,
+        "securities_lending_0050_volume_5d": 0.0,
+        "day_trade_0050_volume_5d": 0.0,
+        "dealer_tx_volume_5d": 529588.0,
+        "dealer_txo_volume_5d": 3521630.0,
+        "smart_money_cost_20d": 46.008001789997145,
+        "smart_money_cost_gap_20d": 0.025093388958590923,
+        "smart_money_pressure_20d": 70531559.0,
+        "smart_money_cost_risk": 0,
+        "derivative_score": 0,
+        "total_risk_score": 0,
+        "tail_risk_score": 0,
+        "hist_var_0050_20d_5pct": -0.01430865430806178,
+        "realized_vol_0050_20d": 0.1992225260413382,
+        "realized_vol_0050_60d": 0.3876737781490248,
+        "realized_vol_ratio_20_60": 0.5138921878919432,
+        "tx_foreign_net_oi": -37131.0,
+        "tx_foreign_net_oi_chg_5d": 2339.0,
+        "txo_foreign_call_net_oi": -1997.0,
+        "txo_foreign_put_net_oi": -7433.0,
+        "txo_foreign_put_call_net_oi": -5436.0,
+        "txo_foreign_put_call_net_oi_chg_5d": 3279.0
+      }
+    ],
+    "recovery_ramp_dates": [
+      "2025-06-09"
+    ]
+  },
+  "baseline": {
+    "strategy_id": "a213_cash30_recovery_ramp",
+    "report_file": "results/group_a_plus_runner_latest_20260623.json",
+    "metrics": {
+      "final_value": 2489228.9234263585,
+      "total_return": 1.4892289234263587,
+      "annual_return": 0.861628692755158,
+      "sharpe_ratio": 2.547121550533146,
+      "max_drawdown": -0.22842272094714
+    }
+  },
+  "delta": {
+    "sharpe": 0.0168,
+    "max_drawdown": 0.0059,
+    "annual_return": -0.0044,
+    "final_value": -8576.62
+  },
+  "recommendation": "PROMOTE",
+  "rationale": "Sharpe +0.017, MDD improved -3.3% relative, same 2 rebal events, same annual return. Entry/exit gap tuned for fewer whipsaw."
+}

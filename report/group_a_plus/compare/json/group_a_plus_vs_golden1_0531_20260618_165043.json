@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-06-18T16:50:43",
+  "baseline": "GROUP_A_PLUS_CURRENT_BASELINE.json",
+  "latest_group_a_plus": {
+    "name": "Latest GroupA+",
+    "role": "active baseline: focused_tdcc_0124_stab5_turn12_fast_cd3",
+    "source": "results/group_a_plus_final_signal_predict_20260622_from_20260618_total1000000.json",
+    "requested_as_of_date": "2026-06-22",
+    "actual_data_date": "2026-06-18",
+    "signal_status": "rebalance",
+    "signal_reason": "rebalance_to_0050_60_00631L_20_cash_20",
+    "action_label": null,
+    "candidate_target_label": null,
+    "effective_target_label": null,
+    "total_assets": 1000000.0,
+    "target_weights": {
+      "0050.TW": 0.599914317062378,
+      "00631L.TW": 0.1999676195526123,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.1985782906570259
+    },
+    "target_shares": {
+      "0050.TW": 5591,
+      "00631L.TW": 5217,
+      "00679B.TWO": 0,
+      "00632R.TW": 0
+    },
+    "latest_prices": {
+      "0050.TW": 107.30000305175781,
+      "00631L.TW": 38.33000183105469,
+      "00679B.TWO": 27.040000915527344,
+      "00632R.TW": 10.029999732971191
+    },
+    "overlay_regime": "risk_on",
+    "overlay_00679b_weight": 0.0,
+    "execution_summary": {
+      "buy_notional": 799881.9366149902,
+      "sell_notional": 0.0,
+      "commission": 1139.8317596763611,
+      "sell_tax": 0.0,
+      "slippage": 399.9409683074951,
+      "total_execution_cost": 1539.7727279838562,
+      "target_invested": 799881.9366149902,
+      "cash_before_cost": 200118.06338500977,
+      "cash_after_cost": 198578.2906570259,
+      "turnover_notional": 799881.9366149902,
+      "turnover_ratio": 0.7998819366149902
+    }
+  },
+  "golden1_0531": {
+    "name": "Golden1_0531",
+    "role": "benchmark: Golden1_0531 total 1,000,000",
+    "source": "results/signal_group_a_golden1_0531_predict_20260622_from_20260618_total1000000.json",
+    "requested_as_of_date": "2026-06-22",
+    "actual_data_date": "2026-06-18",
+    "signal_status": "rebalance",
+    "signal_reason": "rebalance_to_0050_60_00631L_20_cash_20",
+    "action_label": "rebalance_to_0050_60_00631L_20_cash_20",
+    "candidate_target_label": "0050 60% / 00631L 20% / cash 20%",
+    "effective_target_label": "0050 60% / 00631L 20% / cash 20%",
+    "total_assets": 1000000.0,
+    "target_weights": {
+      "0050.TW": 0.6,
+      "00631L.TW": 0.2,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.19999999999999996
+    },
+    "target_shares": {
+      "0050.TW": 5592,
+      "00631L.TW": 5218,
+      "00679B.TWO": 0,
+      "00632R.TW": 0
+    },
+    "latest_prices": {
+      "0050.TW": 107.30000305175781,
+      "00631L.TW": 38.33000183105469,
+      "00679B.TWO": 27.040000915527344,
+      "00632R.TW": 10.029999732971191
+    },
+    "execution_summary": {}
+  },
+  "comparison_note": "Target weights are comparable. Target shares may use different capital bases."
+}

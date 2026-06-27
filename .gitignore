@@ -6,14 +6,20 @@ __pycache__/
 dist/
 build/
 .venv/
+.venv*/
 venv/
 *.parquet
 .DS_Store
 
 
 # 訓練產出（由 .gitignore 管理）
+/models/
+/results/
+/log/
+/catboost_info/
 FinRL/models/
 FinRL/results/
+FinRL/.venv-backtest/
 FinRL/FinRL/
 FinRL/test_integration.py
 FinRL/optimize_0050.py

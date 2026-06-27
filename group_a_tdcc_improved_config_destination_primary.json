@@ -1,0 +1,32 @@
+{
+  "strategy_name": "Golden1_0531_tdcc_v1_destination_primary",
+  "status": "shadow_candidate",
+  "base_strategy": "Golden1_0531",
+  "tickers": [
+    "0050",
+    "00631L",
+    "00632R"
+  ],
+  "primary_ticker": "0050",
+  "leverage_ticker": "00631L",
+  "inverse_ticker": "00632R",
+  "lookback_weeks": 8,
+  "availability_lag_days": 1,
+  "caution": {
+    "leverage_minority_percent_change": 4.0,
+    "leverage_total_people_change_ratio": 0.35,
+    "leverage_weight_cap": 0.18
+  },
+  "risk_off": {
+    "leverage_minority_percent_change": 6.0,
+    "leverage_total_people_change_ratio": 0.5,
+    "leverage_weight_cap": 0.0
+  },
+  "released_leverage_budget_destination": "primary",
+  "released_to_primary_fraction": 0.5,
+  "inverse_hedge_on_tdcc_risk_off": {
+    "enabled": false,
+    "weight": 0.05,
+    "require_base_local_risk_off": true
+  }
+}

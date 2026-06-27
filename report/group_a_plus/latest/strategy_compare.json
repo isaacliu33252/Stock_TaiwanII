@@ -1,0 +1,8 @@
+{
+  "report_type": "strategy_compare",
+  "generated_at": "2026-06-18T16:50:43",
+  "latest_profile": "focused_tdcc_0124_stab5_turn12_fast_cd3",
+  "benchmark": "Golden1_0531",
+  "html": "report/group_a_plus/compare/html/group_a_plus_vs_golden1_0531_20260618_165043.html",
+  "json": "report/group_a_plus/compare/json/group_a_plus_vs_golden1_0531_20260618_165043.json"
+}

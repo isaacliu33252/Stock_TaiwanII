@@ -1,0 +1,262 @@
+{
+  "name": "GroupA+ formal baseline",
+  "generated_at": "2026-06-18T10:46:57",
+  "status": "active_baseline",
+  "profile": "focused_tdcc_0124_stab5_turn12_fast_cd3",
+  "config": "group_a_plus_config.json",
+  "clean_payload": "results/group_a_payload_clean_cashdiv_dca8000_20260612.json",
+  "latest_group_a_signal": "results/signal_group_a_20260617_230855.json",
+  "latest_group_a_plus_final_signal": "results/group_a_plus_final_signal_a20_20260617.json",
+  "stress_test_result": "results/group_a_plus_a15_turnover_fine_stress_20260614.json",
+  "strict_cost_result": "results/group_a_plus_a15_turnover_fine_replay_20260614.json",
+  "policy": {
+    "dca": {
+      "dca_day": 20,
+      "monthly_amounts": {
+        "0050.TW": 8000.0
+      },
+      "note": "Group A DCA is applied only during evaluation/backtest, not PPO training reward."
+    },
+    "dividend": {
+      "mode": "cash",
+      "note": "Group A dividends are credited on ex-dividend day and retained as cash; DCA remains fixed separately."
+    },
+    "dynamic_dca": "disabled",
+    "dividend_reinvestment": "disabled"
+  },
+  "group_a_clean_replay": {
+    "final_value": 2404745.868990235,
+    "sharpe": 2.5929818387666614,
+    "max_drawdown": -0.24264730332183287,
+    "dca_total_contributions": 136000.0,
+    "total_dividend_credited": 29608.209156017198,
+    "dividend_mode": "cash"
+  },
+  "latest_signal": {
+    "signal_status": "rebalance",
+    "signal_reason": "pva_overlay_j; trend_gate_released_0050_step",
+    "requested_as_of_date": "2026-06-17",
+    "actual_data_date": "2026-06-17",
+    "stale_days": 0,
+    "action_label": "rebalance_to_0050_60_00631L_20_cash_20",
+    "candidate_target_label": "0050 69.7% / 00631L 10.3% / cash 20%",
+    "effective_target_label": "0050 69.7% / 00631L 10.3% / cash 20%"
+  },
+  "group_a_plus_final_signal": {
+    "status": "active_final_signal",
+    "source_status": "shadow_research_only",
+    "actual_data_date": "2026-06-17",
+    "signal_status": "rebalance",
+    "signal_reason": "pva_overlay_j; trend_gate_released_0050_step",
+    "overlay_regime": "risk_on",
+    "overlay_00679b_weight": 0.0,
+    "target_shares": {
+      "0050.TW": 8374,
+      "00631L.TW": 3514,
+      "00679B.TWO": 24,
+      "00632R.TW": 0
+    },
+    "execution_summary": {
+      "buy_notional": 1010020.1341018677,
+      "sell_notional": 267456.5546722412,
+      "commission": 1820.4042815031053,
+      "sell_tax": 267.4565546722412,
+      "slippage": 638.7383443870544,
+      "total_execution_cost": 2726.5991805624008,
+      "target_invested": 1020097.5740890503,
+      "cash_before_cost": 257436.42057037354,
+      "cash_after_cost": 254709.82138981114,
+      "turnover_notional": 1277476.688774109,
+      "turnover_ratio": 0.9999551433577858
+    }
+  },
+  "stress_summary": {
+    "gfc_2008": {
+      "base": {
+        "final_value": 1293254.7645370662,
+        "annual_return": 0.0771487369706505,
+        "sharpe_ratio": 0.35142341430954954,
+        "max_drawdown": -0.5005467591485404,
+        "volatility": 0.2295226772880095,
+        "num_rebalances": 149,
+        "fees_paid_estimate": 58808.462462811556,
+        "dca_total_contributions": 210000.0,
+        "total_invested_capital": 1210000.0,
+        "net_profit": 83254.76453706622,
+        "contribution_return": 0.06880559052650101
+      },
+      "group_a_plus": null,
+      "delta_plus_vs_base": null
+    },
+    "china_fx_2015": {
+      "base": {
+        "final_value": 1105198.3349638397,
+        "annual_return": 0.05334588243764893,
+        "sharpe_ratio": 0.3109605528464799,
+        "max_drawdown": -0.21402622530945167,
+        "volatility": 0.13001236299040814,
+        "num_rebalances": 83,
+        "fees_paid_estimate": 22749.54832215781,
+        "dca_total_contributions": 120000.0,
+        "total_invested_capital": 1120000.0,
+        "net_profit": -14801.665036160266,
+        "contribution_return": -0.013215772353714524
+      },
+      "group_a_plus": null,
+      "delta_plus_vs_base": null
+    },
+    "china_fx_2016_partial": {
+      "base": {
+        "final_value": 1157896.9615593771,
+        "annual_return": 0.16567104806620336,
+        "sharpe_ratio": 1.1828159946324293,
+        "max_drawdown": -0.08119429391484503,
+        "volatility": 0.11866751062646522,
+        "num_rebalances": 42,
+        "fees_paid_estimate": 13079.571236675356,
+        "dca_total_contributions": 60000.0,
+        "total_invested_capital": 1060000.0,
+        "net_profit": 97896.96155937715,
+        "contribution_return": 0.09235562411261995
+      },
+      "group_a_plus": null,
+      "delta_plus_vs_base": null
+    },
+    "covid_2020": {
+      "base": {
+        "final_value": 1275519.4782231469,
+        "annual_return": 0.2857373072753435,
+        "sharpe_ratio": 1.276295038880764,
+        "max_drawdown": -0.25060824114655034,
+        "volatility": 0.1964679549698118,
+        "num_rebalances": 41,
+        "fees_paid_estimate": 13632.489214244633,
+        "dca_total_contributions": 60000.0,
+        "total_invested_capital": 1060000.0,
+        "net_profit": 215519.47822314687,
+        "contribution_return": 0.20332026247466686
+      },
+      "group_a_plus": null,
+      "delta_plus_vs_base": null
+    },
+    "inflation_2022": {
+      "base": {
+        "final_value": 820577.1038916662,
+        "annual_return": -0.1840460233513671,
+        "sharpe_ratio": -1.2157150240478585,
+        "max_drawdown": -0.2652128947957616,
+        "volatility": 0.17160386768990468,
+        "num_rebalances": 44,
+        "fees_paid_estimate": 15252.043233604927,
+        "dca_total_contributions": 60000.0,
+        "total_invested_capital": 1060000.0,
+        "net_profit": -239422.89610833384,
+        "contribution_return": -0.2258706567059753
+      },
+      "group_a_plus": null,
+      "delta_plus_vs_base": null
+    }
+  },
+  "turnover_cap_multi_window_sweep": "results/group_a_plus_multi_window_turnover_cap_sweep_20260613.json",
+  "strict_cost_turnover_compare": "results/group_a_plus_strict_cost_dca8000_turnover_compare_20260613.json",
+  "improvement_review_20260613": {
+    "decision": "promote_balanced_turnover_cap_12pct",
+    "reason": "turn12 在 turn08/turn10/turn12 中具備較佳平衡分數。擴大檢查至 turn15/18/20/25 後，turn12 仍是通過 stress guardrail 的高分 profile。turn15 的 strict-cost final 較高，但 stress guardrail 較弱，因此保留為 research-only。如果唯一目標是降低 worst-window final drag，turn08 可作 tail-risk fallback。",
+    "multi_window_aggregate": [
+      {
+        "turnover_cap": 0.25,
+        "avg_delta_final_value": 55241.99043180898,
+        "min_delta_final_value": -38001.46382302232,
+        "avg_delta_sharpe_ratio": 0.25928756111834944,
+        "min_delta_sharpe_ratio": -0.07544668181343273,
+        "avg_mdd_improvement": 0.06000558328251535,
+        "min_mdd_improvement": 0.008176511441470385,
+        "avg_volatility_reduction": 0.025961234760405377,
+        "avg_contribution_return_delta": 0.04742513456835472,
+        "windows_positive_final": 4,
+        "windows_total": 5
+      },
+      {
+        "turnover_cap": 0.08,
+        "avg_delta_final_value": 52516.566896844815,
+        "min_delta_final_value": -12072.899963043397,
+        "avg_delta_sharpe_ratio": 0.22879795535606137,
+        "min_delta_sharpe_ratio": 0.017132184537360873,
+        "avg_mdd_improvement": 0.05183617429925382,
+        "min_mdd_improvement": 0.0007310260466294738,
+        "avg_volatility_reduction": 0.017647949794713336,
+        "avg_contribution_return_delta": 0.04438499562549957,
+        "windows_positive_final": 4,
+        "windows_total": 5
+      },
+      {
+        "turnover_cap": 0.2,
+        "avg_delta_final_value": 52354.223472755475,
+        "min_delta_final_value": -35474.94373252895,
+        "avg_delta_sharpe_ratio": 0.2388671893871937,
+        "min_delta_sharpe_ratio": -0.0591084383769509,
+        "avg_mdd_improvement": 0.05713115973442302,
+        "min_mdd_improvement": 0.00603020781573374,
+        "avg_volatility_reduction": 0.024233725118729246,
+        "avg_contribution_return_delta": 0.04461144972622154,
+        "windows_positive_final": 4,
+        "windows_total": 5
+      },
+      {
+        "turnover_cap": 0.18,
+        "avg_delta_final_value": 51353.256306312935,
+        "min_delta_final_value": -33511.050288726576,
+        "avg_delta_sharpe_ratio": 0.23228890258764695,
+        "min_delta_sharpe_ratio": -0.04602653176628513,
+        "avg_mdd_improvement": 0.05591216904200711,
+        "min_mdd_improvement": 0.005159565201944077,
+        "avg_volatility_reduction": 0.02347854428306636,
+        "avg_contribution_return_delta": 0.04364189961243466,
+        "windows_positive_final": 4,
+        "windows_total": 5
+      },
+      {
+        "turnover_cap": 0.1,
+        "avg_delta_final_value": 50448.327858598364,
+        "min_delta_final_value": -19198.654612838756,
+        "avg_delta_sharpe_ratio": 0.21819924429152698,
+        "min_delta_sharpe_ratio": 0.009122147504208478,
+        "avg_mdd_improvement": 0.05208118921493876,
+        "min_mdd_improvement": 0.001625089603229074,
+        "avg_volatility_reduction": 0.01924795603250662,
+        "avg_contribution_return_delta": 0.04252885675131228,
+        "windows_positive_final": 4,
+        "windows_total": 5
+      },
+      {
+        "turnover_cap": 0.15,
+        "avg_delta_final_value": 50036.68034791287,
+        "min_delta_final_value": -29865.77358601871,
+        "avg_delta_sharpe_ratio": 0.2223546328581675,
+        "min_delta_sharpe_ratio": -0.022184362951417347,
+        "avg_mdd_improvement": 0.0538583212747481,
+        "min_mdd_improvement": 0.0038429786530845,
+        "avg_volatility_reduction": 0.022187045785157927,
+        "avg_contribution_return_delta": 0.04234318689028744,
+        "windows_positive_final": 4,
+        "windows_total": 5
+      },
+      {
+        "turnover_cap": 0.12,
+        "avg_delta_final_value": 49318.06700914537,
+        "min_delta_final_value": -24645.445087554166,
+        "avg_delta_sharpe_ratio": 0.21461253156497845,
+        "min_delta_sharpe_ratio": 0.012199075627185696,
+        "avg_mdd_improvement": 0.05225302050529581,
+        "min_mdd_improvement": 0.0025154127133806548,
+        "avg_volatility_reduction": 0.020536227556646375,
+        "avg_contribution_return_delta": 0.04157071578188294,
+        "windows_positive_final": 4,
+        "windows_total": 5
+      }
+    ],
+    "strict_cost_best_by_final": "GroupA+_focused_tdcc_0258_stab3_turn15",
+    "strict_cost_best_by_sharpe": "GroupA+_focused_tdcc_0258_stab3_turn15",
+    "balanced_profile_score": "results/group_a_plus_turnover_profile_score_20260613.json"
+  }
+}

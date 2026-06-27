@@ -1,0 +1,16 @@
+{
+  "strategy_name": "Golden1_0531_tdcc_destination_primary_00632r_stress_strict_cap10",
+  "status": "shadow_candidate",
+  "base_strategy": "Golden1_0531_tdcc_v1_destination_primary",
+  "overlay_type": "conditional_inverse_cap",
+  "ticker": "00632R.TW",
+  "cap": 0.1,
+  "release_to": "0050.TW",
+  "condition": "stress_strict",
+  "primary_ticker": "0050.TW",
+  "ma_window": 60,
+  "momentum_window": 21,
+  "group_drawdown_threshold": -0.1,
+  "signal_lag_trading_days": 1,
+  "note": "Caps 00632R at 10% only when stress_strict is active; otherwise releases 00632R target weight to 0050. Stress_strict is below MA60 and either negative 21-day momentum or Group A drawdown <= -10%. The 2024-2026 sweep matched stress_any, while the 2008 proxy event replay favored stress_strict."
+}

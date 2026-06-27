@@ -294,7 +294,7 @@ def calculate_performance_metrics(episode_results, risk_free_rate=0.02, trading_
     
     # 計算基礎統計
     mean_return = np.mean(returns)
-    std_return = np.std(returns)
+    std_return = np.std(returns, ddof=1)
     min_return = np.min(returns)
     max_return = np.max(returns)
     
@@ -351,10 +351,12 @@ def calculate_performance_metrics(episode_results, risk_free_rate=0.02, trading_
         avg_pnl = 0
         n_trades = 0
     
-    # Sortino Ratio
+    # Sortino Ratio: (年化報酬 - 無風險利率) / 下行標準差 * sqrt(252)
+    # 修復：原本公式缺少「- risk_free_rate」，導致 Sortino 被高估
     downside_returns = [r for r in returns if r < 0]
     if len(downside_returns) > 0 and np.std(downside_returns, ddof=1) > 0:
-        sortino_ratio = mean_return / np.std(downside_returns, ddof=1) * np.sqrt(trading_days)
+        downside_std_annual = np.std(downside_returns, ddof=1) * np.sqrt(trading_days)
+        sortino_ratio = (annualized_return - risk_free_rate) / downside_std_annual if downside_std_annual > 0 else 0
     else:
         sortino_ratio = 0
     

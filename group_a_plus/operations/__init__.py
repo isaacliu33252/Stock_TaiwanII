@@ -1,0 +1,1 @@
+"""Operational GroupA+ signal utilities."""

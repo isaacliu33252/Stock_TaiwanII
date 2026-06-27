@@ -1,0 +1,172 @@
+{
+  "name": "GroupA+ minimal_sleeve_v3",
+  "description": "Group A latest LLM meta shadow strategy plus a 00679B defensive bond sleeve.",
+  "status": "shadow_candidate",
+  "base_strategy": "GroupA_meta_ensemble_real_v1",
+  "base_signal_json": "results/group_a_meta_ensemble_shadow_live_latest.json",
+  "base_signal_sweep": "results/group_a_meta_real_vote_tune_sweep_20250101_20260606_llmfilled.json",
+  "overlay": {
+    "type": "defensive_bond_sleeve",
+    "ticker": "00679B.TWO",
+    "name": "元大美債20年",
+    "default_current_shares": 10000,
+    "target_policy": "static",
+    "reference_static_mix": {
+      "group_a_weight": 0.8,
+      "00679b_weight": 0.2
+    },
+    "dynamic_weight_bands": {
+      "risk_on": 0.0,
+      "caution": 0.0,
+      "risk_off": 0.0,
+      "severe": 0.0
+    }
+  },
+  "leverage_control": {
+    "ticker": "00631L.TW",
+    "release_to": "cash",
+    "max_weight_by_regime": {
+      "risk_on": 0.08,
+      "caution": 0.08,
+      "risk_off": 0.08,
+      "severe": 0.08
+    }
+  },
+  "execution_control": {
+    "default_turnover_penalty_by_regime": {
+      "risk_on": 0.0,
+      "caution": 0.0,
+      "risk_off": 0.0,
+      "severe": 0.0
+    },
+    "live_turnover_penalty_by_regime": {
+      "risk_on": 0.0,
+      "caution": 0.0,
+      "risk_off": 0.0,
+      "severe": 0.0
+    },
+    "buy_fraction_by_regime": {
+      "risk_on": 1.0,
+      "caution": 1.0,
+      "risk_off": 1.0,
+      "severe": 1.0
+    },
+    "sell_fraction_by_regime": {
+      "risk_on": 1.0,
+      "caution": 1.0,
+      "risk_off": 1.0,
+      "severe": 1.0
+    },
+    "defensive_sleeve_sell_fraction_by_regime": {
+      "risk_on": 1.0,
+      "caution": 1.0,
+      "risk_off": 1.0,
+      "severe": 1.0
+    },
+    "max_turnover_ratio_by_regime": {
+      "risk_on": 1.0,
+      "caution": 1.0,
+      "risk_off": 1.0,
+      "severe": 1.0
+    }
+  },
+  "second_stage_control": {
+    "reference_ticker": "0050.TW",
+    "pause_on_break_reference_low": true,
+    "break_low_buffer": 0.0,
+    "price_tolerance": 0.01,
+    "pause_on_open_gap_down": true,
+    "pause_open_gap_down_pct": -0.015,
+    "release_fraction_by_trigger": {
+      "close_above_reference_close": 0.5,
+      "intraday_recovery": 0.25,
+      "hold_deferred_buys": 0.0
+    },
+    "notes": [
+      "Used after the first GroupA+ risk-off staged buy is executed.",
+      "If 0050 breaks the previous trading day's low, keep deferred buys paused.",
+      "If 0050 opens down 1.5% or more, keep deferred buys paused unless the close later confirms recovery.",
+      "If 0050 closes above the previous trading day's close, release 50% of the still-deferred buy quantity.",
+      "If 0050 or TAIEX recovers intraday without a close confirmation, release 25% of the still-deferred buy quantity."
+    ]
+  },
+  "vix_regime_control": {
+    "enabled": true,
+    "description": "Upgrade regime based on VIX levels (FinRL-Meta style). VIX >= risk_off_threshold upgrades risk_on/caution to risk_off. VIX >= severe_threshold upgrades to severe.",
+    "source": "yfinance ^VIX",
+    "lookback_days": 1,
+    "threshold_risk_off": 25.0,
+    "threshold_severe": 35.0,
+    "notes": [
+      "VIX is fetched via yfinance. Must be <= actual_data_date.",
+      "When VIX >= threshold_severe, risk_on or caution is upgraded to severe.",
+      "When VIX >= threshold_risk_off, risk_on is upgraded to risk_off.",
+      "These thresholds are NOT used to downgrade any regime."
+    ]
+  },
+  "turbulence_control": {
+    "enabled": true,
+    "override_regime": true,
+    "description": "Calculate Mahalanobis-distance-style turbulence from Group A ticker returns. High turbulence upgrades regime (FinRL-Meta style).",
+    "lookback_window": 252,
+    "min_history": 60,
+    "threshold_risk_off": 50.0,
+    "threshold_severe": 100.0,
+    "notes": [
+      "turbulence = current_return @ inv(cov_matrix) @ current_return.T",
+      "cov_matrix estimated from lookback_window (default 252 trading days).",
+      "When turbulence >= threshold_severe, any regime is upgraded to severe.",
+      "When turbulence >= threshold_risk_off, risk_on is upgraded to risk_off.",
+      "override_regime=true means turbulence can override even risk_off to severe."
+    ]
+  },
+  "latest_reference": {
+    "as_of_date": "2026-06-08",
+    "actual_data_date": "2026-06-05",
+    "00679b_latest_price": 26.549999237060547,
+    "00679b_10000_shares_value": 265499.99237060547,
+    "00679b_weight_with_latest_group_a_signal": 0.20827296634588677,
+    "latest_group_a_taifex_backtest": "results/group_a_backtest_20250101_20260605_20260607_152808.json",
+    "latest_00679b_overlay_sweep": "results/group_a_taifex_00679b_overlay_sweep_20250102_20260605.json",
+    "latest_turnover_penalty_sweep": "results/group_a_plus_latest_strategy_125w_20260608_turnover_penalty_sweep.json",
+    "recommended_live_turnover_penalty": 0.1
+  },
+  "recommended_profile": {
+    "name": "minimal_sleeve_v3",
+    "selection_basis": "Remove TDCC regime overlay (caused -8.5% drag in backtest). Keep only second_stage pause and basic 00631L cap. Full pass-through in bull markets.",
+    "risk_off_controls": {
+      "00679b_weight": 0.0,
+      "buy_fraction": 1.0,
+      "defensive_sleeve_sell_fraction": 1.0,
+      "max_turnover_ratio": 1.0,
+      "00631l_max_weight": 0.08
+    },
+    "backtest_summary": {},
+    "promotion_gate": "shadow_candidate"
+  },
+  "promotion_gate": {
+    "_comment": "Thresholds for deciding whether a GroupA+ variant is promoted to production.",
+    "_notes": [
+      "drag > promotion_max_final_drag_pct means the variant loses LESS than the threshold amount (e.g. -5% means losing up to 5% is acceptable).",
+      "sharpe_delta > promotion_min_sharpe_delta means the variant's Sharpe remains within this delta of base.",
+      "Return upgrade path (promotion_gate): requires drag > -5% AND sharpe_delta > -0.05",
+      "Risk-control path (risk_control_gate): requires volatility_reduction >= 0.01 AND drag > -15% AND sharpe_delta > -0.05",
+      "Retrain path: requires volatility_reduction >= 0.02 AND drag > -20%",
+      "The -5% drag threshold is calibrated for 2025-2026 market conditions where Group A (with leverage ETFs) is inherently strong."
+    ],
+    "promotion_max_final_drag_pct": -0.1,
+    "promotion_min_sharpe_delta": -0.05,
+    "risk_control_max_final_drag_pct": -0.15,
+    "risk_control_min_volatility_reduction": 0.01,
+    "risk_control_min_sharpe_delta": -0.05,
+    "retrain_min_volatility_reduction": 0.02,
+    "retrain_max_final_drag_pct": -0.2
+  },
+  "notes": [
+    "Minimal overlay design v3 (2026-06-10)",
+    "Only essential protections: second_stage pause + 00631L basic cap",
+    "Removed: TDCC regime overlay, staged buy, turnover penalty, all bond sleeve controls",
+    "Key insight: TDCC caution triggered 21/69 events, leverage cap=0 for 9 events during bull market (2025-02 to 2025-05)",
+    "This caused major opportunity cost during the biggest rally period"
+  ]
+}

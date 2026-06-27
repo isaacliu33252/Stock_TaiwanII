@@ -1,0 +1,33 @@
+{
+  "schema_version": 2,
+  "report_type": "group_a_plus_latest_strategy",
+  "activated_at": "2026-06-25",
+  "active_strategy": {
+    "id": "a2111_tight_entry_bond30c30",
+    "runner": "group_a_plus.runners.a2111",
+    "status": "active",
+    "decision_record": "GROUP_A_PLUS_HANDOFF_20260625_IMPROVEMENTS.md",
+    "recent_result": "results/group_a_plus_runner_a2111.json",
+    "long_result": "results/group_a_plus_runner_a2111_long.json",
+    "promoted_from": "a217_tight_entry_mw100",
+    "improvements": {
+      "sharpe_delta_short": 0.113,
+      "sortino_delta_short": 0.216,
+      "mdd_improvement_pct_short": 8.33,
+      "worst_20d_improvement_pct_short": 7.03,
+      "sharpe_delta_long": 0.026,
+      "sortino_delta_long": 0.032,
+      "annual_return_delta_short": -1.43,
+      "basket": "bond30_cash30 (was cash30)",
+      "ma_window": 100,
+      "entry_gap": "0.003 (unchanged)",
+      "rebal_count_short": 4
+    }
+  },
+  "compatibility": {
+    "legacy_strategy": "a207",
+    "legacy_pointer": "report/group_a_plus/latest/switch_backtest.json",
+    "legacy_pointer_unchanged": true,
+    "note": "Consumers supporting schema v2 use A21.11; legacy two-regime consumers continue using A20.7."
+  }
+}

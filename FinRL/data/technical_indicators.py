@@ -653,18 +653,33 @@ class TechnicalIndicators:
         """
         # 5日均量
         self.df['volume_ma5'] = self.df['volume'].rolling(window=5).mean()
-        
+
         # 量增信號: 當日成交量明顯超過均量
         # 這是 RL 狀態的重要特徵 (pattern_features)
         self.df['volume_spike'] = self.df['volume'] / (self.df['volume_ma5'] + 1e-10)
-        
+
+        # 量比: 當日成交量 / 5日均量（與 volume_spike 相同，取別名）
+        self.df['volume_ratio'] = self.df['volume_spike']
+
         # 標準化成交量 (z-score)
         self.df['volume_normalized'] = (
             self.df['volume'] - self.df['volume'].rolling(window=20).mean()
         ) / (self.df['volume'].rolling(window=20).std(ddof=1) + 1e-10)
-        
+
+        # OBV（能量潮）
+        obv = (np.sign(self.df['close'].diff()) * self.df['volume']).fillna(0).cumsum()
+        self.df['obv'] = obv
+        self.df['obv_ma10'] = obv.rolling(window=10).mean()
+        self.df['obv_slope'] = obv.diff() / (obv.diff().abs().rolling(window=5).sum() + 1e-10)
+
+        # VWAP（成交量加權平均價）- 日內滾動版本
+        # typical_price = (high + low + close) / 3
+        typical_price = (self.df['high'] + self.df['low'] + self.df['close']) / 3.0
+        self.df['vwap'] = (typical_price * self.df['volume']).cumsum() / (self.df['volume'].cumsum() + 1e-10)
+        self.df['close_vwap_ratio'] = self.df['close'] / (self.df['vwap'] + 1e-10)
+
         return self.df
-    
+
     # =========================================================================
     # 價格型態特徵
     # =========================================================================
@@ -881,7 +896,9 @@ class TechnicalIndicators:
         features.append('mfi')
 
         # 成交量
-        features.extend(['volume_ma5', 'volume_spike', 'volume_normalized'])
+        features.extend(['volume_ma5', 'volume_spike', 'volume_normalized',
+                         'obv', 'obv_ma10', 'obv_slope',
+                         'vwap', 'close_vwap_ratio'])
         
         # 價格型態
         features.extend([

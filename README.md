@@ -525,7 +525,7 @@ FinRL/
 
 ## 狀態空間
 
-`TaiwanStockTradingEnv` 使用 52 維狀態：
+`TaiwanStockTradingEnv` 使用 57 維狀態：
 
 | 類別 | 維度 | 內容 |
 |---|---:|---|
@@ -534,7 +534,7 @@ FinRL/
 | 型態/動能 | 8 | 突破、跌破、量增、momentum、volatility、連漲連跌、gap |
 | 基本/籌碼 | 8 | 外資、投信、自營商、殖利率、PER、PBR |
 | 持倉狀態 | 6 | position、現金比例、未實現損益、MDD、距上次交易日數 |
-| 市場情緒 | 4 | 加權指數報酬、量變化、相關性、市場波動 |
+| 市場情緒 | 9 | 加權指數報酬、量變化、相關性、市場波動、DJI lag 特徵 |
 
 ## Action Space
 
@@ -568,6 +568,20 @@ FinRL/
 ```bash
 cd FinRL
 pip install -r requirements.txt
+```
+
+## 測試環境
+
+本專案根目錄已包含可用的虛擬環境 `.venv`。執行 pytest 時請使用專案環境，不要使用系統 Python：
+
+```bash
+.venv/bin/python -m pytest -q
+```
+
+pytest 執行檔位置：
+
+```bash
+.venv/bin/pytest
 ```
 
 單一標的訓練：

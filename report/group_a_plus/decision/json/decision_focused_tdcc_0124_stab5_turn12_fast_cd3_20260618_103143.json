@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-06-18T10:31:43",
+  "profile": "focused_tdcc_0124_stab5_turn12_fast_cd3",
+  "source_review_decision": "caution",
+  "decision": "caution_auto_adjusted",
+  "allowed_for_execution": true,
+  "source_signal": "results/group_a_plus_final_signal_a20_20260617.json",
+  "source_weights": {
+    "0050.TW": 0.694724,
+    "00631L.TW": 0.10315249538421631,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.0004825799903869629,
+    "cash": 0.19950671591073071
+  },
+  "target_total_assets": 1000000.0,
+  "adjusted_weights": {
+    "0050.TW": 0.694724,
+    "00631L.TW": 0.10315249538421631,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.0004825799903869629,
+    "cash": 0.19950671591073071
+  },
+  "target_shares_before_policy": {
+    "0050.TW": 6554,
+    "00631L.TW": 2750,
+    "00632R.TW": 0,
+    "00679B.TWO": 18
+  },
+  "target_shares_after_policy": {
+    "0050.TW": 6554,
+    "00631L.TW": 2750,
+    "00632R.TW": 0,
+    "00679B.TWO": 18
+  },
+  "execution_summary_before_policy": {
+    "buy_notional": 790562.4953842163,
+    "sell_notional": 209359.28582954407,
+    "commission": 1424.8885382296087,
+    "sell_tax": 209.35928582954406,
+    "slippage": 499.9608906068802,
+    "total_execution_cost": 2134.208714666033,
+    "target_invested": 798359.0753746033,
+    "cash_before_cost": 201640.92462539673,
+    "cash_after_cost": 199506.7159107307,
+    "turnover_notional": 999921.7812137604,
+    "turnover_ratio": 0.9999217812137604
+  },
+  "execution_summary_after_policy": {
+    "buy_notional": 790562.4953842163,
+    "sell_notional": 209359.28582954407,
+    "commission": 1424.8885382296087,
+    "sell_tax": 209.35928582954406,
+    "slippage": 499.9608906068802,
+    "total_execution_cost": 2134.208714666033,
+    "target_invested": 798359.0753746033,
+    "cash_before_cost": 201640.92462539673,
+    "cash_after_cost": 199506.7159107307,
+    "turnover_notional": 999921.7812137604,
+    "turnover_ratio": 0.9999217812137604
+  },
+  "auto_adjustments": [],
+  "reason_codes": [
+    "benchmark_agent"
+  ],
+  "review_vote_counts": {
+    "approve": 3,
+    "caution": 1,
+    "block": 0,
+    "shadow_only": 0
+  },
+  "inputs": {
+    "baseline": "GROUP_A_PLUS_CURRENT_BASELINE.json",
+    "review_generated_at": "2026-06-18T10:31:33",
+    "strategy_compare_generated_at": "2026-06-18T10:29:47"
+  }
+}

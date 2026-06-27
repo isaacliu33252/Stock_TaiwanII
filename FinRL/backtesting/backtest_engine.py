@@ -1,467 +1,481 @@
 """
-BacktestEngine - 回測引擎
-================================================================================
-提供完整的回測框架，用於評估 RL 交易策略的績效表現。
-
-功能:
-    - 歷史數據回測
-    - 績效指標計算
-    - 交易記錄分析
-    - 與 Benchmark 比較
-
-績效指標:
-    - Total Return: 總報酬率
-    - Sharpe Ratio: 夏普比率
-    - Max Drawdown: 最大回撒
-    - Win Rate: 勝率
-    - Profit Factor: 利潤因子
-    - Calmar Ratio: 卡爾瑪比率
-    - Annual Return: 年化報酬率
-
-作者: FinRL量化交易專家
+Backtest Engine — FinRL-X style weight-centric backtesting
+===========================================================
+使用 bt library 執行權重驅動回測，保留本地 FinRL 常用績效指標。
 """
 
+from __future__ import annotations
+
+import logging
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import bt
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Optional, Tuple, Any
-from datetime import datetime
-from pathlib import Path
-import json
-import warnings
 
-warnings.filterwarnings('ignore')
+from ..strategies.base_strategy import StrategyResult
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class BacktestConfig:
+    start_date: str
+    end_date: str
+    initial_capital: float = 1_000_000.0
+    rebalance_freq: str = "D"
+    transaction_cost: float = 0.001
+    benchmark_tickers: List[str] = field(default_factory=lambda: ["0050.TW"])
+    tax_rate: float = 0.003
+    brokerage_fee: float = 0.001425
+    min_brokerage_fee: float = 20.0
+    cost_model: Optional[Any] = None
+    price_dir: Optional[str] = None
+    risk_free_rate: float = 0.02
+
+
+@dataclass
+class BacktestResult:
+    strategy_name: str
+    portfolio_returns: pd.Series
+    portfolio_values: pd.Series
+    weights_history: pd.DataFrame
+    trades: pd.DataFrame
+    metrics: Dict[str, float] = field(default_factory=dict)
+    benchmark_values: Optional[pd.Series] = None
+    benchmark_returns: Optional[pd.Series] = None
+
+    def summary(self) -> str:
+        if self.portfolio_values.empty:
+            return f"Strategy: {self.strategy_name}\nNo backtest results."
+
+        period_start = self.portfolio_values.index[0].date()
+        period_end = self.portfolio_values.index[-1].date()
+        m = self.metrics
+        return "\n".join(
+            [
+                f"Strategy: {self.strategy_name}",
+                f"Period: {period_start} -> {period_end}",
+                f"Total Return: {m.get('total_return', 0.0) * 100:.2f}%",
+                f"Annual Return: {m.get('annual_return', 0.0) * 100:.2f}%",
+                f"Sharpe Ratio: {m.get('sharpe', 0.0):.3f}",
+                f"Sortino Ratio: {m.get('sortino', 0.0):.3f}",
+                f"Max Drawdown: {m.get('max_drawdown', 0.0) * 100:.2f}%",
+                f"Calmar Ratio: {m.get('calmar', 0.0):.3f}",
+                f"Win Rate: {m.get('win_rate', 0.0) * 100:.1f}%",
+                f"Total Trades: {m.get('num_trades', 0)}",
+            ]
+        )
 
 
 class BacktestEngine:
     """
-    回測引擎
-    
-    用於回測交易策略並計算績效指標。
-    
-    Attributes:
-        initial_balance: 初始資金
-        commission_rate: 佣金率
-        tax_rate: 證交稅率
-    
-    Example:
-        >>> engine = BacktestEngine(initial_balance=1_000_000)
-        >>> results = engine.run(env, model)
-        >>> engine.print_results(results)
-    """
-    
-    def __init__(
-        self,
-        initial_balance: float = 1_000_000,
-        commission_rate: float = 0.0015,
-        tax_rate: float = 0.003
-    ):
-        """
-        初始化回測引擎
-        
-        Args:
-            initial_balance: 初始資金
-            commission_rate: 券商佣金
-            tax_rate: 證交稅
-        """
-        self.initial_balance = initial_balance
-        self.commission_rate = commission_rate
-        self.tax_rate = tax_rate
-        
-        # 回測結果
-        self.results = None
-        self.trade_history = []
-        self.portfolio_history = []
-    
-    def run(
-        self,
-        env,
-        model=None,
-        deterministic: bool = True
-    ) -> Dict[str, Any]:
-        """
-        執行回測
-        
-        Args:
-            env: 交易環境
-            model: 訓練好的模型 (若為 None，使用隨機策略)
-            deterministic: 是否使用確定性策略
-        
-        Returns:
-            回測結果字典
-        """
-        print("[BacktestEngine] 開始回測...")
-        
-        # 重置環境
-        state, info = env.reset()
-        done = False
-        truncated = False
-        
-        # 記錄
-        self.trade_history = []
-        self.portfolio_history = []
-        
-        # 取得初始資金
-        if 'initial_balance' in info:
-            self.initial_balance = info['initial_balance']
-        
-        step = 0
-        
-        while not (done or truncated):
-            # 選擇動作
-            if model is not None:
-                action, _ = model.predict(state, deterministic=deterministic)
-            else:
-                action = env.action_space.sample()
-            
-            # 執行交易
-            prev_state = state.copy()
-            state, reward, done, truncated, info = env.step(action)
-            
-            # 記錄
-            self.portfolio_history.append({
-                'step': step,
-                'action': action,
-                'action_name': ['HOLD', 'BUY_1000', 'SELL_1000', 'CLOSE_POSITION', 'STOP_LOSS'][action],
-                'portfolio_value': info.get('portfolio_value', 0),
-                'balance': info.get('balance', 0),
-                'position': info.get('position', 0),
-                'price': info.get('price', 0),
-                'reward': reward,
-            })
+    FinRL-X 風格的權重式回測引擎。
 
-            # 從環境的交易歷史同步完整的交易記錄（含 pnl、shares、commission、tax）
-            # 修正: 不再自行建立不完整的 trade_history，改为同步 env 的完整記錄
-            if hasattr(env, 'trade_history') and env.trade_history:
-                existing_indices = set(t.get('step', -1) for t in self.trade_history)
-                for trade in env.trade_history:
-                    if trade.get('step', -1) not in existing_indices:
-                        self.trade_history.append(trade)
-            
-            step += 1
-            
-            if step % 100 == 0:
-                print(f"  Step {step}: Portfolio = {info.get('portfolio_value', 0):,.0f}")
-        
-        # 計算績效指標
-        self.results = self._calculate_metrics()
-        
-        print(f"[BacktestEngine] 回測完成")
-        print(f"  - 總交易次數: {len(self.trade_history)}")
-        print(f"  - 最終資金: {self.results['final_value']:,.0f}")
-        print(f"  - 總報酬率: {self.results['total_return']:.2%}")
-        
-        return self.results
-    
-    def _calculate_metrics(self) -> Dict[str, Any]:
-        """
-        計算績效指標
-        
-        Returns:
-            績效指標字典
-        """
-        if not self.portfolio_history:
-            return {}
-        
-        # 轉換為 DataFrame 方便計算
-        df = pd.DataFrame(self.portfolio_history)
-        
-        # 基本指標
-        initial_value = self.initial_balance
-        final_value = df['portfolio_value'].iloc[-1]
-        total_return = (final_value - initial_value) / initial_value
-        
-        # =====================================================================
-        # 年化報酬率
-        # =====================================================================
-        # 根據資料長度估算交易日數
-        n_days = len(df)
-        years = n_days / 252  # 假設每年 252 交易日
-        if years > 0:
-            annualized_return = (1 + total_return) ** (1 / years) - 1
-        else:
-            annualized_return = 0
-        
-        # =====================================================================
-        # 夏普比率 (Sharpe Ratio)
-        # =====================================================================
-        # Sharpe Ratio = (平均報酬 - 無風險利率) / 報酬標準差
-        daily_returns = df['portfolio_value'].pct_change().dropna()
-        
-        risk_free_rate = 0.02 / 252  # 日化無風險利率
-        excess_returns = daily_returns - risk_free_rate
-        
-        if len(excess_returns) > 1 and excess_returns.std(ddof=1) > 0:
-            sharpe_ratio = (excess_returns.mean() / excess_returns.std(ddof=1)) * np.sqrt(252)
-        else:
-            sharpe_ratio = 0
-        
-        # =====================================================================
-        # 最大回撒 (Max Drawdown)
-        # =====================================================================
-        df['peak'] = df['portfolio_value'].cummax()
-        df['drawdown'] = (df['portfolio_value'] - df['peak']) / df['peak']
-        max_drawdown = df['drawdown'].min()  # 負值
-        max_drawdown_pct = abs(max_drawdown)
-        
-        # 找到最大回撒發生的位置
-        max_dd_idx = df['drawdown'].idxmin()
-        
-        # =====================================================================
-        # Sortino 比率 (只用於下行風險)
-        # =====================================================================
-        # Sortino = (平均報酬 - 目標報酬) / 下行標準差
-        target_return = risk_free_rate  # 目標報酬率 = 無風險利率
-        downside_returns = daily_returns[daily_returns < target_return]
-        if len(downside_returns) > 1 and downside_returns.std(ddof=1) > 0:
-            excess_return = daily_returns.mean() - target_return
-            sortino_ratio = excess_return / downside_returns.std(ddof=1) * np.sqrt(252)
-        else:
-            sortino_ratio = 0
-        
-        # =====================================================================
-        # Calmar 比率 (卡爾瑪比率)
-        # =====================================================================
-        # Calmar = 年化報酬率 / 最大回撒
-        if max_drawdown_pct > 0:
-            calmar_ratio = annualized_return / max_drawdown_pct
-        else:
-            calmar_ratio = 0
-        
-        # =====================================================================
-        # 勝率與利潤因子
-        # =====================================================================
-        trades_df = pd.DataFrame(self.trade_history)
-        
-        if len(trades_df) > 0:
-            # 識別買入和賣出交易
-            buy_trades = trades_df[trades_df['action'] == 1]
-            sell_trades = trades_df[trades_df['action'].isin([2, 3, 4])]
-            
-            # 計算交易次數
-            total_trades = len(trades_df)
-            n_wins = len([t for t in self.trade_history if t.get('pnl', 0) > 0])
-            n_losses = len([t for t in self.trade_history if t.get('pnl', 0) < 0])
-            
-            win_rate = n_wins / total_trades if total_trades > 0 else 0
-            
-            # 利潤因子
-            gross_profit = sum([t.get('pnl', 0) for t in self.trade_history if t.get('pnl', 0) > 0])
-            gross_loss = abs(sum([t.get('pnl', 0) for t in self.trade_history if t.get('pnl', 0) < 0]))
-            
-            profit_factor = gross_profit / gross_loss if gross_loss > 0 else float('inf') if gross_profit > 0 else 0
-            
-            # 平均獲利/平均虧損
-            avg_win = gross_profit / n_wins if n_wins > 0 else 0
-            avg_loss = gross_loss / n_losses if n_losses > 0 else 0
-            avg_win_loss_ratio = avg_win / avg_loss if avg_loss > 0 else 0
-        else:
-            total_trades = 0
-            n_wins = 0
-            n_losses = 0
-            win_rate = 0
-            gross_profit = 0
-            gross_loss = 0
-            profit_factor = 0
-            avg_win = 0
-            avg_loss = 0
-            avg_win_loss_ratio = 0
-        
-        # =====================================================================
-        # 組裝結果
-        # =====================================================================
-        results = {
-            # 基本指標
-            'initial_balance': initial_value,
-            'final_value': final_value,
-            'total_return': total_return,
-            'total_profit': final_value - initial_value,
-            
-            # 報酬指標
-            'annualized_return': annualized_return,
-            'n_trading_days': n_days,
-            'n_years': years,
-            
-            # 風險指標
-            'sharpe_ratio': sharpe_ratio,
-            'sortino_ratio': sortino_ratio,
-            'calmar_ratio': calmar_ratio,
-            'max_drawdown': max_drawdown_pct,
-            'max_drawdown_value': max_drawdown_pct * initial_value,
-            
-            # 交易統計
-            'total_trades': total_trades,
-            'n_wins': n_wins,
-            'n_losses': n_losses,
-            'win_rate': win_rate,
-            'profit_factor': profit_factor,
-            'avg_win': avg_win,
-            'avg_loss': avg_loss,
-            'avg_win_loss_ratio': avg_win_loss_ratio,
-            
-            # 其他
-            'avg_trade_return': total_return / total_trades if total_trades > 0 else 0,
-        }
-        
-        return results
-    
-    def get_trade_history(self) -> pd.DataFrame:
-        """
-        取得交易歷史
-        
-        Returns:
-            交易歷史 DataFrame
-        """
-        return pd.DataFrame(self.trade_history)
-    
-    def get_portfolio_history(self) -> pd.DataFrame:
-        """
-        取得投資組合價值歷史
-        
-        Returns:
-            投資組合歷史 DataFrame
-        """
-        return pd.DataFrame(self.portfolio_history)
-    
-    def get_equity_curve(self) -> pd.DataFrame:
-        """
-        取得權益曲線
-        
-        Returns:
-            包含權益曲線的 DataFrame
-        """
-        df = pd.DataFrame(self.portfolio_history)
-        if 'step' in df.columns and 'portfolio_value' in df.columns:
-            return df[['step', 'portfolio_value']]
-        return df
-    
-    def get_drawdown_series(self) -> pd.Series:
-        """
-        取得回撤序列
-        
-        Returns:
-            回撤 Series
-        """
-        df = pd.DataFrame(self.portfolio_history)
-        df['peak'] = df['portfolio_value'].cummax()
-        df['drawdown'] = (df['portfolio_value'] - df['peak']) / df['peak']
-        return df['drawdown']
-    
-    def print_results(self, results: Optional[Dict] = None):
-        """
-        印出回測結果
-        
-        Args:
-            results: 結果字典 (若為 None，使用 self.results)
-        """
-        if results is None:
-            results = self.results
-        
-        if not results:
-            print("無回測結果")
-            return
-        
-        print("\n" + "=" * 60)
-        print("              FinRL 台股策略回測報告")
-        print("=" * 60)
-        
-        print("\n【基本資訊】")
-        print(f"  初始資金:     {results['initial_balance']:>15,.0f} TWD")
-        print(f"  最終價值:     {results['final_value']:>15,.0f} TWD")
-        print(f"  總報酬率:     {results['total_return']:>15.2%}")
-        print(f"  總獲利:       {results['total_profit']:>15,.0f} TWD")
-        
-        print("\n【報酬分析】")
-        print(f"  年化報酬率:   {results['annualized_return']:>15.2%}")
-        print(f"  交易日數:     {results['n_trading_days']:>15} 天")
-        print(f"  投資年數:     {results['n_years']:>15.2f} 年")
-        
-        print("\n【風險指標】")
-        print(f"  夏普比率:     {results['sharpe_ratio']:>15.2f}")
-        print(f"  Sortino 比率: {results['sortino_ratio']:>15.2f}")
-        print(f"  卡爾瑪比率:   {results['calmar_ratio']:>15.2f}")
-        print(f"  最大回撒:     {results['max_drawdown']:>15.2%}")
-        print(f"  最大回撒金額: {results['max_drawdown_value']:>15,.0f} TWD")
-        
-        print("\n【交易統計】")
-        print(f"  總交易次數:   {results['total_trades']:>15}")
-        print(f"  獲利次數:     {results['n_wins']:>15}")
-        print(f"  虧損次數:     {results['n_losses']:>15}")
-        print(f"  勝率:         {results['win_rate']:>15.2%}")
-        print(f"  利潤因子:     {results['profit_factor']:>15.2f}")
-        print(f"  平均獲利:     {results['avg_win']:>15,.0f} TWD")
-        print(f"  平均虧損:     {results['avg_loss']:>15,.0f} TWD")
-        print(f"  獲虧比:       {results['avg_win_loss_ratio']:>15.2f}")
-        
-        print("\n" + "=" * 60)
-    
-    def save_results(self, path: str, results: Optional[Dict] = None):
-        """
-        儲存回測結果到 JSON 檔案
-        
-        Args:
-            path: 儲存路徑
-            results: 結果字典 (若為 None，使用 self.results)
-        """
-        if results is None:
-            results = self.results
-        
-        if not results:
-            print("無回測結果可儲存")
-            return
-        
-        path = Path(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # 轉換 numpy 類型為 Python 原生類型
-        results_save = {}
-        for k, v in results.items():
-            if isinstance(v, (np.integer, np.floating)):
-                results_save[k] = float(v)
-            else:
-                results_save[k] = v
-        
-        with open(path, 'w', encoding='utf-8') as f:
-            json.dump(results_save, f, indent=2, ensure_ascii=False)
-        
-        print(f"[BacktestEngine] 結果已儲存: {path}")
-    
-    def compare_with_benchmark(
+    權重來源優先順序：
+    1. `StrategyResult.metadata["weights_full"]`
+    2. `StrategyResult.weights`
+
+    價格來源優先順序：
+    1. `metadata["prices"]` / `["price_frame"]` / `["close_prices"]`
+    2. `metadata["price_data"]`
+    3. 本地 `data/cache/*.parquet`
+    """
+
+    def __init__(self, config: Optional[BacktestConfig] = None):
+        self.config = config or BacktestConfig(
+            start_date="2020-01-01",
+            end_date="2025-12-31",
+        )
+        self.logger = logging.getLogger(f"{__name__}.BacktestEngine")
+
+    def run(self, strategy_result: StrategyResult) -> BacktestResult:
+        weights = self._resolve_weights(strategy_result)
+        start = pd.Timestamp(self.config.start_date)
+        end = pd.Timestamp(self.config.end_date)
+        weights = weights.loc[(weights.index >= start) & (weights.index <= end)]
+        if weights.empty:
+            raise ValueError(f"No weights in date range [{start.date()}, {end.date()}]")
+
+        tickers = list(weights.columns)
+        prices = self._resolve_prices(strategy_result, tickers, start, end)
+        prices = prices.loc[(prices.index >= start) & (prices.index <= end), tickers]
+        prices = prices.sort_index().ffill().dropna(how="all")
+        if prices.empty:
+            raise ValueError("No price data available after alignment.")
+
+        weights = self._align_weights_to_prices(weights, prices.index)
+        if weights.empty:
+            raise ValueError("No valid rebalance dates overlap with price data.")
+
+        strategy_name = strategy_result.strategy_name or "RLPortfolio"
+        strategy = self._build_bt_strategy(strategy_name, weights)
+        backtest = bt.Backtest(
+            strategy,
+            prices,
+            initial_capital=self.config.initial_capital,
+            commissions=self._cost_fn,
+            progress_bar=False,
+        )
+        result = bt.run(backtest)
+
+        equity = self._scaled_equity(result.prices[strategy_name].astype(float)).rename("portfolio_value")
+        returns = equity.pct_change().dropna().rename("portfolio_return")
+        weights_history = self._get_weights_history(result, strategy_name)
+        trades = self._get_trades(result, strategy_name)
+
+        benchmark_values, benchmark_returns = self._run_benchmark(prices, start, end)
+        metrics = self._compute_metrics(
+            returns=returns,
+            equity=equity,
+            benchmark_returns=benchmark_returns,
+            trades=trades,
+            weights=weights_history,
+        )
+
+        return BacktestResult(
+            strategy_name=strategy_name,
+            portfolio_returns=returns,
+            portfolio_values=equity,
+            weights_history=weights_history,
+            trades=trades,
+            metrics=metrics,
+            benchmark_values=benchmark_values,
+            benchmark_returns=benchmark_returns,
+        )
+
+    def _cost_fn(self, quantity: float, price: float) -> float:
+        if self.config.cost_model is not None:
+            return float(self.config.cost_model(quantity, price))
+        trade_value = abs(float(quantity) * float(price))
+        brokerage = max(
+            trade_value * self.config.brokerage_fee,
+            self.config.min_brokerage_fee,
+        )
+        tax = trade_value * self.config.tax_rate if quantity < 0 else 0.0
+        return float(brokerage + tax)
+
+    def _resolve_weights(self, strategy_result: StrategyResult) -> pd.DataFrame:
+        metadata = strategy_result.metadata or {}
+        full_weights = metadata.get("weights_full")
+        weights = full_weights if isinstance(full_weights, pd.DataFrame) and not full_weights.empty else strategy_result.weights
+        if weights is None or weights.empty:
+            raise ValueError("StrategyResult does not contain usable weights.")
+
+        frame = weights.copy()
+        if isinstance(frame.columns, pd.MultiIndex):
+            frame.columns = [col[0] if isinstance(col, tuple) else col for col in frame.columns]
+        frame = self._coerce_datetime_index(frame)
+        frame = frame.apply(pd.to_numeric, errors="coerce").fillna(0.0)
+        frame = frame.loc[:, ~frame.columns.duplicated()].copy()
+        frame = frame.sort_index().clip(lower=0.0)
+        return frame
+
+    def _resolve_prices(
         self,
-        benchmark_returns: pd.Series,
-        results: Optional[Dict] = None
-    ) -> Dict[str, Any]:
-        """
-        與 Benchmark 比較
-        
-        Args:
-            benchmark_returns: Benchmark 報酬率序列
-            results: 本策略結果
-        
-        Returns:
-            比較結果字典
-        """
-        if results is None:
-            results = self.results
-        
-        # 計算 Benchmark 的指標
-        bench_total_return = (1 + benchmark_returns).prod() - 1
-        bench_sharpe = benchmark_returns.mean() / benchmark_returns.std(ddof=1) * np.sqrt(252) if benchmark_returns.std(ddof=1) > 0 else 0
-        
-        # 比較
-        comparison = {
-            'strategy_return': results['total_return'],
-            'benchmark_return': bench_total_return,
-            'excess_return': results['total_return'] - bench_total_return,
-            'strategy_sharpe': results['sharpe_ratio'],
-            'benchmark_sharpe': bench_sharpe,
-            'alpha': results['total_return'] - bench_total_return,
+        strategy_result: StrategyResult,
+        tickers: List[str],
+        start: pd.Timestamp,
+        end: pd.Timestamp,
+    ) -> pd.DataFrame:
+        metadata = strategy_result.metadata or {}
+
+        for key in ("prices", "price_frame", "close_prices"):
+            value = metadata.get(key)
+            if isinstance(value, pd.DataFrame) and not value.empty:
+                prices = self._coerce_datetime_index(value.copy()).sort_index()
+                return prices.loc[:, [tic for tic in tickers if tic in prices.columns]]
+
+        price_data = metadata.get("price_data")
+        if isinstance(price_data, dict) and price_data:
+            prices = self._price_dict_to_frame(price_data, tickers)
+            if not prices.empty:
+                return prices
+
+        return self._fetch_prices(tickers, start, end)
+
+    def _price_dict_to_frame(
+        self,
+        price_data: Dict[str, pd.DataFrame],
+        tickers: List[str],
+    ) -> pd.DataFrame:
+        frames: List[pd.DataFrame] = []
+        for ticker in tickers:
+            df = price_data.get(ticker)
+            if not isinstance(df, pd.DataFrame) or df.empty:
+                continue
+            local = self._coerce_datetime_index(df.copy())
+            if "close" not in local.columns:
+                continue
+            frames.append(local[["close"]].rename(columns={"close": ticker}))
+        if not frames:
+            return pd.DataFrame()
+        return pd.concat(frames, axis=1).sort_index()
+
+    def _fetch_prices(
+        self,
+        tickers: List[str],
+        start: pd.Timestamp,
+        end: pd.Timestamp,
+    ) -> pd.DataFrame:
+        frames: List[pd.DataFrame] = []
+        for ticker in tickers:
+            cache_file = self._locate_price_file(ticker)
+            if cache_file is None:
+                self.logger.warning("Price file not found for %s", ticker)
+                continue
+            price_df = self._read_price_file(cache_file, ticker)
+            if price_df.empty:
+                continue
+            frames.append(price_df[[ticker]])
+
+        if not frames:
+            raise FileNotFoundError(f"No price data found for {tickers}")
+
+        prices = pd.concat(frames, axis=1).sort_index().ffill()
+        return prices.loc[(prices.index >= start) & (prices.index <= end)]
+
+    def _locate_price_file(self, ticker: str) -> Optional[Path]:
+        patterns = [
+            f"{ticker}_*_1d.parquet",
+            f"{ticker.replace('.TW', '')}_TW_*_1d.parquet",
+        ]
+        for cache_dir in self._candidate_cache_dirs():
+            for pattern in patterns:
+                matches = sorted(cache_dir.glob(pattern))
+                if matches:
+                    return matches[-1]
+        return None
+
+    def _candidate_cache_dirs(self) -> List[Path]:
+        roots: List[Path] = []
+        if self.config.price_dir:
+            roots.append(Path(self.config.price_dir))
+
+        package_root = Path(__file__).resolve().parents[1]
+        roots.extend(
+            [
+                package_root / "data" / "cache",
+                Path.cwd() / "data" / "cache",
+                Path.cwd() / "FinRL" / "data" / "cache",
+            ]
+        )
+
+        unique_roots: List[Path] = []
+        for root in roots:
+            resolved = root.resolve()
+            if resolved.exists() and resolved not in unique_roots:
+                unique_roots.append(resolved)
+        return unique_roots
+
+    def _read_price_file(self, path: Path, ticker: str) -> pd.DataFrame:
+        df = pd.read_parquet(path)
+        local = self._coerce_datetime_index(df)
+        if "close" in local.columns:
+            prices = local[["close"]].rename(columns={"close": ticker})
+        elif ticker in local.columns:
+            prices = local[[ticker]].copy()
+        else:
+            raise ValueError(f"Unsupported price file format: {path}")
+        return prices.sort_index()
+
+    def _build_bt_strategy(self, strategy_name: str, weights: pd.DataFrame) -> bt.Strategy:
+        return bt.Strategy(
+            strategy_name,
+            [
+                bt.algos.SelectAll(),
+                bt.algos.WeighTarget(weights),
+                bt.algos.Rebalance(),
+            ],
+        )
+
+    def _align_weights_to_prices(
+        self,
+        weights: pd.DataFrame,
+        trading_index: pd.DatetimeIndex,
+    ) -> pd.DataFrame:
+        trading_days = pd.DatetimeIndex(trading_index).sort_values()
+        if trading_days.empty:
+            return pd.DataFrame(columns=weights.columns)
+
+        aligned_rows = []
+        aligned_index = []
+        for when, row in weights.sort_index().iterrows():
+            pos = trading_days.searchsorted(when, side="left")
+            if pos >= len(trading_days):
+                continue
+            aligned_index.append(trading_days[pos])
+            aligned_rows.append(row)
+
+        if not aligned_rows:
+            return pd.DataFrame(columns=weights.columns)
+
+        aligned = pd.DataFrame(aligned_rows, index=pd.DatetimeIndex(aligned_index), columns=weights.columns)
+        return aligned.groupby(level=0).last().sort_index().fillna(0.0).clip(lower=0.0)
+
+    def _run_benchmark(
+        self,
+        prices: pd.DataFrame,
+        start: pd.Timestamp,
+        end: pd.Timestamp,
+    ) -> tuple[Optional[pd.Series], Optional[pd.Series]]:
+        tickers = [ticker for ticker in self.config.benchmark_tickers if ticker]
+        if not tickers:
+            return None, None
+
+        benchmark_prices = prices[[ticker for ticker in tickers if ticker in prices.columns]].copy()
+        missing = [ticker for ticker in tickers if ticker not in benchmark_prices.columns]
+        if missing:
+            fetched = self._fetch_prices(missing, start, end)
+            benchmark_prices = pd.concat([benchmark_prices, fetched], axis=1)
+
+        benchmark_prices = benchmark_prices.loc[:, ~benchmark_prices.columns.duplicated()].sort_index().ffill()
+        benchmark_prices = benchmark_prices[[ticker for ticker in tickers if ticker in benchmark_prices.columns]]
+        if benchmark_prices.empty:
+            self.logger.warning("No benchmark prices available, skipping benchmark.")
+            return None, None
+
+        benchmark = bt.Backtest(
+            bt.Strategy(
+                "Benchmark",
+                [
+                    bt.algos.SelectAll(),
+                    bt.algos.WeighEqually(),
+                    bt.algos.Rebalance(),
+                ],
+            ),
+            benchmark_prices,
+            initial_capital=self.config.initial_capital,
+            progress_bar=False,
+        )
+        result = bt.run(benchmark)
+        equity = self._scaled_equity(result.prices["Benchmark"].astype(float)).rename("benchmark_value")
+        returns = equity.pct_change().dropna().rename("benchmark_return")
+        return equity, returns
+
+    def _scaled_equity(self, series: pd.Series) -> pd.Series:
+        equity = series.astype(float).copy()
+        if equity.empty:
+            return equity
+        first_value = float(equity.iloc[0])
+        if first_value == 0:
+            return equity
+        scale = self.config.initial_capital / first_value
+        return equity * scale
+
+    def _get_weights_history(self, result: bt.backtest.Result, strategy_name: str) -> pd.DataFrame:
+        try:
+            weights = result.get_security_weights(strategy_name)
+        except TypeError:
+            weights = result.get_security_weights()
+        except Exception as exc:
+            self.logger.warning("Could not extract weights history: %s", exc)
+            return pd.DataFrame()
+        return weights.sort_index().fillna(0.0)
+
+    def _get_trades(self, result: bt.backtest.Result, strategy_name: str) -> pd.DataFrame:
+        try:
+            trades = result.get_transactions(strategy_name)
+        except TypeError:
+            trades = result.get_transactions()
+        except Exception as exc:
+            self.logger.warning("Could not extract trades: %s", exc)
+            return pd.DataFrame()
+
+        if trades is None or trades.empty:
+            return pd.DataFrame()
+
+        frame = trades.reset_index()
+        frame.columns = ["date", "ticker", "price", "quantity"]
+        frame["date"] = pd.to_datetime(frame["date"])
+        frame["price"] = pd.to_numeric(frame["price"], errors="coerce")
+        frame["quantity"] = pd.to_numeric(frame["quantity"], errors="coerce")
+        frame["side"] = np.where(frame["quantity"] >= 0, "buy", "sell")
+        frame["trade_value"] = (frame["price"] * frame["quantity"].abs()).astype(float)
+        frame["commission"] = np.maximum(
+            frame["trade_value"] * self.config.brokerage_fee,
+            self.config.min_brokerage_fee,
+        )
+        frame["tax"] = np.where(frame["quantity"] < 0, frame["trade_value"] * self.config.tax_rate, 0.0)
+        frame["fees"] = frame["commission"] + frame["tax"]
+        return frame.set_index("date").sort_index()
+
+    def _compute_metrics(
+        self,
+        returns: pd.Series,
+        equity: pd.Series,
+        benchmark_returns: Optional[pd.Series],
+        trades: pd.DataFrame,
+        weights: pd.DataFrame,
+    ) -> Dict[str, float]:
+        if equity.empty:
+            return {}
+
+        total_return = float(equity.iloc[-1] / equity.iloc[0] - 1.0) if len(equity) > 1 else 0.0
+        n_periods = max(len(returns), 1)
+        annual_return = float((1.0 + total_return) ** (252.0 / n_periods) - 1.0) if len(equity) > 1 else 0.0
+        daily_vol = float(returns.std(ddof=1)) if not returns.empty else 0.0
+        annual_vol = float(daily_vol * np.sqrt(252.0))
+        rf_daily = self.config.risk_free_rate / 252.0
+
+        excess_returns = returns - rf_daily
+        # 正確 Sharpe：分子分母都使用 excess_returns
+        excess_std = excess_returns.std(ddof=1)
+        sharpe = float(excess_returns.mean() / excess_std * np.sqrt(252.0)) if excess_std > 0 else 0.0
+
+        downside = returns[returns < rf_daily]
+        downside_std = float(downside.std(ddof=1) * np.sqrt(252.0)) if len(downside) > 0 else 0.0
+        sortino = float((annual_return - self.config.risk_free_rate) / downside_std) if downside_std > 0 else 0.0
+
+        running_max = equity.cummax()
+        drawdown = (equity / running_max) - 1.0
+        max_drawdown = float(drawdown.min()) if not drawdown.empty else 0.0
+        calmar = float(annual_return / abs(max_drawdown)) if max_drawdown < 0 else 0.0
+
+        non_zero_returns = returns[returns != 0]
+        win_rate = float((non_zero_returns > 0).mean()) if not non_zero_returns.empty else 0.0
+
+        active_sharpe = 0.0
+        benchmark_total_return = 0.0
+        benchmark_annual_return = 0.0
+        if benchmark_returns is not None and not benchmark_returns.empty:
+            aligned = returns.align(benchmark_returns, join="inner")
+            active = aligned[0] - aligned[1]
+            if active.std(ddof=1) > 0:
+                active_sharpe = float(active.mean() / active.std(ddof=1) * np.sqrt(252.0))
+            benchmark_total_return = float((1.0 + aligned[1]).prod() - 1.0)
+            benchmark_annual_return = float((1.0 + benchmark_total_return) ** (252.0 / max(len(aligned[1]), 1)) - 1.0)
+
+        avg_gross_exposure = float(weights.sum(axis=1).mean()) if not weights.empty else 0.0
+        cash_weight = float(np.clip(1.0 - avg_gross_exposure, 0.0, 1.0))
+        turnover_multiple = float(trades["trade_value"].sum() / self.config.initial_capital) if not trades.empty else 0.0
+
+        return {
+            "total_return": total_return,
+            "annual_return": annual_return,
+            "sharpe": sharpe,
+            "sortino": sortino,
+            "max_drawdown": max_drawdown,
+            "calmar": calmar,
+            "win_rate": win_rate,
+            "num_trades": int(len(trades)) if not trades.empty else 0,
+            "annual_volatility": annual_vol,
+            "sharpe_vs_benchmark": active_sharpe,
+            "benchmark_total_return": benchmark_total_return,
+            "benchmark_annual_return": benchmark_annual_return,
+            "avg_gross_exposure": avg_gross_exposure,
+            "avg_cash_weight": cash_weight,
+            "turnover_multiple": turnover_multiple,
         }
-        
-        print(f"\n【與 Benchmark 比較】")
-        print(f"  策略報酬率:   {comparison['strategy_return']:.2%}")
-        print(f"  Benchmark:   {comparison['benchmark_return']:.2%}")
-        print(f"  超額報酬 (α): {comparison['excess_return']:.2%}")
-        print(f"  策略夏普:     {comparison['strategy_sharpe']:.2f}")
-        print(f"  Benchmark 夏普: {comparison['benchmark_sharpe']:.2f}")
-        
-        return comparison
+
+    def _coerce_datetime_index(self, frame: pd.DataFrame) -> pd.DataFrame:
+        local = frame.copy()
+        if "date" in local.columns:
+            local["date"] = pd.to_datetime(local["date"])
+            local = local.set_index("date")
+        else:
+            local.index = pd.to_datetime(local.index)
+        local.index = pd.DatetimeIndex(local.index).tz_localize(None)
+        return local.sort_index()

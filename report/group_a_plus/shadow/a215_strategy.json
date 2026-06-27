@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "report_type": "group_a_plus_shadow_strategy",
+  "activated_at": "2026-06-21",
+  "active_strategy": {
+    "id": "a215_cash40_mw80",
+    "runner": "group_a_plus.runners.a215",
+    "status": "shadow",
+    "decision_record": "results/group_a_plus_a215_evaluation_20260621.json"
+  },
+  "compatibility": {
+    "production_strategy": "a213_cash30_recovery_ramp",
+    "production_manifest": "report/group_a_plus/latest/strategy.json",
+    "note": "Shadow-only manifest. It must not be used for automatic production execution."
+  }
+}

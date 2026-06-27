@@ -1,0 +1,14 @@
+{
+  "report_type": "daily_status",
+  "profile": "focused_tdcc_0124_stab5_turn14_fast_cd3",
+  "check_date": "2026-06-14",
+  "generated_at": "2026-06-14T13:57:55",
+  "overall_status": "warn",
+  "json_path": "report/group_a_plus/daily/json/daily_status_focused_tdcc_0124_stab5_turn14_fast_cd3_20260614_20260614_135755.json",
+  "markdown_path": "report/group_a_plus/daily/md/daily_status_focused_tdcc_0124_stab5_turn14_fast_cd3_20260614_20260614_135755.md",
+  "json_size_bytes": 1745,
+  "markdown_size_bytes": 749,
+  "legacy_json_path": "results/group_a_plus_daily_check_20260614_a15.json",
+  "legacy_markdown_path": "results/group_a_plus_daily_check_20260614_a15.md",
+  "baseline_path": "GROUP_A_PLUS_CURRENT_BASELINE.json"
+}

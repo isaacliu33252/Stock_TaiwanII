@@ -84,7 +84,9 @@ def calculate_sortino_ratio(
         return 0.0
     
     mean_return = np.mean(returns)
-    return (mean_return * np.sqrt(252)) / (downside_std * np.sqrt(252))
+    # Sortino Ratio (annualized): (日均超額報酬 - 目標) / 日均下行標準差 * sqrt(252)
+    # 分子：日均超額報酬；分母：日均下行標準差；乘以 sqrt(252) 完成年化
+    return (mean_return - target) / downside_std * np.sqrt(252)
 
 
 def calculate_max_drawdown(
@@ -279,7 +281,7 @@ def calculate_avg_holding_days(trade_history: List[Dict]) -> float:
     if len(trade_history) < 2:
         return 0.0
     
-    buy_trades = [t for t in trade_history if t.get('action') == 1]
+    buy_trades = [t for t in trade_history if t.get('action') in [1, 2, 3]]
     
     if not buy_trades:
         return 0.0
@@ -290,7 +292,8 @@ def calculate_avg_holding_days(trade_history: List[Dict]) -> float:
         
         for j in range(i + 1, len(trade_history)):
             sell_trade = trade_history[j]
-            if sell_trade.get('action') in [2, 3]:
+            # TaiwanStockTradingEnv discrete sell actions: 4=SELL_1000, 5=SELL_5000, 6=SELL_10000
+            if sell_trade.get('action') in [4, 5, 6]:
                 sell_step = sell_trade.get('step', 0)
                 holding_periods.append(sell_step - buy_step)
                 break
@@ -343,8 +346,9 @@ def calculate_all_metrics(
     avg_win, avg_loss, win_loss_ratio = calculate_win_loss_stats(trade_history)
     
     total_trades = len(trade_history)
-    buy_trades = sum(1 for t in trade_history if t.get('action') == 1)
-    sell_trades = sum(1 for t in trade_history if t.get('action') in [2, 3])
+    buy_trades = sum(1 for t in trade_history if t.get('action') in [1, 2, 3])
+    # TaiwanStockTradingEnv discrete sell actions: 4=SELL_1000, 5=SELL_5000, 6=SELL_10000
+    sell_trades = sum(1 for t in trade_history if t.get('action') in [4, 5, 6])
     
     # 其他指標
     max_dd_duration = calculate_max_drawdown_duration(equity_curve)

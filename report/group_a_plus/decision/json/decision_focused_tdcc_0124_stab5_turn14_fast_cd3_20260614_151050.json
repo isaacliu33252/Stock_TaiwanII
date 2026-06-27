@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-06-14T15:10:50",
+  "profile": "focused_tdcc_0124_stab5_turn14_fast_cd3",
+  "source_review_decision": "caution",
+  "decision": "caution_auto_adjusted",
+  "allowed_for_execution": true,
+  "source_signal": "results/group_a_plus_final_signal_20260613_6p12data.json",
+  "source_weights": {
+    "0050.TW": 0.5302419500000001,
+    "00631L.TW": 0.0,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.4671493239955902,
+    "cash": 0.0001883984138998285
+  },
+  "target_total_assets": 1000000.0,
+  "adjusted_weights": {
+    "0050.TW": 0.5238191,
+    "00631L.TW": 0.0,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.4636705239658356,
+    "cash": 0.010092236939817412
+  },
+  "target_shares_before_policy": {
+    "0050.TW": 5201,
+    "00631L.TW": 0,
+    "00632R.TW": 0,
+    "00679B.TWO": 17457
+  },
+  "target_shares_after_policy": {
+    "0050.TW": 5138,
+    "00631L.TW": 0,
+    "00632R.TW": 0,
+    "00679B.TWO": 17327
+  },
+  "execution_summary_before_policy": {
+    "buy_notional": 497516.0,
+    "sell_notional": 500037.364276886,
+    "commission": 1421.5135440945626,
+    "sell_tax": 500.037364276886,
+    "slippage": 498.776682138443,
+    "total_execution_cost": 2420.3275905098917,
+    "target_invested": 997391.2739955903,
+    "cash_before_cost": 2608.72600440972,
+    "cash_after_cost": 188.39841389982848,
+    "turnover_notional": 997553.364276886,
+    "turnover_ratio": 0.997553364276886
+  },
+  "execution_summary_after_policy": {
+    "buy_notional": 491093.15,
+    "sell_notional": 503516.1643066406,
+    "commission": 1417.318272886963,
+    "sell_tax": 503.51616430664063,
+    "slippage": 497.3046571533203,
+    "total_execution_cost": 2418.139094346924,
+    "target_invested": 987489.6239658357,
+    "cash_before_cost": 12510.376034164336,
+    "cash_after_cost": 10092.236939817412,
+    "turnover_notional": 994609.3143066406,
+    "turnover_ratio": 0.9946093143066407
+  },
+  "auto_adjustments": [
+    {
+      "type": "cash_after_cost_buffer",
+      "from_weight": 0.0001883984138998285,
+      "to_min_weight": 0.01,
+      "reason": "review caution: cash_after_cost too thin"
+    }
+  ],
+  "reason_codes": [
+    "data_freshness_agent",
+    "cost_agent",
+    "benchmark_agent"
+  ],
+  "review_vote_counts": {
+    "approve": 1,
+    "caution": 3,
+    "block": 0,
+    "shadow_only": 0
+  },
+  "inputs": {
+    "baseline": "GROUP_A_PLUS_CURRENT_BASELINE.json",
+    "review_generated_at": "2026-06-14T15:09:36",
+    "strategy_compare_generated_at": "2026-06-14T15:09:57"
+  }
+}

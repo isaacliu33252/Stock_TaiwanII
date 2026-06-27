@@ -20,8 +20,8 @@ from portfolio_train_v2 import calculate_backtest_metrics, calculate_buy_and_hol
 TRAIN_START = "2016-01-01"
 TRAIN_END = "2023-12-31"
 BACKTEST_START = "2024-01-01"
-BACKTEST_END = "2026-05-08"
-DOWNLOAD_END = "2026-05-09"
+BACKTEST_END = "2026-05-15"
+DOWNLOAD_END = "2026-05-22"
 
 
 def slice_by_date(df: pd.DataFrame, start: str, end: str) -> pd.DataFrame:

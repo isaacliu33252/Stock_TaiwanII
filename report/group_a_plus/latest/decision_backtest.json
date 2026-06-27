@@ -1,0 +1,36 @@
+{
+  "report_type": "decision_backtest",
+  "generated_at": "2026-06-18T10:47:00",
+  "json": "results/group_a_plus_policy_signal_backtest_a20_pipeline.json",
+  "csv": "results/group_a_plus_policy_signal_backtest_a20_pipeline.csv",
+  "curve_csv": "results/group_a_plus_policy_signal_backtest_a20_pipeline_curve.csv",
+  "summary": {
+    "group_a_plus_original": {
+      "initial_value": 1000000.0,
+      "final_value": 1603654.4565471574,
+      "total_return": 0.6036544565471573,
+      "annual_return": 0.38384069551321653,
+      "volatility": 0.17328716355425758,
+      "sharpe_ratio": 2.04982285500638,
+      "max_drawdown": -0.15724331649995993
+    },
+    "group_a_plus_policy_adjusted": {
+      "initial_value": 1000000.0,
+      "final_value": 2085465.033554752,
+      "total_return": 1.085465033554752,
+      "annual_return": 0.657924369739477,
+      "volatility": 0.25098284794916004,
+      "sharpe_ratio": 2.235735959718278,
+      "max_drawdown": -0.25346979287067073
+    },
+    "golden1_0531_1m": {
+      "initial_value": 1000000.0,
+      "final_value": 2214964.5924768914,
+      "total_return": 1.2149645924768913,
+      "annual_return": 0.7280711446670283,
+      "volatility": 0.27844040961456196,
+      "sharpe_ratio": 2.1975061103591265,
+      "max_drawdown": -0.27538670040425206
+    }
+  }
+}

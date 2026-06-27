@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-06-18T10:46:57",
+  "check_date": "2026-06-18",
+  "overall_status": "ok",
+  "profile": "focused_tdcc_0124_stab5_turn12_fast_cd3",
+  "baseline": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/GROUP_A_PLUS_CURRENT_BASELINE.json",
+  "source_paths": {
+    "latest_group_a_signal": "results/signal_group_a_20260617_230855.json",
+    "latest_group_a_plus_final_signal": "results/group_a_plus_final_signal_a20_20260617.json",
+    "clean_payload": "results/group_a_payload_clean_cashdiv_dca8000_20260612.json",
+    "stress_test_result": "results/group_a_plus_a15_turnover_fine_stress_20260614.json",
+    "strict_cost_result": "results/group_a_plus_a15_turnover_fine_replay_20260614.json"
+  },
+  "checks": [
+    {
+      "name": "required_files",
+      "status": "ok",
+      "detail": "all required files present"
+    },
+    {
+      "name": "data_freshness",
+      "status": "ok",
+      "detail": "1 business days stale, 1 calendar days stale"
+    },
+    {
+      "name": "signal_guard",
+      "status": "ok",
+      "detail": "pva_overlay_j; trend_gate_released_0050_step"
+    },
+    {
+      "name": "group_a_plus_cash_constraint",
+      "status": "ok",
+      "detail": "cash_after_cost=254,710"
+    },
+    {
+      "name": "overlay_regime",
+      "status": "ok",
+      "detail": "regime=risk_on, 00679B_weight=0.00%"
+    }
+  ],
+  "signal": {
+    "signal_status": "rebalance",
+    "signal_reason": "pva_overlay_j; trend_gate_released_0050_step",
+    "actual_data_date": "2026-06-17",
+    "requested_as_of_date": "2026-06-17",
+    "business_stale_days": 1,
+    "calendar_stale_days": 1
+  },
+  "group_a_plus": {
+    "overlay_regime": "risk_on",
+    "overlay_00679b_weight": 0.0,
+    "cash_after_cost": 254709.82138981114,
+    "target_shares": {
+      "0050.TW": 8374,
+      "00631L.TW": 3514,
+      "00679B.TWO": 24,
+      "00632R.TW": 0
+    }
+  }
+}

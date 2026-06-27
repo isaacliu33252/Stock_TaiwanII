@@ -16,7 +16,7 @@ import numpy as np
 import yfinance as yf
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
-from datetime import datetime
+from datetime import datetime, timedelta
 import warnings
 import sys
 import os
@@ -42,6 +42,11 @@ except ImportError:
     BACKTEST_END = "2010-12-31"
     TRAIN_START = "1990-01-01"
     TRAIN_END = "2000-12-31"
+
+
+def _inclusive_history_end(value: str) -> str:
+    """yfinance history() treats end as exclusive; move it forward one day."""
+    return (pd.Timestamp(value).normalize() + timedelta(days=1)).strftime("%Y-%m-%d")
 
 
 def download_all_stocks(
@@ -101,7 +106,11 @@ def download_all_stocks(
         print(f"  [{i+1}/{len(tickers)}] 下載 {ticker}... (YF: {yf_ticker})", end=" ", flush=True)
         try:
             yf_ticker_obj = yf.Ticker(yf_ticker)
-            df = yf_ticker_obj.history(start=start_date, end=end_date, interval=interval)
+            df = yf_ticker_obj.history(
+                start=start_date,
+                end=_inclusive_history_end(end_date),
+                interval=interval,
+            )
 
             if df.empty:
                 print("無數據")

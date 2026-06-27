@@ -35,7 +35,7 @@ from pathlib import Path
 _config_py = Path(__file__).parent.parent / "config.py"
 if _config_py.exists():
     _ns = {'os': os, 'sys': sys}
-    with open(_config_py) as _f:
+    with open(_config_py, encoding='utf-8') as _f:
         _code = _f.read()
     try:
         exec(compile(_code, str(_config_py), 'exec'), _ns)

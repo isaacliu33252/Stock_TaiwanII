@@ -77,6 +77,8 @@ class TaiwanStockTradingEnv(gym.Env):
         reward_func=None,
         initial_shares: int = 0,
         initial_avg_cost: float = 0.0,
+        enable_risk_manager: bool = True,
+        crash_window: int = 15,
     ):
         """
         初始化交易環境

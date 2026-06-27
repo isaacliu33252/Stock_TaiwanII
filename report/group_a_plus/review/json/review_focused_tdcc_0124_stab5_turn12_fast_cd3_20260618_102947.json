@@ -1,0 +1,123 @@
+{
+  "generated_at": "2026-06-18T10:29:47",
+  "profile": "focused_tdcc_0124_stab5_turn12_fast_cd3",
+  "phase": "research_debate_vote",
+  "inputs": {
+    "daily_status": "report/group_a_plus/daily/json/daily_status_focused_tdcc_0124_stab5_turn14_fast_cd3_20260617_20260617_230719.json",
+    "daily_html": "report/group_a_plus/daily/html/daily_status_focused_tdcc_0124_stab5_turn14_fast_cd3_20260617_20260617_230719.html",
+    "strategy_compare": "report/group_a_plus/compare/json/group_a_plus_vs_golden1_0531_20260614_151125.json",
+    "compare_html": "report/group_a_plus/compare/html/group_a_plus_vs_golden1_0531_20260614_151125.html",
+    "baseline": "GROUP_A_PLUS_CURRENT_BASELINE.json"
+  },
+  "research_reviews": [
+    {
+      "agent": "data_freshness_agent",
+      "vote": "caution",
+      "severity": "caution",
+      "findings": [
+        "3 business days stale, 5 calendar days stale"
+      ],
+      "evidence": {
+        "business_stale_days": 3,
+        "calendar_stale_days": 5
+      }
+    },
+    {
+      "agent": "risk_agent",
+      "vote": "approve",
+      "severity": "approve",
+      "findings": [
+        "overlay regime is risk_on",
+        "signal guard: cooldown_4d"
+      ],
+      "evidence": {
+        "overlay_regime": "risk_on",
+        "signal_guard": {
+          "name": "signal_guard",
+          "status": "ok",
+          "detail": "cooldown_4d"
+        }
+      }
+    },
+    {
+      "agent": "cost_agent",
+      "vote": "caution",
+      "severity": "caution",
+      "findings": [
+        "cash_after_cost is thin: 47"
+      ],
+      "evidence": {
+        "cash_after_cost": 47.08491853946589,
+        "cash_check": {
+          "name": "group_a_plus_cash_constraint",
+          "status": "ok",
+          "detail": "cash_after_cost=47"
+        }
+      }
+    },
+    {
+      "agent": "benchmark_agent",
+      "vote": "caution",
+      "severity": "caution",
+      "findings": [
+        "00631L weight delta vs Golden1: -20.00%",
+        "00679B weight delta vs Golden1: +46.37%",
+        "cash weight delta vs Golden1: -18.99%",
+        "latest GroupA+ is materially less leveraged than Golden1; confirm intentional defensive posture"
+      ],
+      "evidence": {
+        "latest_weights": {
+          "0050.TW": 0.5238191,
+          "00631L.TW": 0.0,
+          "00632R.TW": 0.0,
+          "00679B.TWO": 0.4636705239658356,
+          "cash": 0.010092236939817412
+        },
+        "golden_weights": {
+          "0050.TW": 0.6,
+          "00631L.TW": 0.2,
+          "00632R.TW": 0.0,
+          "00679B.TWO": 0.0,
+          "cash": 0.19999999999999996
+        },
+        "weight_delta": {
+          "00631L.TW": -0.2,
+          "00679B.TWO": 0.4636705239658356,
+          "cash": -0.18990776306018253
+        }
+      }
+    }
+  ],
+  "debate": [
+    {
+      "agent": "data_freshness_agent",
+      "stance": "cautionary objection",
+      "key_point": "3 business days stale, 5 calendar days stale"
+    },
+    {
+      "agent": "risk_agent",
+      "stance": "supports approval",
+      "key_point": "overlay regime is risk_on"
+    },
+    {
+      "agent": "cost_agent",
+      "stance": "cautionary objection",
+      "key_point": "cash_after_cost is thin: 47"
+    },
+    {
+      "agent": "benchmark_agent",
+      "stance": "cautionary objection",
+      "key_point": "00631L weight delta vs Golden1: -20.00%"
+    }
+  ],
+  "vote": {
+    "decision": "caution",
+    "action": "Allow hold or reduced-risk execution only; require manual confirmation for new orders.",
+    "vote_counts": {
+      "approve": 1,
+      "caution": 3,
+      "block": 0,
+      "shadow_only": 0
+    }
+  }
+}

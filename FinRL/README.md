@@ -1,5 +1,26 @@
 # FinRL 台股強化學習交易系統
 
+## 2026-05-15 Canonical 版位與整合狀態
+
+目前唯一主版請以這個目錄為準：
+
+- `Stock_taiwan2-main/FinRL`
+
+外層工作區曾有 `../FinRL` 抽出副本，現在已移除。先前從該副本吸收進主版的能力包含：
+
+- `strategies/rl_portfolio_strategy.py`
+- `finrlx_demo_backtest.py`
+- `backtest/` legacy compatibility layer
+- `FinRL.__init__` 的 FinRL-X 風格 exports
+
+整合後的定位：
+
+- 離散 PPO / 既有主流程：沿用目前 repo 內既有腳本
+- 連續控制投組：以 `portfolio_mvo_sac_td3.py` 為主
+- FinRL-X 權重式回測：以 `finrlx_demo_backtest.py` + `FinRL.backtesting.backtest_engine` 為主
+
+外層副本中那支不同實作的 `wf_5etf_2020_2024.py` 沒有直接覆蓋這裡同名檔案，因為它和目前主版的 5 ETF 工作流屬於不同實驗路線；直接覆蓋只會讓 canonical 行為變得不明確。
+
 ## 2026-05-10 自動最佳化流程
 
 新增 `optimize_portfolio_grid.py`，用來自動掃描 4 ETF PPO/DCA/PVA 參數並以多 seed 排名。這個腳本不改交易環境本身，而是呼叫既有 `train_portfolio_0050_0056_00713_00878_2016_2023_backtest_2024_2026.py`，確保最佳化與正式回測走同一套資料、reward、DCA 與 PVA/SJM overlay。
@@ -1146,7 +1167,7 @@ FinRL/
 
 ## 狀態空間
 
-`TaiwanStockTradingEnv` 使用 52 維狀態：
+`TaiwanStockTradingEnv` 使用 57 維狀態：
 
 | 類別 | 維度 | 內容 |
 |---|---:|---|
@@ -1155,7 +1176,7 @@ FinRL/
 | 型態/動能 | 8 | 突破、跌破、量增、momentum、volatility、連漲連跌、gap |
 | 基本/籌碼 | 8 | 外資、投信、自營商、殖利率、PER、PBR |
 | 持倉狀態 | 6 | position、現金比例、未實現損益、MDD、距上次交易日數 |
-| 市場情緒 | 4 | 加權指數報酬、量變化、相關性、市場波動 |
+| 市場情緒 | 9 | 加權指數報酬、量變化、相關性、市場波動、DJI lag 特徵 |
 
 ## Action Space
 

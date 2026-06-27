@@ -16,21 +16,36 @@ import numpy as np
 import yfinance as yf
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
-from datetime import datetime
+from datetime import datetime, timedelta
 import warnings
 import sys
 import os
+import re
+import time
+import requests
+import json
 
 # 引入統一資料工具（PyArrow 24 相容 + graceful fallback）
-from data.data_utils import (
-    read_parquet_safe,
-    write_parquet_safe,
-    normalize_date_column as _normalize_date_column,
-    CacheValidator,
-    ParquetStreamReader,
-    smart_read,
-    validator_for_stock_data,
-)
+try:
+    from .data.data_utils import (
+        read_parquet_safe,
+        write_parquet_safe,
+        normalize_date_column as _normalize_date_column,
+        CacheValidator,
+        ParquetStreamReader,
+        smart_read,
+        validator_for_stock_data,
+    )
+except ImportError:
+    from data.data_utils import (
+        read_parquet_safe,
+        write_parquet_safe,
+        normalize_date_column as _normalize_date_column,
+        CacheValidator,
+        ParquetStreamReader,
+        smart_read,
+        validator_for_stock_data,
+    )
 
 warnings.filterwarnings('ignore')
 
@@ -46,8 +61,18 @@ try:
     from config import TRAIN_START_DATE, TRAIN_END_DATE, TEST_START_DATE, TEST_END_DATE
 except ImportError:
     # fallback
-    ALL_TICKERS = ["0050.TW", "0056.TW", "00646.TW", "00679B.TWO",
-                   "00713.TW", "00751B.TWO", "00878.TW", "2884.TW"]
+    ALL_TICKERS = [
+        "0050.TW",
+        "0056.TW",
+        "00646.TW",
+        "00679B.TWO",
+        "00713.TW",
+        "00751B.TWO",
+        "00878.TW",
+        "2884.TW",
+        "00632R.TW",
+        "00631L.TW",
+    ]
     PORTFOLIO_HOLDINGS = {}
     BACKTEST_START = "2000-01-01"
     BACKTEST_END = "2010-12-31"
@@ -57,6 +82,12 @@ except ImportError:
 
 MARKET_TICKER = "^TWII"
 GLOBAL_TICKER = "^DJI"
+LLM_SENTIMENT_COLUMNS = [
+    "llm_sentiment_score",
+    "llm_sentiment_confidence",
+    "llm_risk_off_score",
+    "llm_news_intensity",
+]
 MARKET_FEATURE_COLUMNS = [
     "twse_index_return",
     "twse_index_volume_change",
@@ -67,6 +98,12 @@ MARKET_FEATURE_COLUMNS = [
     "dji_volatility_20d_lag1",
     "dji_ma60_ratio_lag1",
     "dji_drawdown_60d_lag1",
+] + LLM_SENTIMENT_COLUMNS
+LLM_SENTIMENT_DEFAULT_FILES = [
+    "data/sentiment/llm_market_sentiment_daily.parquet",
+    "data/sentiment/llm_market_sentiment_daily.csv",
+    "data/llm_market_sentiment_daily.parquet",
+    "data/llm_market_sentiment_daily.csv",
 ]
 MARKET_RAW_COLUMNS = [
     "twse_index_return_raw",
@@ -79,6 +116,84 @@ MARKET_RAW_COLUMNS = [
     "dji_drawdown_60d_raw",
 ]
 
+TWSE_SPLIT_ADJUSTMENTS = {
+    # The engine does not model share-count changes, so keep a continuous
+    # synthetic price series after this known 22-for-1 split.
+    "00631L": [(pd.Timestamp("2026-03-31"), 22.0)],
+}
+
+
+def _inclusive_history_end(value: str | datetime | pd.Timestamp) -> str:
+    """yfinance history() treats end as exclusive; move it forward one day."""
+    return (pd.Timestamp(value).normalize() + timedelta(days=1)).strftime("%Y-%m-%d")
+
+
+def _find_covering_cache(
+    cache_dir: Path,
+    prefix: str,
+    start_date: str,
+    end_date: str,
+    interval: str,
+    suffix: str,
+) -> Optional[Path]:
+    """Find the smallest cache file whose filename range covers the request."""
+    start_ts = pd.Timestamp(start_date).normalize()
+    end_ts = pd.Timestamp(end_date).normalize()
+    pattern = re.compile(
+        rf"^{re.escape(prefix)}_(\d{{8}})_(\d{{8}})_{re.escape(interval)}_{re.escape(suffix)}\.parquet$"
+    )
+    candidates = []
+    for path in cache_dir.glob(f"{prefix}_*_{interval}_{suffix}.parquet"):
+        match = pattern.match(path.name)
+        if not match:
+            continue
+        cache_start = pd.Timestamp(match.group(1)).normalize()
+        cache_end = pd.Timestamp(match.group(2)).normalize()
+        if cache_start <= start_ts and cache_end >= end_ts:
+            span_days = (cache_end - cache_start).days
+            candidates.append((span_days, -cache_end.value, path))
+
+    if not candidates:
+        return None
+    candidates.sort()
+    return candidates[0][2]
+
+
+def _read_relaxed_cache(
+    file_path: Path,
+    *,
+    start_date: str,
+    end_date: str,
+    required_columns: list[str],
+    min_rows: int,
+    start_tolerance_days: int = 7,
+    end_tolerance_days: int = 7,
+    allow_late_start: bool = False,
+) -> Optional[pd.DataFrame]:
+    """Read cache with a trading-day tolerance for the requested end date."""
+    df = read_parquet_safe(file_path)
+    if df is None or df.empty:
+        return None
+
+    missing = [col for col in required_columns if col not in df.columns]
+    if missing:
+        return None
+
+    df = _normalize_date_column(df)
+    start_ts = pd.Timestamp(start_date).normalize()
+    end_ts = pd.Timestamp(end_date).normalize()
+    df = df[(df["date"] >= start_ts) & (df["date"] <= end_ts)].reset_index(drop=True)
+    if len(df) < min_rows:
+        return None
+
+    file_start = df["date"].min()
+    file_end = df["date"].max()
+    if not allow_late_start and file_start > start_ts + pd.Timedelta(days=start_tolerance_days):
+        return None
+    if file_end < end_ts - pd.Timedelta(days=end_tolerance_days):
+        return None
+    return df
+
 
 # 統一使用 data_utils 的 _normalize_date_column（已在上方 import）
 
@@ -90,11 +205,194 @@ def _rolling_zscore(series: pd.Series, window: int = 60, min_periods: int = 20) 
     return ((values - mean) / std).replace([np.inf, -np.inf], 0.0).fillna(0.0)
 
 
+def resolve_llm_sentiment_path(sentiment_path: str | Path | None = None) -> Optional[Path]:
+    candidates: list[Path] = []
+    if sentiment_path:
+        raw = Path(sentiment_path)
+        candidates.append(raw)
+        if not raw.is_absolute():
+            candidates.append(PROJECT_ROOT / raw)
+            candidates.append(PROJECT_ROOT.parent / raw)
+
+    env_path = os.getenv("FINRL_LLM_SENTIMENT_FILE")
+    if env_path:
+        env_candidate = Path(env_path)
+        candidates.append(env_candidate)
+        if not env_candidate.is_absolute():
+            candidates.append(PROJECT_ROOT / env_candidate)
+            candidates.append(PROJECT_ROOT.parent / env_candidate)
+
+    for rel_path in LLM_SENTIMENT_DEFAULT_FILES:
+        candidates.append(PROJECT_ROOT / rel_path)
+
+    seen: set[str] = set()
+    for candidate in candidates:
+        try:
+            resolved = candidate.resolve()
+        except Exception:
+            resolved = candidate.absolute()
+        key = str(resolved)
+        if key in seen:
+            continue
+        seen.add(key)
+        if resolved.exists():
+            return resolved
+    return None
+
+
+def _read_json_records(file_path: Path) -> pd.DataFrame:
+    if file_path.suffix.lower() == ".jsonl":
+        records = []
+        with file_path.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                line = line.strip()
+                if not line:
+                    continue
+                records.append(json.loads(line))
+        return pd.DataFrame(records)
+
+    with file_path.open("r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+    if isinstance(payload, dict):
+        if "data" in payload and isinstance(payload["data"], list):
+            return pd.DataFrame(payload["data"])
+        return pd.DataFrame([payload])
+    return pd.DataFrame(payload)
+
+
+def _normalize_llm_sentiment_frame(df: pd.DataFrame) -> pd.DataFrame:
+    if df is None or df.empty:
+        return pd.DataFrame(columns=["date"] + LLM_SENTIMENT_COLUMNS)
+
+    out = df.copy()
+    rename_map = {}
+    had_canonical_intensity = "llm_news_intensity" in out.columns
+    alias_map = {
+        "sentiment_score": "llm_sentiment_score",
+        "market_sentiment_score": "llm_sentiment_score",
+        "score": "llm_sentiment_score",
+        "confidence": "llm_sentiment_confidence",
+        "sentiment_confidence": "llm_sentiment_confidence",
+        "risk_off": "llm_risk_off_score",
+        "risk_off_score": "llm_risk_off_score",
+        "fear_score": "llm_risk_off_score",
+        "headline_count": "llm_news_intensity",
+        "news_count": "llm_news_intensity",
+        "article_count": "llm_news_intensity",
+        "mention_count": "llm_news_intensity",
+    }
+    lowered = {str(col).strip().lower(): col for col in out.columns}
+    for alias, target in alias_map.items():
+        if target in out.columns:
+            continue
+        source = lowered.get(alias)
+        if source is not None:
+            rename_map[source] = target
+    if rename_map:
+        out = out.rename(columns=rename_map)
+
+    if "date" not in out.columns:
+        for candidate in ("dt", "datetime", "published_at", "timestamp"):
+            if candidate in out.columns:
+                out = out.rename(columns={candidate: "date"})
+                break
+    if "date" not in out.columns:
+        raise ValueError("LLM sentiment input must contain a date-like column")
+
+    out["date"] = pd.to_datetime(out["date"], errors="coerce").dt.tz_localize(None)
+    out = out.dropna(subset=["date"]).copy()
+    out["date"] = out["date"].dt.normalize()
+
+    for col in LLM_SENTIMENT_COLUMNS:
+        if col not in out.columns:
+            out[col] = 0.0
+        out[col] = pd.to_numeric(out[col], errors="coerce")
+
+    raw_intensity = out["llm_news_intensity"].fillna(0.0).clip(lower=0.0)
+    if had_canonical_intensity:
+        out["llm_news_intensity"] = raw_intensity.clip(0.0, 5.0)
+    else:
+        out["llm_news_intensity"] = np.log1p(raw_intensity).clip(0.0, 5.0)
+    out["llm_sentiment_score"] = out["llm_sentiment_score"].fillna(0.0).clip(-1.0, 1.0)
+    out["llm_sentiment_confidence"] = out["llm_sentiment_confidence"].fillna(0.0).clip(0.0, 1.0)
+    out["llm_risk_off_score"] = out["llm_risk_off_score"].fillna(0.0).clip(0.0, 1.0)
+
+    aggregations = {
+        "llm_sentiment_score": "mean",
+        "llm_sentiment_confidence": "mean",
+        "llm_risk_off_score": "mean",
+        "llm_news_intensity": "sum",
+    }
+    out = out.groupby("date", as_index=False).agg(aggregations)
+    out["llm_news_intensity"] = out["llm_news_intensity"].clip(0.0, 5.0)
+    return out[["date"] + LLM_SENTIMENT_COLUMNS].sort_values("date").reset_index(drop=True)
+
+
+def load_llm_sentiment_features(
+    start_date: str,
+    end_date: str,
+    sentiment_path: str | Path | None = None,
+) -> Optional[pd.DataFrame]:
+    resolved = resolve_llm_sentiment_path(sentiment_path)
+    if resolved is None:
+        return None
+
+    suffix = resolved.suffix.lower()
+    if suffix == ".parquet":
+        df = read_parquet_safe(resolved)
+    elif suffix in {".csv", ".tsv"}:
+        sep = "\t" if suffix == ".tsv" else ","
+        df = pd.read_csv(resolved, sep=sep)
+    elif suffix in {".json", ".jsonl"}:
+        df = _read_json_records(resolved)
+    else:
+        raise ValueError(f"Unsupported LLM sentiment file format: {resolved}")
+
+    out = _normalize_llm_sentiment_frame(df)
+    start_ts = pd.Timestamp(start_date).normalize()
+    end_ts = pd.Timestamp(end_date).normalize()
+    out = out[(out["date"] >= start_ts) & (out["date"] <= end_ts)].copy()
+    if out.empty:
+        return pd.DataFrame(columns=["date"] + LLM_SENTIMENT_COLUMNS)
+    return out.reset_index(drop=True)
+
+
+def _merge_llm_sentiment_features(
+    market: pd.DataFrame,
+    start_date: str,
+    end_date: str,
+    *,
+    include_llm_sentiment: bool = False,
+    llm_sentiment_path: str | Path | None = None,
+) -> pd.DataFrame:
+    out = _normalize_date_column(market)
+    if not include_llm_sentiment:
+        for col in LLM_SENTIMENT_COLUMNS:
+            if col not in out.columns:
+                out[col] = 0.0
+        return out
+
+    sentiment = load_llm_sentiment_features(start_date, end_date, sentiment_path=llm_sentiment_path)
+    if sentiment is None or sentiment.empty:
+        print("[Portfolio Data Loader] 未找到可用的 LLM sentiment 特徵檔，將以 0 填補。")
+        for col in LLM_SENTIMENT_COLUMNS:
+            out[col] = 0.0
+        return out
+
+    print(f"[Portfolio Data Loader] 合併 LLM sentiment: {len(sentiment)} 筆")
+    out = out.merge(sentiment, on="date", how="left")
+    for col in LLM_SENTIMENT_COLUMNS:
+        out[col] = pd.to_numeric(out[col], errors="coerce").fillna(0.0)
+    return out
+
+
 def download_market_features(
     start_date: str,
     end_date: str,
     interval: str = "1d",
     cache_dir: str = None,
+    include_llm_sentiment: bool = False,
+    llm_sentiment_path: str | Path | None = None,
 ) -> Optional[pd.DataFrame]:
     """Download TWSE index data and derive market features."""
     if cache_dir is None:
@@ -108,13 +406,55 @@ def download_market_features(
     cache_file = cache_dir / f"TWII_DJI_{safe_start}_{safe_end}_{interval}_market_v3.parquet"
 
     if cache_file.exists():
-        market = read_parquet_safe(cache_file)
+        market = _read_relaxed_cache(
+            cache_file,
+            start_date=start_date,
+            end_date=end_date,
+            required_columns=["date"],
+            min_rows=20,
+        )
         if market is not None:
-            return _normalize_date_column(market)
+            return _merge_llm_sentiment_features(
+                _normalize_date_column(market),
+                start_date,
+                end_date,
+                include_llm_sentiment=include_llm_sentiment,
+                llm_sentiment_path=llm_sentiment_path,
+            )
+
+    fallback_cache = _find_covering_cache(
+        cache_dir,
+        prefix="TWII_DJI",
+        start_date=start_date,
+        end_date=end_date,
+        interval=interval,
+        suffix="market_v3",
+    )
+    if fallback_cache is not None and fallback_cache != cache_file:
+        market = _read_relaxed_cache(
+            fallback_cache,
+            start_date=start_date,
+            end_date=end_date,
+            required_columns=["date"],
+            min_rows=20,
+        )
+        if market is not None:
+            print(f"[Portfolio Data Loader] 使用大盤覆蓋快取: {fallback_cache.name}")
+            return _merge_llm_sentiment_features(
+                _normalize_date_column(market),
+                start_date,
+                end_date,
+                include_llm_sentiment=include_llm_sentiment,
+                llm_sentiment_path=llm_sentiment_path,
+            )
 
     print(f"[Portfolio Data Loader] 下載大盤 {MARKET_TICKER}...", end=" ", flush=True)
     try:
-        market = yf.Ticker(MARKET_TICKER).history(start=start_date, end=end_date, interval=interval)
+        market = yf.Ticker(MARKET_TICKER).history(
+            start=start_date,
+            end=_inclusive_history_end(end_date),
+            interval=interval,
+        )
         if market.empty:
             print("無數據")
             return None
@@ -132,7 +472,7 @@ def download_market_features(
             vol_change.replace([np.inf, -np.inf], 0.0).fillna(0.0).clip(-5.0, 5.0)
         )
         market["market_volatility_raw"] = (
-            market["twse_index_return_raw"].rolling(20, min_periods=5).std().fillna(0.0).clip(0.0, 1.0)
+            market["twse_index_return_raw"].rolling(20, min_periods=5).std(ddof=1).fillna(0.0).clip(0.0, 1.0)
         )
 
         market["twse_index_return"] = (market["twse_index_return_raw"] * 10.0).clip(-2.0, 2.0)
@@ -141,7 +481,11 @@ def download_market_features(
 
         print(f"[Portfolio Data Loader] 下載全球市場 {GLOBAL_TICKER}...", end=" ", flush=True)
         try:
-            dji = yf.Ticker(GLOBAL_TICKER).history(start=start_date, end=end_date, interval=interval)
+            dji = yf.Ticker(GLOBAL_TICKER).history(
+                start=start_date,
+                end=_inclusive_history_end(end_date),
+                interval=interval,
+            )
             if dji.empty:
                 print("無數據")
                 dji_features = pd.DataFrame({"date": market["date"]})
@@ -154,7 +498,7 @@ def download_market_features(
                 dji_features["dji_return_1d_raw"] = dji_close.pct_change().fillna(0.0).clip(-0.2, 0.2)
                 dji_features["dji_return_5d_raw"] = dji_close.pct_change(5).fillna(0.0).clip(-0.4, 0.4)
                 dji_features["dji_volatility_20d_raw"] = (
-                    dji_features["dji_return_1d_raw"].rolling(20, min_periods=5).std().fillna(0.0).clip(0.0, 1.0)
+                    dji_features["dji_return_1d_raw"].rolling(20, min_periods=5).std(ddof=1).fillna(0.0).clip(0.0, 1.0)
                 )
                 ma60 = dji_close.rolling(60, min_periods=20).mean()
                 dji_features["dji_ma60_ratio_raw"] = (dji_close / ma60 - 1.0).replace([np.inf, -np.inf], 0.0).fillna(0.0)
@@ -206,7 +550,13 @@ def download_market_features(
         ]].copy()
         write_parquet_safe(out, cache_file)
         print(f"{len(out)} 筆")
-        return out
+        return _merge_llm_sentiment_features(
+            out,
+            start_date,
+            end_date,
+            include_llm_sentiment=include_llm_sentiment,
+            llm_sentiment_path=llm_sentiment_path,
+        )
     except Exception as e:
         print(f"失敗: {e}")
         return None
@@ -216,6 +566,9 @@ def add_market_features(df: pd.DataFrame, market: Optional[pd.DataFrame]) -> pd.
     """Merge market features into one stock dataframe."""
     out = _normalize_date_column(df)
     if market is None or market.empty:
+        for col in LLM_SENTIMENT_COLUMNS:
+            if col not in out.columns:
+                out[col] = 0.0
         return out
 
     drop_cols = [c for c in MARKET_FEATURE_COLUMNS + MARKET_RAW_COLUMNS if c in out.columns]
@@ -231,9 +584,12 @@ def add_market_features(df: pd.DataFrame, market: Optional[pd.DataFrame]) -> pd.
         "dji_volatility_20d_lag1",
         "dji_ma60_ratio_lag1",
         "dji_drawdown_60d_lag1",
-    ]
-    out = out.merge(market[market_cols], on="date", how="left")
+    ] + LLM_SENTIMENT_COLUMNS
+    available_market_cols = ["date"] + [col for col in market_cols[1:] if col in market.columns]
+    out = out.merge(market[available_market_cols], on="date", how="left")
     for col in market_cols[1:]:
+        if col not in out.columns:
+            out[col] = 0.0
         out[col] = pd.to_numeric(out[col], errors="coerce").ffill().fillna(0.0)
 
     stock_return = pd.to_numeric(out["close"], errors="coerce").pct_change()
@@ -289,6 +645,75 @@ def add_long_horizon_features(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def _parse_roc_date(value: str) -> pd.Timestamp:
+    year, month, day = value.split("/")
+    return pd.Timestamp(year=int(year) + 1911, month=int(month), day=int(day))
+
+
+def _download_twse_monthly_history(
+    ticker: str,
+    start_date: str,
+    end_date: str,
+) -> pd.DataFrame:
+    """Download TWSE monthly OHLCV data when Yahoo has no usable response."""
+    local_code = ticker.split(".")[0]
+    start_ts = pd.Timestamp(start_date)
+    end_ts = pd.Timestamp(end_date)
+    months = pd.date_range(start_ts.replace(day=1), end_ts.replace(day=1), freq="MS")
+    rows = []
+
+    session = requests.Session()
+    session.headers.update({"User-Agent": "Mozilla/5.0"})
+    for month in months:
+        payload = None
+        for attempt in range(3):
+            response = session.get(
+                "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY",
+                params={
+                    "date": month.strftime("%Y%m%d"),
+                    "stockNo": local_code,
+                    "response": "json",
+                },
+                timeout=30,
+            )
+            response.raise_for_status()
+            try:
+                payload = response.json()
+                break
+            except ValueError:
+                time.sleep(0.5 * (attempt + 1))
+        if payload is None:
+            continue
+        if payload.get("stat") != "OK":
+            continue
+        for raw in payload.get("data", []):
+            rows.append(
+                {
+                    "date": _parse_roc_date(raw[0]),
+                    "volume": int(str(raw[1]).replace(",", "")),
+                    "open": float(str(raw[3]).replace(",", "")),
+                    "high": float(str(raw[4]).replace(",", "")),
+                    "low": float(str(raw[5]).replace(",", "")),
+                    "close": float(str(raw[6]).replace(",", "")),
+                }
+            )
+        time.sleep(0.15)
+
+    if not rows:
+        return pd.DataFrame()
+
+    df = pd.DataFrame(rows)
+    df = df[(df["date"] >= start_ts) & (df["date"] <= end_ts)].sort_values("date").reset_index(drop=True)
+    df["dividends"] = 0.0
+    df["stock splits"] = 0.0
+
+    for split_date, factor in TWSE_SPLIT_ADJUSTMENTS.get(local_code, []):
+        mask = df["date"] >= split_date
+        df.loc[mask, ["open", "high", "low", "close"]] *= factor
+
+    return df
+
+
 def download_all_stocks(
     tickers: List[str],
     start_date: str,
@@ -339,11 +764,13 @@ def download_all_stocks(
 
         # 嘗試從快取讀取（使用 CacheValidator 驗證）
         if cache_file.exists():
-            stock_validator = validator_for_stock_data(min_rows=50)
-            df = stock_validator.validate_and_read(
+            df = _read_relaxed_cache(
                 cache_file,
                 start_date=start_date,
                 end_date=end_date,
+                required_columns=['date', 'open', 'high', 'low', 'close', 'volume'],
+                min_rows=50,
+                allow_late_start=True,
             )
             if df is not None:
                 print(f"  [{i+1}/{len(tickers)}] {ticker} 從快取驗證通過: {len(df)} 筆")
@@ -351,6 +778,28 @@ def download_all_stocks(
                 continue
             else:
                 print(f"  [{i+1}/{len(tickers)}] {ticker} 快取無效或過期，將重新下載")
+
+        fallback_cache = _find_covering_cache(
+            cache_dir,
+            prefix=safe_ticker,
+            start_date=start_date,
+            end_date=end_date,
+            interval=interval,
+            suffix="raw_v1",
+        )
+        if fallback_cache is not None and fallback_cache != cache_file:
+            df = _read_relaxed_cache(
+                fallback_cache,
+                start_date=start_date,
+                end_date=end_date,
+                required_columns=['date', 'open', 'high', 'low', 'close', 'volume'],
+                min_rows=50,
+                allow_late_start=True,
+            )
+            if df is not None:
+                print(f"  [{i+1}/{len(tickers)}] {ticker} 使用覆蓋快取: {fallback_cache.name} ({len(df)} 筆)")
+                results[ticker] = add_long_horizon_features(add_market_features(df, market))
+                continue
 
         # 轉換為 Yahoo Finance ticker
         yf_ticker = YF_TICKER_MAP.get(ticker, ticker)
@@ -361,11 +810,15 @@ def download_all_stocks(
             yf_ticker_obj = yf.Ticker(yf_ticker)
             df = yf_ticker_obj.history(
                 start=start_date,
-                end=end_date,
+                end=_inclusive_history_end(end_date),
                 interval=interval,
                 auto_adjust=False,
                 actions=True,
             )
+
+            if df.empty:
+                print("no Yahoo data; trying TWSE fallback...", end=" ", flush=True)
+                df = _download_twse_monthly_history(ticker, start_date, end_date)
 
             if df.empty:
                 print("無數據")
@@ -436,7 +889,10 @@ def add_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
     統一使用 data/technical_indicators.py 的 TechnicalIndicators 類別，
     確保計算邏輯一致，避免重複代碼。
     """
-    from data.technical_indicators import TechnicalIndicators
+    try:
+        from .data.technical_indicators import TechnicalIndicators
+    except ImportError:
+        from data.technical_indicators import TechnicalIndicators
     ti = TechnicalIndicators(df)
     return ti.calculate_all()
 

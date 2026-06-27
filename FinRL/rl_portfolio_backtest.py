@@ -241,8 +241,8 @@ class RLPortfolioBacktester:
             else:
                 unrealized = 0.0
 
-            # 52維狀態向量（與 taiwan_stock_env.py 一致）
-            # 結構: [價格(6) | 技術指標(20) | 型態(8) | 基本面(8) | 部位(6) | 情緒(4)] = 52
+            # 57維狀態向量（與 taiwan_stock_env.py 完全一致）
+            # 結構: [價格(6) | 技術指標(20) | 型態(8) | 基本面(8) | 部位(6) | 情緒(9)] = 57
             prev_close_val = prev_close if prev_close is not None else close
             price_norm = close / 1000.0
 
@@ -257,7 +257,20 @@ class RLPortfolioBacktester:
 
                 # ── 2. 技術指標 (20維) ──────────────────────────────
                 # 與 taiwan_stock_env._create_state() 的 tech_features_available[:20] 完全一致
-                # MA family (7)
+                # tech_features_available[:20] = close_ma120_ratio, close_ma240_ratio, ma60_ma240_ratio,
+                #   momentum_63, momentum_126, momentum_252, high_252_position, rolling_mdd_63,
+                #   ma3, ma5, ma10, ma20, ma60, ma120, ma240, ma3_slope, ma20_slope, ma60_slope, ma_cross_signal
+                # Missing from old code: close_ma120_ratio, close_ma240_ratio, ma60_ma240_ratio,
+                #   momentum_63, momentum_126, momentum_252, high_252_position, rolling_mdd_63
+                row.get('close_ma120_ratio', 0) if pd.notna(row.get('close_ma120_ratio')) else 0.0,
+                row.get('close_ma240_ratio', 0) if pd.notna(row.get('close_ma240_ratio')) else 0.0,
+                row.get('ma60_ma240_ratio', 0) if pd.notna(row.get('ma60_ma240_ratio')) else 0.0,
+                row.get('momentum_63', 0) if pd.notna(row.get('momentum_63')) else 0.0,
+                row.get('momentum_126', 0) if pd.notna(row.get('momentum_126')) else 0.0,
+                row.get('momentum_252', 0) if pd.notna(row.get('momentum_252')) else 0.0,
+                row.get('high_252_position', 0.5) if pd.notna(row.get('high_252_position')) else 0.5,
+                row.get('rolling_mdd_63', 0) if pd.notna(row.get('rolling_mdd_63')) else 0.0,
+                # MA family (7) - now correct count: 20 tech features total
                 row.get('ma3', close) / close if pd.notna(row.get('ma3')) else 1.0,
                 row.get('ma5', close) / close if pd.notna(row.get('ma5')) else 1.0,
                 row.get('ma10', close) / close if pd.notna(row.get('ma10')) else 1.0,
@@ -269,18 +282,8 @@ class RLPortfolioBacktester:
                 row.get('ma3_slope', 0) if pd.notna(row.get('ma3_slope')) else 0.0,
                 row.get('ma20_slope', 0) if pd.notna(row.get('ma20_slope')) else 0.0,
                 row.get('ma60_slope', 0) if pd.notna(row.get('ma60_slope')) else 0.0,
-                # MA cross (1)
                 row.get('ma_cross_signal', 0) if pd.notna(row.get('ma_cross_signal')) else 0.0,
-                # MACD (4)
                 row.get('macd_line', 0) / close if (close > 0 and pd.notna(row.get('macd_line'))) else 0.0,
-                row.get('signal_line', 0) / close if (close > 0 and pd.notna(row.get('signal_line'))) else 0.0,
-                row.get('histogram', 0) / close if (close > 0 and pd.notna(row.get('histogram'))) else 0.0,
-                row.get('histogram_change', 0) / close if (close > 0 and pd.notna(row.get('histogram_change'))) else 0.0,
-                # MACD turn (1)
-                1.0 if (pd.notna(row.get('macd_turn_positive')) and row.get('macd_turn_positive', 0) > 0) else 0.0,
-                # RSI (2)
-                row.get('rsi_14', 50) / 100.0 if pd.notna(row.get('rsi_14')) else 0.5,
-                row.get('rsi_28', 50) / 100.0 if pd.notna(row.get('rsi_28')) else 0.5,
 
                 # ── 3. 型態特徵 (8維) ──────────────────────────────
                 # pattern_features: highest_breakout, lowest_breakdown, volume_spike,
@@ -312,11 +315,19 @@ class RLPortfolioBacktester:
                 0.0,  # days_since_trade (simplified)
                 balance / (balance + sellable * close + 1e-10),  # cash_ratio
 
-                # ── 6. 市場情緒 (4維) ───────────────────────────────
+                # ── 6. 市場情緒 (9維) ───────────────────────────────
+                # sentiment_features: twse_index_return, twse_index_volume_change, sector_correlation,
+                #   market_volatility, dji_return_1d_lag1, dji_return_5d_lag1,
+                #   dji_volatility_20d_lag1, dji_ma60_ratio_lag1, dji_drawdown_60d_lag1
                 (close - prev_close_val) / prev_close_val if prev_close_val > 0 else 0.0,
                 row.get('volume_spike', 1.0) - 1.0 if pd.notna(row.get('volume_spike')) else 0.0,
-                0.0,  # sector_correlation
+                0.0,  # sector_correlation (placeholder)
                 row.get('volatility', 0) if pd.notna(row.get('volatility')) else 0.0,
+                row.get('dji_return_1d_lag1', 0) if pd.notna(row.get('dji_return_1d_lag1')) else 0.0,
+                row.get('dji_return_5d_lag1', 0) if pd.notna(row.get('dji_return_5d_lag1')) else 0.0,
+                row.get('dji_volatility_20d_lag1', 0) if pd.notna(row.get('dji_volatility_20d_lag1')) else 0.0,
+                row.get('dji_ma60_ratio_lag1', 0) if pd.notna(row.get('dji_ma60_ratio_lag1')) else 0.0,
+                row.get('dji_drawdown_60d_lag1', 0) if pd.notna(row.get('dji_drawdown_60d_lag1')) else 0.0,
             ], dtype=np.float32)
 
             action = agent.predict(state, deterministic=True)

@@ -1,0 +1,292 @@
+{
+  "ticker": "00631L.TW",
+  "generated_at": "2026-06-26T09:36:08",
+  "last_close_date": "2026-06-25",
+  "last_close": 38.16,
+  "current_regime": "BULL",
+  "feature_selection": false,
+  "external_features": true,
+  "labeling_mode": "auto",
+  "labeling_per_horizon": {
+    "1": "simple",
+    "5": "triple_barrier",
+    "20": "simple"
+  },
+  "tbl_mult": 0.75,
+  "direction_threshold": 0.005,
+  "probability_calibration": {
+    "method": "isotonic_regression",
+    "n_fit": 228,
+    "n_calib": 0,
+    "applied": false,
+    "n_models_calibrated": 0
+  },
+  "models": {
+    "regression": [
+      "rf",
+      "et",
+      "elasticnet"
+    ],
+    "classification": [
+      "rf",
+      "et",
+      "hgb",
+      "gb",
+      "lgb",
+      "xgb",
+      "cat"
+    ]
+  },
+  "horizons": {
+    "1": {
+      "prediction_date": "2026-06-26",
+      "regression": {
+        "predicted_return": -0.003792,
+        "predicted_close": 38.0153,
+        "model_returns": {
+          "rf": -0.006795,
+          "et": -0.006012,
+          "en": 0.00143
+        },
+        "val_mae_return": 0.01810303,
+        "val_r2": 0.002929,
+        "confidence_68_return": {
+          "low": -0.029252,
+          "high": 0.021668
+        },
+        "confidence_68_price": {
+          "low": 37.0437,
+          "high": 38.9868
+        }
+      },
+      "classification": {
+        "direction": "UP",
+        "probability_up": 0.5731,
+        "model_probabilities": {
+          "rf": 0.477,
+          "et": 0.4376,
+          "hgb": 0.8447,
+          "gb": 0.3255,
+          "lgb": 0.9106,
+          "xgb": 0.6574,
+          "cat": 0.5497
+        },
+        "ensemble_weights": {
+          "rf": 0.182,
+          "et": 0.1095,
+          "hgb": 0.1123,
+          "gb": 0.1609,
+          "lgb": 0.0947,
+          "xgb": 0.1645,
+          "cat": 0.1761
+        },
+        "best_model": "rf",
+        "val_accuracy": 0.5238,
+        "val_auc": 0.5354,
+        "val_auc_raw": 0.5354,
+        "ensemble_val_brier": 0.2944,
+        "model_brier": {
+          "rf": 0.2538,
+          "et": 0.2518,
+          "hgb": 0.3966,
+          "gb": 0.3375,
+          "lgb": 0.372,
+          "xgb": 0.3255,
+          "cat": 0.3065
+        },
+        "model_brier_raw": {
+          "rf": 0.2538,
+          "et": 0.2518,
+          "hgb": 0.3966,
+          "gb": 0.3375,
+          "lgb": 0.372,
+          "xgb": 0.3255,
+          "cat": 0.3065
+        }
+      }
+    },
+    "5": {
+      "prediction_date": "2026-07-02",
+      "regression": {
+        "predicted_return": 0.006668,
+        "predicted_close": 38.4144,
+        "model_returns": {
+          "rf": 0.005656,
+          "et": 0.007467,
+          "en": 0.006881
+        },
+        "val_mae_return": 0.04262604,
+        "val_r2": -0.036659,
+        "confidence_68_return": {
+          "low": -0.048289,
+          "high": 0.061624
+        },
+        "confidence_68_price": {
+          "low": 36.3173,
+          "high": 40.5116
+        }
+      },
+      "classification": {
+        "direction": "UP",
+        "probability_up": 0.7674,
+        "model_probabilities": {
+          "rf": 0.6476,
+          "et": 0.611,
+          "hgb": 0.9701,
+          "gb": 0.8688,
+          "lgb": 0.9204,
+          "xgb": 0.9004,
+          "cat": 0.7142
+        },
+        "ensemble_weights": {
+          "rf": 0.1665,
+          "et": 0.1801,
+          "hgb": 0.04,
+          "gb": 0.1559,
+          "lgb": 0.0989,
+          "xgb": 0.1513,
+          "cat": 0.2074
+        },
+        "best_model": "cat",
+        "val_accuracy": 0.4993,
+        "val_auc": 0.5343,
+        "val_auc_raw": 0.5343,
+        "ensemble_val_brier": 0.2839,
+        "model_brier": {
+          "rf": 0.2525,
+          "et": 0.2547,
+          "hgb": 0.3611,
+          "gb": 0.3312,
+          "lgb": 0.3606,
+          "xgb": 0.3182,
+          "cat": 0.2998
+        },
+        "model_brier_raw": {
+          "rf": 0.2525,
+          "et": 0.2547,
+          "hgb": 0.3611,
+          "gb": 0.3312,
+          "lgb": 0.3606,
+          "xgb": 0.3182,
+          "cat": 0.2998
+        }
+      }
+    },
+    "20": {
+      "prediction_date": "2026-07-23",
+      "regression": {
+        "predicted_return": 0.045771,
+        "predicted_close": 39.9066,
+        "model_returns": {
+          "rf": 0.02397,
+          "et": 0.022219,
+          "en": 0.091124
+        },
+        "val_mae_return": 0.09060555,
+        "val_r2": -0.138648,
+        "confidence_68_return": {
+          "low": -0.064668,
+          "high": 0.15621
+        },
+        "confidence_68_price": {
+          "low": 35.6923,
+          "high": 44.121
+        }
+      },
+      "classification": {
+        "direction": "NEUTRAL",
+        "probability_up": 0.5453,
+        "model_probabilities": {
+          "rf": 0.544,
+          "et": 0.5488,
+          "hgb": 0.9574,
+          "gb": 0.6262,
+          "lgb": 0.7186,
+          "xgb": 0.5218,
+          "cat": 0.1914,
+          "stable_rf": 0.6511
+        },
+        "ensemble_weights": {
+          "rf": 0.0,
+          "et": 0.0,
+          "hgb": 0.0,
+          "gb": 0.1791,
+          "lgb": 0.0241,
+          "xgb": 0.7968,
+          "cat": 0.0,
+          "stable_rf": 0.0
+        },
+        "best_model": "xgb",
+        "val_accuracy": 0.5279,
+        "val_auc": 0.5155,
+        "val_auc_raw": 0.5155,
+        "ensemble_val_brier": 0.3629,
+        "model_brier": {
+          "rf": 0.2736,
+          "et": 0.2603,
+          "hgb": 0.3849,
+          "gb": 0.3785,
+          "lgb": 0.3776,
+          "xgb": 0.366,
+          "cat": 0.3721,
+          "stable_rf": 0.3011
+        },
+        "model_brier_raw": {
+          "rf": 0.2736,
+          "et": 0.2603,
+          "hgb": 0.3849,
+          "gb": 0.3785,
+          "lgb": 0.3776,
+          "xgb": 0.366,
+          "cat": 0.3721,
+          "stable_rf": 0.3011
+        }
+      }
+    }
+  },
+  "horizon_ensemble": {
+    "direction": "UP",
+    "combined_probability_up": 0.6453,
+    "calibrated_probability_up": 0.5948,
+    "confidence": 0.5039,
+    "shrinkage": 0.6527,
+    "weighted_return": -0.000625,
+    "predicted_close": 38.1362,
+    "votes_up": 2,
+    "direction_weights": {
+      "1": 0.4293,
+      "5": 0.3965,
+      "20": 0.1742
+    },
+    "return_weights": {
+      "1": 0.8195,
+      "5": 0.1478,
+      "20": 0.0327
+    },
+    "horizon_aucs": {
+      "1": 0.5291,
+      "5": 0.5269,
+      "20": 0.5118
+    },
+    "wf_h1_rf_accuracy": null,
+    "wf_confidence_component": null,
+    "wf_confidence_used": false
+  },
+  "top_features": {
+    "inst_total_net": 0.036324,
+    "tsmc_ret": 0.024958,
+    "us_soxx_ret": 0.021221,
+    "margin_chg_pct": 0.019951,
+    "gap": 0.019774,
+    "tsmc_vs_0050_5d": 0.019579,
+    "eti0050_5d_ret": 0.018681,
+    "rsi_14": 0.018445,
+    "return_2d": 0.018374,
+    "tx_night_ret": 0.018244,
+    "close_ma5_ratio": 0.018025,
+    "close_ma10_ratio": 0.018001,
+    "rsi_28": 0.017998,
+    "momentum_21": 0.017489,
+    "us_tsm_adr_ret": 0.017175
+  }
+}

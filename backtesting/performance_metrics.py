@@ -302,3 +302,22 @@ def calculate_all_metrics(
         'max_consecutive_loss': max_consecutive_loss,
         'avg_holding_days': avg_holding_days,
     }
+
+
+def format_metrics(metrics: Dict[str, Any]) -> str:
+    """格式化績效指標為可讀字串（用於報告輸出）"""
+    lines = []
+    lines.append("=" * 40)
+    lines.append("       績效指標摘要")
+    lines.append("=" * 40)
+    lines.append(f"  總報酬率:     {metrics.get('total_return', 0)*100:.2f}%")
+    lines.append(f"  年化報酬:     {metrics.get('annual_return', 0)*100:.2f}%")
+    lines.append(f"  夏普比率:     {metrics.get('sharpe_ratio', 0):.3f}")
+    lines.append(f"  索提諾比率:   {metrics.get('sortino_ratio', 0):.3f}")
+    lines.append(f"  卡爾瑪比率:   {metrics.get('calmar_ratio', 0):.3f}")
+    lines.append(f"  最大回撤:     {metrics.get('max_drawdown', 0)*100:.2f}%")
+    lines.append(f"  勝率:         {metrics.get('win_rate', 0)*100:.1f}%")
+    lines.append(f"  利潤因子:     {metrics.get('profit_factor', 0):.3f}")
+    lines.append(f"  總交易次數:   {metrics.get('total_trades', 0)}")
+    lines.append("=" * 40)
+    return "\n".join(lines)
