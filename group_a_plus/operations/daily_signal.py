@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -13,6 +14,18 @@ import pandas as pd
 from backtest_group_a_plus_policy_signal import TICKERS, _normalize
 from backtest_group_a_plus_switch_policy import DB_PATH
 from group_a_plus.governance.latest import DEFAULT_LATEST_STRATEGY
+from group_a_plus.integrations.factor_lens import factor_passes_gate
+from group_a_plus.integrations.finbert import load_finbert_daily_snapshot
+from group_a_plus.integrations.lm_dictionary_sentiment import build_lm_dictionary_snapshot
+from group_a_plus.integrations.signal_alignment import build_signal_alignment
+from group_a_plus.utils.symbols import build_symbol_metadata
+from group_a_plus.integrations.ncf import load_ncf_signal, ncf_overlay_summary
+from group_a_plus.integrations.tbrain_features import (
+    kdj_j_quantile_snapshot,
+    latest_tbrain_snapshot,
+    weekly_ma_bull_snapshot,
+)
+from group_a_plus.paths import PROJECT_ROOT
 from group_a_plus.runners.latest import run_latest
 from tw_output_standard import OutputStandardizer, write_standard_output
 
@@ -40,6 +53,13 @@ OPTIONAL_SOURCE_SPECS = {
         3,
     ),
 }
+SOFT_OPTIONAL_SOURCES = {
+    "securities_lending_0050",
+}
+NCF_TICKER_TAGS = {
+    "00631L.TW": "00631l",
+    "00632R.TW": "00632r",
+}
 TAIWAN_MARKET_HOLIDAYS = {
     pd.Timestamp("2026-06-19"),  # Dragon Boat Festival market holiday
 }
@@ -55,7 +75,9 @@ def _business_days_between(start: str | pd.Timestamp, end: str | pd.Timestamp) -
 
 
 def _resolve_weights(report: dict[str, Any], regime: str) -> dict[str, float]:
-    weights = report.get("weights") or {}
+    # a2111-style: report["weights"][regime]
+    # a2118-style: report["base_weights"][regime]  (base_weights is the fallback)
+    weights = report.get("weights") or report.get("base_weights") or {}
     if regime in weights:
         return _normalize(dict(weights[regime]))
     aliases = {
@@ -68,7 +90,246 @@ def _resolve_weights(report: dict[str, Any], regime: str) -> dict[str, float]:
     raise ValueError(f"No target weights for execution regime: {regime}")
 
 
-def _source_freshness(db_path: Path, requested_as_of: pd.Timestamp) -> dict[str, Any]:
+def _latest_ncf_path(ticker_tag: str, project_root: Path = PROJECT_ROOT) -> Path | None:
+    results = project_root / "results"
+    patterns = [
+        f"ncf_{ticker_tag}_latest_*.json",
+        f"ncf_{ticker_tag}_2*.json",
+    ]
+    candidates: list[Path] = []
+    for pattern in patterns:
+        candidates.extend(results.glob(pattern))
+    candidates = [
+        path
+        for path in candidates
+        if path.is_file()
+        and "panel" not in path.name
+        and "advisory" not in path.name
+    ]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda path: path.stat().st_mtime).resolve()
+
+
+def _apply_ncf_live_overlay(
+    target_weights: dict[str, float],
+    execution_regime: str,
+    actual_date: pd.Timestamp,
+    latest_row: pd.Series,
+    project_root: Path = PROJECT_ROOT,
+) -> tuple[dict[str, float], dict[str, Any], list[str]]:
+    paths = {
+        ticker: _latest_ncf_path(tag, project_root)
+        for ticker, tag in NCF_TICKER_TAGS.items()
+    }
+    missing = sorted(ticker for ticker, path in paths.items() if path is None)
+    if missing:
+        return dict(target_weights), {
+            "status": "unavailable",
+            "reason": "missing_ncf_files",
+            "missing_tickers": missing,
+        }, [f"NCF live overlay unavailable: missing {missing}"]
+
+    assert paths["00631L.TW"] is not None
+    assert paths["00632R.TW"] is not None
+    sig_631l = load_ncf_signal(paths["00631L.TW"])
+    sig_632r = load_ncf_signal(paths["00632R.TW"])
+    actual = str(pd.Timestamp(actual_date).date())
+    ncf_dates = {
+        "00631L.TW": sig_631l.get("date"),
+        "00632R.TW": sig_632r.get("date"),
+    }
+    if any(str(date) != actual for date in ncf_dates.values()):
+        return dict(target_weights), {
+            "status": "stale",
+            "reason": "ncf_date_mismatch",
+            "actual_data_date": actual,
+            "ncf_dates": ncf_dates,
+            "files": {ticker: str(path) for ticker, path in paths.items() if path is not None},
+        }, [f"NCF live overlay skipped: date mismatch {ncf_dates}, actual {actual}"]
+
+    summary = ncf_overlay_summary(
+        sig_631l,
+        sig_632r,
+        target_weights,
+        execution_regime,
+        ma_gap=float(latest_row.get("ma_gap", 0.0)),
+    )
+    summary["status"] = "applied" if execution_regime == "golden1" else "not_applicable"
+    summary["files"] = {ticker: str(path) for ticker, path in paths.items() if path is not None}
+    if execution_regime != "golden1":
+        return dict(target_weights), summary, []
+    return _normalize(dict(summary["adjusted_golden1_weights"])), summary, []
+
+
+def _a2118_live_signal_is_current(ncf_live_signal: dict[str, Any], actual_date: pd.Timestamp) -> bool:
+    if ncf_live_signal.get("status", "ok") != "ok":
+        return False
+    signal_date = ncf_live_signal.get("signal_date")
+    if signal_date is None:
+        return True
+    return str(pd.Timestamp(signal_date).date()) == str(pd.Timestamp(actual_date).date())
+
+
+def _load_previous_live_signal(path: Path = DEFAULT_LIVE_SIGNAL) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    data = payload.get("data") if isinstance(payload, dict) else None
+    if isinstance(data, dict):
+        data = dict(data)
+        data["_payload_metadata"] = payload.get("metadata") if isinstance(payload, dict) else None
+        return data
+    return None
+
+
+def _previous_a2118_hold_active(
+    previous_signal: dict[str, Any] | None,
+    actual_date: pd.Timestamp,
+    min_generated_at: datetime | None = None,
+) -> bool:
+    if not previous_signal:
+        return False
+    if min_generated_at is not None:
+        previous_generated_at = (previous_signal.get("_payload_metadata") or {}).get("timestamp")
+        if not previous_generated_at:
+            return False
+        try:
+            if datetime.fromisoformat(str(previous_generated_at)) < min_generated_at:
+                return False
+        except ValueError:
+            return False
+    if previous_signal.get("strategy_id") != "a2118_a2111_ncf_late_bull_deleverage":
+        return False
+    try:
+        previous_date = pd.Timestamp(previous_signal.get("actual_data_date")).normalize()
+    except Exception:
+        return False
+    if previous_date >= pd.Timestamp(actual_date).normalize():
+        return False
+    overlay = previous_signal.get("ncf_live_overlay") or {}
+    return bool(
+        overlay.get("a2118_late_bull_hard_overlay_applied")
+        or overlay.get("a2118_late_bull_hold_active")
+    )
+
+
+def _a2118_live_hard_overlay_reason(
+    *,
+    report: dict[str, Any],
+    execution_regime: str,
+    actual_date: pd.Timestamp,
+    previous_signal: dict[str, Any] | None = None,
+    min_previous_generated_at: datetime | None = None,
+) -> str | None:
+    if str(report.get("active_strategy_id", "")) != "a2118_a2111_ncf_late_bull_deleverage":
+        return None
+    if execution_regime != "golden1":
+        return None
+    ncf_live_signal = report.get("ncf_live_signal", {})
+    if not _a2118_live_signal_is_current(ncf_live_signal, actual_date):
+        return None
+    if ncf_live_signal.get("late_bull_triggered"):
+        return "trigger"
+    if not _previous_a2118_hold_active(
+        previous_signal,
+        actual_date,
+        min_generated_at=min_previous_generated_at,
+    ):
+        return None
+    h5_prob = ncf_live_signal.get("h5_prob_up")
+    h5_reentry = (report.get("rules") or {}).get("ncf_late_bull_h5_reentry_min")
+    if h5_prob is None or h5_reentry in (None, 0):
+        return None
+    try:
+        if float(h5_prob) < float(h5_reentry):
+            return "h5_hold"
+    except (TypeError, ValueError):
+        return None
+    return None
+
+
+def _a2118_live_hard_overlay_weights(report: dict[str, Any], reason: str) -> dict[str, float] | None:
+    ncf_live_signal = report.get("ncf_live_signal", {})
+    base_weights = report.get("base_weights") or {}
+    hedge_weights = base_weights.get("ncf_late_bull_hedge")
+    if reason == "h5_hold" and hedge_weights:
+        return _normalize(dict(hedge_weights))
+    effective_weights = ncf_live_signal.get("effective_weights")
+    if effective_weights:
+        return _normalize(dict(effective_weights))
+    if hedge_weights:
+        return _normalize(dict(hedge_weights))
+    return None
+
+
+def _apply_bearish_high_risk_trim(
+    target_weights: dict[str, float],
+    latest_features: dict[str, float | int],
+    signal_alignment: dict[str, Any],
+    ncf_live_overlay: dict[str, Any],
+    *,
+    trim_fraction: float = 0.20,
+) -> tuple[dict[str, float], dict[str, Any]]:
+    """Trim live 00631L exposure when broad risk is high and sources lean bearish.
+
+    trim_fraction scales with total_risk_score:
+      risk=9  → trim_fraction × 1.0  (e.g. 20%)
+      risk=10 → trim_fraction × 1.5  (e.g. 30%)
+    """
+    if ncf_live_overlay.get("current_regime") != "golden1":
+        return dict(target_weights), ncf_live_overlay
+    total_risk_score = int(latest_features.get("total_risk_score", 0) or 0)
+    if total_risk_score < 9:
+        return dict(target_weights), ncf_live_overlay
+    if signal_alignment.get("dominant_direction") != "bearish":
+        return dict(target_weights), ncf_live_overlay
+    if signal_alignment.get("alignment") not in {"wide_divergence", "bearish_alignment", "mixed"}:
+        return dict(target_weights), ncf_live_overlay
+
+    weights = dict(target_weights)
+    current_00631l = float(weights.get("00631L.TW", 0.0) or 0.0)
+    # Scale trim with risk severity: risk=9 → base, risk=10 → base × 1.5
+    raw_risk = int(latest_features.get("total_risk_score", 0) or 0)
+    scale = 1.0 + 0.5 * max(0, raw_risk - 9)
+    trim_fraction = min(max(float(trim_fraction) * scale, 0.0), 1.0)
+    reduction = current_00631l * trim_fraction
+    if reduction <= 0.0005:
+        return weights, ncf_live_overlay
+
+    weights["00631L.TW"] = current_00631l - reduction
+    weights["cash"] = float(weights.get("cash", 0.0) or 0.0) + reduction
+    weights = _normalize(weights)
+
+    overlay = dict(ncf_live_overlay)
+    overlay["bearish_high_risk_trim_applied"] = True
+    overlay["bearish_high_risk_trim_fraction"] = trim_fraction
+    overlay["bearish_high_risk_trim_reduction"] = round(reduction, 4)
+    overlay["bearish_high_risk_trim_reason"] = (
+        f"total_risk_score={total_risk_score}, "
+        f"alignment={signal_alignment.get('alignment')}, "
+        f"dominant={signal_alignment.get('dominant_direction')}"
+    )
+    overlay["adjusted_golden1_weights_before_high_risk_trim"] = ncf_live_overlay.get("adjusted_golden1_weights")
+    overlay["adjusted_golden1_weights"] = weights
+    overlay["00631l_reduction"] = round(
+        float((ncf_live_overlay.get("base_golden1_weights") or {}).get("00631L.TW", current_00631l)) - weights.get("00631L.TW", 0.0),
+        4,
+    )
+    overlay["action"] = "reduce_00631l_high_risk"
+    return weights, overlay
+
+
+def _source_freshness(
+    db_path: Path,
+    requested_as_of: pd.Timestamp,
+    price_as_of: pd.Timestamp,
+) -> dict[str, Any]:
+    requested_as_of = pd.Timestamp(requested_as_of).normalize()
+    price_as_of = pd.Timestamp(price_as_of).normalize()
     con = duckdb.connect(str(db_path), read_only=True)
     try:
         tables = {
@@ -83,32 +344,42 @@ def _source_freshness(db_path: Path, requested_as_of: pd.Timestamp) -> dict[str,
             GROUP BY ticker
             ORDER BY ticker
             """,
-            [*TICKERS, str(requested_as_of.date())],
+            [*TICKERS, str(price_as_of.date())],
         ).fetchdf()
         optional = {}
         for source, (table, where, max_stale) in OPTIONAL_SOURCE_SPECS.items():
+            severity = "soft" if source in SOFT_OPTIONAL_SOURCES else "hard"
             if table not in tables:
                 optional[source] = {
                     "table": table,
+                    "severity": severity,
                     "exists": False,
                     "latest_date": None,
                     "business_stale_days": None,
                     "max_business_stale_days": max_stale,
-                    "status": "block",
+                    "status": "warn" if severity == "soft" else "block",
                 }
                 continue
             latest = con.execute(
                 f"SELECT max(dt) FROM {table} WHERE {where} AND dt <= ?",
                 [str(requested_as_of.date())],
             ).fetchone()[0]
-            stale_days = _business_days_between(latest, requested_as_of) if latest is not None else None
+            stale_days = _business_days_between(latest, price_as_of) if latest is not None else None
             optional[source] = {
                 "table": table,
+                "severity": severity,
                 "exists": True,
                 "latest_date": str(latest) if latest is not None else None,
+                "freshness_as_of": str(price_as_of.date()),
                 "business_stale_days": stale_days,
                 "max_business_stale_days": max_stale,
-                "status": "ok" if stale_days is not None and stale_days <= max_stale else "block",
+                "status": (
+                    "ok"
+                    if stale_days is not None and stale_days <= max_stale
+                    else "warn"
+                    if severity == "soft"
+                    else "block"
+                ),
             }
     finally:
         con.close()
@@ -123,10 +394,280 @@ def _source_freshness(db_path: Path, requested_as_of: pd.Timestamp) -> dict[str,
         if pd.notna(row.latest_close)
     }
     return {
+        "price_data_as_of": str(price_as_of.date()),
         "ohlcv_by_ticker": ticker_dates,
         "latest_prices": latest_prices,
         "optional_sources": optional,
     }
+
+
+def _load_ohlcv_window(
+    db_path: Path,
+    ticker: str,
+    end: pd.Timestamp,
+    *,
+    lookback_days: int = 220,
+) -> pd.DataFrame:
+    start = pd.Timestamp(end).normalize() - pd.Timedelta(days=lookback_days)
+    con = duckdb.connect(str(db_path), read_only=True)
+    try:
+        rows = con.execute(
+            """
+            SELECT dt, open, high, low, close, volume
+            FROM ohlcv
+            WHERE ticker = ? AND dt BETWEEN ? AND ?
+            ORDER BY dt
+            """,
+            [ticker, str(start.date()), str(pd.Timestamp(end).date())],
+        ).fetchdf()
+    finally:
+        con.close()
+    if rows.empty:
+        return pd.DataFrame()
+    rows["date"] = pd.to_datetime(rows["dt"])
+    return rows.set_index("date")[["open", "high", "low", "close", "volume"]].astype(float)
+
+
+def _tbrain_shadow_snapshot(db_path: Path, actual_date: pd.Timestamp) -> dict[str, Any]:
+    """Build a compact TBrain-style diagnostic block for the live signal JSON."""
+    try:
+        df = _load_ohlcv_window(db_path, "0050.TW", actual_date)
+        if df.empty:
+            return {"status": "unavailable", "reason": "missing_ohlcv_0050"}
+        snapshot = latest_tbrain_snapshot(df)
+        features = {**snapshot, **kdj_j_quantile_snapshot(df)}
+        # Weekly MA needs more trailing history than the 220-day daily window above.
+        weekly_df = _load_ohlcv_window(db_path, "0050.TW", actual_date, lookback_days=400)
+        weekly_ma = weekly_ma_bull_snapshot(weekly_df if not weekly_df.empty else df)
+        return {
+            "status": "available",
+            "ticker": "0050.TW",
+            "date": str(pd.Timestamp(df.index[-1]).date()),
+            "features": features,
+            "weekly_ma": weekly_ma,
+            "method": "tbrain_multi_kdj_location_shadow_v1",
+        }
+    except Exception as exc:
+        return {"status": "error", "reason": str(exc)}
+
+
+def _factor_lens_gate_check(
+    project_root: Path = PROJECT_ROOT,
+    key_factors: tuple[str, ...] = (
+        "ncf_00631l_prob_up",
+        "ncf_cross_ticker_market_up",
+        "ncf_market_probability_up",
+    ),
+) -> dict[str, Any]:
+    """Load the latest factor lens report and return gate status per factor.
+
+    This is advisory only — it does not block execution.
+    Returns {"status": "unavailable"} when no report file is found.
+    """
+    candidates = sorted(
+        (project_root / "results").glob("group_a_plus_factor_lens_*.json"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    if not candidates:
+        return {"status": "unavailable", "reason": "no_factor_lens_report"}
+    report_path = candidates[0]
+    try:
+        import json as _json
+        report = _json.loads(report_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return {"status": "error", "reason": str(exc)}
+    factors_section = report.get("factors", {})
+    gates: dict[str, Any] = {}
+    for name in key_factors:
+        if name not in factors_section:
+            gates[name] = {"passed": None, "reason": "not_in_report"}
+            continue
+        gates[name] = factor_passes_gate(factors_section[name])
+    all_pass = all(g.get("passed") is True for g in gates.values())
+    return {
+        "status": "available",
+        "report_file": report_path.name,
+        "report_generated_at": report.get("generated_at"),
+        "all_key_factors_pass": all_pass,
+        "factors": gates,
+    }
+
+
+def _execution_risk_assessment(
+    *,
+    execution_allowed: bool,
+    business_stale: int,
+    calendar_stale: int,
+    optional_warnings: list[str],
+    target_weights: dict[str, float],
+    latest_features: dict[str, float | int],
+    ncf_live_overlay: dict[str, Any],
+    finbert_sentiment: dict[str, Any],
+) -> dict[str, Any]:
+    components = {
+        "blocked_guard": 1.0 if not execution_allowed else 0.0,
+        "business_stale": min(max(float(business_stale), 0.0) / 3.0, 1.0),
+        "calendar_stale": min(max(float(calendar_stale), 0.0) / 7.0, 1.0),
+        "soft_data_warnings": min(len(optional_warnings) / 3.0, 1.0),
+        "leverage_weight": min(max(float(target_weights.get("00631L.TW", 0.0)), 0.0) / 0.2, 1.0),
+        # Normalized to /10.0 (system max is 10, not 8); weight raised to reflect primacy
+        "total_risk_score": min(max(float(latest_features.get("total_risk_score", 0.0)), 0.0) / 10.0, 1.0),
+        "ncf_downside": min(max(float(ncf_live_overlay.get("gated_downside_signal", 0.0) or 0.0), 0.0), 1.0),
+        "ncf_tail_downside": min(max(float(ncf_live_overlay.get("tail_downside_signal", 0.0) or 0.0), 0.0), 1.0),
+        "finbert_sentiment_risk": min(max(float(finbert_sentiment.get("risk_score", 0.0) or 0.0), 0.0), 1.0),
+    }
+    score = (
+        0.28 * components["blocked_guard"]
+        + 0.12 * components["business_stale"]
+        + 0.05 * components["calendar_stale"]
+        + 0.08 * components["soft_data_warnings"]
+        + 0.12 * components["leverage_weight"]
+        + 0.20 * components["total_risk_score"]
+        + 0.08 * components["ncf_downside"]
+        + 0.04 * components["ncf_tail_downside"]
+        + 0.03 * components["finbert_sentiment_risk"]
+    )
+    score = round(float(min(max(score, 0.0), 1.0)), 4)
+    raw_risk_score = int(latest_features.get("total_risk_score", 0) or 0)
+    if not execution_allowed or score >= 0.55:
+        level = "high"
+    elif score >= 0.30 or raw_risk_score >= 9:
+        # Floor: composite market risk at max range → at least medium, even if weighted score is low
+        level = "medium"
+    else:
+        level = "low"
+    return {
+        "score": score,
+        "level": level,
+        "components": {key: round(value, 4) for key, value in components.items()},
+        "method": "weighted_daily_execution_risk_v2",
+    }
+
+
+def _build_signal_alerts(
+    *,
+    strategy_id: str,
+    actual_date: pd.Timestamp,
+    execution_allowed: bool,
+    execution_regime: str,
+    changed_today: bool,
+    execution_risk: dict[str, Any],
+    latest_features: dict[str, float | int],
+    finbert_sentiment: dict[str, Any],
+    factor_lens_gate: dict[str, Any] | None = None,
+    ncf_live_signal: dict[str, Any] | None = None,
+    ncf_live_overlay: dict[str, Any] | None = None,
+    signal_alignment: dict[str, Any] | None = None,
+    cooldown_minutes: int = 5,
+) -> list[dict[str, Any]]:
+    """Build stable alert payloads for downstream notification/cooldown layers."""
+    date_key = str(pd.Timestamp(actual_date).date())
+    alerts: list[dict[str, Any]] = []
+
+    def add(alert_type: str, level: str, title: str, reason: str) -> None:
+        alerts.append(
+            {
+                "type": alert_type,
+                "level": level,
+                "title": title,
+                "reason": reason,
+                "cooldown_key": f"{strategy_id}:{date_key}:{alert_type}",
+                "cooldown_minutes": cooldown_minutes,
+            }
+        )
+
+    risk_level = str(execution_risk.get("level", "low"))
+    risk_score = float(execution_risk.get("score", 0.0) or 0.0)
+    if not execution_allowed:
+        add("execution_blocked", "high", "Execution blocked", "Execution guard is not satisfied.")
+    if changed_today:
+        add("regime_transition", "medium", "Regime transition", f"Execution regime changed to {execution_regime}.")
+    if risk_level in {"medium", "high"}:
+        add("execution_risk", risk_level, "Execution risk elevated", f"Daily execution risk score is {risk_score:.4f}.")
+    if float(finbert_sentiment.get("risk_score", 0.0) or 0.0) >= 0.55:
+        add("finbert_sentiment_risk", "medium", "FinBERT sentiment risk", "Market-news sentiment risk is elevated.")
+    total_risk_score = int(latest_features.get("total_risk_score", 0) or 0)
+    if total_risk_score >= 9:
+        add("total_risk_score", "high", "Total risk score high", "Composite market risk score is high.")
+    elif total_risk_score >= 6:
+        add("total_risk_score", "medium", "Total risk score elevated", "Composite market risk score is elevated.")
+    if (signal_alignment or {}).get("alignment") == "wide_divergence":
+        dominant = (signal_alignment or {}).get("dominant_direction")
+        add(
+            "signal_wide_divergence",
+            "medium",
+            "Signal alignment diverged",
+            f"Cross-source signals show wide divergence; dominant direction is {dominant}.",
+        )
+    if (ncf_live_overlay or {}).get("bearish_high_risk_trim_applied"):
+        add(
+            "bearish_high_risk_trim",
+            "medium",
+            "Bearish high-risk trim applied",
+            str((ncf_live_overlay or {}).get("bearish_high_risk_trim_reason", "High-risk bearish trim applied.")),
+        )
+    factor_generated_at = (factor_lens_gate or {}).get("report_generated_at")
+    if factor_generated_at:
+        try:
+            factor_date = pd.Timestamp(factor_generated_at).normalize()
+            if factor_date < pd.Timestamp(actual_date).normalize():
+                add(
+                    "factor_lens_stale",
+                    "medium",
+                    "Factor lens report stale",
+                    f"Factor lens report is dated {factor_date.date()}, older than signal date {date_key}.",
+                )
+        except Exception:
+            pass
+
+    # 20d IC 可靠性警告
+    gate_factors = (factor_lens_gate or {}).get("factors", {})
+    any_20d_warning = any(
+        bool(v.get("ic_20d_warning"))
+        for v in gate_factors.values()
+        if isinstance(v, dict)
+    )
+    late_bull_triggered = bool((ncf_live_signal or {}).get("late_bull_triggered"))
+    ma_gap = float(latest_features.get("ma_gap", 0.0))
+
+    if any_20d_warning and late_bull_triggered:
+        ic_20d = next(
+            (v.get("ic_20d_recent_mean") for v in gate_factors.values()
+             if isinstance(v, dict) and v.get("ic_20d_warning")),
+            None,
+        )
+        add(
+            "ncf_20d_ic_unreliable_with_trigger",
+            "high",
+            "NCF 20d IC 不可信：a2118 觸發中",
+            (
+                f"近期 rolling 20d IC={ic_20d:.3f}（< 0），模型 20d 方向預測反向。"
+                " a2118 正依據此信號調整倉位，建議改以 1d/5d 信號為準，"
+                " 並手動確認 00631L 倉位是否合理。"
+            ),
+        )
+    elif any_20d_warning and ma_gap > 0.10:
+        add(
+            "ncf_20d_ic_unreliable_late_bull",
+            "medium",
+            "NCF 20d IC 不可信：處於 late-bull 區間",
+            (
+                f"近期 rolling 20d IC 為負，20d 預測不可靠。"
+                f" 目前 ma_gap={ma_gap:.3f}（late-bull 區間）。"
+                " 建議主動將 00631L 降至正常配置的 50%，不等 NCF 觸發。"
+                " 改以技術面（MA20/MA100 跌破）作為備援停損。"
+            ),
+        )
+    elif any_20d_warning:
+        add(
+            "ncf_20d_ic_unreliable",
+            "low",
+            "NCF 20d IC 不可信",
+            "近期 rolling 20d IC 為負，月度展望請勿依賴 NCF 判斷，改看 1d/5d 信號。",
+        )
+
+    return alerts
 
 
 def build_daily_signal(
@@ -148,13 +689,63 @@ def build_daily_signal(
     execution_regime = str(regimes.iloc[-1])
     base_regime = str(frame["base_regime"].iloc[-1]) if "base_regime" in frame.columns else execution_regime
     target_weights = _resolve_weights(report, execution_regime)
-    source_freshness = _source_freshness(db_path, as_of)
+    latest_row = frame.iloc[-1]
+    target_weights, ncf_live_overlay, ncf_warnings = _apply_ncf_live_overlay(
+        target_weights,
+        execution_regime,
+        actual,
+        latest_row,
+    )
+    # a2118 hard overlay: when late-bull trigger fires, use the binary de-leverage weights
+    # (soft overlay underestimates the required de-leverage; a2118 does a full 00631L halving)
+    ncf_live_signal = report.get("ncf_live_signal", {})
+    previous_signal = _load_previous_live_signal()
+    min_previous_generated_at = None
+    panel_path_raw = (report.get("ncf_panel_coverage") or {}).get("panel_631l_path")
+    if panel_path_raw:
+        panel_path = Path(panel_path_raw)
+        if panel_path.exists():
+            min_previous_generated_at = datetime.fromtimestamp(panel_path.stat().st_mtime)
+    a2118_overlay_reason = _a2118_live_hard_overlay_reason(
+        report=report,
+        execution_regime=execution_regime,
+        actual_date=actual,
+        previous_signal=previous_signal,
+        min_previous_generated_at=min_previous_generated_at,
+    )
+    if a2118_overlay_reason is not None:
+        hard_weights = _a2118_live_hard_overlay_weights(report, a2118_overlay_reason)
+        if hard_weights:
+            target_weights = hard_weights
+            ncf_live_overlay["a2118_late_bull_hard_overlay_applied"] = True
+            ncf_live_overlay["a2118_late_bull_overlay_reason"] = a2118_overlay_reason
+            ncf_live_overlay["a2118_late_bull_hold_active"] = a2118_overlay_reason == "h5_hold"
+            ncf_live_overlay["a2118_h20_prob"] = ncf_live_signal.get("h20_prob_up")
+            ncf_live_overlay["a2118_h5_prob"] = ncf_live_signal.get("h5_prob_up")
+            ncf_live_overlay["a2118_confidence"] = ncf_live_signal.get("confidence")
+    elif (
+        str(report.get("active_strategy_id", "")) == "a2118_a2111_ncf_late_bull_deleverage"
+        and execution_regime == "ncf_late_bull_hedge"
+        and _a2118_live_signal_is_current(ncf_live_signal, actual)
+    ):
+        ncf_live_overlay["a2118_late_bull_hard_overlay_applied"] = True
+        ncf_live_overlay["a2118_late_bull_overlay_reason"] = "panel_trigger"
+        ncf_live_overlay["a2118_late_bull_hold_active"] = False
+        ncf_live_overlay["a2118_h20_prob"] = ncf_live_signal.get("h20_prob_up")
+        ncf_live_overlay["a2118_h5_prob"] = ncf_live_signal.get("h5_prob_up")
+        ncf_live_overlay["a2118_confidence"] = ncf_live_signal.get("confidence")
+    source_freshness = _source_freshness(db_path, as_of, actual)
     ticker_dates = source_freshness["ohlcv_by_ticker"]
     latest_prices = source_freshness["latest_prices"]
     optional_blocks = sorted(
         source
         for source, detail in source_freshness["optional_sources"].items()
         if detail["status"] == "block"
+    )
+    optional_warnings = sorted(
+        source
+        for source, detail in source_freshness["optional_sources"].items()
+        if detail["status"] == "warn"
     )
     missing_tickers = sorted(set(TICKERS) - set(ticker_dates))
     ticker_misaligned = sorted(
@@ -178,7 +769,63 @@ def build_daily_signal(
         "group_a_plus_defensive": "A20.7 defensive state is active and recovery ramp has not triggered",
         "group_a_plus_recovery": "A20.7 remains defensive; MA75 gap and five-day momentum triggered recovery ramp",
     }.get(execution_regime, "active strategy regime")
-    latest_row = frame.iloc[-1]
+    latest_features = {
+        "ma_gap": float(latest_row.get("ma_gap", 0.0)),
+        "drawdown": float(latest_row.get("drawdown", 0.0)),
+        "exit_momentum_5d": float(latest_row.get("exit_momentum", 0.0)),
+        "chip_score": int(latest_row.get("chip_score", 0)),
+        "derivative_score": int(latest_row.get("derivative_score", 0)),
+        "total_risk_score": int(latest_row.get("total_risk_score", 0)),
+        "tail_risk_score": int(latest_row.get("tail_risk_score", 0)),
+    }
+    finbert_sentiment = load_finbert_daily_snapshot(as_of, actual)
+    lm_dictionary_sentiment = build_lm_dictionary_snapshot(str(actual.date()))
+    latest_features["finbert_sentiment_risk"] = float(finbert_sentiment.get("risk_score", 0.0) or 0.0)
+    tbrain_shadow = _tbrain_shadow_snapshot(db_path, actual)
+    factor_lens_gate = _factor_lens_gate_check()
+    signal_alignment = build_signal_alignment(
+        {
+            "strategy_id": str(report["active_strategy_id"]),
+            "actual_data_date": str(actual.date()),
+            "execution_regime": execution_regime,
+            "latest_features": latest_features,
+            "finbert_sentiment": finbert_sentiment,
+            "lm_dictionary_sentiment": lm_dictionary_sentiment,
+            "ncf_live_overlay": ncf_live_overlay,
+            "factor_lens_gate": factor_lens_gate,
+            "tbrain_shadow": tbrain_shadow,
+        }
+    )
+    target_weights, ncf_live_overlay = _apply_bearish_high_risk_trim(
+        target_weights,
+        latest_features,
+        signal_alignment,
+        ncf_live_overlay,
+    )
+    execution_risk = _execution_risk_assessment(
+        execution_allowed=execution_allowed,
+        business_stale=business_stale,
+        calendar_stale=calendar_stale,
+        optional_warnings=optional_warnings,
+        target_weights=target_weights,
+        latest_features=latest_features,
+        ncf_live_overlay=ncf_live_overlay,
+        finbert_sentiment=finbert_sentiment,
+    )
+    signal_alerts = _build_signal_alerts(
+        strategy_id=str(report["active_strategy_id"]),
+        actual_date=actual,
+        execution_allowed=execution_allowed,
+        execution_regime=execution_regime,
+        changed_today=changed_today,
+        execution_risk=execution_risk,
+        latest_features=latest_features,
+        finbert_sentiment=finbert_sentiment,
+        factor_lens_gate=factor_lens_gate,
+        ncf_live_signal=ncf_live_signal,
+        ncf_live_overlay=ncf_live_overlay,
+        signal_alignment=signal_alignment,
+    )
     target_shares = {
         ticker: (
             int((portfolio_value * target_weights.get(ticker, 0.0)) // latest_prices[ticker])
@@ -214,6 +861,13 @@ def build_daily_signal(
             )
             if condition
         ],
+        "execution_warning_reasons": [
+            reason
+            for condition, reason in (
+                (bool(optional_warnings), f"soft strategy sources are stale or missing: {optional_warnings}"),
+            )
+            if condition
+        ] + ncf_warnings,
         "base_regime": base_regime,
         "execution_regime": execution_regime,
         "regime_reason": reason,
@@ -226,16 +880,17 @@ def build_daily_signal(
         "reference_target_market_values": target_market_values,
         "estimated_cash_after_rounding_before_cost": estimated_cash_after_rounding,
         "latest_prices": latest_prices,
+        "symbol_metadata": build_symbol_metadata(tuple(target_weights.keys())),
         "portfolio_value_input": float(portfolio_value),
-        "latest_features": {
-            "ma_gap": float(latest_row.get("ma_gap", 0.0)),
-            "drawdown": float(latest_row.get("drawdown", 0.0)),
-            "exit_momentum_5d": float(latest_row.get("exit_momentum", 0.0)),
-            "chip_score": int(latest_row.get("chip_score", 0)),
-            "derivative_score": int(latest_row.get("derivative_score", 0)),
-            "total_risk_score": int(latest_row.get("total_risk_score", 0)),
-            "tail_risk_score": int(latest_row.get("tail_risk_score", 0)),
-        },
+        "latest_features": latest_features,
+        "execution_risk": execution_risk,
+        "signal_alerts": signal_alerts,
+        "signal_alignment": signal_alignment,
+        "finbert_sentiment": finbert_sentiment,
+        "lm_dictionary_sentiment": lm_dictionary_sentiment,
+        "tbrain_shadow": tbrain_shadow,
+        "ncf_live_overlay": ncf_live_overlay,
+        "factor_lens_gate": factor_lens_gate,
         "data_freshness": source_freshness,
         "manifest": str(manifest_path),
     }

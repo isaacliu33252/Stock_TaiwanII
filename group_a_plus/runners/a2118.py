@@ -50,7 +50,8 @@ from __future__ import annotations
 
 import argparse
 import glob
-from datetime import date
+import hashlib
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -63,7 +64,6 @@ from backtest_group_a_plus_defensive_basket import (
 )
 from backtest_group_a_plus_policy_signal import (
     DEFAULT_DECISION_POINTER,
-    DEFAULT_GOLDEN_SIGNAL,
     TICKERS,
     _load,
     _load_policy_signal,
@@ -82,7 +82,7 @@ from backtest_group_a_plus_switch_policy import (
 from backtest_group_a_plus_warmup_consistency import _trim_window, _warmup_start
 from group_a_plus.integrations.ncf import load_ncf_signal, ncf_overlay_summary
 from group_a_plus.paths import PROJECT_ROOT
-from group_a_plus.runners.a2111 import _build_switch_rule
+from group_a_plus.runners.a2111 import _build_switch_rule, _resolve_golden_signal_path
 from tw_output_standard import OutputStandardizer, write_standard_output
 
 
@@ -105,6 +105,16 @@ LATE_BULL_HEDGE_WEIGHTS = {
 }
 
 NCF_LB_REGIME = "ncf_late_bull_hedge"
+NCF_LB_SOFT_REGIME = "ncf_late_bull_hedge_soft"
+
+
+def _late_bull_hedge_weights(golden_weights: dict[str, float], intensity: float = 1.0) -> dict[str, float]:
+    weights = dict(golden_weights)
+    intensity = min(max(float(intensity), 0.0), 1.0)
+    shift = float(weights.get("00631L.TW", 0.0)) * 0.5 * intensity
+    weights["00631L.TW"] = float(weights.get("00631L.TW", 0.0)) - shift
+    weights["0050.TW"] = float(weights.get("0050.TW", 0.0)) + shift
+    return _normalize(weights)
 
 
 def _resolve_ncf_path(explicit: str | None, ticker_tag: str) -> Path | None:
@@ -113,14 +123,12 @@ def _resolve_ncf_path(explicit: str | None, ticker_tag: str) -> Path | None:
         if not p.is_absolute():
             p = PROJECT_ROOT / p
         return p if p.exists() else None
-    today_str = date.today().strftime("%Y%m%d")
-    today_path = PROJECT_ROOT / "results" / f"ncf_{ticker_tag}_{today_str}.json"
-    if today_path.exists():
-        return today_path
-    candidates = sorted(
-        glob.glob(str(PROJECT_ROOT / "results" / f"ncf_{ticker_tag}_2?????.json"))
-    )
-    return Path(candidates[-1]) if candidates else None
+    results = PROJECT_ROOT / "results"
+    candidates: list[Path] = []
+    for pattern in (f"ncf_{ticker_tag}_latest_*.json", f"ncf_{ticker_tag}_2*.json"):
+        candidates.extend(results.glob(pattern))
+    candidates = [p for p in candidates if p.is_file() and "panel" not in p.name]
+    return max(candidates, key=lambda p: p.stat().st_mtime) if candidates else None
 
 
 def _load_ncf_panel(path: Path | None) -> pd.DataFrame | None:
@@ -131,6 +139,36 @@ def _load_ncf_panel(path: Path | None) -> pd.DataFrame | None:
     return df
 
 
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _ncf_panel_metadata(path: Path, panel: pd.DataFrame) -> dict:
+    stat = path.stat()
+    return {
+        "panel_631l_rows": int(len(panel)),
+        "panel_631l_path": str(path.resolve()),
+        "panel_631l_sha256": _file_sha256(path),
+        "panel_631l_modified_at": datetime.fromtimestamp(
+            stat.st_mtime,
+            timezone.utc,
+        ).isoformat(timespec="seconds").replace("+00:00", "Z"),
+        "panel_631l_first_date": str(panel.index.min().date()) if len(panel) else None,
+        "panel_631l_last_date": str(panel.index.max().date()) if len(panel) else None,
+    }
+
+
+def _signal_date_matches(signal: dict, frame_data_date: pd.Timestamp) -> bool:
+    signal_date_raw = signal.get("date")
+    if not signal_date_raw:
+        return False
+    return pd.Timestamp(signal_date_raw).normalize() == pd.Timestamp(frame_data_date).normalize()
+
+
 def _apply_late_bull_overlay(
     execution_regime: pd.Series,
     panel_631l: pd.DataFrame | None,
@@ -138,43 +176,141 @@ def _apply_late_bull_overlay(
     ma_gap_min: float = NCF_LB_MA_GAP_MIN,
     h20_max: float = NCF_LB_H20_MAX,
     conf_min: float = NCF_LB_CONF_MIN,
+    h5_reentry_min: float = 0.0,
+    gain_prob_soft_min: float | None = None,
+    rally_suppress_min: float | None = None,
 ) -> tuple[pd.Series, dict]:
     """Pre-process execution_regime: override golden1 trigger days to ncf_late_bull_hedge.
 
     Reuses _simulate_costed_curve unchanged — only the regime input changes.
     This ensures share-tracking simulation identical to A21.11 on non-trigger days.
+
+    h5_reentry_min > 0: enables hold mechanism — once triggered, stays in hedge
+    until prob_up_h5 >= h5_reentry_min (H=5 confirms reversal). Set to 0 (default)
+    to use original stateless day-by-day logic.
+
+    rally_suppress_min: when prob_fwd_gain_gt5_h20 >= this threshold, suppress the
+    hedge entirely (stay in golden1). Checked before gain_prob_soft_min. Default None
+    (no suppression) preserves original A21.18 behaviour.
     """
     if panel_631l is None:
         return execution_regime.copy(), {
             "late_bull_trigger_days": 0,
             "late_bull_trigger_events": [],
         }
+    missing_cols = sorted({"prob_up_h20", "confidence"} - set(panel_631l.columns))
+    if missing_cols:
+        return execution_regime.copy(), {
+            "late_bull_trigger_days": 0,
+            "late_bull_trigger_events": [],
+            "skipped_reason": "missing_required_panel_columns",
+            "missing_columns": missing_cols,
+        }
 
     modified = execution_regime.copy()
     trigger_events: list[dict] = []
+    hold_days: list[str] = []
+    soft_hedge_days: list[str] = []
+    suppressed_days: list[str] = []
+    skipped_days: list[str] = []
+    in_hedge = False
+
+    def _gain_prob(day: pd.Timestamp) -> float | None:
+        if "prob_fwd_gain_gt5_h20" not in panel_631l.columns:
+            return None
+        val = panel_631l.loc[day, "prob_fwd_gain_gt5_h20"]
+        return float(val) if pd.notna(val) else None
+
+    def hedge_regime_for_day(day: pd.Timestamp) -> str | None:
+        """Return hedge regime string, or None to suppress hedge entirely."""
+        gp = _gain_prob(day)
+        if rally_suppress_min is not None and gp is not None and gp >= rally_suppress_min:
+            suppressed_days.append(str(day.date()))
+            return None
+        if gain_prob_soft_min is not None and gp is not None and gp >= gain_prob_soft_min:
+            soft_hedge_days.append(str(day.date()))
+            return NCF_LB_SOFT_REGIME
+        return NCF_LB_REGIME
 
     for d in execution_regime.index:
         if str(execution_regime.loc[d]) != "golden1":
+            in_hedge = False  # regime changed — reset hold state
             continue
         if d not in panel_631l.index:
             continue
+
         ma_gap = float(ma_gap_series.get(d, 0.0))
-        if ma_gap <= ma_gap_min:
+        h20_raw = panel_631l.loc[d, "prob_up_h20"]
+        conf_raw = panel_631l.loc[d, "confidence"]
+        if pd.isna(h20_raw) or pd.isna(conf_raw):
+            skipped_days.append(str(d.date()))
             continue
-        h20_prob = float(panel_631l.loc[d, "prob_up_h20"])
-        conf = float(panel_631l.loc[d, "confidence"])
-        if h20_prob < h20_max and conf > conf_min:
-            modified.loc[d] = NCF_LB_REGIME
-            trigger_events.append({
-                "date": str(d.date()),
-                "ma_gap": round(ma_gap, 4),
-                "prob_up_h20": round(h20_prob, 4),
-                "confidence": round(conf, 4),
-            })
+        h20_prob = float(h20_raw)
+        conf = float(conf_raw)
+        h5_raw = panel_631l.loc[d, "prob_up_h5"] if "prob_up_h5" in panel_631l.columns else 1.0
+        h5_prob = float(h5_raw) if pd.notna(h5_raw) else 1.0
+
+        is_trigger = ma_gap > ma_gap_min and h20_prob < h20_max and conf > conf_min
+
+        if h5_reentry_min > 0:
+            # Stateful hold logic with optional rally suppression.
+            # Rally suppression is evaluated at entry: if the initial trigger fires
+            # but gain_prob >= rally_suppress_min, skip entering hedge entirely.
+            if is_trigger and not in_hedge:
+                init_regime = hedge_regime_for_day(d)
+                if init_regime is not None:
+                    in_hedge = True
+                    modified.loc[d] = init_regime
+                    trigger_events.append({
+                        "date": str(d.date()),
+                        "ma_gap": round(ma_gap, 4),
+                        "prob_up_h20": round(h20_prob, 4),
+                        "confidence": round(conf, 4),
+                        "trigger_type": "initial",
+                    })
+                # else: rally_suppress fired — trigger condition met but hedge not entered
+            elif in_hedge:
+                if is_trigger:
+                    # Still triggering inside hold window
+                    hold_days.append(str(d.date()))
+                else:
+                    # Check hold-exit conditions
+                    gp = _gain_prob(d)
+                    rally_exit = (
+                        rally_suppress_min is not None
+                        and gp is not None
+                        and gp >= rally_suppress_min
+                    )
+                    if h5_prob >= h5_reentry_min or rally_exit:
+                        in_hedge = False  # reversal confirmed or rally suppression
+                    else:
+                        hold_days.append(str(d.date()))
+
+                if in_hedge:
+                    regime = hedge_regime_for_day(d)
+                    if regime is not None:
+                        modified.loc[d] = regime
+        else:
+            # Original stateless logic (h5_reentry_min == 0)
+            if is_trigger:
+                regime = hedge_regime_for_day(d)
+                if regime is not None:
+                    modified.loc[d] = regime
+                trigger_events.append({
+                    "date": str(d.date()),
+                    "ma_gap": round(ma_gap, 4),
+                    "prob_up_h20": round(h20_prob, 4),
+                    "confidence": round(conf, 4),
+                })
 
     return modified, {
         "late_bull_trigger_days": len(trigger_events),
         "late_bull_trigger_events": trigger_events,
+        "hold_days": hold_days,
+        "soft_hedge_days": soft_hedge_days,
+        "suppressed_days": suppressed_days,
+        "skipped_days": skipped_days,
+        "total_hedge_days": len(trigger_events) + len(hold_days),
     }
 
 
@@ -192,6 +328,10 @@ def run_a2118(
     ma_gap_min: float = NCF_LB_MA_GAP_MIN,
     h20_max: float = NCF_LB_H20_MAX,
     conf_min: float = NCF_LB_CONF_MIN,
+    h5_reentry_min: float = 0.0,
+    gain_prob_soft_min: float | None = None,
+    soft_hedge_intensity: float = 0.5,
+    rally_suppress_min: float | None = None,
 ) -> tuple[dict, pd.DataFrame]:
     """Run A21.18: A21.11 base + NCF late-bull de-leverage overlay on golden1.
 
@@ -201,7 +341,7 @@ def run_a2118(
     Without the panel, backtest is identical to A21.11.
     """
     policy_signal, policy_signal_path = _load_policy_signal(_resolve(DEFAULT_DECISION_POINTER))
-    golden_signal_path = _resolve(DEFAULT_GOLDEN_SIGNAL)
+    golden_signal_path = _resolve_golden_signal_path()
     golden_signal = _load(golden_signal_path)
     current_defensive = _normalize(_weights_from_group_a_plus(policy_signal))
     basket = _normalize(DEFENSIVE_BASKETS["bond30_cash30"])
@@ -220,7 +360,8 @@ def run_a2118(
         "golden1": golden_weights,
         "group_a_plus_defensive": basket,
         "group_a_plus_recovery": current_defensive,
-        NCF_LB_REGIME: _normalize(LATE_BULL_HEDGE_WEIGHTS),
+        NCF_LB_REGIME: _late_bull_hedge_weights(golden_weights),
+        NCF_LB_SOFT_REGIME: _late_bull_hedge_weights(golden_weights, intensity=soft_hedge_intensity),
     }
 
     panel_631l = _load_ncf_panel(
@@ -236,6 +377,9 @@ def run_a2118(
             ma_gap_min=ma_gap_min,
             h20_max=h20_max,
             conf_min=conf_min,
+            h5_reentry_min=h5_reentry_min,
+            gain_prob_soft_min=gain_prob_soft_min,
+            rally_suppress_min=rally_suppress_min,
         )
         curve, sim_result = _simulate_costed_curve(
             total_return_prices,
@@ -247,10 +391,7 @@ def run_a2118(
             equity_etf_sell_tax,
         )
         backtest_mode = "ncf_late_bull_regime_overlay"
-        ncf_panel_coverage = {
-            "panel_631l_rows": int(len(panel_631l)),
-            "panel_631l_path": str(Path(ncf_panel_631l_path).resolve()),
-        }
+        ncf_panel_coverage = _ncf_panel_metadata(Path(ncf_panel_631l_path), panel_631l)
     else:
         modified_regime = execution_regime
         overlay_info = {"late_bull_trigger_days": 0, "late_bull_trigger_events": []}
@@ -282,30 +423,75 @@ def run_a2118(
     ncf_live: dict = {}
     path_631l = _resolve_ncf_path(ncf_00631l_path, "00631l")
     today_ma_gap = float(ma_gap_series.iloc[-1]) if len(ma_gap_series) > 0 else 0.0
+    frame_data_date = pd.Timestamp(modified_regime.index[-1]).normalize()
 
     if path_631l:
         sig_631l = load_ncf_signal(path_631l)
-        h20_prob = float(sig_631l.get("prob_up_h20", sig_631l.get("calibrated_prob_up", 0.5)))
+        signal_date_raw = sig_631l.get("date")
+        signal_date = pd.Timestamp(signal_date_raw).normalize() if signal_date_raw else None
+        date_matches = _signal_date_matches(sig_631l, frame_data_date)
+        # Use raw H=20 probability (horizon_prob_up["20"]) to match panel backtest behavior.
+        # calibrated_prob_up is the AUC-weighted ensemble across all horizons — different metric.
+        h20_prob = float(
+            (sig_631l.get("horizon_prob_up") or {}).get("20")
+            or sig_631l.get("calibrated_prob_up", 0.5)
+        )
+        h5_prob = float(
+            (sig_631l.get("horizon_prob_up") or {}).get("5")
+            or sig_631l.get("calibrated_prob_up", 0.5)
+        )
         conf = float(sig_631l.get("confidence", 0.0))
-        late_bull_triggered = (
+        late_bull_triggered = bool(
+            date_matches
+            and
             today_ma_gap > ma_gap_min
             and h20_prob < h20_max
             and conf > conf_min
         )
+        gain_prob = sig_631l.get("prob_fwd_gain_gt5_h20")
+        gain_prob_f = float(gain_prob) if gain_prob is not None else None
+        rally_suppressed = (
+            late_bull_triggered
+            and rally_suppress_min is not None
+            and gain_prob_f is not None
+            and gain_prob_f >= rally_suppress_min
+        )
+        soft_hedge_triggered = (
+            late_bull_triggered
+            and not rally_suppressed
+            and gain_prob_soft_min is not None
+            and gain_prob_f is not None
+            and gain_prob_f >= gain_prob_soft_min
+        )
+        effective_hedge_active = late_bull_triggered and not rally_suppressed
         ncf_live = {
+            "status": "ok" if date_matches else "stale",
+            "reason": None if date_matches else "ncf_date_mismatch",
             "ncf_00631l_file": str(path_631l.relative_to(PROJECT_ROOT)),
+            "signal_date": str(signal_date.date()) if signal_date is not None else None,
+            "frame_data_date": str(frame_data_date.date()),
             "today_ma_gap": round(today_ma_gap, 4),
             "h20_prob_up": round(h20_prob, 4),
+            "h5_prob_up": round(h5_prob, 4),
             "confidence": round(conf, 4),
+            "prob_fwd_gain_gt5_h20": gain_prob,
             "late_bull_triggered": late_bull_triggered,
+            "rally_suppressed": rally_suppressed,
+            "soft_hedge_triggered": soft_hedge_triggered,
+            "effective_hedge_active": effective_hedge_active,
             "trigger_conditions": {
                 "ma_gap_min": ma_gap_min,
                 "h20_max": h20_max,
                 "conf_min": conf_min,
+                "gain_prob_soft_min": gain_prob_soft_min,
+                "rally_suppress_min": rally_suppress_min,
             },
             "effective_weights": (
-                _normalize(LATE_BULL_HEDGE_WEIGHTS)
-                if today_regime == "golden1" and late_bull_triggered
+                _late_bull_hedge_weights(
+                    golden_weights,
+                    intensity=soft_hedge_intensity if soft_hedge_triggered else 1.0,
+                )
+                if date_matches and today_regime == "golden1" and effective_hedge_active
                 else dict(golden_weights)
             ),
         }
@@ -326,6 +512,23 @@ def run_a2118(
         },
         "metrics": _metrics(curve, initial_value),
         "execution": {**sim_result, **overlay_info},
+        "backtest_live_discrepancy": {
+            "trim_layer": "bearish_high_risk_trim",
+            "trim_condition": "total_risk_score>=9 AND signal_alignment bearish/wide_divergence",
+            "trim_fraction": 0.25,
+            "in_backtest": False,
+            "reason": "signal_alignment requires real-time multi-source inputs, not reconstructable historically",
+            "high_chip_golden1_days": int(
+                ((frame["chip_score"] >= 9) & (frame["regime"] == "golden1")).sum()
+                if "chip_score" in frame.columns and "regime" in frame.columns
+                else -1
+            ),
+            "high_chip_golden1_fraction": round(float(
+                ((frame["chip_score"] >= 9) & (frame["regime"] == "golden1")).mean()
+                if "chip_score" in frame.columns and "regime" in frame.columns
+                else float("nan")
+            ), 4),
+        },
         "a207_events": events,
         "recovery_ramp_dates": recovery_dates,
         "rules": {
@@ -339,8 +542,17 @@ def run_a2118(
             "ncf_late_bull_ma_gap_min": ma_gap_min,
             "ncf_late_bull_h20_max": h20_max,
             "ncf_late_bull_conf_min": conf_min,
+            "ncf_late_bull_h5_reentry_min": h5_reentry_min,
+            "ncf_late_bull_gain_prob_soft_min": gain_prob_soft_min,
+            "ncf_late_bull_soft_hedge_intensity": soft_hedge_intensity,
+            "ncf_late_bull_rally_suppress_min": rally_suppress_min,
             "late_bull_hedge_regime": NCF_LB_REGIME,
-            "late_bull_hedge_weights": _normalize(LATE_BULL_HEDGE_WEIGHTS),
+            "late_bull_hedge_weights": _late_bull_hedge_weights(golden_weights),
+            "late_bull_soft_hedge_regime": NCF_LB_SOFT_REGIME,
+            "late_bull_soft_hedge_weights": _late_bull_hedge_weights(
+                golden_weights,
+                intensity=soft_hedge_intensity,
+            ),
         },
         "cost_assumptions": {
             "commission_rate": commission_rate,
@@ -381,6 +593,17 @@ def run_a2118(
                 "75% MDD>5% (vs 35.4% base), 75% gain>5% at 20d. "
                 "Confirms sharp-drop-then-rally pattern in late-bull corrections."
             ),
+            "bearish_trim_discrepancy": (
+                "LIVE vs BACKTEST: daily_signal.py applies an additional 25% trim to 00631L "
+                "when total_risk_score>=9 AND signal_alignment is bearish/wide_divergence. "
+                "This trim is NOT included in this backtest simulation because signal_alignment "
+                "requires real-time multi-source inputs (finbert, factor_lens, NCF, chip_score) "
+                "that cannot be reconstructed historically without lookahead bias. "
+                "Impact estimate: trim fires on days with chip_score>=9 in golden1 regime; "
+                "see backtest_live_discrepancy field for historical chip_score>=9 day count. "
+                "When comparing backtest Sharpe/Sortino to live performance, note that live "
+                "returns are conservatively biased relative to backtest on high-chip days."
+            ),
         },
     }
     return report, out_frame
@@ -402,6 +625,11 @@ def main() -> None:
     parser.add_argument("--ma-gap-min", type=float, default=NCF_LB_MA_GAP_MIN)
     parser.add_argument("--h20-max", type=float, default=NCF_LB_H20_MAX)
     parser.add_argument("--conf-min", type=float, default=NCF_LB_CONF_MIN)
+    parser.add_argument("--h5-reentry-min", type=float, default=0.0)
+    parser.add_argument("--gain-prob-soft-min", type=float, default=None)
+    parser.add_argument("--soft-hedge-intensity", type=float, default=0.5)
+    parser.add_argument("--rally-suppress-min", type=float, default=None,
+                        help="suppress hedge when prob_fwd_gain_gt5_h20 >= threshold (rally too likely)")
     parser.add_argument("--output", default="results/group_a_plus_runner_a2118.json")
     parser.add_argument("--frame-output", default="results/group_a_plus_runner_a2118_frame.csv")
     args = parser.parse_args()
@@ -421,6 +649,10 @@ def main() -> None:
             ma_gap_min=args.ma_gap_min,
             h20_max=args.h20_max,
             conf_min=args.conf_min,
+            h5_reentry_min=args.h5_reentry_min,
+            gain_prob_soft_min=args.gain_prob_soft_min,
+            soft_hedge_intensity=args.soft_hedge_intensity,
+            rally_suppress_min=args.rally_suppress_min,
         )
         Path(args.frame_output).parent.mkdir(parents=True, exist_ok=True)
         frame.to_csv(args.frame_output, encoding="utf-8-sig")
