@@ -1,0 +1,249 @@
+{
+  "date": "2026-06-30",
+  "mode": "template",
+  "headline": "NCF H=20 機率 0.344，低於閾值但信心不足以觸發",
+  "market_pulse": "台灣股市中期展望偏空，NCF H=20 機率 0.344 低於 0.35 觸發閾值，中期上行動能受壓。H=5 機率 0.447（略偏空），本週走勢偏空。",
+  "signal_interpretation": {
+    "h1_note": "隔日機率 0.7130（強烈看多），明日偏多。",
+    "h5_note": "5 日機率 0.4469（略偏空），本週整體偏空。",
+    "h20_note": "20 日機率 0.3438 低於觸發閾值 0.35，且信心值 0.3586 > 0.55，去槓桿條件部分滿足。",
+    "deleverage_status": "INACTIVE"
+  },
+  "risk_alerts": [
+    "H=20 機率 0.344 低於觸發閾值 0.35，中期偏空壓力持續",
+    "H=5 機率 0.447，短期下行動能仍在",
+    "信心值 0.359 偏低，信號可靠性下降，請保守看待"
+  ],
+  "positive_catalysts": [
+    "H=20 機率接近 0.35 附近，若回升至 0.40 以上可考慮解除去槓桿",
+    "H=1 機率 0.713 接近中性，短線可能有技術性反彈",
+    "整體 Regime 仍維持 BULL，大趨勢尚未反轉"
+  ],
+  "action_today": "H=20 機率 0.344 接近觸發閾值 0.35，去槓桿尚未觸發，維持現有配置但密切監控。若下一個交易日 h20 跌破 0.35 且信心 > 0.55，則觸發去槓桿。",
+  "watch_levels": {
+    "ncf_h20_reentry": "h20 ≥ 0.40（目前 0.344）→ 可考慮解除去槓桿，恢復 00631L 標準配置",
+    "ncf_conf_floor": "信心值跌破 0.50（目前 0.359）→ 信號可靠性下降，去槓桿決策參考性降低"
+  },
+  "_ncf_snapshot": {
+    "ticker": "00631L.TW",
+    "last_close_date": "2026-06-30",
+    "last_close": 38.42,
+    "regime": "BULL",
+    "h1_prob_up": 0.713,
+    "h5_prob_up": 0.4469,
+    "h20_prob_up": 0.3438,
+    "calibrated_prob_up": 0.4887,
+    "confidence": 0.3586
+  },
+  "_ncf_source": "ncf_00631l_latest_20260630.json",
+  "watchlist_news": {
+    "schema_version": 1,
+    "generated_at": "2026-06-30T15:40:22Z",
+    "signal_date": "2026-06-30",
+    "lookback_days": 7,
+    "source": "local_ltn_jsonl",
+    "config": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/config/group_a_plus_watchlist.json",
+    "news_glob": "news/ltn_mainstream_*.jsonl",
+    "watchlist": [
+      {
+        "symbol": "0050.TW",
+        "label": "元大台灣50",
+        "matched_count": 2
+      },
+      {
+        "symbol": "00631L.TW",
+        "label": "元大台灣50正2",
+        "matched_count": 2
+      },
+      {
+        "symbol": "00632R.TW",
+        "label": "元大台灣50反1",
+        "matched_count": 2
+      },
+      {
+        "symbol": "00679B.TWO",
+        "label": "元大美債20年",
+        "matched_count": 2
+      }
+    ],
+    "fallback_used": false,
+    "article_count": 8,
+    "articles": [
+      {
+        "date": "2026-06-29",
+        "source": "自由時報",
+        "title": "黑色星期五！台股跳空重挫、 新台幣盤中下探至31.889元",
+        "url": "https://ec.ltn.com.tw/article/breakingnews/5484833",
+        "category": "財經",
+        "snippet": "儘管美5月通膨數據符合預期，但蘋果漲價、荷姆茲海峽有貨輪遭擊，國際油價再度攀升，在美股走勢震盪下，台股一早開盤跳空開低，新台幣兌美元匯率亦同步走貶，盤中最低下探至31.889元、即將回測31.9元價位。中午暫時收在31.887元、貶值5.2分，台北外匯經紀公司成交量11億美元。",
+        "matched_keywords": [
+          "台股"
+        ],
+        "match_scope": "0050.TW"
+      },
+      {
+        "date": "2026-06-29",
+        "source": "自由時報",
+        "title": "飆股幕後》投信季底作帳 景碩連拉2根漲停",
+        "url": "https://ec.ltn.com.tw/article/paper/1760457",
+        "category": "財經",
+        "snippet": "受惠AI伺服器需求大增，ABF載板產業今年營運大翻身，獲利三級跳，ABF載板已成為賣方市場，相關個股更成為法人追捧標的；景碩（3189）本週獲得投信大買10064張，在台股回檔修正之際，成為投信季底作帳拉抬標的，昨日一度連兩天拉出漲停，逆勢創下掛牌天價，近3個月漲幅達126.74%。",
+        "matched_keywords": [
+          "台股",
+          "AI"
+        ],
+        "match_scope": "00631L.TW"
+      },
+      {
+        "date": "2026-06-29",
+        "source": "自由時報",
+        "title": "＜財經週報-美伊終戰＞美伊停火難解通膨後座力！全球央行集體「鷹」姿再現",
+        "url": "https://ec.ltn.com.tw/article/breakingnews/5487184",
+        "category": "財經",
+        "snippet": "儘管在瑞士進行談判的美國和伊朗已同意在60天內達成結束戰爭的最終協議，並確保荷姆茲海峽暢通，導致國際油價下跌；但在伊朗戰爭期間各國飆升的通膨，預期短期內難以迅速下降，促使全球多個主要央行近日紛紛調高利率或釋出未來會升息的「鷹派」訊息，恐加劇全球股市的波動。",
+        "matched_keywords": [
+          "下跌"
+        ],
+        "match_scope": "00632R.TW"
+      },
+      {
+        "date": "2026-06-29",
+        "source": "自由時報",
+        "title": "長榮航7月8日除息 每股配發2元現金股利、殖利率近4.66％",
+        "url": "https://ec.ltn.com.tw/article/breakingnews/5481973",
+        "category": "財經",
+        "snippet": "長榮航空（2618）近日發布重大訊息，宣布將於7月8日進行除息作業，每股配發現金股利新台幣2元。以長榮航週二（23日）收盤價42.95計算，每股配發2元現金股利，股息殖利率約為4.66%，對投資人具一定吸引力。根據公告時程，7月8日為除息交易日，7月9日為最後過戶日，7月10日至7月14日期間停止股",
+        "matched_keywords": [
+          "殖利率"
+        ],
+        "match_scope": "00679B.TWO"
+      },
+      {
+        "date": "2026-06-29",
+        "source": "自由時報",
+        "title": "高力下半年營運勝上半年 橋科新廠最快明年投產",
+        "url": "https://ec.ltn.com.tw/article/breakingnews/5481031",
+        "category": "財經",
+        "snippet": "受惠AI客戶需求盛，熱處理公司高力（8996）在高雄橋頭科學園區擴建橋科新廠，今日舉行動土典禮。董事長吳誌雄表示，對未來非常樂觀，橋科新廠將分為一期、二期逐步拓展，一期將於明年（2027）部分完成、2028年全部完工，二期也已經在評估，與南科管理局討論是否有合適土地。",
+        "matched_keywords": [
+          "AI"
+        ],
+        "match_scope": "0050.TW"
+      },
+      {
+        "date": "2026-06-29",
+        "source": "自由時報",
+        "title": "韓媒指「台灣人其實很窮」？ 網路掀兩派論戰",
+        "url": "https://news.ltn.com.tw/news/world/breakingnews/5486219",
+        "category": "國際",
+        "snippet": "隨著AI產業發展，台股不斷寫下歷史。但一般人是否也同步感受到經濟成長，時常引發熱議。有網友在社群發文說，韓媒近期一系列報導指稱台灣人「其實很窮」，文章一出引發兩派討論。原PO日前在「Dcard」發文說，韓媒最近進行一篇系列報導，標題為「富裕的台灣 貧困的台灣人」，報導稱台灣GDP成長超過9％，創下4",
+        "matched_keywords": [
+          "台股",
+          "AI"
+        ],
+        "match_scope": "00631L.TW"
+      },
+      {
+        "date": "2026-06-29",
+        "source": "自由時報",
+        "title": "近1年台股ETF前十強超狂 報酬率贏過大盤逾6成",
+        "url": "https://ec.ltn.com.tw/article/breakingnews/5480177",
+        "category": "財經",
+        "snippet": "台股站穩4萬7千！今天（22日）收盤大漲1276點收在47741點，寫下史上最高收盤紀錄。根據統計，近一年來加權指數大漲107%，台股ETF前十強更狂，報酬率大勝大盤在6成至1倍左右。台股多頭續航，AI股飆漲，加上中東停火，美伊將於19日將簽署、結束中東戰爭的諒解備忘錄（MOU），其中，6/18端午",
+        "matched_keywords": [
+          "台股",
+          "加權"
+        ],
+        "match_scope": "00632R.TW"
+      },
+      {
+        "date": "2026-06-29",
+        "source": "自由時報",
+        "title": "聯準會鷹聲再起！新台幣連3黑收31.631元",
+        "url": "https://ec.ltn.com.tw/article/breakingnews/5480344",
+        "category": "財經",
+        "snippet": "儘管台股在AI題材持續發酵帶動下強勢上攻，大盤指數一舉站上47000點、再創歷史新高，外資也大舉回補台股，但受到美國聯準會釋出偏鷹訊號、美元指數重返100之上影響，主要亞幣普遍承壓，其中，日圓再度破底，新台幣兌美元匯率收在31.631元、貶值4.3分，匯價連3黑，總成交量20.21億美元。",
+        "matched_keywords": [
+          "聯準會"
+        ],
+        "match_scope": "00679B.TWO"
+      }
+    ]
+  },
+  "signal_alignment": {
+    "schema_version": 1,
+    "generated_at": "2026-06-30T15:40:22Z",
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "signal_date": "2026-06-30",
+    "alignment": "wide_divergence",
+    "dominant_direction": "bearish",
+    "direction_counts": {
+      "bullish": 2,
+      "bearish": 4,
+      "neutral": 1
+    },
+    "weighted_share": {
+      "bullish": 0.2976,
+      "bearish": 0.6565,
+      "neutral": 0.0458
+    },
+    "available_sources": 7,
+    "total_sources": 7,
+    "divergent_sources": [
+      "factor_lens",
+      "execution_regime"
+    ],
+    "confidence_penalty": 0.25,
+    "sources": [
+      {
+        "name": "ncf_00631l",
+        "available": true,
+        "direction": "bearish",
+        "strength": 0.3021,
+        "reason": "00631L calibrated_prob_up=0.4481, direction=DOWN"
+      },
+      {
+        "name": "ncf_00632r_inverse",
+        "available": true,
+        "direction": "bearish",
+        "strength": 0.3102,
+        "reason": "00632R calibrated_prob_up=0.6551, inverse_direction=bearish"
+      },
+      {
+        "name": "ncf_cross_ticker",
+        "available": true,
+        "direction": "bearish",
+        "strength": 0.3731,
+        "reason": "market_probability_up=0.3718, agreement=0.7462"
+      },
+      {
+        "name": "finbert_sentiment",
+        "available": true,
+        "direction": "neutral",
+        "strength": 0.1386,
+        "reason": "finbert_risk_score=0.5193, status=ok"
+      },
+      {
+        "name": "composite_risk_score",
+        "available": true,
+        "direction": "bearish",
+        "strength": 1.0,
+        "reason": "total_risk_score=10, chip=9, derivative=1"
+      },
+      {
+        "name": "factor_lens",
+        "available": true,
+        "direction": "bullish",
+        "strength": 0.55,
+        "reason": "all_key_factors_pass=True, ic_20d_warnings=0"
+      },
+      {
+        "name": "execution_regime",
+        "available": true,
+        "direction": "bullish",
+        "strength": 0.35,
+        "reason": "execution_regime=golden1"
+      }
+    ]
+  }
+}

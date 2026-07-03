@@ -9,6 +9,12 @@ build/
 .venv*/
 venv/
 *.parquet
+*.db
+*.duckdb
+*.xlsx
+*.xls
+*.csv
+*.log
 .DS_Store
 
 
@@ -16,12 +22,20 @@ venv/
 /models/
 /results/
 /log/
+/logs/
+/news/
 /catboost_info/
 FinRL/models/
 FinRL/results/
+FinRL/log/
+FinRL/logs/
 FinRL/.venv-backtest/
 FinRL/FinRL/
 FinRL/test_integration.py
 FinRL/optimize_0050.py
-data/
-ope
+/data/cache/
+/data/news/
+/data/portfolio_cache/
+/data/raw/
+/data/taifex/
+FinRL/data/stock_data.db

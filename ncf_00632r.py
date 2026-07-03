@@ -14,6 +14,7 @@ NCF_00632R — Next Close Forecast for 00632R（元大台灣50反1）
 
 import argparse
 import json
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -66,10 +67,22 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from FinRL.data.stock_db import DB_PATH
+from group_a_plus.integrations.tbrain_features import add_tbrain_features, tbrain_feature_columns
+from group_a_plus.integrations.fourier_features import add_fourier_features, fourier_feature_columns
+from group_a_plus.integrations.global_features import (
+    add_global_features,
+    global_feature_columns,
+    global_interaction_feature_columns,
+)
+from ncf_data_quality import ncf_data_freshness
 from ncf_external_cache import fetch_yf_close_cached
 
 TICKER = "00632R.TW"
 DEFAULT_OUTPUT = PROJECT_ROOT / "results" / f"ncf_00632r_{datetime.now().strftime('%Y%m%d')}.json"
+TBRAIN_FEATURES = tbrain_feature_columns()
+FOURIER_FEATURES = fourier_feature_columns()
+GLOBAL_FEATURES = global_feature_columns()
+GLOBAL_INTERACTION_FEATURES = global_interaction_feature_columns()
 
 # Scale-invariant features（與 ncf_00631l 相同：從 00632R 自身 OHLCV 計算）
 FEATURES = [
@@ -126,6 +139,8 @@ FEATURES = [
     "consecutive_up_days",
     "consecutive_down_days",
 ]
+FEATURES += TBRAIN_FEATURES
+FEATURES += FOURIER_FEATURES
 
 # 外部特徵 — 與 ncf_00631l 相同，另外加入：
 #   eti0050_ma200_regime：0050 是否在其自身 MA200 之上（T shift=0）
@@ -169,6 +184,8 @@ EXT_FEATURES = [
     "txo_total_pcr",
     "txo_foreign_pc_spread_ma5",
 ]
+# Global correlated assets — opt-out via --no-global-features (default: enabled)
+EXT_FEATURES += GLOBAL_FEATURES + GLOBAL_INTERACTION_FEATURES
 
 INTERACTION_FEATURES = [
     # Internal regime interactions
@@ -202,9 +219,10 @@ INTERACTION_FEATURES = [
 
 
 def _fetch_yf(ticker: str, start: str, end: str) -> pd.Series:
-    """Read Close series from DB cache; download and version missing yfinance rows."""
+    """Read Close series from DB cache; optionally download when explicitly enabled."""
     try:
-        return fetch_yf_close_cached(ticker, start, end, DB_PATH)
+        allow_download = os.environ.get("NCF_EXTERNAL_ALLOW_DOWNLOAD", "").lower() in {"1", "true", "yes"}
+        return fetch_yf_close_cached(ticker, start, end, DB_PATH, allow_download=allow_download)
     except Exception:
         return pd.Series(dtype=float, name=ticker)
 
@@ -501,7 +519,8 @@ def _build_features(df: pd.DataFrame) -> pd.DataFrame:
     df["lower_shadow_pct"] = lower_shadow / full_range.clip(lower=1e-10)
     df["body_pct"] = body / full_range.clip(lower=1e-10)
 
-    return df
+    df = add_fourier_features(df)
+    return add_tbrain_features(df)
 
 
 def _add_interaction_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -1206,6 +1225,8 @@ def train_classifier(
         sel_features = list(X_train.columns)
 
     X_train_sel, X_val_sel = X_train, X_val
+    X_train_sel = X_train_sel.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    X_val_sel = X_val_sel.replace([np.inf, -np.inf], np.nan).fillna(0.0)
     y_train_arr, y_val_arr = np.asarray(y_train), np.asarray(y_val)
 
     base_defs = {
@@ -1238,10 +1259,57 @@ def train_classifier(
 
     BASE_NAMES = list(base_defs.keys())
 
+    class _ConstantClassifier:
+        def __init__(self, prob_up: float):
+            self._prob_up = float(np.clip(prob_up, 0.0, 1.0))
+
+        def predict_proba(self, X):
+            p = np.full(len(X), self._prob_up, dtype=float)
+            return np.column_stack([1.0 - p, p])
+
+        def predict(self, X):
+            return (self.predict_proba(X)[:, 1] >= 0.5).astype(int)
+
+    if len(np.unique(y_train_arr)) < 2 or len(np.unique(y_val_arr)) < 2:
+        prob_up = float(np.mean(y_train_arr)) if len(y_train_arr) else 0.5
+        model = _ConstantClassifier(prob_up)
+        v_proba = model.predict_proba(X_val_sel)[:, 1]
+        v_pred = (v_proba >= 0.5).astype(int)
+        auc = 0.5
+        brier = brier_score_loss(y_val_arr, v_proba) if len(y_val_arr) else float("nan")
+        acc = accuracy_score(y_val_arr, v_pred) if len(y_val_arr) else float("nan")
+        results["constant"] = {
+            "model": model,
+            "accuracy": acc,
+            "proba": v_proba,
+            "proba_raw": v_proba,
+            "predictions": v_pred,
+            "auc": auc,
+            "auc_raw": auc,
+            "brier": brier,
+            "brier_raw": brier,
+            "calib_applied": False,
+            "features": sel_features,
+            "auc_defined": False,
+        }
+        results["ensemble"] = {
+            "accuracy": acc,
+            "proba": v_proba,
+            "predictions": v_pred,
+            "auc": auc,
+            "brier": brier,
+            "features": sel_features,
+            "weights": {"constant": 1.0},
+            "auc_defined": False,
+        }
+        results["_models"] = {"constant": model}
+        return results
+
     n_tr = len(X_train_sel)
     n_calib = max(30, int(n_tr * calib_frac))
     n_fit = n_tr - n_calib
     MIN_CALIB = 60
+    CALIB_MAX_AUC_DROP = 0.03  # max acceptable AUC loss from isotonic calibration
     use_calibration = n_fit >= 50 and n_calib >= MIN_CALIB
 
     if use_calibration:
@@ -1295,6 +1363,9 @@ def train_classifier(
             iso = IsotonicRegression(out_of_bounds="clip")
             iso.fit(raw_cal, y_calib)
             iso_val_proba = np.clip(iso.predict(m_fit.predict_proba(X_val_sel)[:, 1]), 0.0, 1.0)
+            brier_iso = brier_score_loss(y_val_arr, iso_val_proba)
+            brier_raw = brier_score_loss(y_val_arr, v_proba_raw)
+            auc_iso   = roc_auc_score(y_val_arr, iso_val_proba)
 
             iso_late_bull = None
             if _use_late_bull and late_bull_calib_mask.sum() >= 30:
@@ -1305,7 +1376,11 @@ def train_classifier(
                     iso_lb.fit(lb_raw, lb_y)
                     iso_late_bull = iso_lb
 
-            if roc_auc_score(y_val_arr, iso_val_proba) > auc_raw:
+            # Accept only if Brier genuinely improves AND held-out AUC doesn't
+            # degrade materially. Isotonic's step function creates ties on
+            # unseen data, which can quietly erode ranking power even while
+            # Brier improves -- a Brier-only gate was too permissive.
+            if brier_iso < brier_raw and auc_iso >= auc_raw - CALIB_MAX_AUC_DROP:
                 cal_m = _IsotonicModel(
                     m_fit, iso,
                     iso_late_bull=iso_late_bull,
@@ -1326,10 +1401,21 @@ def train_classifier(
             "calib_applied": calib_applied, "features": sel_features,
         }
 
-    raw_w = {name: max(0.0, results[name]["auc"] - 0.5) for name in BASE_NAMES}
+    # w_i ∝ max(0, AUC_i - 0.5) * max(0, naive_brier - Brier_i). AUC alone
+    # rewards ranking skill but ignores calibration quality; naive_brier is
+    # the Brier of always predicting the validation-set base rate.
+    p_base      = float(np.mean(y_val_arr))
+    naive_brier = p_base * (1.0 - p_base)
+    auc_w   = {name: max(0.0, results[name]["auc"] - 0.5) for name in BASE_NAMES}
+    brier_w = {name: max(0.0, naive_brier - results[name]["brier"]) for name in BASE_NAMES}
+    raw_w   = {name: auc_w[name] * brier_w[name] for name in BASE_NAMES}
     total_w = sum(raw_w.values())
-    W = ({name: raw_w[name] / total_w for name in BASE_NAMES}
-         if total_w > 0 else {name: 1.0 / len(BASE_NAMES) for name in BASE_NAMES})
+    if total_w > 0:
+        W = {name: raw_w[name] / total_w for name in BASE_NAMES}
+    else:
+        total_auc_w = sum(auc_w.values())
+        W = ({name: auc_w[name] / total_auc_w for name in BASE_NAMES}
+             if total_auc_w > 0 else {name: 1.0 / len(BASE_NAMES) for name in BASE_NAMES})
 
     ens_proba = sum(W[name] * results[name]["proba"] for name in BASE_NAMES)
     ens_pred  = (ens_proba >= 0.5).astype(int)
@@ -1392,7 +1478,10 @@ def train_classifier(
                 iso_stb = IsotonicRegression(out_of_bounds="clip")
                 iso_stb.fit(raw_cal_stb, y_calib)
                 iso_stb_proba = np.clip(iso_stb.predict(stb_fit.predict_proba(X_val_stb)[:, 1]), 0.0, 1.0)
-                if roc_auc_score(y_val_arr, iso_stb_proba) > roc_auc_score(y_val_arr, stb_proba_raw):
+                stb_auc_raw  = roc_auc_score(y_val_arr, stb_proba_raw)
+                stb_auc_iso  = roc_auc_score(y_val_arr, iso_stb_proba)
+                if (brier_score_loss(y_val_arr, iso_stb_proba) < brier_score_loss(y_val_arr, stb_proba_raw)
+                        and stb_auc_iso >= stb_auc_raw - CALIB_MAX_AUC_DROP):
                     stb_cal_m = _IsotonicModel(stb_fit, iso_stb)
                     stb_proba = iso_stb_proba
                     stb_calib_applied = True
@@ -1409,10 +1498,16 @@ def train_classifier(
             }
             ALL_NAMES = BASE_NAMES + ["stable_rf"]
 
-            raw_w2 = {name: max(0.0, results[name]["auc"] - 0.5) for name in ALL_NAMES}
+            auc_w2   = {name: max(0.0, results[name]["auc"] - 0.5) for name in ALL_NAMES}
+            brier_w2 = {name: max(0.0, naive_brier - results[name]["brier"]) for name in ALL_NAMES}
+            raw_w2   = {name: auc_w2[name] * brier_w2[name] for name in ALL_NAMES}
             total_w2 = sum(raw_w2.values())
-            W2 = ({name: raw_w2[name] / total_w2 for name in ALL_NAMES}
-                  if total_w2 > 0 else {name: 1.0 / len(ALL_NAMES) for name in ALL_NAMES})
+            if total_w2 > 0:
+                W2 = {name: raw_w2[name] / total_w2 for name in ALL_NAMES}
+            else:
+                total_auc_w2 = sum(auc_w2.values())
+                W2 = ({name: auc_w2[name] / total_auc_w2 for name in ALL_NAMES}
+                      if total_auc_w2 > 0 else {name: 1.0 / len(ALL_NAMES) for name in ALL_NAMES})
             ens_proba2 = sum(W2[name] * results[name]["proba"] for name in ALL_NAMES)
             ens_pred2  = (ens_proba2 >= 0.5).astype(int)
             results["ensemble"] = {
@@ -1433,6 +1528,77 @@ def train_classifier(
     return results
 
 
+def _build_expanding_horizon_ensemble_panel(
+    probs_by_horizon: dict[int, pd.Series],
+    labels_by_horizon: dict[int, pd.Series] | None = None,
+    *,
+    min_history: int = 60,
+) -> pd.DataFrame:
+    """Build horizon ensemble rows using only labels before each row."""
+    horizons = sorted(probs_by_horizon)
+    if not horizons:
+        return pd.DataFrame()
+
+    common_idx = probs_by_horizon[horizons[0]].index
+    for horizon in horizons[1:]:
+        common_idx = common_idx.intersection(probs_by_horizon[horizon].index)
+    common_idx = common_idx.sort_values()
+
+    prob_df = pd.DataFrame(
+        {f"prob_up_h{horizon}": probs_by_horizon[horizon].reindex(common_idx) for horizon in horizons},
+        index=common_idx,
+    )
+    if labels_by_horizon:
+        label_df = pd.DataFrame(
+            {
+                horizon: labels_by_horizon[horizon].reindex(common_idx)
+                for horizon in horizons
+                if horizon in labels_by_horizon and labels_by_horizon[horizon] is not None
+            },
+            index=common_idx,
+        )
+    else:
+        label_df = pd.DataFrame(index=common_idx)
+
+    equal_weights = {horizon: 1.0 / len(horizons) for horizon in horizons}
+    weight_rows: list[dict[int, float]] = []
+    ensemble_values: list[float] = []
+
+    for pos, idx in enumerate(common_idx):
+        raw_weights: dict[int, float] = {}
+        for horizon in horizons:
+            if horizon not in label_df:
+                continue
+            hist_labels = label_df[horizon].iloc[:pos]
+            hist_probs = prob_df[f"prob_up_h{horizon}"].iloc[:pos]
+            valid = hist_labels.notna() & hist_probs.notna()
+            if int(valid.sum()) < min_history or hist_labels[valid].nunique() < 2:
+                continue
+            auc = roc_auc_score(hist_labels[valid].astype(int), hist_probs[valid])
+            raw_weights[horizon] = max(0.0, float(auc) - 0.5)
+
+        total_weight = sum(raw_weights.values())
+        if total_weight > 0:
+            weights = {horizon: raw_weights.get(horizon, 0.0) / total_weight for horizon in horizons}
+        else:
+            weights = equal_weights
+
+        row_probs = prob_df.loc[idx]
+        ensemble_values.append(
+            float(sum(weights[horizon] * row_probs[f"prob_up_h{horizon}"] for horizon in horizons))
+        )
+        weight_rows.append(weights)
+
+    panel_df = prob_df.copy()
+    panel_df["ensemble_prob_up"] = ensemble_values
+    panel_df["direction"] = panel_df["ensemble_prob_up"].apply(lambda p: "UP" if p > 0.5 else "DOWN")
+    panel_df["prob_magnitude"] = (panel_df["ensemble_prob_up"] - 0.5).abs() * 2
+    for horizon in horizons:
+        panel_df[f"ensemble_weight_h{horizon}"] = [weights[horizon] for weights in weight_rows]
+    panel_df["horizon_ensemble_method"] = f"expanding_prior_auc_min{min_history}"
+    return panel_df
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", default=str(DB_PATH))
@@ -1449,14 +1615,27 @@ def main() -> None:
     parser.add_argument("--labeling", choices=["auto", "simple", "triple_barrier"], default="auto")
     parser.add_argument("--tbl-mult", type=float, default=1.0)
     parser.add_argument("--no-external-features", action="store_true")
+    parser.add_argument("--no-tbrain-features", action="store_true")
+    parser.add_argument("--no-fourier-features", action="store_true",
+                        help="Disable Fourier trend-decomposition features")
+    parser.add_argument("--no-global-features", action="store_true",
+                        help="Disable global correlated asset features (N225/HSI/USDJPY/KOSPI)")
     parser.add_argument("--feature-stability", action="store_true")
     parser.add_argument("--feature-stability-k", type=int, default=5)
+    parser.add_argument("--calib-frac", type=float, default=0.20,
+                        help="Fraction of training data held out for calibration (default 0.20)")
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     parser.add_argument(
         "--val-predictions-output", default=None,
         help="If set, save per-day val prediction panel as CSV (enables A21.13 historical backtest)",
     )
     args = parser.parse_args()
+    if args.no_tbrain_features:
+        FEATURES[:] = [feature for feature in FEATURES if feature not in set(TBRAIN_FEATURES)]
+    if args.no_fourier_features:
+        FEATURES[:] = [feature for feature in FEATURES if feature not in set(FOURIER_FEATURES)]
+    if args.no_global_features:
+        EXT_FEATURES[:] = [f for f in EXT_FEATURES if f not in set(GLOBAL_FEATURES + GLOBAL_INTERACTION_FEATURES)]
 
     db_path = Path(args.db)
     val_end = resolve_end_date(db_path, args.ticker, args.val_end)
@@ -1490,6 +1669,12 @@ def main() -> None:
                 lag = (last_date_raw.date() - max_dt).days
                 if lag > 3:
                     print(f"  ⚠️  {name}: DB 最後日 {max_dt}，落後 {lag} 天（已填 0）")
+        if not args.no_global_features and ext_df is not None:
+            print(f"  [GlobalFeat] Fetching N225/HSI/USDJPY/KOSPI...")
+            _idx = raw.index
+            _start_ext = ((_idx[0] - pd.Timedelta(days=90)).strftime("%Y-%m-%d"))
+            _end_ext = ((_idx[-1] + pd.Timedelta(days=2)).strftime("%Y-%m-%d"))
+            add_global_features(ext_df, _idx, _fetch_yf, _start_ext, _end_ext)
 
     HORIZONS = [1, 5, 20]
     val_panels: dict = {}  # per-horizon val prediction panels (used if --val-predictions-output)
@@ -1571,15 +1756,28 @@ def main() -> None:
 
         above_ma200_train = X_train_sel["above_ma200"] >= 0.5
         above_ma200_val   = X_val_sel["above_ma200"] >= 0.5
-        n_bull = above_ma200_val.sum()
-        n_bear = (~above_ma200_val).sum()
+        n_bull = int(above_ma200_val.sum())
+        n_bear = int((~above_ma200_val).sum())
+        n_bull_train = int(above_ma200_train.sum())
+        n_bear_train = int((~above_ma200_train).sum())
 
-        reg_bull = train_regressor(X_train_sel[above_ma200_train], y_train_ret[above_ma200_train],
-                                   X_val_sel[above_ma200_val], y_val_ret[above_ma200_val],
-                                   do_feature_selection=do_fs)
-        reg_bear = train_regressor(X_train_sel[~above_ma200_train], y_train_ret[~above_ma200_train],
-                                   X_val_sel[~above_ma200_val], y_val_ret[~above_ma200_val],
-                                   do_feature_selection=do_fs)
+        reg_bull = None
+        reg_bear = None
+        if n_bull > 0 and n_bull_train >= 20:
+            reg_bull = train_regressor(X_train_sel[above_ma200_train], y_train_ret[above_ma200_train],
+                                       X_val_sel[above_ma200_val], y_val_ret[above_ma200_val],
+                                       do_feature_selection=do_fs)
+        if n_bear > 0 and n_bear_train >= 20:
+            reg_bear = train_regressor(X_train_sel[~above_ma200_train], y_train_ret[~above_ma200_train],
+                                       X_val_sel[~above_ma200_val], y_val_ret[~above_ma200_val],
+                                       do_feature_selection=do_fs)
+        if reg_bull is None and reg_bear is None:
+            reg_bull = reg_all
+            reg_bear = reg_all
+        elif reg_bull is None:
+            reg_bull = reg_bear
+        elif reg_bear is None:
+            reg_bear = reg_bull
 
         print(f"\n  --- Regime Regression ---")
         for regime, reg, n in [("Bull", reg_bull, n_bull), ("Bear", reg_bear, n_bear)]:
@@ -1588,20 +1786,37 @@ def main() -> None:
 
         X_train_clf_sel       = X_train_sel[clf_train_mask]
         above_ma200_train_clf = X_train_clf_sel["above_ma200"] >= 0.5
+        n_bull_train_clf = int(above_ma200_train_clf.sum())
+        n_bear_train_clf = int((~above_ma200_train_clf).sum())
 
         stable_feats = None
         if h == 20:
             stable_feats = identify_stable_features(X_train_clf_sel, y_train_dir_clf, n_folds=3, top_k=20, min_folds=3)
             print(f"  Stable features ({len(stable_feats)}): {stable_feats[:8]}...")
 
-        clf_bull = train_classifier(X_train_clf_sel[above_ma200_train_clf],
-                                    y_train_dir_clf[above_ma200_train_clf],
-                                    X_val_sel[above_ma200_val], y_val_dir[above_ma200_val],
-                                    do_feature_selection=do_fs, stable_features=stable_feats)
-        clf_bear = train_classifier(X_train_clf_sel[~above_ma200_train_clf],
-                                    y_train_dir_clf[~above_ma200_train_clf],
-                                    X_val_sel[~above_ma200_val], y_val_dir[~above_ma200_val],
-                                    do_feature_selection=do_fs, stable_features=stable_feats)
+        clf_bull = None
+        clf_bear = None
+        if n_bull > 0 and n_bull_train_clf >= 20:
+            clf_bull = train_classifier(X_train_clf_sel[above_ma200_train_clf],
+                                        y_train_dir_clf[above_ma200_train_clf],
+                                        X_val_sel[above_ma200_val], y_val_dir[above_ma200_val],
+                                        do_feature_selection=do_fs, stable_features=stable_feats,
+                                        calib_frac=args.calib_frac)
+        if n_bear > 0 and n_bear_train_clf >= 20:
+            clf_bear = train_classifier(X_train_clf_sel[~above_ma200_train_clf],
+                                        y_train_dir_clf[~above_ma200_train_clf],
+                                        X_val_sel[~above_ma200_val], y_val_dir[~above_ma200_val],
+                                        do_feature_selection=do_fs, stable_features=stable_feats,
+                                        calib_frac=args.calib_frac)
+        if clf_bull is None and clf_bear is None:
+            clf_bull = train_classifier(X_train_clf_sel, y_train_dir_clf, X_val_sel, y_val_dir,
+                                        do_feature_selection=do_fs, stable_features=stable_feats,
+                                        calib_frac=args.calib_frac)
+            clf_bear = clf_bull
+        elif clf_bull is None:
+            clf_bull = clf_bear
+        elif clf_bear is None:
+            clf_bear = clf_bull
 
         print(f"\n  --- Regime Classification ---")
         for regime, clf, n in [("Bull", clf_bull, n_bull), ("Bear", clf_bear, n_bear)]:
@@ -1615,16 +1830,22 @@ def main() -> None:
             import pandas as _pd
             bull_idx = X_val.index[above_ma200_val]
             bear_idx = X_val.index[~above_ma200_val]
-            bull_p = clf_bull["ensemble"]["proba"]
-            bear_p = clf_bear["ensemble"]["proba"]
-            h_series = _pd.concat([
-                _pd.Series(bull_p, index=bull_idx),
-                _pd.Series(bear_p, index=bear_idx),
-            ]).sort_index()
+            h_parts = []
+            if n_bull > 0:
+                h_parts.append(_pd.Series(clf_bull["ensemble"]["proba"], index=bull_idx))
+            if n_bear > 0:
+                h_parts.append(_pd.Series(clf_bear["ensemble"]["proba"], index=bear_idx))
+            h_series = _pd.concat(h_parts).sort_index()
+            h_label_parts = []
+            if n_bull > 0:
+                h_label_parts.append(_pd.Series(np.asarray(y_val_dir[above_ma200_val]), index=bull_idx))
+            if n_bear > 0:
+                h_label_parts.append(_pd.Series(np.asarray(y_val_dir[~above_ma200_val]), index=bear_idx))
+            h_label = _pd.concat(h_label_parts).sort_index()
             # Mean AUC between bull and bear, weighted by count
             n_total = n_bull + n_bear
             h_auc = (clf_bull["ensemble"]["auc"] * n_bull + clf_bear["ensemble"]["auc"] * n_bear) / max(n_total, 1)
-            val_panels[h] = {"proba": h_series, "auc": h_auc}
+            val_panels[h] = {"proba": h_series, "label": h_label, "auc": h_auc}
 
         last_row   = X.iloc[-1:]
         last_close = float(raw["close"].iloc[-1])
@@ -1662,8 +1883,11 @@ def main() -> None:
         else:
             direction = "NEUTRAL"
 
-        sigma_ret = np.std(y_val_ret[above_ma200_val if is_bull else ~above_ma200_val].values
-                           - reg_sel["ensemble"]["predictions"])
+        sigma_mask = above_ma200_val if is_bull else ~above_ma200_val
+        if sigma_mask.sum() == 0:
+            sigma_ret = float(np.std(y_val_ret.values - reg_all["ensemble"]["predictions"]))
+        else:
+            sigma_ret = float(np.std(y_val_ret[sigma_mask].values - reg_sel["ensemble"]["predictions"]))
 
         proba_str  = "  ".join(f"{nm.upper()}={p:.3f}" for nm, p in model_probas.items())
         weight_str = "  ".join(f"{nm.upper()}={W_inf[nm]:.2f}" for nm in W_inf)
@@ -1736,21 +1960,11 @@ def main() -> None:
     if args.val_predictions_output and val_panels:
         import pandas as _pd, numpy as _np
         avail_h = sorted(val_panels.keys())
-        common_idx = val_panels[avail_h[0]]["proba"].index
-        for _h in avail_h[1:]:
-            common_idx = common_idx.intersection(val_panels[_h]["proba"].index)
-        # AUC-weighted ensemble across horizons (same as horizon_ensemble logic)
-        raw_w = {_h: max(0.0, val_panels[_h]["auc"] - 0.5) for _h in avail_h}
-        total_w = sum(raw_w.values())
-        w = ({_h: raw_w[_h] / total_w for _h in avail_h}
-             if total_w > 0 else {_h: 1.0 / len(avail_h) for _h in avail_h})
-        ens_proba_panel = sum(w[_h] * val_panels[_h]["proba"].reindex(common_idx) for _h in avail_h)
-        panel_df = _pd.DataFrame({
-            **{f"prob_up_h{_h}": val_panels[_h]["proba"].reindex(common_idx) for _h in avail_h},
-            "ensemble_prob_up": ens_proba_panel,
-            "direction": ens_proba_panel.apply(lambda p: "UP" if p > 0.5 else "DOWN"),
-            "prob_magnitude": (ens_proba_panel - 0.5).abs() * 2,
-        })
+        panel_df = _build_expanding_horizon_ensemble_panel(
+            {_h: val_panels[_h]["proba"] for _h in avail_h},
+            {_h: val_panels[_h]["label"] for _h in avail_h if "label" in val_panels[_h]},
+        )
+        common_idx = panel_df.index
         # h20_only: most reliable single horizon
         if 20 in avail_h:
             panel_df["h20_prob_up"] = val_panels[20]["proba"].reindex(common_idx)
@@ -1951,8 +2165,12 @@ def main() -> None:
         "last_close_date": str(last_date),
         "last_close": round(last_close, 4),
         "current_regime": "BULL" if all_results[1]["is_bull"] else "BEAR",
+        "data_freshness": ncf_data_freshness(db_path, TICKER, str(last_date)),
         "feature_selection": args.feature_selection,
         "external_features": not args.no_external_features,
+        "tbrain_features": not args.no_tbrain_features,
+        "fourier_features": not args.no_fourier_features,
+        "global_features": not args.no_global_features,
         "labeling_mode": args.labeling,
         "labeling_per_horizon": {
             str(h): (("triple_barrier" if h == 5 else "simple") if args.labeling == "auto" else args.labeling)

@@ -1,33 +1,230 @@
 {
   "schema_version": 2,
   "report_type": "group_a_plus_latest_strategy",
-  "activated_at": "2026-06-25",
+  "activated_at": "2026-06-29",
   "active_strategy": {
-    "id": "a2111_tight_entry_bond30c30",
-    "runner": "group_a_plus.runners.a2111",
+    "id": "a2118_a2111_ncf_late_bull_deleverage",
+    "runner": "group_a_plus.runners.a2118",
     "status": "active",
-    "decision_record": "GROUP_A_PLUS_HANDOFF_20260625_IMPROVEMENTS.md",
-    "recent_result": "results/group_a_plus_runner_a2111.json",
-    "long_result": "results/group_a_plus_runner_a2111_long.json",
-    "promoted_from": "a217_tight_entry_mw100",
+    "decision_record": "GROUP_A_PLUS_A2118_HANDOFF_20260628.md",
+    "recent_result": "results/group_a_plus_runner_latest_20260701_refreshed.json",
+    "promoted_from": "a2111_tight_entry_bond30c30",
+    "ncf_version": "v5_tabnet",
+    "runner_params": {
+      "ncf_panel_631l_path": "results/ncf_00631l_panel_latest_20260630.csv",
+      "h20_max": 0.33,
+      "conf_min": 0.55,
+      "h5_reentry_min": 0.55
+    },
     "improvements": {
-      "sharpe_delta_short": 0.113,
-      "sortino_delta_short": 0.216,
-      "mdd_improvement_pct_short": 8.33,
-      "worst_20d_improvement_pct_short": 7.03,
-      "sharpe_delta_long": 0.026,
-      "sortino_delta_long": 0.032,
-      "annual_return_delta_short": -1.43,
-      "basket": "bond30_cash30 (was cash30)",
-      "ma_window": 100,
-      "entry_gap": "0.003 (unchanged)",
-      "rebal_count_short": 4
+      "sharpe_delta": 0.029,
+      "sortino_delta": 0.033,
+      "annual_return_delta": -5.04,
+      "trigger_accuracy": "3/3 (100%)",
+      "trigger_count_short": 3,
+      "h20_threshold": "0.35 (tightened from 0.45 to eliminate May-2026 false positives)",
+      "bug_fix": "h20_prob_up now uses raw H=20 probability (not ensemble calibrated_prob_up)",
+      "ncf_v5_upgrade_20260629": {
+        "ncf_panel": "v5_tabnet (TXO PCR + Cascade + Macro 60d/120d + TabNet ensemble)",
+        "h20_auc_delta": "+0.0227 (0.6809→0.7036)",
+        "h5_auc_delta": "+0.0119 (0.6788→0.6907)",
+        "h20_max_tightened": "0.35→0.33 (param sweep, conf_min=0.55 optimal)",
+        "sharpe_delta_vs_v4": "+0.020 (2.4029→2.4224)",
+        "trigger_count_v5": 2,
+        "sweep_grid": "h20_max=[0.28,0.30,0.33,0.35,0.38] x conf_min=[0.50,0.55,0.60], 15 combos"
+      },
+      "fresh_panel_reconciliation_20260630": {
+        "ncf_panel": "results/ncf_00631l_panel_latest_20260630.csv",
+        "latest_result": "results/group_a_plus_runner_latest_20260630_fixed.json",
+        "live_signal": "report/group_a_plus/latest/live_signal.json",
+        "h20_prob": 0.3883,
+        "h5_prob": 0.4047,
+        "confidence": 0.6042,
+        "hard_hedge_active": false,
+        "execution_regime": "golden1",
+        "live_high_risk_trim": "When total_risk_score>=9 and signal alignment is bearish/wide_divergence, live signal trims current 00631L by an additional 25% into cash."
+      },
+      "reproducibility_guard_20260701": {
+        "latest_result": "results/group_a_plus_runner_latest_20260701_refreshed.json",
+        "reason": "NCF latest panel drift was detected: current panel no longer reproduced the old 20260630_fixed trigger set.",
+        "runner_change": "A21.18 reports now include panel_631l_sha256, modified_at, first_date, and last_date in ncf_panel_coverage.",
+        "panel_631l_sha256": "34391e15f0b0a29f06475c1a6c32f0ca549c935157143a3c65cd53601f61a939",
+        "refreshed_metrics": {
+          "final_value": 2120835.7061,
+          "annual_return": 0.6566,
+          "sharpe_ratio": 2.5111,
+          "sortino_ratio": 2.7603,
+          "max_drawdown": -0.1382,
+          "late_bull_trigger_days": 1,
+          "total_hedge_days": 5
+        },
+        "decision": "Keep A21.18 active, but do not promote A21.20 or LightGBM overlay; refreshed panel improves final value but lowers Sharpe versus the old fixed report."
+      },
+      "external_research_review_20260630": {
+        "stock_prediction_models_master": {
+          "source": "C:\\Users\\isaac\\Downloads\\Stock-Prediction-Models-master\\Stock-Prediction-Models-master",
+          "review": "STOCK_PREDICTION_MODELS_IMPORT_REVIEW_20260630.md",
+          "status": "review_completed",
+          "classification": "external_research_reference",
+          "active_allocation_impact": "none",
+          "decision": "Do not import directly into active Group A+ allocation logic; use only as future shadow-research inspiration after Taiwan ETF walk-forward ablation.",
+          "candidate_ideas": [
+            "sequence_model_shadow_benchmark",
+            "stacking_residual_feature",
+            "monte_carlo_stress_test_report"
+          ],
+          "promoted_reporting_tool": {
+            "name": "monte_carlo_stress_test_report",
+            "script": "scripts/evaluate/evaluate_group_a_plus_monte_carlo_stress.py",
+            "latest_report": "results/group_a_plus_monte_carlo_stress_latest_20260630.json",
+            "status": "reporting_only",
+            "active_allocation_impact": "none",
+            "summary": {
+              "horizon_days": 20,
+              "n_paths": 20000,
+              "path_return_p05": -0.0661,
+              "path_return_p50": 0.0378,
+              "prob_loss": 0.2759,
+              "prob_loss_gt_5pct": 0.0817,
+              "prob_drawdown_gt_10pct": 0.05
+            }
+          },
+          "sequence_shadow_benchmark": {
+            "script": "scripts/evaluate/evaluate_group_a_plus_sequence_shadow.py",
+            "latest_report": "results/group_a_plus_sequence_shadow_latest_20260630.json",
+            "status": "research_only",
+            "active_allocation_impact": "none",
+            "target": "forward_gain_h20 > 0",
+            "feature_rows": 334,
+            "feature_count": 76,
+            "baseline": {
+              "feature": "prob_up_h20",
+              "auc": 0.8694,
+              "brier": 0.2474
+            },
+            "best_shadow_model": {
+              "name": "lagged_hgb",
+              "auc": 0.5731,
+              "brier": 0.0387,
+              "auc_delta_vs_baseline": -0.2963
+            },
+            "decision": "Do not promote sequence-lag model; raw H20 probability remains stronger for directional ranking."
+          }
+        },
+        "stock_rnn_master": {
+          "source": "C:\\Users\\isaac\\Downloads\\stock-rnn-master\\stock-rnn-master",
+          "review": "STOCK_RNN_IMPORT_REVIEW_20260630.md",
+          "status": "step4_sweep_completed",
+          "classification": "external_research_reference",
+          "active_allocation_impact": "none",
+          "imported_idea": "30-day relative-window normalization from stock-rnn, tested as a research-only OHLCV sequence benchmark.",
+          "relative_window_shadow": {
+            "script": "scripts/evaluate/evaluate_stock_rnn_relative_window_shadow.py",
+            "latest_report": "results/stock_rnn_relative_window_shadow_latest_20260630.json",
+            "lookback_days": 30,
+            "feature_set": "close",
+            "feature_rows": 310,
+            "feature_count": 141,
+            "baseline": {
+              "feature": "prob_up_h20",
+              "auc": 0.9004,
+              "brier": 0.2614
+            },
+            "best_shadow_model": {
+              "name": "relative_window_hgb",
+              "auc": 0.5782,
+              "brier": 0.1163,
+              "auc_delta_vs_baseline": -0.3222,
+              "brier_delta_vs_baseline": -0.1451
+            },
+            "decision": "Research-only. Brier improved, but directional AUC underperformed the current raw H20 probability baseline."
+          },
+          "ohlcv_relative_window_shadow": {
+            "script": "scripts/evaluate/evaluate_stock_rnn_relative_window_shadow.py",
+            "latest_report": "results/stock_rnn_ohlcv_relative_window_shadow_latest_20260630.json",
+            "lookback_days": 30,
+            "feature_set": "ohlcv",
+            "feature_rows": 310,
+            "feature_count": 401,
+            "baseline": {
+              "feature": "prob_up_h20",
+              "auc": 0.9004,
+              "brier": 0.2614
+            },
+            "best_shadow_model": {
+              "name": "relative_window_hgb",
+              "auc": 0.591,
+              "brier": 0.0824,
+              "auc_delta_vs_baseline": -0.3094,
+              "brier_delta_vs_baseline": -0.179
+            },
+            "decision": "Research-only. OHLCV improves calibration versus close-only but still underperforms the raw H20 probability baseline for directional ranking."
+          },
+          "ohlcv_combined_shadow": {
+            "script": "scripts/evaluate/evaluate_stock_rnn_relative_window_shadow.py",
+            "latest_report": "results/stock_rnn_ohlcv_combined_shadow_latest_20260630.json",
+            "lookback_days": 30,
+            "feature_set": "ohlcv",
+            "include_baseline_feature": true,
+            "feature_rows": 310,
+            "feature_count": 401,
+            "baseline": {
+              "feature": "prob_up_h20",
+              "auc": 0.9004,
+              "brier": 0.2614
+            },
+            "best_shadow_model": {
+              "name": "relative_window_hgb",
+              "auc": 0.5702,
+              "brier": 0.0812,
+              "auc_delta_vs_baseline": -0.3302,
+              "brier_delta_vs_baseline": -0.1803
+            },
+            "decision": "Research-only. Combining prob_up_h20 with OHLCV relative-window features improves calibration but still loses directional ranking versus raw prob_up_h20."
+          },
+          "fast_parameter_sweep": {
+            "script": "scripts/evaluate/sweep_stock_rnn_relative_window_shadow.py",
+            "latest_report": "results/stock_rnn_relative_window_sweep_fast_20260630.json",
+            "combo_count": 30,
+            "fast": true,
+            "lookbacks": [10, 20, 30, 45, 60],
+            "feature_sets": ["ohlcv"],
+            "best_auc_combo": {
+              "lookback": 45,
+              "feature_set": "ohlcv",
+              "include_baseline_feature": true,
+              "max_leaf_nodes": 7,
+              "learning_rate": 0.02,
+              "l2_regularization": 0.2,
+              "baseline_auc": 0.9127,
+              "model_auc": 0.7074,
+              "auc_delta_vs_baseline": -0.2052,
+              "baseline_brier": 0.2517,
+              "model_brier": 0.0316,
+              "brier_delta_vs_baseline": -0.2201
+            },
+            "decision": "Research-only. Tuning improved AUC versus prior OHLCV runs, but best AUC still materially underperforms raw prob_up_h20."
+          }
+        }
+      }
+    },
+    "rationale": "a2118 adds NCF late-bull de-leverage overlay on top of a2111. When ma_gap>10%, h20_prob<0.33, conf>0.55 (all 3 conditions), shift 00631L from 20% to 10% (half transferred to 0050). NCF upgraded to v5 (TXO PCR + Cascade B + Macro 60d/120d proxies + TabNet): H=20 AUC 0.7036 (+2.27pp vs v4), H=5 AUC 0.6907 (+1.19pp). Active params remain h20_max=0.33, conf_min=0.55, h5_reentry_min=0.55. Fresh 2026-06-30 panel reconciliation: h20=0.3883, h5=0.4047, conf=0.6042, so A21.18 hard hedge is NOT active; execution_regime=golden1. Live execution still applies NCF continuous trimming, plus a bearish high-risk trim when total_risk_score>=9 and signal alignment is bearish/wide_divergence. Stock-Prediction-Models-master review is recorded as an external research reference only and has no active allocation impact; its Monte Carlo idea is promoted only as a stress-test report, while the sequence shadow benchmark remains research-only because it underperforms the raw H20 probability ranking. stock-rnn relative-window normalization was tested in close-only, OHLCV, combined, and fast-sweep forms; all remain research-only because Brier improves but AUC underperforms prob_up_h20."
+  },
+  "previous_strategy": {
+    "id": "a214_bond30c30_mw60",
+    "deactivated_at": "2026-07-02",
+    "note": "a214 was briefly promoted on 2026-07-02 (17:40) per Three_Direction_Handoff_20260620.md, then reverted the same day: a2118 was judged the better strategy (keeps the NCF late-bull de-leverage risk-control overlay; a214 has higher isolated Sharpe/Sortino/return but drops the NCF overlay entirely, per the promotion note 'NCF overlay can be re-added on top of A21.4 parameters as a separate candidate'). a214 remains available as group_a_plus.runners.a214 for future research/backtesting.",
+    "metrics": {
+      "annual_return": 0.7971522505236919,
+      "sharpe_ratio": 2.5327779904438286,
+      "sortino_ratio": 2.8103469578459315,
+      "max_drawdown": -0.14758847855162782
     }
   },
   "compatibility": {
     "legacy_strategy": "a207",
     "legacy_pointer": "report/group_a_plus/latest/switch_backtest.json",
     "legacy_pointer_unchanged": true,
-    "note": "Consumers supporting schema v2 use A21.11; legacy two-regime consumers continue using A20.7."
+    "note": "Consumers supporting schema v2 use A21.18; legacy two-regime consumers continue using A20.7."
   }
 }

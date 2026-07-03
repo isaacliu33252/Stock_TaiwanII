@@ -82,6 +82,7 @@ from train_dual_group_2024_2026 import (
     payload_uses_group_a_taifex_futures_features,
     payload_uses_group_b_institutional_features,
     payload_uses_group_b_margin_features,
+    _inject_0050_pva_columns,
 )
 
 
@@ -114,8 +115,10 @@ def _group_column_bounds(df: pd.DataFrame) -> dict[str, tuple[int, int]]:
     columns = list(df.columns)
     for idx, name in enumerate(columns):
         label = str(name).strip().lower()
-        if label in {"group a", "group b"}:
-            positions.append((idx, label.replace(" ", "_")))
+        if label in {"group a", "group a+", "group a++"}:
+            positions.append((idx, "group_a"))
+        elif label == "group b":
+            positions.append((idx, "group_b"))
     if len(positions) < 2:
         raise ValueError("Workbook does not expose both Group A / Group B headers")
 
@@ -610,6 +613,21 @@ def _action_hint(weight_diff: float, delta_shares: int, threshold: float, signal
     return "hold"
 
 
+def _adapt_obs_for_model(obs: np.ndarray, model: PPO) -> np.ndarray:
+    """Pad/truncate live observations for legacy PPO model compatibility."""
+    expected_shape = getattr(model.observation_space, "shape", None)
+    if not expected_shape:
+        return obs
+    expected = int(expected_shape[0])
+    values = np.asarray(obs, dtype=np.float32)
+    current = int(values.shape[0])
+    if current == expected:
+        return values
+    if current < expected:
+        return np.pad(values, (0, expected - current), constant_values=0.0).astype(np.float32)
+    return values[:expected].astype(np.float32)
+
+
 def _apply_group_a_0050_weight_step_overlay(
     target_weights: dict[str, float],
     target_cash_weight: float,
@@ -932,6 +950,13 @@ def main() -> None:
     if panel.empty:
         raise RuntimeError("No aligned rows available to generate a signal")
 
+    # Group B with PVA features: inject 0050 PVA/SJM columns so the trained model
+    # (obs_dim=66 = 6×8 + 9 shared + 4 PVA + 5 state) can receive the right obs shape.
+    if args.group == "group_b" and env_kwargs.get("enable_pva_features"):
+        pva_source = load_stock_data_db_first(["0050.TW"], history_start, download_end)
+        if "0050.TW" in pva_source:
+            panel = _inject_0050_pva_columns(panel, pva_source["0050.TW"])
+
     model = PPO.load(str(model_path))
     env = PortfolioEnv(
         panel,
@@ -954,16 +979,16 @@ def main() -> None:
             raise ValueError("--extra-cash must be >= 0")
         _seed_live_start_reference_state(env, tickers)
         current_obs = env._get_obs()
-        latest_action, _ = model.predict(current_obs, deterministic=True)
+        latest_action, _ = model.predict(_adapt_obs_for_model(current_obs, model), deterministic=True)
         decision = env.plan_action(int(latest_action))
     else:
         while env.step_idx < len(panel) - 1:
-            action, _ = model.predict(obs, deterministic=True)
+            action, _ = model.predict(_adapt_obs_for_model(obs, model), deterministic=True)
             obs, _, terminated, truncated, _ = env.step(action)
             if terminated or truncated:
                 break
         current_obs = env._get_obs()
-        latest_action, _ = model.predict(current_obs, deterministic=True)
+        latest_action, _ = model.predict(_adapt_obs_for_model(current_obs, model), deterministic=True)
         decision = env.plan_action(int(latest_action))
 
     actual_date = pd.Timestamp(panel.iloc[env.step_idx]["date"])
@@ -1134,7 +1159,7 @@ def main() -> None:
         "signal_reason": signal_reason,
         "guard_reasons": guard_reasons,
         "group_a_action_schema": env.group_a_action_schema if args.group == "group_a" else None,
-        "group_b_action_schema": env.group_b_action_schema if args.group == "group_b" else None,
+        "group_b_action_schema": env_kwargs.get("group_b_action_schema") if args.group == "group_b" else None,
         "latest_action": int(latest_action),
         "action_label": decision["action_label"],
         "base_target_label": decision["base_target_label"],

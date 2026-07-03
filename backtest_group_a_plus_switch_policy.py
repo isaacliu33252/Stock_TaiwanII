@@ -514,6 +514,28 @@ def _simulate_regime_curve(
 
 
 def _metrics(values: pd.Series, initial_value: float) -> dict[str, Any]:
+    """Group A+'s metric convention -- NOT directly comparable to FinRL's.
+
+    M6 (2026-07-02 Fable 5 audit): `FinRL/v2/backtesting/performance_metrics.py`
+    (`calculate_sharpe_ratio`/`calculate_sortino_ratio`) defaults to
+    `risk_free_rate=0.02` (2% annual) and reports volatility/drawdown/VaR as
+    *percentages* (already multiplied by 100). Every metric here uses
+    risk_free_rate=0 (no subtraction at all) and reports everything as a
+    decimal fraction (0.25 == 25%). A raw `sharpe_ratio` from this function
+    is systematically ~0.1-0.3 higher than the same equity curve run through
+    FinRL's default -- do not compare the two systems' Sharpe/Sortino values
+    directly. Use `_metrics_finrl_comparable()` below to compute this
+    system's numbers under FinRL's convention before comparing.
+
+    Also note: the two systems have never been cross-validated against the
+    *same* regime/weight sequence through both backtest engines (a2118 only
+    ever runs through this file's `_simulate_costed_curve`, never through
+    `FinRL.v2.backtesting.BacktestEngine`) -- reconciling the metric
+    convention does not by itself confirm the two engines agree on P&L for
+    identical inputs. That reconciliation is a separate, larger task (see
+    GROUP_A_PLUS_FABLE5_AUDIT_A214_REVERT_HANDOFF_20260702.md section 6),
+    not done as part of this fix.
+    """
     returns = values.pct_change().dropna()
     years = max((values.index[-1] - values.index[0]).days / 365.25, 1e-9)
     total_return = float(values.iloc[-1] / initial_value - 1.0)
@@ -573,6 +595,45 @@ def _metrics(values: pd.Series, initial_value: float) -> dict[str, Any]:
         "volatility_weighted_etl_5pct": volatility_weighted_etl_5pct,
         "worst_daily_return": worst_daily_return,
         "worst_20d_return": worst_20d_return,
+    }
+
+
+def _metrics_finrl_comparable(
+    values: pd.Series,
+    risk_free_rate: float = 0.02,
+    periods_per_year: int = 252,
+) -> dict[str, float]:
+    """M6 (2026-07-02 Fable 5 audit): recompute Sharpe/Sortino/volatility for
+    this system's equity curve under FinRL's convention, so they can be
+    compared against a FinRL-side backtest without the systematic ~0.1-0.3
+    Sharpe offset `_metrics()` above has relative to FinRL's default.
+
+    Calls FinRL's own functions directly (rather than reimplementing the
+    formulas here) specifically because FinRL's Sortino downside-deviation
+    uses `np.std(negative_excess_returns, ddof=1)` (sample std of the
+    negative-excess subset), which is a *different* formula from both
+    `_metrics()` above and a naive reimplementation using
+    `sqrt(mean(downside_returns**2))` (root-mean-square from zero) --
+    reimplementing risks a second, harder-to-notice mismatch on top of the
+    one this function exists to fix. Import is local to avoid adding a
+    module-level dependency from Group A+ code onto FinRL for callers that
+    never need this comparison.
+    """
+    from FinRL.v2.backtesting.performance_metrics import (
+        calculate_sharpe_ratio,
+        calculate_sortino_ratio,
+        calculate_volatility,
+    )
+
+    returns = values.pct_change().dropna()
+    if len(returns) < 2:
+        return {"sharpe_ratio": 0.0, "sortino_ratio": 0.0, "volatility": 0.0, "risk_free_rate": risk_free_rate}
+
+    return {
+        "sharpe_ratio": float(calculate_sharpe_ratio(returns, risk_free_rate, periods_per_year)),
+        "sortino_ratio": float(calculate_sortino_ratio(returns, risk_free_rate, periods_per_year)),
+        "volatility": float(calculate_volatility(returns, periods_per_year)),
+        "risk_free_rate": risk_free_rate,
     }
 
 

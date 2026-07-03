@@ -24,6 +24,8 @@ SUPPORTED_STRATEGIES = {
     "a2114_a2111_ncf_exit_gate": "group_a_plus.runners.a2114",
     "a2118_a2111_ncf_late_bull_deleverage": "group_a_plus.runners.a2118",
     "a2115_a2111_ncf_dual_mode_gate": "group_a_plus.runners.a2115",
+    "a2119_a2111_finbert_gate": "group_a_plus.runners.a2119",
+    "a2120_a2111_ncf_late_bull_rally_aware": "group_a_plus.runners.a2120",
 }
 
 

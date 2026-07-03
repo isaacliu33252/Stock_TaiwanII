@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-01T04:21:01Z",
+  "signal_date": "2026-06-30",
+  "lookback_days": 20,
+  "source": "finmind_stock_news",
+  "news_glob": "news/finmind_stock_news_*.jsonl",
+  "watchlist": [
+    {
+      "symbol": "0050.TW",
+      "matched_count": 10
+    },
+    {
+      "symbol": "00631L.TW",
+      "matched_count": 10
+    },
+    {
+      "symbol": "00632R.TW",
+      "matched_count": 10
+    },
+    {
+      "symbol": "00679B.TWO",
+      "matched_count": 5
+    }
+  ],
+  "article_count": 35,
+  "articles": [
+    {
+      "date": "2026-06-30",
+      "source": "LINE TODAY",
+      "title": "市值型ETF績效出爐！這2檔「不靠台積電」勝過0050 | 民視新聞網 - LINE TODAY",
+      "url": "https://today.line.me/tw/v3/article/2DBqEPj",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "自由財經",
+      "title": "焦點股》00631L：台股大漲逾千點 爆量狂飆 - 自由財經",
+      "url": "https://ec.ltn.com.tw/article/breakingnews/5488437",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-06-28",
+      "source": "CMoney",
+      "title": "00632R 元大台灣50反1 - 第一支撐4萬3，明天一定破👈 所以往第二支撐4萬16看齊�... - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/179669022",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    },
+    {
+      "date": "2026-06-22",
+      "source": "CMoney",
+      "title": "00679B 元大美債20年 - 美銀估要升3碼，我自己評估要到4碼對市場比較好😀 - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180078588",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00679B.TWO"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "UDN",
+      "title": "台股拉回投資人撿市值雙雄0050、00631L 單周獲386億元稱霸| 存股族愛ETF | 股市 - UDN",
+      "url": "https://udn.com/news/story/123006/9597713",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "旺得富理財網",
+      "title": "槓桿型ETF戰勝「瑤池金母」 調查：元大台灣50正2 成爆紅ETF榜首 - 旺得富理財網",
+      "url": "https://wantrich.chinatimes.com/news/20260630900656-420101",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-06-26",
+      "source": "經濟日報",
+      "title": "今日最夯 ETF／大盤拉回 反向型台股 ETF 走強 00632R 爆量收漲4% - 經濟日報",
+      "url": "https://money.udn.com/money/amp/story/5618/9591276",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    },
+    {
+      "date": "2026-06-20",
+      "source": "CMoney",
+      "title": "元大美債20年(00679B)- - 券商分點進出買賣統計 - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/stock/00679B?s=broker&agent=8840",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00679B.TWO"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "經濟日報",
+      "title": "兩檔面板股成交量分占前兩名 零股成交第一0050、國巨衝上第三 - 經濟日報",
+      "url": "https://money.udn.com/money/story/5607/9597516",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "工商時報",
+      "title": "槓桿型ETF戰勝「瑤池金母」 調查：元大台灣50正2 成爆紅ETF榜首 - 工商時報",
+      "url": "https://www.ctee.com.tw/news/20260630702027-430503",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-06-25",
+      "source": "CMoney",
+      "title": "00632R 元大台灣50反1 - 賣美債台股買台股唯一5.2%類定存股避通膨AI泡沫當資產配置- 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180195537",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    },
+    {
+      "date": "2026-06-19",
+      "source": "CMoney",
+      "title": "元大美債20年(00679B) 個股概覽 | 個股 - 股市 - CMoney",
+      "url": "https://www.cmoney.tw/finance/00679B/f00025",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00679B.TWO"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "UDN",
+      "title": "兩檔面板股成交量分占前兩名 零股成交第一0050、國巨衝上第三 - UDN",
+      "url": "https://udn.com/news/story/7251/9597516",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "知新聞",
+      "title": "Q2「10大爆紅台股榜」晶技奪冠 ETF布局新風向，元大台灣50正2居榜首 - 知新聞",
+      "url": "https://www.knews.com.tw/news/8B1D1F4038113FEB78DC5C1F5BEB149D",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-06-25",
+      "source": "CMoney",
+      "title": "00632R 元大台灣50反1 - 賣美債台股買台股唯一5.2%類定存股避通膨AI泡沫當資產配置- 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180195542",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    },
+    {
+      "date": "2026-06-13",
+      "source": "CMoney",
+      "title": "00679B 元大美債20年 - 下周繼續漲不停嗎🎉🎉🎉 - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/179859757",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00679B.TWO"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "三立新聞網SETN.com",
+      "title": "他賣飆股改買0050超後悔！專家曝「根本搞錯了」：這類人不該買ETF - 三立新聞網SETN.com",
+      "url": "https://inews.setn.com/news/1864797",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "CMoney",
+      "title": "00631L 元大台灣50正2 - 夜盤台指期一開就小跌- 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180295470",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-06-24",
+      "source": "CMoney",
+      "title": "00632R 元大台灣50反1 - 夜盤居然從底部拉了1600點，漲500點，扯🤣 - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180126235",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    },
+    {
+      "date": "2026-06-12",
+      "source": "CMoney",
+      "title": "00679B 元大美債20年 - 賣美債台股買台股唯一5.5%類定存股避通膨AI泡沫當資產配置- 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/179818736",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00679B.TWO"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "CMoney投資網誌",
+      "title": "【ETF籌碼月報】6月官股大買0050，外資、自營商大賣0050達1234億 - CMoney投資網誌",
+      "url": "https://cmnews.com.tw/article/cmoney-aeb4e229-7467-11f1-890c-85cea55a78e6",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
+    },
+    {
+      "date": "2026-06-29",
+      "source": "自由時報",
+      "title": "焦點股》00631L：台股大漲逾千點 爆量狂飆 - 自由時報",
+      "url": "https://stock.ltn.com.tw/article/7hfcx1kfxk2e",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-06-23",
+      "source": "CMoney",
+      "title": "00632R 元大台灣50反1 - 明天10.10解套 要先跑還是放到禮拜五在賣呢 - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180121759",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "CMoney投資網誌",
+      "title": "【ETF籌碼日報】官股大賣0050，外資、自營商大買00981A達41億 - CMoney投資網誌",
+      "url": "https://cmnews.com.tw/article/cmoney-4818252c-7466-11f1-bc16-e4743a22b26e",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
+    },
+    {
+      "date": "2026-06-29",
+      "source": "FTNN 新聞網",
+      "title": "換股增刪共44檔！「這檔高息ETF」被外資看好進場6524張 再撒7億元買入00631L - FTNN 新聞網",
+      "url": "https://www.ftnn.com.tw/news/557040",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-06-22",
+      "source": "CMoney",
+      "title": "00632R 元大台灣50反1 - 我又來抄底看看了…怎麼說又呢🤪 - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180067497",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "UDN",
+      "title": "87歲阿公曬0050對帳單獲利翻倍！還開示孫女：別害怕、繼續買！然後快睡覺 - UDN",
+      "url": "https://udn.com/news/story/123006/9597058",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
+    },
+    {
+      "date": "2026-06-29",
+      "source": "商周財富網",
+      "title": "0050今年來績效超越台積電，買0050還是0050正2？00631L、00675L、00685L差在哪？ - 商周財富網",
+      "url": "https://wealth.businessweekly.com.tw/GArticle.aspx?id=ARTL003018758",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-06-22",
+      "source": "CMoney",
+      "title": "00632R 元大台灣50反1 - 不知道買什麼 只能買反 - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180078617",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "UDN",
+      "title": "009816能「物理超渡」0050不配息是更好的選擇？他疑惑：何不直接00935就好了| 存股族愛ETF | 股市 - UDN",
+      "url": "https://udn.com/news/story/123006/9597745",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
+    },
+    {
+      "date": "2026-06-28",
+      "source": "自由財經",
+      "title": "台股震盪逾3700點散戶逆勢加碼 00631L成交量寫新高 - 自由財經",
+      "url": "https://ec.ltn.com.tw/article/breakingnews/5486611",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-06-21",
+      "source": "CMoney",
+      "title": "00632R 元大台灣50反1 - 真的沒事別亂空- 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180050256",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    },
+    {
+      "date": "2026-06-30",
+      "source": "CMoney",
+      "title": "0050 元大台灣50 - 台股國內成分股ETP半年報-2 數據來源 https://g... - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180295444",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
+    },
+    {
+      "date": "2026-06-26",
+      "source": "news.cnyes.com",
+      "title": "越跌越勇！散戶續買「正2」 00631L單周日均成交量、金額創高 - news.cnyes.com",
+      "url": "https://news.cnyes.com/news/id/6513973",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-06-17",
+      "source": "CMoney",
+      "title": "00632R 元大台灣50反1 - 有人看10萬點了 反1的未來如何！ - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/179993593",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    }
+  ]
+}

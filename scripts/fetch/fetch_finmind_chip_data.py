@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -14,7 +15,7 @@ import requests
 import duckdb
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -30,6 +31,25 @@ API_URL = "https://api.finmindtrade.com/api/v4/data"
 DEFAULT_TICKERS = "0050,00631L,00632R,00679B"
 DEFAULT_OTC_CODES = {"00679B", "00751B"}
 DB_PATH = PROJECT_ROOT / "FinRL" / "data" / "stock_data.db"
+
+# M8-3 (2026-07-02 Fable 5 audit): several fetch_* functions catch RuntimeError
+# per-item and `continue`, so a partial fetch failure never affected this
+# script's exit code and run_ncf_daily_pipeline.py's `subprocess.run(check=True)`
+# never saw it. Every such except-block now records here; main() exits non-zero
+# if anything was recorded, so the existing check=True in the pipeline runner
+# propagates the failure instead of silently continuing.
+_FETCH_FAILURES: list[str] = []
+
+
+def _record_fetch_failure(context: str) -> None:
+    _FETCH_FAILURES.append(context)
+
+
+def _exit_if_fetch_failures() -> None:
+    if not _FETCH_FAILURES:
+        return
+    print(f"[FinMind] {len(_FETCH_FAILURES)} dataset fetch(es) failed: {_FETCH_FAILURES}")
+    sys.exit(1)
 
 
 CREATE_FOREIGN_SHAREHOLDING_SQL = """
@@ -274,26 +294,68 @@ def _local_ticker(value: str) -> str:
     return f"{code}.TW"
 
 
-def _get(dataset: str, stock_id: str, start: str, end: str, token: str) -> list[dict[str, Any]]:
+def _get(
+    dataset: str,
+    stock_id: str,
+    start: str,
+    end: str,
+    token: str,
+    *,
+    max_retries: int = 3,
+    backoff_seconds: float = 1.0,
+) -> list[dict[str, Any]]:
+    """M8 (2026-07-02 Fable 5 audit): retries transient failures (HTTP 429
+    rate-limit, 5xx, and connection errors) with exponential backoff --
+    previously a single 429/500 blip aborted the whole fetch for that
+    dataset/ticker. 402 (FinMind free-tier quota/plan gate) and other 4xx
+    are *not* retried -- those are not transient and retrying just wastes
+    the remaining attempts before failing anyway. Every caller of `_get`
+    already wraps this in try/except and skips on failure (see
+    fetch_derivative_institutional and friends), so this only changes how
+    many genuinely-transient failures get a second chance before that
+    skip-and-log path kicks in.
+    """
     headers = {"Authorization": f"Bearer {token}"} if token else {}
-    response = requests.get(
-        API_URL,
-        headers=headers,
-        params={
-            "dataset": dataset,
-            "data_id": stock_id,
-            "start_date": start,
-            "end_date": end,
-        },
-        timeout=60,
-    )
-    payload = response.json()
-    if response.status_code != 200:
-        raise RuntimeError(f"FinMind {dataset} {stock_id}: HTTP {response.status_code}: {payload}")
-    rows = payload.get("data", [])
-    if not isinstance(rows, list):
-        raise RuntimeError(f"FinMind {dataset} {stock_id}: unexpected response: {payload}")
-    return rows
+    last_exc: Exception | None = None
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(
+                API_URL,
+                headers=headers,
+                params={
+                    "dataset": dataset,
+                    "data_id": stock_id,
+                    "start_date": start,
+                    "end_date": end,
+                },
+                timeout=60,
+            )
+        except requests.exceptions.RequestException as exc:
+            last_exc = exc
+            if attempt + 1 >= max_retries:
+                raise RuntimeError(f"FinMind {dataset} {stock_id}: connection error after {max_retries} attempts: {exc}") from exc
+            time.sleep(backoff_seconds * (2 ** attempt))
+            continue
+
+        if response.status_code == 429 or response.status_code >= 500:
+            last_exc = RuntimeError(f"FinMind {dataset} {stock_id}: HTTP {response.status_code}")
+            if attempt + 1 >= max_retries:
+                break
+            retry_after = response.headers.get("Retry-After")
+            delay = float(retry_after) if retry_after and retry_after.isdigit() else backoff_seconds * (2 ** attempt)
+            time.sleep(delay)
+            continue
+
+        payload = response.json()
+        if response.status_code != 200:
+            # 402 (quota/plan gate) and other 4xx: not transient, fail now.
+            raise RuntimeError(f"FinMind {dataset} {stock_id}: HTTP {response.status_code}: {payload}")
+        rows = payload.get("data", [])
+        if not isinstance(rows, list):
+            raise RuntimeError(f"FinMind {dataset} {stock_id}: unexpected response: {payload}")
+        return rows
+
+    raise RuntimeError(f"FinMind {dataset} {stock_id}: failed after {max_retries} attempts: {last_exc}")
 
 
 def _num(frame: pd.DataFrame, column: str) -> pd.Series:
@@ -1051,6 +1113,7 @@ def fetch_derivative_institutional(
                 rows = _get(dataset, product_id, start, end, token)
             except RuntimeError as exc:
                 print(f"[FinMind] derivative_institutional {market} {product_id}: skipped ({exc})")
+                _record_fetch_failure(f"derivative_institutional {market} {product_id}: {exc}")
                 continue
             frame = pd.DataFrame(rows)
             if frame.empty:
@@ -1098,6 +1161,7 @@ def fetch_derivative_large_trader(
                 rows = _get(dataset, product_id, start, end, token)
             except RuntimeError as exc:
                 print(f"[FinMind] derivative_large_trader {market} {product_id}: skipped ({exc})")
+                _record_fetch_failure(f"derivative_large_trader {market} {product_id}: {exc}")
                 continue
             frame = pd.DataFrame(rows)
             if frame.empty:
@@ -1144,6 +1208,7 @@ def fetch_stock_per(tickers: list[str], start: str, end: str, token: str) -> pd.
             rows = _get("TaiwanStockPER", stock_id, start, end, token)
         except RuntimeError as exc:
             print(f"[FinMind] per {stock_id}: skipped ({exc})")
+            _record_fetch_failure(f"per {stock_id}: {exc}")
             continue
         frame = pd.DataFrame(rows)
         if frame.empty:
@@ -1172,6 +1237,7 @@ def fetch_securities_lending(tickers: list[str], start: str, end: str, token: st
             rows = _get("TaiwanStockSecuritiesLending", stock_id, start, end, token)
         except RuntimeError as exc:
             print(f"[FinMind] securities_lending {stock_id}: skipped ({exc})")
+            _record_fetch_failure(f"securities_lending {stock_id}: {exc}")
             continue
         frame = pd.DataFrame(rows)
         if frame.empty:
@@ -1203,6 +1269,7 @@ def fetch_short_sale_balances(tickers: list[str], start: str, end: str, token: s
             rows = _get("TaiwanDailyShortSaleBalances", stock_id, start, end, token)
         except RuntimeError as exc:
             print(f"[FinMind] short_sale_balances {stock_id}: skipped ({exc})")
+            _record_fetch_failure(f"short_sale_balances {stock_id}: {exc}")
             continue
         frame = pd.DataFrame(rows)
         if frame.empty:
@@ -1240,6 +1307,7 @@ def fetch_total_return_index(index_ids: list[str], start: str, end: str, token: 
             rows = _get("TaiwanStockTotalReturnIndex", index_id, start, end, token)
         except RuntimeError as exc:
             print(f"[FinMind] total_return_index {index_id}: skipped ({exc})")
+            _record_fetch_failure(f"total_return_index {index_id}: {exc}")
             continue
         frame = pd.DataFrame(rows)
         if frame.empty:
@@ -1263,6 +1331,7 @@ def fetch_margin_maintenance(start: str, end: str, token: str) -> pd.DataFrame:
         rows = _get("TaiwanTotalExchangeMarginMaintenance", "", start, end, token)
     except RuntimeError as exc:
         print(f"[FinMind] margin_maintenance: skipped ({exc})")
+        _record_fetch_failure(f"margin_maintenance: {exc}")
         return pd.DataFrame()
     frame = pd.DataFrame(rows)
     if frame.empty:
@@ -1288,6 +1357,7 @@ def fetch_government_bank(tickers: list[str], start: str, end: str, token: str) 
             rows = _get("TaiwanStockGovernmentBankBuySell", stock_id, start, end, token)
         except RuntimeError as exc:
             print(f"[FinMind] government_bank {stock_id}: skipped ({exc})")
+            _record_fetch_failure(f"government_bank {stock_id}: {exc}")
             continue
         frame = pd.DataFrame(rows)
         if frame.empty:
@@ -1320,6 +1390,7 @@ def fetch_day_trading(tickers: list[str], start: str, end: str, token: str) -> p
             rows = _get("TaiwanStockDayTrading", stock_id, start, end, token)
         except RuntimeError as exc:
             print(f"[FinMind] day_trading {stock_id}: skipped ({exc})")
+            _record_fetch_failure(f"day_trading {stock_id}: {exc}")
             continue
         frame = pd.DataFrame(rows)
         if frame.empty:
@@ -1349,6 +1420,7 @@ def fetch_dealer_futures(product_ids: list[str], start: str, end: str, token: st
             rows = _get("TaiwanFuturesDealerTradingVolumeDaily", product_id, start, end, token)
         except RuntimeError as exc:
             print(f"[FinMind] dealer_futures {product_id}: skipped ({exc})")
+            _record_fetch_failure(f"dealer_futures {product_id}: {exc}")
             continue
         frame = pd.DataFrame(rows)
         if frame.empty:
@@ -1376,6 +1448,7 @@ def fetch_dealer_options(product_ids: list[str], start: str, end: str, token: st
             rows = _get("TaiwanOptionDealerTradingVolumeDaily", product_id, start, end, token)
         except RuntimeError as exc:
             print(f"[FinMind] dealer_options {product_id}: skipped ({exc})")
+            _record_fetch_failure(f"dealer_options {product_id}: {exc}")
             continue
         frame = pd.DataFrame(rows)
         if frame.empty:
@@ -1414,6 +1487,7 @@ def fetch_derivative_afterhours(
                 rows = _get(dataset, product_id, start, end, token)
             except RuntimeError as exc:
                 print(f"[FinMind] afterhours {market} {product_id}: skipped ({exc})")
+                _record_fetch_failure(f"afterhours {market} {product_id}: {exc}")
                 continue
             frame = pd.DataFrame(rows)
             if frame.empty:
@@ -1461,6 +1535,7 @@ def main() -> None:
     parser.add_argument("--token", default=os.environ.get("FINMIND_API_TOKEN", ""))
     args = parser.parse_args()
 
+    _FETCH_FAILURES.clear()
     tickers = [item.strip().upper() for item in args.tickers.split(",") if item.strip()]
     futures_ids = [item.strip().upper() for item in args.futures_ids.split(",") if item.strip()]
     option_ids = [item.strip().upper() for item in args.option_ids.split(",") if item.strip()]
@@ -1520,6 +1595,7 @@ def main() -> None:
         total_written["dealer_options"] = upsert_dealer_options(rows)
 
     print(f"[FinMind] rows_written={total_written}")
+    _exit_if_fetch_failures()
 
 
 if __name__ == "__main__":

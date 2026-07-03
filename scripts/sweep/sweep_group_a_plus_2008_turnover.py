@@ -5,11 +5,15 @@ from __future__ import annotations
 
 import copy
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
 
 from compare_group_a_plus_2008_golden_latest import (
     END,
@@ -24,9 +28,6 @@ from compare_group_a_plus_2008_golden_latest import (
     _row,
     _run_group_a_plus,
 )
-
-
-PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 def _variant_config(base: dict[str, Any], cap: float) -> dict[str, Any]:

@@ -19,7 +19,14 @@ from typing import Iterable
 import duckdb
 import pandas as pd
 
-from run_group_a_shareholding_shadow import _load_weekly_features, _ticker_snapshot, assess_shadow_signal
+try:
+    from run_group_a_shareholding_shadow import _load_weekly_features, _ticker_snapshot, assess_shadow_signal
+except ModuleNotFoundError:
+    from scripts.misc.run_group_a_shareholding_shadow import (
+        _load_weekly_features,
+        _ticker_snapshot,
+        assess_shadow_signal,
+    )
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent

@@ -114,12 +114,41 @@ def _download_yf(ticker: str, start: str, end: str) -> pd.DataFrame:
     return out.dropna(subset=["close"])
 
 
-def _write_cache(db_path: Path, ticker: str, df: pd.DataFrame, purpose: str) -> None:
+def _write_cache(
+    db_path: Path,
+    ticker: str,
+    df: pd.DataFrame,
+    purpose: str,
+    *,
+    requested_start: str | None = None,
+    requested_end: str | None = None,
+) -> None:
+    """Cache freshly downloaded rows, purging the *entire requested window*
+    first (M8-4, 2026-07-02 Fable 5 audit).
+
+    yfinance's `auto_adjust=True` re-bases historical closes relative to
+    every split/dividend known as of download time. If a re-fetch only
+    covers a narrower window than what was originally requested (e.g. a
+    partial/rate-limited download), deleting by the downloaded frame's own
+    min/max would leave older rows cached under a stale adjustment basis
+    sitting right next to freshly rebased rows -- a spurious price jump at
+    the boundary that corrupts pct_change()-based features. Deleting the
+    full originally-requested window (not just the narrower download's
+    span) means a partial download leaves those dates *missing* rather than
+    present-but-wrong; the next call's cache-coverage check then forces a
+    full re-download instead of silently serving mismatched vintages.
+    """
     if df.empty:
         return
     ensure_external_cache_schema(db_path)
-    start_dt = pd.to_datetime(df["dt"]).min().date()
-    end_dt = pd.to_datetime(df["dt"]).max().date()
+    df_start_dt = pd.to_datetime(df["dt"]).min().date()
+    df_end_dt = pd.to_datetime(df["dt"]).max().date()
+    start_dt = df_start_dt
+    end_dt = df_end_dt
+    if requested_start is not None:
+        start_dt = min(start_dt, pd.Timestamp(requested_start).date())
+    if requested_end is not None:
+        end_dt = max(end_dt, pd.Timestamp(requested_end).date())
     run_id = datetime.now().strftime("%Y%m%d%H%M%S")
     try:
         yf_version = importlib.metadata.version("yfinance")
@@ -153,6 +182,7 @@ def fetch_yf_close_cached(
     end: str,
     db_path: Path,
     purpose: str = "ncf_external_features",
+    allow_download: bool = True,
 ) -> pd.Series:
     """Return yfinance adjusted close, caching downloaded rows in DuckDB.
 
@@ -162,16 +192,26 @@ def fetch_yf_close_cached(
     start_ts = pd.Timestamp(start).normalize()
     end_ts = pd.Timestamp(end).normalize()
     cached = _read_cached_close(db_path, ticker, start_ts.strftime("%Y-%m-%d"), end_ts.strftime("%Y-%m-%d"))
-    if (
+    cache_is_usable = (
         not cached.empty
         and cached.index.min() <= start_ts
         and cached.index.max() >= end_ts - timedelta(days=4)
         and not _has_large_cache_gap(cached)
-    ):
+    )
+    if cache_is_usable:
+        return cached.rename(ticker)
+    if not allow_download:
         return cached.rename(ticker)
 
     downloaded = _download_yf(ticker, start_ts.strftime("%Y-%m-%d"), end_ts.strftime("%Y-%m-%d"))
     if not downloaded.empty:
-        _write_cache(db_path, ticker, downloaded, purpose)
+        _write_cache(
+            db_path,
+            ticker,
+            downloaded,
+            purpose,
+            requested_start=start_ts.strftime("%Y-%m-%d"),
+            requested_end=end_ts.strftime("%Y-%m-%d"),
+        )
         cached = _read_cached_close(db_path, ticker, start_ts.strftime("%Y-%m-%d"), end_ts.strftime("%Y-%m-%d"))
     return cached.rename(ticker)

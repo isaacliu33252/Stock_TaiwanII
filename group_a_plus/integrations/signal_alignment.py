@@ -326,7 +326,26 @@ def _weekly_ma_source(live_signal: dict[str, Any]) -> dict[str, Any]:
 
 def _execution_regime_source(live_signal: dict[str, Any]) -> dict[str, Any]:
     regime = str(live_signal.get("execution_regime") or "")
-    if regime in {"ncf_late_bull_hedge", "group_a_plus_defensive"}:
+    # M7 (2026-07-02 Fable 5 audit): "ncf_late_bull_hedge" (and its soft
+    # variant) is *derived from* the ncf_00631l signal (a2118's late-bull
+    # trigger reads h20_prob/confidence from that same source) -- voting
+    # bearish here on top of the ncf_00631l/ncf_00632r_inverse/
+    # ncf_cross_ticker sources double-counts one NCF reading as up to four
+    # "independent" bearish votes, inflating weighted_share["bearish"] and
+    # making it easier to cross the bearish_alignment/wide_divergence
+    # thresholds that _apply_bearish_high_risk_trim (daily_signal.py) uses
+    # to apply an *additional* 00631L cut on top of a2118's own hedge for
+    # the same underlying signal. "group_a_plus_defensive" is a genuinely
+    # independent (MA/price-derived) technical signal and still votes.
+    if regime in {"ncf_late_bull_hedge", "ncf_late_bull_hedge_soft"}:
+        return _source(
+            "execution_regime",
+            "neutral",
+            0.0,
+            f"execution_regime={regime} (excluded from vote: derived from ncf_00631l, already counted there)",
+            available=False,
+        )
+    if regime == "group_a_plus_defensive":
         direction = "bearish"
         strength = 0.65
     elif regime == "group_a_plus_recovery":

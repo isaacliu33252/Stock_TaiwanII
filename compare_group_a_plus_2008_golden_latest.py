@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import sys
+import zipfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -20,6 +21,7 @@ from backtest_group_a_plus_overlay import _simulate_plus
 from generate_dual_group_signal import _env_kwargs_from_payload
 from train_dual_group_2024_2026 import (
     DEFAULT_INITIAL_CASH,
+    DJI_FEATURE_COLUMNS,
     PortfolioEnv,
     _align_panel,
     attach_group_a_margin_shared_features_db_first,
@@ -49,6 +51,53 @@ GOLDEN_2008_SOURCE = PROJECT_ROOT / "results" / "group_a_twii_proxy_2008_2007070
 LATEST_PAYLOAD = PROJECT_ROOT / "results" / "group_a_backtest_20250101_20260531_20260609_214023.json"
 LATEST_MODEL = PROJECT_ROOT / "models" / "portfolio" / "group_a_production_2020_2025_100k.zip"
 GROUP_A_PLUS_CONFIG = PROJECT_ROOT / "group_a_plus_config.json"
+
+
+def _checkpoint_observation_dim(model_path: Path) -> int | None:
+    try:
+        with zipfile.ZipFile(model_path) as archive:
+            data = json.loads(archive.read("data").decode("utf-8"))
+        shape = (data.get("observation_space") or {}).get("_shape")
+        if isinstance(shape, list) and shape:
+            return int(shape[0])
+    except Exception:
+        return None
+    return None
+
+
+def _align_shared_cols_to_checkpoint(
+    panel: pd.DataFrame,
+    stock_data: dict[str, pd.DataFrame],
+    tickers: list[str],
+    shared_feature_cols: list[str],
+    env_kwargs: dict[str, Any],
+    model_path: Path,
+    initial_cash: float,
+) -> list[str]:
+    expected_dim = _checkpoint_observation_dim(model_path)
+    if expected_dim is None:
+        return shared_feature_cols
+    probe = PortfolioEnv(
+        panel,
+        tickers,
+        shared_feature_cols=shared_feature_cols,
+        initial_cash=initial_cash,
+        **env_kwargs,
+    )
+    missing_dim = int(expected_dim) - int(probe.observation_space.shape[0])
+    if missing_dim <= 0:
+        return shared_feature_cols
+
+    first_ticker = tickers[0]
+    source_cols = set(stock_data.get(first_ticker, pd.DataFrame()).columns)
+    candidates = [col for col in DJI_FEATURE_COLUMNS if col in source_cols and col not in shared_feature_cols]
+    if len(candidates) < missing_dim:
+        raise ValueError(
+            f"{model_path.name} expects observation dim {expected_dim}, "
+            f"proxy env has {probe.observation_space.shape[0]}, and only "
+            f"{len(candidates)} shared proxy columns are available"
+        )
+    return [*shared_feature_cols, *candidates[:missing_dim]]
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -118,6 +167,17 @@ def _capture_model_events(
     stock_data, _market = _build_group_a_plus_proxy_data(start, end)
     stock_data = _attach_payload_features(stock_data, payload, tickers, start, end)
     panel = _align_panel(stock_data, tickers, start, end, shared_feature_cols=shared_feature_cols)
+    shared_feature_cols = _align_shared_cols_to_checkpoint(
+        panel,
+        stock_data,
+        tickers,
+        shared_feature_cols,
+        env_kwargs,
+        model_path,
+        initial_cash,
+    )
+    if shared_feature_cols:
+        panel = _align_panel(stock_data, tickers, start, end, shared_feature_cols=shared_feature_cols)
     if panel.empty:
         raise RuntimeError(f"No aligned 2008 proxy rows for {name}")
 

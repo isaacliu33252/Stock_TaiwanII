@@ -8,16 +8,27 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import pandas as pd
+
 from group_a_plus.integrations.ncf import (
     adjust_golden1_weights,
     load_ncf_signal,
+    ncf_cross_ticker_consistency,
     ncf_downside_signal,
+    ncf_dynamic_horizon_signal,
     ncf_overlay_summary,
     ncf_regime_gated_signal,
+    ncf_tail_downside_signal,
     ncf_upside_signal,
 )
 from group_a_plus.governance.latest import SUPPORTED_STRATEGIES
 from group_a_plus.runners.a2113 import A2113_ID, _resolve_ncf_path
+from group_a_plus.runners.a2118 import (
+    NCF_LB_REGIME,
+    _apply_late_bull_overlay,
+    _ncf_panel_metadata,
+    _signal_date_matches,
+)
 
 
 def _make_ncf_json(
@@ -48,7 +59,11 @@ def _make_ncf_json(
             "wf_confidence_component": None,
             "wf_confidence_used": False,
         },
-        "horizons": {},
+        "horizons": {
+            "1": {"classification": {"probability_up": calibrated_prob_up, "val_auc": 0.56}},
+            "5": {"classification": {"probability_up": calibrated_prob_up, "val_auc": 0.62}},
+            "20": {"classification": {"probability_up": calibrated_prob_up, "val_auc": 0.68}},
+        },
     }
 
 
@@ -73,6 +88,344 @@ class NCFSignalLoadTests(unittest.TestCase):
             p = self._write_ncf(tmp, "00631L.TW", 0.7, 0.8, "UP")
             sig = load_ncf_signal(p)
         self.assertEqual(sig["votes_up"], 2)
+
+    def test_load_ncf_signal_confidence_panel_aligned_absent_is_none(self) -> None:
+        """H2 (2026-07-02 Fable 5 audit, Option A): payloads without the new
+        prob_magnitude_panel_aligned field must yield None, not silently
+        fall back to the differently-scaled composite `confidence`."""
+        with tempfile.TemporaryDirectory() as tmp:
+            p = self._write_ncf(tmp, "00631L.TW", 0.35, 0.6, "DOWN")
+            sig = load_ncf_signal(p)
+        self.assertIsNone(sig["confidence_panel_aligned"])
+
+    def test_load_ncf_signal_confidence_panel_aligned_present(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            payload = _make_ncf_json("00631L.TW", "DOWN", 0.35, 0.6)
+            payload["horizon_ensemble"]["prob_magnitude_panel_aligned"] = 0.04
+            path = Path(tmp) / "ncf_00631L.TW.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            sig = load_ncf_signal(path)
+        self.assertAlmostEqual(sig["confidence_panel_aligned"], 0.04, places=4)
+
+    def test_load_ncf_signal_extracts_horizon_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            p = self._write_ncf(tmp, "00632R.TW", 0.7, 0.8, "UP")
+            sig = load_ncf_signal(p)
+        self.assertAlmostEqual(sig["horizon_prob_up"]["5"], 0.7, places=4)
+        self.assertAlmostEqual(sig["horizon_val_auc"]["20"], 0.68, places=4)
+
+    def test_load_ncf_signal_adds_direction_magnitude_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            p = self._write_ncf(tmp, "00631L.TW", 0.7, 0.8, "UP")
+            sig = load_ncf_signal(p)
+
+        self.assertIn("direction_magnitude_gate", sig)
+        self.assertFalse(sig["direction_magnitude_gate"]["passed"])
+        self.assertEqual("DOWN", sig["direction_magnitude_gate"]["return_side"])
+
+
+class A2118LateBullHoldTests(unittest.TestCase):
+    def test_ncf_panel_metadata_records_content_fingerprint(self) -> None:
+        idx = pd.to_datetime(["2026-02-23", "2026-02-24"])
+        panel = pd.DataFrame(
+            {
+                "prob_up_h20": [0.28, 0.40],
+                "confidence": [0.60, 0.40],
+            },
+            index=idx,
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "panel.csv"
+            panel.rename_axis("date").to_csv(path)
+            meta = _ncf_panel_metadata(path, panel)
+
+        self.assertEqual(2, meta["panel_631l_rows"])
+        self.assertEqual("2026-02-23", meta["panel_631l_first_date"])
+        self.assertEqual("2026-02-24", meta["panel_631l_last_date"])
+        self.assertRegex(meta["panel_631l_sha256"], r"^[0-9a-f]{64}$")
+        self.assertTrue(meta["panel_631l_modified_at"].endswith("Z"))
+
+    def test_signal_date_must_match_frame_date(self) -> None:
+        self.assertTrue(_signal_date_matches({"date": "2026-06-29"}, pd.Timestamp("2026-06-29")))
+        self.assertFalse(_signal_date_matches({"date": "2026-06-29"}, pd.Timestamp("2026-06-18")))
+        self.assertFalse(_signal_date_matches({}, pd.Timestamp("2026-06-29")))
+
+    def test_missing_required_panel_columns_skip_overlay(self) -> None:
+        idx = pd.to_datetime(["2026-02-23"])
+        regime = pd.Series(["golden1"], index=idx)
+        ma_gap = pd.Series([0.19], index=idx)
+        panel = pd.DataFrame({"prob_up_h20": [0.28]}, index=idx)
+
+        modified, info = _apply_late_bull_overlay(
+            regime,
+            panel,
+            ma_gap,
+            h20_max=0.33,
+            conf_min=0.55,
+        )
+
+        self.assertEqual(["golden1"], modified.tolist())
+        self.assertEqual("missing_required_panel_columns", info["skipped_reason"])
+        self.assertEqual(["confidence"], info["missing_columns"])
+
+    def test_nan_panel_values_skip_overlay(self) -> None:
+        idx = pd.to_datetime(["2026-02-23"])
+        regime = pd.Series(["golden1"], index=idx)
+        ma_gap = pd.Series([0.19], index=idx)
+        panel = pd.DataFrame(
+            {"prob_up_h20": [0.28], "confidence": [float("nan")], "prob_up_h5": [0.30]},
+            index=idx,
+        )
+
+        modified, info = _apply_late_bull_overlay(
+            regime,
+            panel,
+            ma_gap,
+            h20_max=0.33,
+            conf_min=0.55,
+        )
+
+        self.assertEqual(["golden1"], modified.tolist())
+        self.assertEqual(["2026-02-23"], info["skipped_days"])
+
+    def test_h5_hold_keeps_hedge_until_reentry_signal(self) -> None:
+        idx = pd.to_datetime(["2026-02-23", "2026-02-24", "2026-02-25", "2026-02-26"])
+        regime = pd.Series(["golden1"] * 4, index=idx)
+        ma_gap = pd.Series([0.19, 0.21, 0.22, 0.23], index=idx)
+        panel = pd.DataFrame(
+            {
+                "prob_up_h20": [0.28, 0.40, 0.42, 0.43],
+                "confidence": [0.60, 0.40, 0.40, 0.40],
+                "prob_up_h5": [0.30, 0.35, 0.54, 0.56],
+            },
+            index=idx,
+        )
+
+        modified, info = _apply_late_bull_overlay(
+            regime,
+            panel,
+            ma_gap,
+            h20_max=0.33,
+            conf_min=0.55,
+            h5_reentry_min=0.55,
+        )
+
+        self.assertEqual(
+            [NCF_LB_REGIME, NCF_LB_REGIME, NCF_LB_REGIME, "golden1"],
+            modified.tolist(),
+        )
+        self.assertEqual(1, info["late_bull_trigger_days"])
+        self.assertEqual(["2026-02-24", "2026-02-25"], info["hold_days"])
+        self.assertEqual(3, info["total_hedge_days"])
+
+    def test_h5_hold_resets_when_base_regime_leaves_golden1(self) -> None:
+        idx = pd.to_datetime(["2026-02-23", "2026-02-24", "2026-02-25"])
+        regime = pd.Series(["golden1", "group_a_plus_defensive", "golden1"], index=idx)
+        ma_gap = pd.Series([0.19, 0.21, 0.22], index=idx)
+        panel = pd.DataFrame(
+            {
+                "prob_up_h20": [0.28, 0.40, 0.42],
+                "confidence": [0.60, 0.40, 0.40],
+                "prob_up_h5": [0.30, 0.30, 0.30],
+            },
+            index=idx,
+        )
+
+        modified, info = _apply_late_bull_overlay(
+            regime,
+            panel,
+            ma_gap,
+            h20_max=0.33,
+            conf_min=0.55,
+            h5_reentry_min=0.55,
+        )
+
+        self.assertEqual(
+            [NCF_LB_REGIME, "group_a_plus_defensive", "golden1"],
+            modified.tolist(),
+        )
+        self.assertEqual([], info["hold_days"])
+
+
+class A2120RallyAwareGateTests(unittest.TestCase):
+    """Tests for the 3-tier rally-aware gate introduced in A21.20."""
+
+    def test_a2120_h20_default_matches_active_a2118_threshold(self) -> None:
+        from group_a_plus.runners.a2120 import A2120_H20_MAX
+
+        self.assertAlmostEqual(0.33, A2120_H20_MAX)
+
+    def _make_panel(
+        self, h20_probs, confs, h5_probs, gain_probs, dates=None
+    ) -> pd.DataFrame:
+        if dates is None:
+            dates = pd.date_range("2026-02-23", periods=len(h20_probs))
+        return pd.DataFrame(
+            {
+                "prob_up_h20": h20_probs,
+                "confidence": confs,
+                "prob_up_h5": h5_probs,
+                "prob_fwd_gain_gt5_h20": gain_probs,
+            },
+            index=dates,
+        )
+
+    def test_rally_suppression_prevents_hedge_when_gain_prob_high(self) -> None:
+        """When gain_prob >= rally_suppress_min, hedge must be suppressed entirely."""
+        idx = pd.to_datetime(["2026-04-30"])
+        regime = pd.Series(["golden1"], index=idx)
+        ma_gap = pd.Series([0.23], index=idx)
+        panel = self._make_panel(
+            h20_probs=[0.26],
+            confs=[0.58],
+            h5_probs=[0.50],
+            gain_probs=[0.55],  # >= 0.50 → should suppress
+            dates=idx,
+        )
+
+        modified, info = _apply_late_bull_overlay(
+            regime, panel, ma_gap,
+            h20_max=0.33, conf_min=0.55, h5_reentry_min=0.55,
+            gain_prob_soft_min=0.30, rally_suppress_min=0.50,
+        )
+
+        self.assertEqual(["golden1"], modified.tolist())
+        # Trigger condition fired but hedge NOT entered (rally suppressed)
+        self.assertEqual(0, info["late_bull_trigger_days"])
+        self.assertEqual(["2026-04-30"], info["suppressed_days"])
+        self.assertEqual(0, info["total_hedge_days"])
+
+    def test_soft_hedge_applied_when_gain_prob_in_middle_tier(self) -> None:
+        """When gain_prob in [0.30, 0.50), apply soft hedge regime."""
+        from group_a_plus.runners.a2118 import NCF_LB_SOFT_REGIME
+        idx = pd.to_datetime(["2026-04-30"])
+        regime = pd.Series(["golden1"], index=idx)
+        ma_gap = pd.Series([0.23], index=idx)
+        panel = self._make_panel(
+            h20_probs=[0.26],
+            confs=[0.58],
+            h5_probs=[0.50],
+            gain_probs=[0.43],  # in [0.30, 0.50) → soft hedge
+            dates=idx,
+        )
+
+        modified, info = _apply_late_bull_overlay(
+            regime, panel, ma_gap,
+            h20_max=0.33, conf_min=0.55, h5_reentry_min=0.55,
+            gain_prob_soft_min=0.30, rally_suppress_min=0.50,
+        )
+
+        self.assertEqual([NCF_LB_SOFT_REGIME], modified.tolist())
+        self.assertEqual(1, info["late_bull_trigger_days"])
+        self.assertEqual(["2026-04-30"], info["soft_hedge_days"])
+        self.assertEqual([], info["suppressed_days"])
+
+    def test_hard_hedge_applied_when_gain_prob_low(self) -> None:
+        """When gain_prob < 0.30, apply full hard hedge (same as A21.18)."""
+        idx = pd.to_datetime(["2026-02-23"])
+        regime = pd.Series(["golden1"], index=idx)
+        ma_gap = pd.Series([0.19], index=idx)
+        panel = self._make_panel(
+            h20_probs=[0.17],
+            confs=[0.56],
+            h5_probs=[0.30],
+            gain_probs=[0.25],  # < 0.30 → hard hedge
+            dates=idx,
+        )
+
+        modified, info = _apply_late_bull_overlay(
+            regime, panel, ma_gap,
+            h20_max=0.33, conf_min=0.55, h5_reentry_min=0.55,
+            gain_prob_soft_min=0.30, rally_suppress_min=0.50,
+        )
+
+        self.assertEqual([NCF_LB_REGIME], modified.tolist())
+        self.assertEqual(1, info["late_bull_trigger_days"])
+        self.assertEqual([], info["suppressed_days"])
+        self.assertEqual([], info["soft_hedge_days"])
+
+    def test_rally_suppression_exits_hold_early(self) -> None:
+        """When in hold and gain_prob rises above rally_suppress_min, exit hold early."""
+        idx = pd.to_datetime(["2026-02-23", "2026-02-24", "2026-02-25", "2026-02-26"])
+        regime = pd.Series(["golden1"] * 4, index=idx)
+        ma_gap = pd.Series([0.19, 0.20, 0.21, 0.22], index=idx)
+        panel = self._make_panel(
+            h20_probs=[0.28, 0.40, 0.42, 0.43],
+            confs=[0.60, 0.40, 0.40, 0.40],
+            h5_probs=[0.30, 0.35, 0.35, 0.35],
+            gain_probs=[0.25, 0.30, 0.52, 0.55],
+            # Day 3: gain_prob >= 0.50 → rally exit of hold
+            dates=idx,
+        )
+
+        modified, info = _apply_late_bull_overlay(
+            regime, panel, ma_gap,
+            h20_max=0.33, conf_min=0.55, h5_reentry_min=0.55,
+            gain_prob_soft_min=0.30, rally_suppress_min=0.50,
+        )
+
+        # Day 0: hard hedge (gain_prob=0.25 < 0.30)
+        # Day 1: hold (soft, gain_prob=0.30)
+        # Day 2: hold exit by rally suppression (gain_prob=0.52 >= 0.50)
+        # Day 3: back to golden1
+        self.assertEqual("golden1", modified.iloc[2])
+        self.assertEqual("golden1", modified.iloc[3])
+        self.assertEqual(1, info["late_bull_trigger_days"])
+
+
+class NCFDynamicHorizonTests(unittest.TestCase):
+    def test_dynamic_horizon_weights_use_multi_year_prior(self) -> None:
+        sig = {
+            "ticker": "00632R.TW",
+            "calibrated_prob_up": 0.5,
+            "confidence": 1.0,
+            "horizon_prob_up": {"1": 0.95, "5": 0.65, "20": 0.70},
+            "horizon_val_auc": {"1": 0.55, "5": 0.55, "20": 0.55},
+        }
+
+        result = ncf_dynamic_horizon_signal(sig, blend_live_auc=0.0)
+
+        self.assertGreater(result["weights"]["5"], result["weights"]["1"])
+        self.assertGreater(result["weights"]["20"], result["weights"]["1"])
+        self.assertEqual(result["direction"], "UP")
+
+    def test_dynamic_horizon_falls_back_to_ensemble_when_no_horizon_data(self) -> None:
+        sig = {"ticker": "00631L.TW", "calibrated_prob_up": 0.42, "confidence": 0.5}
+
+        result = ncf_dynamic_horizon_signal(sig)
+
+        self.assertEqual(result["source"], "ensemble_fallback")
+        self.assertAlmostEqual(result["probability_up"], 0.42, places=4)
+
+
+class NCFCrossTickerConsistencyTests(unittest.TestCase):
+    def _sig(self, ticker: str, probs: dict[str, float], conf: float = 0.8) -> dict:
+        return {
+            "ticker": ticker,
+            "calibrated_prob_up": sum(probs.values()) / len(probs),
+            "confidence": conf,
+            "horizon_prob_up": probs,
+            "horizon_val_auc": {"1": 0.58, "5": 0.64, "20": 0.66},
+        }
+
+    def test_consistent_market_up_signal(self) -> None:
+        l = self._sig("00631L.TW", {"1": 0.65, "5": 0.70, "20": 0.68})
+        r = self._sig("00632R.TW", {"1": 0.35, "5": 0.30, "20": 0.32})
+
+        result = ncf_cross_ticker_consistency(l, r)
+
+        self.assertEqual(result["market_direction"], "UP")
+        self.assertFalse(result["conflict_flag"])
+        self.assertGreater(result["agreement_score"], 0.6)
+
+    def test_conflicting_same_direction_etf_outputs(self) -> None:
+        l = self._sig("00631L.TW", {"1": 0.70, "5": 0.70, "20": 0.70})
+        r = self._sig("00632R.TW", {"1": 0.70, "5": 0.70, "20": 0.70})
+
+        result = ncf_cross_ticker_consistency(l, r)
+
+        self.assertTrue(result["conflict_flag"])
+        self.assertLess(result["agreement_score"], 0.5)
 
 
 class NCFDownsideSignalTests(unittest.TestCase):
@@ -139,6 +492,24 @@ class NCFDownsideSignalTests(unittest.TestCase):
         sig_r_bull = self._sig("00632R.TW", 0.8, 0.8, "UP")
         d_only_r = ncf_downside_signal(base_l, sig_r_bull)
         self.assertGreater(d_only_l, d_only_r)
+
+    def test_tail_risk_boosts_downside_signal(self) -> None:
+        sig_l = {
+            **self._sig("00631L.TW", 0.42, 0.6),
+            "prob_fwd_mdd_gt5_h20": 0.70,
+            "tail_reward_risk_score": -0.40,
+        }
+        sig_r = {
+            **self._sig("00632R.TW", 0.62, 0.5, "UP"),
+            "prob_fwd_gain_gt5_h20": 0.55,
+            "tail_reward_risk_score": 0.10,
+        }
+
+        directional = ncf_downside_signal(sig_l, sig_r, include_tail_risk=False)
+        boosted = ncf_downside_signal(sig_l, sig_r)
+
+        self.assertGreater(boosted, directional)
+        self.assertGreater(ncf_tail_downside_signal(sig_l, sig_r), 0.0)
 
 
 class AdjustGolden1WeightsTests(unittest.TestCase):
@@ -369,6 +740,7 @@ class NCFRegimeGatedSignalTests(unittest.TestCase):
         l, r = self._sigs(0.4, 0.6)
         result = ncf_regime_gated_signal(l, r, ma_gap=0.10)
         for key in ["raw_downside_signal", "raw_upside_signal", "gated_downside_signal",
+                    "directional_downside_signal", "tail_downside_signal",
                     "ma_gap", "bull_suppression", "bull_suppression_applied",
                     "tail_score_631l", "tail_score_632r"]:
             self.assertIn(key, result)
@@ -398,6 +770,23 @@ class NCFOverlaySummaryMaGapTests(unittest.TestCase):
         summary = ncf_overlay_summary(l, r, self.BASE, "golden1")
         for key in ["gated_downside_signal", "bull_suppression", "bull_suppression_applied", "ma_gap"]:
             self.assertIn(key, summary)
+
+    def test_summary_includes_advisory_dynamic_and_consistency_fields(self) -> None:
+        l, r = self._sigs()
+        summary = ncf_overlay_summary(l, r, self.BASE, "golden1")
+
+        self.assertIn("dynamic_horizon_00631l", summary)
+        self.assertIn("dynamic_horizon_00632r", summary)
+        self.assertIn("cross_ticker_consistency", summary)
+        self.assertIn("market_direction", summary["cross_ticker_consistency"])
+        self.assertIn("conflict_flag", summary["cross_ticker_consistency"])
+
+    def test_advisory_fields_do_not_change_existing_reduction_logic(self) -> None:
+        l, r = self._sigs()
+        summary = ncf_overlay_summary(l, r, self.BASE, "golden1")
+        expected = adjust_golden1_weights(self.BASE, summary["gated_downside_signal"])
+
+        self.assertEqual(summary["adjusted_golden1_weights"], expected)
 
     def test_strong_bull_suppresses_reduction(self) -> None:
         l, r = self._sigs()

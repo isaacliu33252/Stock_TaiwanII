@@ -38,7 +38,7 @@ def _parse_group_a_plus_holdings(frame: pd.DataFrame, row_label: str = "即時�
     group_row = group_start = None
     for row_idx in range(len(frame)):
         for col_idx in range(frame.shape[1]):
-            if str(frame.iloc[row_idx, col_idx]).strip() == "Group A++":
+            if str(frame.iloc[row_idx, col_idx]).strip() in {"Group A++", "Group A+"}:
                 group_row, group_start = row_idx, col_idx
                 break
         if group_start is not None:
@@ -195,6 +195,62 @@ def _apply_execution_controls(
     return targets, suppressed
 
 
+def _apply_buy_staging(
+    current_shares: dict[str, int],
+    target_shares: dict[str, int],
+    prices: dict[str, float],
+    max_initial_buy_fraction: float,
+    min_staged_buy_notional: float,
+    share_lot_size: int,
+) -> tuple[dict[str, int], list[dict[str, Any]]]:
+    if share_lot_size < 1:
+        raise ValueError("share_lot_size must be at least 1")
+    if not 0.0 < max_initial_buy_fraction <= 1.0:
+        raise ValueError("max_initial_buy_fraction must be in (0, 1]")
+    if max_initial_buy_fraction >= 1.0:
+        return dict(target_shares), []
+
+    staged_targets = dict(target_shares)
+    staged: list[dict[str, Any]] = []
+    for ticker in sorted(set(current_shares) | set(target_shares)):
+        current = int(current_shares.get(ticker, 0))
+        target = int(target_shares.get(ticker, current))
+        delta = target - current
+        if delta <= 0:
+            continue
+        price = float(prices.get(ticker, 0.0))
+        buy_notional = delta * price
+        if buy_notional < min_staged_buy_notional:
+            continue
+
+        staged_delta = int(delta * max_initial_buy_fraction)
+        staged_delta = max(share_lot_size, (staged_delta // share_lot_size) * share_lot_size)
+        staged_delta = min(delta, staged_delta)
+        staged_target = current + staged_delta
+        if staged_target >= target:
+            continue
+
+        staged_targets[ticker] = staged_target
+        staged.append(
+            {
+                "ticker": ticker,
+                "current_shares": current,
+                "full_target_shares": target,
+                "staged_target_shares": staged_target,
+                "full_delta_shares": delta,
+                "staged_delta_shares": staged_delta,
+                "deferred_delta_shares": target - staged_target,
+                "price": price,
+                "full_buy_notional": buy_notional,
+                "staged_buy_notional": staged_delta * price,
+                "deferred_buy_notional": (target - staged_target) * price,
+                "max_initial_buy_fraction": max_initial_buy_fraction,
+                "reason": "large_buy_staged",
+            }
+        )
+    return staged_targets, staged
+
+
 def build_execution_plan(
     workbook: Path,
     requested_as_of: str,
@@ -210,6 +266,8 @@ def build_execution_plan(
     min_trade_notional: float = 5_000.0,
     min_weight_deviation: float = 0.005,
     share_lot_size: int = 1,
+    max_initial_buy_fraction: float = 0.4,
+    min_staged_buy_notional: float = 20_000.0,
 ) -> dict[str, Any]:
     if not 0.0 <= commission_discount <= 1.0:
         raise ValueError("commission_discount must be between 0 and 1")
@@ -241,6 +299,14 @@ def build_execution_plan(
         total_assets,
         min_trade_notional,
         min_weight_deviation,
+        share_lot_size,
+    )
+    target_shares, staged_buys = _apply_buy_staging(
+        holdings,
+        target_shares,
+        all_prices,
+        max_initial_buy_fraction,
+        min_staged_buy_notional,
         share_lot_size,
     )
     missing_trade_prices = sorted(
@@ -297,6 +363,7 @@ def build_execution_plan(
         "theoretical_target_shares": theoretical_target_shares,
         "target_shares": target_shares,
         "suppressed_trades": suppressed_trades,
+        "staged_buys": staged_buys,
         "execution_controls": {
             "published_commission_rate": commission_rate,
             "commission_discount": commission_discount,
@@ -305,6 +372,9 @@ def build_execution_plan(
             "min_weight_deviation": min_weight_deviation,
             "share_lot_size": share_lot_size,
             "forced_liquidations_bypass_bands": True,
+            "max_initial_buy_fraction": max_initial_buy_fraction,
+            "min_staged_buy_notional": min_staged_buy_notional,
+            "buy_staging_applies_to_sells": False,
         },
         "trades": trades,
         "execution_summary": {
@@ -337,6 +407,8 @@ def main() -> None:
     parser.add_argument("--min-trade-notional", type=float, default=5000.0)
     parser.add_argument("--min-weight-deviation", type=float, default=0.005)
     parser.add_argument("--share-lot-size", type=int, default=1)
+    parser.add_argument("--max-initial-buy-fraction", type=float, default=0.4)
+    parser.add_argument("--min-staged-buy-notional", type=float, default=20_000.0)
     parser.add_argument("--output", default="results/group_a_plus_execution_plan_v2.json")
     parser.add_argument("--latest-pointer", default=str(DEFAULT_EXECUTION_PLAN))
     args = parser.parse_args()
@@ -357,6 +429,8 @@ def main() -> None:
             args.min_trade_notional,
             args.min_weight_deviation,
             args.share_lot_size,
+            args.max_initial_buy_fraction,
+            args.min_staged_buy_notional,
         )
         payload = std.success(plan)
     except Exception as exc:

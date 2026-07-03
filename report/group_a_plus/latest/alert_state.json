@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-03T01:14:08Z",
+  "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+  "signal_date": "2026-07-02",
+  "source_signal_version": 2,
+  "summary": {
+    "current_alert_count": 0,
+    "emitted_count": 0,
+    "suppressed_count": 0,
+    "resolved_count": 0,
+    "active_state_count": 0
+  },
+  "emitted_alerts": [],
+  "suppressed_alerts": [],
+  "resolved_alerts": [],
+  "alerts": {
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:total_risk_score": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:total_risk_score",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:total_risk_score",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-02T05:55:21Z",
+      "last_seen_at": "2026-07-02T05:55:21Z",
+      "last_emitted_at": "2026-07-02T05:55:21Z",
+      "seen_count": 1,
+      "suppressed_count": 0,
+      "cooldown_minutes": 5,
+      "alert": {
+        "type": "total_risk_score",
+        "level": "medium",
+        "title": "Total risk score elevated",
+        "reason": "Composite market risk score is elevated.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:total_risk_score",
+        "cooldown_minutes": 5
+      },
+      "resolved_at": "2026-07-02T07:29:57Z"
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:signal_wide_divergence": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:signal_wide_divergence",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:signal_wide_divergence",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-02T05:55:21Z",
+      "last_seen_at": "2026-07-02T05:55:21Z",
+      "last_emitted_at": "2026-07-02T05:55:21Z",
+      "seen_count": 1,
+      "suppressed_count": 0,
+      "cooldown_minutes": 5,
+      "alert": {
+        "type": "signal_wide_divergence",
+        "level": "medium",
+        "title": "Signal alignment diverged",
+        "reason": "Cross-source signals show wide divergence; dominant direction is bullish.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:signal_wide_divergence",
+        "cooldown_minutes": 5
+      },
+      "resolved_at": "2026-07-02T07:29:57Z"
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:factor_lens_stale": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:factor_lens_stale",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:factor_lens_stale",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-02T05:55:21Z",
+      "last_seen_at": "2026-07-02T05:55:21Z",
+      "last_emitted_at": "2026-07-02T05:55:21Z",
+      "seen_count": 1,
+      "suppressed_count": 0,
+      "cooldown_minutes": 5,
+      "alert": {
+        "type": "factor_lens_stale",
+        "level": "medium",
+        "title": "Factor lens report stale",
+        "reason": "Factor lens report is dated 2026-06-29, older than signal date 2026-07-01.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:factor_lens_stale",
+        "cooldown_minutes": 5
+      },
+      "resolved_at": "2026-07-02T07:29:57Z"
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-06-30:bearish_high_risk_trim": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-06-30:bearish_high_risk_trim",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:bearish_high_risk_trim",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-06-30T15:01:14Z",
+      "last_seen_at": "2026-06-30T15:40:22Z",
+      "last_emitted_at": "2026-06-30T15:40:22Z",
+      "seen_count": 2,
+      "suppressed_count": 0,
+      "cooldown_minutes": 5,
+      "alert": {
+        "type": "bearish_high_risk_trim",
+        "level": "medium",
+        "title": "Bearish high-risk trim applied",
+        "reason": "total_risk_score=10, alignment=wide_divergence, dominant=bearish",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-06-30:bearish_high_risk_trim",
+        "cooldown_minutes": 5
+      },
+      "resolved_at": "2026-07-02T05:55:21Z"
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-06-29:regime_transition": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-06-29:regime_transition",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:regime_transition",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-06-30T06:42:21Z",
+      "last_seen_at": "2026-06-30T09:03:46Z",
+      "last_emitted_at": "2026-06-30T09:03:46Z",
+      "seen_count": 4,
+      "suppressed_count": 1,
+      "cooldown_minutes": 5,
+      "alert": {
+        "type": "regime_transition",
+        "level": "medium",
+        "title": "Regime transition",
+        "reason": "Execution regime changed to ncf_late_bull_hedge.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-06-29:regime_transition",
+        "cooldown_minutes": 5
+      },
+      "resolved_at": "2026-06-30T15:01:14Z"
+    }
+  }
+}

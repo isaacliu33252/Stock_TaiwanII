@@ -359,6 +359,43 @@ def _safe_panel_col(panel: pd.DataFrame, column: str, default: float = 0.0) -> p
     return pd.Series(default, index=panel.index, dtype=float)
 
 
+def _inject_0050_pva_columns(panel: pd.DataFrame, df_0050: pd.DataFrame) -> pd.DataFrame:
+    """Compute 0050-based PVA/SJM columns and merge into panel by date.
+
+    Used to supply GROUP_A_PVA_OBS_COLUMNS for Group B inference when 0050 is
+    not part of Group B tickers but the trained model was built with PVA features.
+    """
+    df = _compute_features(df_0050.copy())
+    pva_p = df["close_ma120_ratio"].fillna(1.0) - 1.0
+    pva_v = df["momentum_63"].fillna(0.0)
+    pva_a = pva_v - pva_v.shift(20).fillna(pva_v)
+    pva_p_z = _rolling_zscore(pva_p)
+    pva_v_z = _rolling_zscore(pva_v)
+    pva_a_z = _rolling_zscore(pva_a)
+    panic = (pva_a_z < -2.0) | (pva_v_z < -2.0)
+    greed = (pva_v_z > 1.0) & (pva_a_z > 0.0)
+    sjm = pd.Series(0.0, index=df.index)
+    sjm[greed] = 1.0
+    sjm[panic] = -1.0
+    pva_df = pd.DataFrame({
+        "date": pd.to_datetime(df["date"]),
+        "0050_pva_p": pva_p.values,
+        "0050_pva_v": pva_v.values,
+        "0050_pva_a": pva_a.values,
+        "0050_pva_p_z": pva_p_z.values,
+        "0050_pva_v_z": pva_v_z.values,
+        "0050_pva_a_z": pva_a_z.values,
+        "0050_sjm_state_code": sjm.values,
+    })
+    panel = panel.copy()
+    panel["date"] = pd.to_datetime(panel["date"])
+    panel = panel.merge(pva_df, on="date", how="left")
+    for col in ["0050_pva_p", "0050_pva_v", "0050_pva_a",
+                "0050_pva_p_z", "0050_pva_v_z", "0050_pva_a_z", "0050_sjm_state_code"]:
+        panel[col] = panel[col].fillna(0.0)
+    return panel.replace([np.inf, -np.inf], 0.0)
+
+
 def _add_group_a_panel_features(panel: pd.DataFrame, tickers: list[str]) -> pd.DataFrame:
     panel = panel.copy()
     if not {"0050.TW", "00631L.TW", "00632R.TW"}.issubset(set(tickers)):
@@ -1697,13 +1734,13 @@ class PortfolioEnv(gym.Env):
         self.feature_cols = []
         self.shared_feature_cols = [c for c in (shared_feature_cols or []) if c in self.panel.columns]
         self.pva_feature_cols = []
-        if self.enable_pva_features and self.group_a_triplet:
+        if self.enable_pva_features:
             self.pva_feature_cols = [c for c in GROUP_A_PVA_OBS_COLUMNS if c in self.panel.columns]
         for ticker in self.tickers:
             self.feature_cols.extend(
                 [f"{ticker}_{c}" for c in FEATURE_COLUMNS if f"{ticker}_{c}" in self.panel.columns]
             )
-        obs_dim = len(self.feature_cols) + len(self.shared_feature_cols) + len(self.pva_feature_cols) + 7
+        obs_dim = len(self.feature_cols) + len(self.shared_feature_cols) + len(self.pva_feature_cols) + 5
         self.observation_space = spaces.Box(low=-10.0, high=10.0, shape=(obs_dim,), dtype=np.float32)
         action_labels = _action_labels_for_context(
             self.profile_name,
@@ -2638,7 +2675,6 @@ class PortfolioEnv(gym.Env):
             extra.append(value / max(float(self.bh_0050_curve[self.step_idx]), 1.0) - 1.0)
         else:
             extra.append(0.0)
-        extra.extend([0.0, 0.0])
 
         state = np.array(extra, dtype=float)
         obs = np.concatenate([features, shared_features, pva_features, state])

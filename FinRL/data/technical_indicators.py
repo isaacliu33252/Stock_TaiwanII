@@ -261,17 +261,29 @@ class TechnicalIndicators:
         close = self.df['close'].values
         
         if TALIB_AVAILABLE:
-            macd_line, signal_line, hist = talib.MACD(
-                close,
-                fastperiod=fast_period,
-                slowperiod=slow_period,
-                signalperiod=signal_period
-            )
-            self.df['macd_line'] = macd_line
-            self.df['signal_line'] = signal_line
-            self.df['histogram'] = hist
+            try:
+                macd_line, signal_line, hist = talib.MACD(
+                    close,
+                    fastperiod=fast_period,
+                    slowperiod=slow_period,
+                    signalperiod=signal_period
+                )
+                self.df['macd_line'] = macd_line
+                self.df['signal_line'] = signal_line
+                self.df['histogram'] = hist
+            except Exception:
+                # TA-Lib 失敗，使用 Pandas fallback
+                ema_fast = self.df['close'].ewm(span=fast_period, adjust=False).mean()
+                ema_slow = self.df['close'].ewm(span=slow_period, adjust=False).mean()
+                macd_line = ema_fast - ema_slow
+                signal_line = macd_line.ewm(span=signal_period, adjust=False).mean()
+                histogram = macd_line - signal_line
+                
+                self.df['macd_line'] = macd_line
+                self.df['signal_line'] = signal_line
+                self.df['histogram'] = histogram
         else:
-            # 手動計算 EMA
+            # 無 TA-Lib，使用 Pandas
             ema_fast = self.df['close'].ewm(span=fast_period, adjust=False).mean()
             ema_slow = self.df['close'].ewm(span=slow_period, adjust=False).mean()
             macd_line = ema_fast - ema_slow
@@ -329,9 +341,17 @@ class TechnicalIndicators:
             col_name = f'rsi_{period}'
             
             if TALIB_AVAILABLE:
-                self.df[col_name] = talib.RSI(close, timeperiod=period)
+                try:
+                    self.df[col_name] = talib.RSI(close, timeperiod=period)
+                except Exception:
+                    # TA-Lib 失敗，使用 Pandas fallback
+                    delta = self.df['close'].diff()
+                    gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+                    loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+                    rs = gain / (loss + 1e-10)
+                    self.df[col_name] = 100 - (100 / (1 + rs))
             else:
-                # 手動計算 RSI
+                # 無 TA-Lib，使用 Pandas
                 delta = self.df['close'].diff()
                 gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
                 loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
@@ -386,17 +406,27 @@ class TechnicalIndicators:
         close = self.df['close'].values
         
         if TALIB_AVAILABLE:
-            k_value, d_value = talib.STOCH(
-                high, low, close,
-                fastk_period=period,
-                slowk_period=smooth_k,
-                slowk_matype=0,
-                slowd_period=smooth_d,
-                slowd_matype=0
-            )
-            j_value = 3 * k_value - 2 * d_value
+            try:
+                k_value, d_value = talib.STOCH(
+                    high, low, close,
+                    fastk_period=period,
+                    slowk_period=smooth_k,
+                    slowk_matype=0,
+                    slowd_period=smooth_d,
+                    slowd_matype=0
+                )
+                j_value = 3 * k_value - 2 * d_value
+            except Exception:
+                # TA-Lib 失敗，使用 Pandas fallback
+                lowest_low = self.df['low'].rolling(window=period).min()
+                highest_high = self.df['high'].rolling(window=period).max()
+                rsv = (close - lowest_low) / (highest_high - lowest_low + 1e-10) * 100
+                
+                k_value = rsv.rolling(window=smooth_k).mean()
+                d_value = k_value.rolling(window=smooth_d).mean()
+                j_value = 3 * k_value - 2 * d_value
         else:
-            # 手動計算 KDJ
+            # 無 TA-Lib，使用 Pandas
             lowest_low = self.df['low'].rolling(window=period).min()
             highest_high = self.df['high'].rolling(window=period).max()
             rsv = (close - lowest_low) / (highest_high - lowest_low + 1e-10) * 100
@@ -435,8 +465,15 @@ class TechnicalIndicators:
         close = self.df['close'].values
         
         if TALIB_AVAILABLE:
-            self.df['williams_r'] = talib.WILLR(high, low, close, timeperiod=period)
+            try:
+                self.df['williams_r'] = talib.WILLR(high, low, close, timeperiod=period)
+            except Exception:
+                # TA-Lib 失敗，使用 Pandas fallback
+                highest_high = self.df['high'].rolling(window=period).max()
+                lowest_low = self.df['low'].rolling(window=period).min()
+                self.df['williams_r'] = -100 * (highest_high - close) / (highest_high - lowest_low + 1e-10)
         else:
+            # 無 TA-Lib，使用 Pandas
             highest_high = self.df['high'].rolling(window=period).max()
             lowest_low = self.df['low'].rolling(window=period).min()
             self.df['williams_r'] = -100 * (highest_high - close) / (highest_high - lowest_low + 1e-10)
@@ -482,17 +519,26 @@ class TechnicalIndicators:
         close = self.df['close'].values
         
         if TALIB_AVAILABLE:
-            upper, middle, lower = talib.BBANDS(
-                close,
-                timeperiod=period,
-                nbdevup=std_dev,
-                nbdevdn=std_dev,
-                matype=0  # Simple Moving Average
-            )
-            self.df['bb_upper'] = upper
-            self.df['bb_middle'] = middle
-            self.df['bb_lower'] = lower
+            try:
+                upper, middle, lower = talib.BBANDS(
+                    close,
+                    timeperiod=period,
+                    nbdevup=std_dev,
+                    nbdevdn=std_dev,
+                    matype=0  # Simple Moving Average
+                )
+                self.df['bb_upper'] = upper
+                self.df['bb_middle'] = middle
+                self.df['bb_lower'] = lower
+            except Exception:
+                # TA-Lib 失敗，使用 Pandas fallback
+                middle = self.df['close'].rolling(window=period).mean()
+                std = self.df['close'].rolling(window=period).std(ddof=1)
+                self.df['bb_upper'] = middle + std_dev * std
+                self.df['bb_middle'] = middle
+                self.df['bb_lower'] = middle - std_dev * std
         else:
+            # 無 TA-Lib，使用 Pandas
             middle = self.df['close'].rolling(window=period).mean()
             std = self.df['close'].rolling(window=period).std(ddof=1)
             self.df['bb_upper'] = middle + std_dev * std
@@ -534,9 +580,18 @@ class TechnicalIndicators:
         close = self.df['close'].values
         
         if TALIB_AVAILABLE:
-            self.df['atr_14'] = talib.ATR(high, low, close, timeperiod=period)
+            # TA-Lib 實作（高效）
+            try:
+                self.df['atr_14'] = talib.ATR(high, low, close, timeperiod=period)
+            except Exception:
+                # TA-Lib 失敗，使用 Pandas fallback
+                tr1 = self.df['high'] - self.df['low']
+                tr2 = abs(self.df['high'] - self.df['close'].shift())
+                tr3 = abs(self.df['low'] - self.df['close'].shift())
+                tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+                self.df['atr_14'] = tr.rolling(window=period).mean()
         else:
-            # 手動計算 True Range
+            # 無 TA-Lib，使用 Pandas
             tr1 = self.df['high'] - self.df['low']
             tr2 = abs(self.df['high'] - self.df['close'].shift())
             tr3 = abs(self.df['low'] - self.df['close'].shift())
@@ -569,8 +624,11 @@ class TechnicalIndicators:
         close = self.df['close'].values
 
         if TALIB_AVAILABLE:
-            self.df['dmi_plus'] = talib.PLUS_DM(high, low, timeperiod=period)
-            self.df['dmi_minus'] = talib.MINUS_DM(high, low, timeperiod=period)
+            # 注意: PLUS_DI/MINUS_DI 是 ATR 正規化的趨向指標，正確用於 DMI
+            # PLUS_DM/MINUS_DM 是未經 ATR 正規化的原始值，兩者不同
+            # DI = 100 * DM / ATR，正確實現 Directional Movement Index
+            self.df['dmi_plus'] = talib.PLUS_DI(high, low, close, timeperiod=period)
+            self.df['dmi_minus'] = talib.MINUS_DI(high, low, close, timeperiod=period)
             self.df['adx'] = talib.ADX(high, low, close, timeperiod=period)
         else:
             # 手動計算 DMI

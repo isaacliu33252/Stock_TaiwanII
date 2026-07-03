@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RESULTS_DIR = PROJECT_ROOT / "results"
+DB_PATH = PROJECT_ROOT / "FinRL" / "data" / "stock_data.db"
 DEFAULT_TICKERS = (
     "0050.TW",
     "00631L.TW",
@@ -75,11 +76,61 @@ def _signal_summary(path: Path) -> dict[str, Any]:
     }
 
 
+def _resolve_chip_start(db_path: Path, tables: list[str], default_start: str) -> str:
+    """M8 (2026-07-02 Fable 5 audit): extend the fetch window backward to
+    cover any real gap since the last successful fetch, instead of always
+    using a fixed lookback (`--chip-start` defaults to today-21d) that
+    leaves a permanent hole whenever the pipeline was down longer than that
+    -- this happened for real on 2026-07-02 (derivative_institutional_data
+    gap, backfilled manually; see project_automation memory).
+
+    Returns the earlier of `default_start` and (the day after the earliest
+    MAX(dt) across `tables`) -- this only ever *widens* the window when
+    there's a real gap; a table that's already fresher than the default
+    lookback doesn't narrow it (still refetches the default trailing window,
+    which is harmless and covers any late-arriving upstream revisions).
+    Falls back to `default_start` unchanged if the DB or tables don't exist
+    yet, or on any query error (never blocks the pipeline on this check).
+    """
+    if not db_path.exists() or not tables:
+        return default_start
+    try:
+        import duckdb
+
+        con = duckdb.connect(str(db_path), read_only=True)
+        try:
+            existing = {
+                row[0] for row in con.execute("SELECT table_name FROM information_schema.tables").fetchall()
+            }
+            max_dates: list[date] = []
+            for table in tables:
+                if table not in existing:
+                    continue
+                result = con.execute(f"SELECT MAX(dt) FROM {table}").fetchone()
+                if result and result[0] is not None:
+                    max_dates.append(result[0] if isinstance(result[0], date) else date.fromisoformat(str(result[0])))
+        finally:
+            con.close()
+    except Exception:
+        return default_start
+    if not max_dates:
+        return default_start
+    earliest_gap_start = min(max_dates) + timedelta(days=1)
+    default_start_date = date.fromisoformat(default_start)
+    return min(default_start_date, earliest_gap_start).isoformat()
+
+
 def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
     stamp = args.date_stamp
     chip_start = args.chip_start
     chip_end = args.chip_end
+    db_path = Path(getattr(args, "db", None) or DB_PATH)
+    institutional_start = _resolve_chip_start(db_path, ["institutional_data"], chip_start)
+    margin_start = _resolve_chip_start(db_path, ["margin_data"], chip_start)
+    market_margin_start = _resolve_chip_start(db_path, ["market_margin_data"], chip_start)
+    derivative_start = _resolve_chip_start(db_path, ["derivative_institutional_data"], chip_start)
     tickers = ",".join(DEFAULT_TICKERS)
+    refresh_target_date = getattr(args, "refresh_target_date", "auto")
 
     only_refresh = getattr(args, "only_refresh", False)
     commands: dict[str, list[str]] = {}
@@ -92,8 +143,12 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
             "--summary-path",
             str(_result_path(f"data_refresh_{stamp}.json")),
         ]
+        if refresh_target_date != "auto":
+            refresh_cmd.extend(["--target-date", refresh_target_date])
         if args.force_refresh:
             refresh_cmd.append("--force")
+        if getattr(args, "strict_refresh", False):
+            refresh_cmd.append("--strict")
         commands["refresh_group_data"] = refresh_cmd
         commands["refresh_taifex"] = [sys.executable, "taifex_futures_data.py", "--refresh-latest"]
         commands["refresh_institutional"] = [
@@ -102,7 +157,7 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
             "--add-institutional",
             tickers,
             "--start",
-            chip_start,
+            institutional_start,
             "--end",
             chip_end,
         ]
@@ -112,7 +167,7 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
             "--add-margin",
             tickers,
             "--start",
-            chip_start,
+            margin_start,
             "--end",
             chip_end,
         ]
@@ -121,7 +176,7 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
             "FinRL/data/stock_db.py",
             "--add-market-margin",
             "--start",
-            chip_start,
+            market_margin_start,
             "--end",
             chip_end,
         ]
@@ -135,7 +190,7 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
             "--option-ids",
             "TXO",
             "--start",
-            chip_start,
+            derivative_start,
             "--end",
             chip_end,
         ]
@@ -146,11 +201,15 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
                 "--add-shareholding",
             ]
 
+    ohlcv_target_date = args.ohlcv_target_date
+    if ohlcv_target_date == "auto" and refresh_target_date != "auto":
+        ohlcv_target_date = refresh_target_date
+
     commands["ohlcv_freshness"] = [
         sys.executable,
         "scripts/misc/check_ohlcv_freshness.py",
         "--target-date",
-        args.ohlcv_target_date,
+        ohlcv_target_date,
         "--max-db-lag-days",
         str(args.max_ohlcv_lag_days),
         "--output",
@@ -228,6 +287,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--date-stamp", default=today.strftime("%Y%m%d"))
     parser.add_argument("--skip-refresh", action="store_true", help="Only run NCF signals and advisory panel.")
     parser.add_argument("--force-refresh", action="store_true", help="Pass --force to refresh_group_data.py.")
+    parser.add_argument(
+        "--refresh-target-date",
+        default="auto",
+        help="Target trading date for refresh_group_data.py in YYYY-MM-DD, or auto.",
+    )
+    parser.add_argument(
+        "--strict-refresh",
+        action="store_true",
+        help="Fail refresh_group_data.py if the provider does not return refresh-target-date.",
+    )
     parser.add_argument("--skip-shareholding", action="store_true", help="Skip TDCC shareholding refresh.")
     parser.add_argument("--chip-start", default=(today - timedelta(days=21)).isoformat())
     parser.add_argument("--chip-end", default=today.isoformat())
@@ -281,33 +350,47 @@ def main() -> None:
         print(f"\nDry run only. Manifest would be written to: {manifest_path}")
         return
 
+    outputs = {
+        "ohlcv_freshness": str(_result_path(f"ohlcv_freshness_{args.date_stamp}.json")),
+    }
+    if not args.skip_refresh:
+        outputs["data_refresh"] = str(_result_path(f"data_refresh_{args.date_stamp}.json"))
+    if not args.only_refresh:
+        outputs.update(
+            {
+                "ncf_00631l": str(_result_path(f"ncf_00631l_latest_{args.date_stamp}.json")),
+                "ncf_00632r": str(_result_path(f"ncf_00632r_latest_{args.date_stamp}.json")),
+                "panel_00631l": str(_result_path(f"ncf_00631l_panel_latest_{args.date_stamp}.csv")),
+                "panel_00632r": str(_result_path(f"ncf_00632r_panel_latest_{args.date_stamp}.csv")),
+                "advisory_panel": str(_result_path(f"ncf_advisory_panel_latest_{args.date_stamp}.csv")),
+                "factor_lens": str(_result_path(f"group_a_plus_factor_lens_{args.date_stamp}.json")),
+                "live_signal": str(_result_path(f"group_a_plus_live_signal_v2_{args.date_stamp}.json")),
+            }
+        )
+
     summary = {
         "date_stamp": args.date_stamp,
-        "outputs": {
-            "ohlcv_freshness": str(_result_path(f"ohlcv_freshness_{args.date_stamp}.json")),
-            "ncf_00631l": str(_result_path(f"ncf_00631l_latest_{args.date_stamp}.json")),
-            "ncf_00632r": str(_result_path(f"ncf_00632r_latest_{args.date_stamp}.json")),
-            "panel_00631l": str(_result_path(f"ncf_00631l_panel_latest_{args.date_stamp}.csv")),
-            "panel_00632r": str(_result_path(f"ncf_00632r_panel_latest_{args.date_stamp}.csv")),
-            "advisory_panel": str(_result_path(f"ncf_advisory_panel_latest_{args.date_stamp}.csv")),
-            "factor_lens": str(_result_path(f"group_a_plus_factor_lens_{args.date_stamp}.json")),
-            "live_signal": str(_result_path(f"group_a_plus_live_signal_v2_{args.date_stamp}.json")),
-        },
-        "signals": {
+        "mode": "refresh_only" if args.only_refresh else "full",
+        "outputs": outputs,
+    }
+    if not args.only_refresh:
+        summary["signals"] = {
             "00631L": _signal_summary(_result_path(f"ncf_00631l_latest_{args.date_stamp}.json")),
             "00632R": _signal_summary(_result_path(f"ncf_00632r_latest_{args.date_stamp}.json")),
-        },
-    }
+        }
     manifest_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     print("\nNCF daily pipeline complete")
-    for ticker, signal in summary["signals"].items():
-        print(
-            f"  {ticker}: {signal['direction']} "
-            f"prob_up={signal['probability_up']} "
-            f"freshness={signal['data_freshness_status']} "
-            f"date={signal['last_close_date']}"
-        )
+    if args.only_refresh:
+        print("  refresh-only mode: NCF signal generation skipped")
+    else:
+        for ticker, signal in summary["signals"].items():
+            print(
+                f"  {ticker}: {signal['direction']} "
+                f"prob_up={signal['probability_up']} "
+                f"freshness={signal['data_freshness_status']} "
+                f"date={signal['last_close_date']}"
+            )
     print(f"Manifest: {manifest_path}")
 
     print("\n[env-health]")
@@ -343,6 +426,10 @@ def main() -> None:
         print("  Saved → report/group_a_plus/latest/ops_health.json")
     except Exception as exc:  # noqa: BLE001
         print(f"  [WARNING] Ops health check failed (non-fatal): {exc}")
+
+    if args.only_refresh:
+        print("\nRefresh-only mode complete; skipped commentary, watchlist news, signal alignment, and alert state.")
+        return
 
     # --- LLM commentary (optional) ---
     if not args.skip_commentary:

@@ -17,10 +17,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import subprocess
-import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).parent.parent.parent
 RESULTS_DIR = ROOT / "results"
@@ -41,14 +42,31 @@ FOLDS = [
 HORIZONS = [1, 5, 20]
 
 
+def _clean_auc(value: Any) -> float | None:
+    if value is None:
+        return None
+    try:
+        out = float(value)
+    except (TypeError, ValueError):
+        return None
+    return out if math.isfinite(out) else None
+
+
 def _run_fold(
     script: Path,
+    ticker: str,
     fold: dict,
     no_external: bool,
+    no_tbrain: bool,
+    tbrain: bool,
+    fourier: bool,
+    no_fourier: bool,
+    global_features: bool,
+    no_global: bool,
     python: str,
 ) -> dict | None:
     """Run one NCF training fold and return parsed JSON output, or None on failure."""
-    tmp_output = RESULTS_DIR / f"_ncf_wf_tmp_{fold['val_year']}_{script.stem}.json"
+    tmp_output = RESULTS_DIR / f"_ncf_wf_tmp_{ticker.lower()}_{fold['val_year']}_{script.stem}.json"
     cmd = [
         python, str(script),
         "--train-start", fold["train_start"],
@@ -58,6 +76,18 @@ def _run_fold(
     ]
     if no_external:
         cmd.append("--no-external-features")
+    if no_tbrain:
+        cmd.append("--no-tbrain-features")
+    if tbrain:
+        cmd.append("--tbrain-features")
+    if fourier:
+        cmd.append("--fourier-features")
+    if no_fourier:
+        cmd.append("--no-fourier-features")
+    if global_features:
+        cmd.append("--global-features")
+    if no_global:
+        cmd.append("--no-global-features")
 
     print(f"  Running fold {fold['val_year']}: {' '.join(cmd[-6:])}", flush=True)
     try:
@@ -88,12 +118,12 @@ def _run_fold(
         return None
 
 
-def _extract_auc(data: dict) -> dict[int, float]:
+def _extract_auc(data: dict[str, Any]) -> dict[int, dict[str, float | None]]:
     """Extract ensemble AUC per horizon from NCF JSON output.
 
     Supports both old (regime_classification) and current (classification.val_auc) structure.
     """
-    aucs: dict[int, float] = {}
+    aucs: dict[int, dict[str, float | None]] = {}
     horizons_data = data.get("horizons", {})
     for h in HORIZONS:
         h_key = str(h)
@@ -108,20 +138,20 @@ def _extract_auc(data: dict) -> dict[int, float]:
         ens_bear = None
 
         if isinstance(clf, dict):
-            ens_all = clf.get("val_auc") or clf.get("ensemble", {}).get("auc")
+            ens_all = _clean_auc(clf.get("val_auc") or clf.get("ensemble", {}).get("auc"))
             # Bull/bear split inside classification (if present)
             bull = clf.get("bull") or {}
             bear = clf.get("bear") or {}
-            ens_bull = bull.get("ensemble", {}).get("auc") or bull.get("val_auc")
-            ens_bear = bear.get("ensemble", {}).get("auc") or bear.get("val_auc")
+            ens_bull = _clean_auc(bull.get("ensemble", {}).get("auc") or bull.get("val_auc"))
+            ens_bear = _clean_auc(bear.get("ensemble", {}).get("auc") or bear.get("val_auc"))
 
         # Older structure: horizons[h].regime_classification.bull/bear
         regime_clf = hd.get("regime_classification") or {}
         if regime_clf:
             bull = regime_clf.get("bull") or {}
             bear = regime_clf.get("bear") or {}
-            ens_bull = ens_bull or bull.get("ensemble", {}).get("auc")
-            ens_bear = ens_bear or bear.get("ensemble", {}).get("auc")
+            ens_bull = ens_bull or _clean_auc(bull.get("ensemble", {}).get("auc"))
+            ens_bear = ens_bear or _clean_auc(bear.get("ensemble", {}).get("auc"))
 
         aucs[h] = {
             "bull": ens_bull,
@@ -168,6 +198,16 @@ def main() -> None:
                         default=[f["val_year"] for f in FOLDS],
                         help="Which val years to run (default: all 2022-2026)")
     parser.add_argument("--no-external-features", action="store_true")
+    parser.add_argument("--no-tbrain-features", action="store_true")
+    parser.add_argument("--tbrain-features", action="store_true")
+    parser.add_argument("--fourier-features", action="store_true",
+                        help="Enable Fourier trend features for 00631L (opt-in)")
+    parser.add_argument("--no-fourier-features", action="store_true",
+                        help="Disable Fourier trend features for 00632R (opt-out)")
+    parser.add_argument("--global-features", action="store_true",
+                        help="Enable global correlated asset features for 00631L (opt-in)")
+    parser.add_argument("--no-global-features", action="store_true",
+                        help="Disable global correlated asset features for 00632R (opt-out)")
     parser.add_argument("--output", default=None,
                         help="Save summary JSON to this path")
     parser.add_argument("--python", default=str(ROOT / ".venv" / "bin" / "python"),
@@ -190,7 +230,19 @@ def main() -> None:
         fold_results = []
         for fold in active_folds:
             print(f"\n--- Fold {fold['val_year']} ---", flush=True)
-            data = _run_fold(script, fold, args.no_external_features, args.python)
+            data = _run_fold(
+                script,
+                ticker,
+                fold,
+                args.no_external_features,
+                args.no_tbrain_features,
+                args.tbrain_features,
+                args.fourier_features,
+                args.no_fourier_features,
+                args.global_features,
+                args.no_global_features,
+                args.python,
+            )
             if data is None:
                 fold_results.append({"val_year": fold["val_year"], "aucs": {}, "error": True})
                 continue
@@ -202,11 +254,19 @@ def main() -> None:
 
     if args.output:
         out_path = Path(args.output)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(
             json.dumps({
                 "generated_at": datetime.now().isoformat(),
                 "folds": [f["val_year"] for f in active_folds],
                 "tickers": tickers,
+                "no_external_features": args.no_external_features,
+                "no_tbrain_features": args.no_tbrain_features,
+                "tbrain_features": args.tbrain_features,
+                "fourier_features": args.fourier_features,
+                "no_fourier_features": args.no_fourier_features,
+                "global_features": args.global_features,
+                "no_global_features": args.no_global_features,
                 "results": all_summary,
             }, indent=2, ensure_ascii=False),
             encoding="utf-8",

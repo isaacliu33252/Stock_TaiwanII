@@ -5,13 +5,24 @@ from __future__ import annotations
 
 import argparse
 import csv
+import glob
 import json
+import sys
 from datetime import datetime
 from html import escape
 from pathlib import Path
 from typing import Any
 
+_SCRIPT_PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(_SCRIPT_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_PROJECT_ROOT))
+
 from group_a_plus_review_tools import PROJECT_ROOT, load_json, resolve_path
+from group_a_plus.integrations.ncf import (
+    load_ncf_signal,
+    ncf_cross_ticker_consistency,
+    ncf_dynamic_horizon_signal,
+)
 
 
 DEFAULT_BASELINE = PROJECT_ROOT / "GROUP_A_PLUS_CURRENT_BASELINE.json"
@@ -19,6 +30,9 @@ DEFAULT_REVIEW_POINTER = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "
 DEFAULT_COMPARE_POINTER = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "strategy_compare.json"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "report" / "group_a_plus" / "decision"
 DEFAULT_LATEST = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "decision.json"
+DEFAULT_NCF_ADVISORY_GLOB = PROJECT_ROOT / "results" / "ncf_advisory_panel_latest_*.csv"
+DEFAULT_NCF_00631L_GLOB = PROJECT_ROOT / "results" / "ncf_00631l_latest_*.json"
+DEFAULT_NCF_00632R_GLOB = PROJECT_ROOT / "results" / "ncf_00632r_latest_*.json"
 TICKERS = ("0050.TW", "00631L.TW", "00632R.TW", "00679B.TWO")
 DEFAULT_TARGET_TOTAL_ASSETS = 1_000_000.0
 
@@ -91,6 +105,139 @@ def _shares_from_weights(signal: dict[str, Any], weights: dict[str, float]) -> d
     return {
         ticker: int((total_assets * max(float(weights.get(ticker, 0.0) or 0.0), 0.0)) // max(float(prices.get(ticker, 0.0) or 0.0), 1e-12))
         for ticker in TICKERS
+    }
+
+
+def _parse_bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {"1", "true", "yes", "y"}
+
+
+def _resolve_latest_ncf_advisory_panel(explicit: str | Path | None = None) -> Path | None:
+    if explicit:
+        path = resolve_path(explicit)
+        return path if path.exists() else None
+    matches = sorted(glob.glob(str(DEFAULT_NCF_ADVISORY_GLOB)), key=lambda item: Path(item).stat().st_mtime)
+    return Path(matches[-1]) if matches else None
+
+
+def _resolve_latest_file(pattern: Path) -> Path | None:
+    matches = sorted(glob.glob(str(pattern)), key=lambda item: Path(item).stat().st_mtime)
+    return Path(matches[-1]) if matches else None
+
+
+def _ncf_shadow_policy(row: dict[str, Any]) -> dict[str, Any]:
+    market_direction = str(row.get("market_direction") or "").upper()
+    agreement_score = float(row.get("agreement_score") or 0.0)
+    conflict_flag = _parse_bool(row.get("conflict_flag"))
+    if conflict_flag:
+        policy = "conflict_reduce_20"
+        risk_reduction = 0.20
+        reason = "NCF 00631L/00632R conflict flag is active"
+    elif market_direction == "DOWN":
+        policy = "bearish_reduce_40"
+        risk_reduction = 0.40
+        reason = "NCF cross-ticker advisory market_direction is DOWN"
+    else:
+        policy = "baseline"
+        risk_reduction = 0.0
+        reason = "NCF cross-ticker advisory is not bearish"
+    return {
+        "policy": policy,
+        "risk_reduction": risk_reduction,
+        "defensive_destination": "00679B.TWO",
+        "reason": reason,
+        "promotion_status": "shadow_only",
+        "implementation_status": "not_applied_to_live_weights",
+        "agreement_score": agreement_score,
+        "conflict_flag": conflict_flag,
+        "market_direction": market_direction,
+    }
+
+
+def _load_ncf_advisory_context(path: str | Path | None = None) -> dict[str, Any]:
+    if path is None:
+        live_context = _load_ncf_live_advisory_context()
+        if live_context.get("status") == "available":
+            return live_context
+    panel_path = _resolve_latest_ncf_advisory_panel(path)
+    if panel_path is None:
+        return {"status": "unavailable", "reason": "ncf_advisory_panel_not_found"}
+    with panel_path.open("r", encoding="utf-8-sig", newline="") as handle:
+        rows = [row for row in csv.DictReader(handle) if row.get("date")]
+    if not rows:
+        return {"status": "unavailable", "file": str(panel_path), "reason": "ncf_advisory_panel_empty"}
+    latest = sorted(rows, key=lambda row: row["date"])[-1]
+    shadow = _ncf_shadow_policy(latest)
+    return {
+        "status": "available",
+        "file": str(panel_path.relative_to(PROJECT_ROOT)) if panel_path.is_relative_to(PROJECT_ROOT) else str(panel_path),
+        "date": latest.get("date"),
+        "market_direction": latest.get("market_direction"),
+        "market_probability_up": float(latest.get("market_probability_up") or 0.0),
+        "agreement_score": float(latest.get("agreement_score") or 0.0),
+        "conflict_flag": _parse_bool(latest.get("conflict_flag")),
+        "cross_ticker_confidence": float(latest.get("cross_ticker_confidence") or 0.0),
+        "dynamic_00631l_direction": latest.get("dynamic_00631l_direction"),
+        "dynamic_00631l_prob_up": float(latest.get("dynamic_00631l_prob_up") or 0.0),
+        "dynamic_00632r_direction": latest.get("dynamic_00632r_direction"),
+        "dynamic_00632r_prob_up": float(latest.get("dynamic_00632r_prob_up") or 0.0),
+        "shadow_recommendation": shadow,
+        "decision_policy_effect": "report_only_no_weight_change",
+    }
+
+
+def _load_ncf_live_advisory_context(
+    path_00631l: str | Path | None = None,
+    path_00632r: str | Path | None = None,
+) -> dict[str, Any]:
+    p631 = resolve_path(path_00631l) if path_00631l else _resolve_latest_file(DEFAULT_NCF_00631L_GLOB)
+    p632 = resolve_path(path_00632r) if path_00632r else _resolve_latest_file(DEFAULT_NCF_00632R_GLOB)
+    missing = []
+    if p631 is None or not p631.exists():
+        missing.append("ncf_00631l")
+    if p632 is None or not p632.exists():
+        missing.append("ncf_00632r")
+    if missing:
+        return {"status": "unavailable", "reason": "ncf_live_json_missing", "missing": missing}
+
+    sig631 = load_ncf_signal(p631)
+    sig632 = load_ncf_signal(p632)
+    dyn631 = ncf_dynamic_horizon_signal(sig631)
+    dyn632 = ncf_dynamic_horizon_signal(sig632)
+    cross = ncf_cross_ticker_consistency(sig631, sig632, use_dynamic_horizon=True)
+    row = {
+        "market_direction": cross["market_direction"],
+        "agreement_score": cross["agreement_score"],
+        "conflict_flag": cross["conflict_flag"],
+    }
+    shadow = _ncf_shadow_policy(row)
+    date631 = sig631.get("date")
+    date632 = sig632.get("date")
+    return {
+        "status": "available",
+        "source": "live_ncf_json",
+        "ncf_00631l_file": str(p631.relative_to(PROJECT_ROOT)) if p631.is_relative_to(PROJECT_ROOT) else str(p631),
+        "ncf_00632r_file": str(p632.relative_to(PROJECT_ROOT)) if p632.is_relative_to(PROJECT_ROOT) else str(p632),
+        "date": date631 if date631 == date632 else {"00631L": date631, "00632R": date632},
+        "date_00631l": date631,
+        "date_00632r": date632,
+        "market_direction": cross["market_direction"],
+        "market_probability_up": cross["market_probability_up"],
+        "agreement_score": cross["agreement_score"],
+        "conflict_flag": cross["conflict_flag"],
+        "cross_ticker_confidence": cross["confidence"],
+        "dynamic_00631l_direction": dyn631["direction"],
+        "dynamic_00631l_prob_up": dyn631["probability_up"],
+        "dynamic_00631l_confidence": dyn631["confidence"],
+        "dynamic_00632r_direction": dyn632["direction"],
+        "dynamic_00632r_prob_up": dyn632["probability_up"],
+        "dynamic_00632r_confidence": dyn632["confidence"],
+        "raw_00631l_ensemble_prob_up": sig631["calibrated_prob_up"],
+        "raw_00632r_ensemble_prob_up": sig632["calibrated_prob_up"],
+        "shadow_recommendation": shadow,
+        "decision_policy_effect": "report_only_no_weight_change",
     }
 
 
@@ -182,6 +329,7 @@ def _apply_policy(
     *,
     min_cash_after_cost_weight: float,
     target_total_assets: float | None,
+    ncf_advisory_context: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     vote = dict(review.get("vote") or {})
     decision = str(vote.get("decision", "block"))
@@ -242,6 +390,7 @@ def _apply_policy(
             "target_shares": {ticker: int(adjusted_shares.get(ticker, 0) or 0) for ticker in TICKERS},
             "execution_summary_before_policy": dict(source_signal.get("execution_summary") or {}),
             "execution_summary": execution_summary,
+            "ncf_advisory_context": ncf_advisory_context or {"status": "not_loaded"},
         }
     )
 
@@ -259,6 +408,7 @@ def _apply_policy(
         "target_shares_after_policy": signal["target_shares"],
         "execution_summary_before_policy": dict(source_signal.get("execution_summary") or {}),
         "execution_summary_after_policy": execution_summary,
+        "ncf_advisory_context": ncf_advisory_context or {"status": "not_loaded"},
         "auto_adjustments": auto_adjustments,
         "reason_codes": reason_codes,
         "review_vote_counts": vote.get("vote_counts", {}),
@@ -298,6 +448,8 @@ def _render_html(report: dict[str, Any]) -> str:
         )
     before_exec = dict(report.get("execution_summary_before_policy") or {})
     after_exec = dict(report.get("execution_summary_after_policy") or {})
+    ncf = dict(report.get("ncf_advisory_context") or {})
+    ncf_shadow = dict(ncf.get("shadow_recommendation") or {})
     return f"""<!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -358,6 +510,13 @@ def _render_html(report: dict[str, Any]) -> str:
         <thead><tr><th>Ticker</th><th class="num">Before Weight</th><th class="num">Before Shares</th><th class="num">After Weight</th><th class="num">After Shares</th><th class="num">Delta</th></tr></thead>
         <tbody>{''.join(rows)}</tbody>
       </table>
+    </section>
+    <section>
+      <h2>NCF Advisory Shadow</h2>
+      <p>Status: <strong>{escape(str(ncf.get("status", "not_loaded")))}</strong></p>
+      <p>Date: <strong>{escape(str(ncf.get("date", "-")))}</strong> | Market: <strong>{escape(str(ncf.get("market_direction", "-")))}</strong> | Agreement: <strong>{_fmt_pct(ncf.get("agreement_score", 0.0))}</strong> | Conflict: <strong>{escape(str(ncf.get("conflict_flag", "-")).lower())}</strong></p>
+      <p>Shadow policy: <strong>{escape(str(ncf_shadow.get("policy", "-")))}</strong> | Risk reduction: <strong>{_fmt_pct(ncf_shadow.get("risk_reduction", 0.0))}</strong> | Destination: <strong>{escape(str(ncf_shadow.get("defensive_destination", "-")))}</strong></p>
+      <p class="subtle">Effect: {escape(str(ncf.get("decision_policy_effect", "report_only_no_weight_change")))}</p>
     </section>
     <section>
       <h2>Reason Codes</h2>
@@ -435,12 +594,23 @@ def main() -> None:
     parser.add_argument("--latest-pointer", default=str(DEFAULT_LATEST))
     parser.add_argument("--min-cash-after-cost-weight", type=float, default=0.01)
     parser.add_argument("--target-total-assets", type=float, default=DEFAULT_TARGET_TOTAL_ASSETS)
+    parser.add_argument(
+        "--ncf-advisory-panel",
+        default=None,
+        help="Optional NCF advisory panel CSV. Default: latest results/ncf_advisory_panel_latest_*.csv.",
+    )
+    parser.add_argument("--disable-ncf-advisory-context", action="store_true")
     args = parser.parse_args()
 
     baseline = load_json(args.baseline)
     _review_pointer, review = _load_latest(args.review_pointer)
     _compare_pointer, compare = _load_latest(args.compare_pointer)
     source_signal = load_json(baseline["latest_group_a_plus_final_signal"])
+    ncf_advisory_context = (
+        {"status": "disabled"}
+        if args.disable_ncf_advisory_context
+        else _load_ncf_advisory_context(args.ncf_advisory_panel)
+    )
     report, signal = _apply_policy(
         baseline,
         review,
@@ -448,6 +618,7 @@ def main() -> None:
         source_signal,
         min_cash_after_cost_weight=args.min_cash_after_cost_weight,
         target_total_assets=args.target_total_assets,
+        ncf_advisory_context=ncf_advisory_context,
     )
     paths = _write_outputs(report, signal, resolve_path(args.output_dir), resolve_path(args.latest_pointer))
     print(f"HTML: {paths['html']}")
@@ -457,6 +628,9 @@ def main() -> None:
     print(f"Latest: {paths['latest']}")
     print(f"Decision: {report['decision']} allowed_for_execution={report['allowed_for_execution']}")
     print(f"Cash after cost: {report['execution_summary_after_policy']['cash_after_cost']:,.0f}")
+    ncf = report.get("ncf_advisory_context") or {}
+    shadow = ncf.get("shadow_recommendation") or {}
+    print(f"NCF advisory: {ncf.get('status')} date={ncf.get('date')} shadow={shadow.get('policy')}")
 
 
 if __name__ == "__main__":

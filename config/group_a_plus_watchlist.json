@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "name": "group_a_plus_latest_strategy_watchlist",
+  "symbols": [
+    {
+      "symbol": "0050.TW",
+      "label": "元大台灣50",
+      "keywords": ["台股", "加權", "權值股", "台積電", "台達電", "半導體", "AI"]
+    },
+    {
+      "symbol": "00631L.TW",
+      "label": "元大台灣50正2",
+      "keywords": ["台股", "加權", "台積電", "半導體", "AI", "電子股", "多頭"]
+    },
+    {
+      "symbol": "00632R.TW",
+      "label": "元大台灣50反1",
+      "keywords": ["台股", "加權", "下跌", "修正", "避險", "空方", "賣壓"]
+    },
+    {
+      "symbol": "00679B.TWO",
+      "label": "元大美債20年",
+      "keywords": ["美債", "公債", "債券", "殖利率", "降息", "聯準會"]
+    }
+  ],
+  "market_fallback_keywords": ["台股", "加權", "台積電", "半導體", "AI", "聯準會", "美債"]
+}

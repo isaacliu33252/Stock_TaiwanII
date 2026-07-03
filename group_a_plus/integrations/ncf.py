@@ -109,6 +109,16 @@ def load_ncf_signal(path: Path) -> dict[str, Any]:
         "direction": ensemble["direction"],
         "calibrated_prob_up": float(ensemble["calibrated_probability_up"]),
         "confidence": float(ensemble["confidence"]),
+        # H2 (2026-07-02 Fable 5 audit, Option A): panel-consistent confidence
+        # (== prob_magnitude on the panel's own expanding-AUC-weighted
+        # ensemble), distinct from the composite `confidence` above. None
+        # for JSON payloads generated before this field existed -- callers
+        # must not silently fall back to `confidence` (different scale).
+        "confidence_panel_aligned": (
+            float(ensemble["prob_magnitude_panel_aligned"])
+            if ensemble.get("prob_magnitude_panel_aligned") is not None
+            else None
+        ),
         "weighted_return": float(ensemble["weighted_return"]),
         "votes_up": int(ensemble["votes_up"]),
         "raw_combined_prob_up": float(ensemble["combined_probability_up"]),

@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import duckdb
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from backtest_group_a_plus_policy_signal import TICKERS, _normalize
 from backtest_group_a_plus_switch_policy import DB_PATH
@@ -25,6 +28,7 @@ from group_a_plus.integrations.tbrain_features import (
     latest_tbrain_snapshot,
     weekly_ma_bull_snapshot,
 )
+from group_a_plus.operations.market_state import classify_market_state
 from group_a_plus.paths import PROJECT_ROOT
 from group_a_plus.runners.latest import run_latest
 from tw_output_standard import OutputStandardizer, write_standard_output
@@ -32,14 +36,14 @@ from tw_output_standard import OutputStandardizer, write_standard_output
 
 DEFAULT_LIVE_SIGNAL = Path("report/group_a_plus/latest/live_signal.json")
 OPTIONAL_SOURCE_SPECS = {
-    "institutional_0050": ("institutional_data", "ticker = '0050.TW'", 3),
-    "margin_0050": ("margin_data", "ticker = '0050.TW'", 3),
-    "market_margin": ("market_margin_data", "1 = 1", 3),
+    "institutional_0050": ("institutional_data", "ticker = '0050.TW'", 0),
+    "margin_0050": ("margin_data", "ticker = '0050.TW'", 1),
+    "market_margin": ("market_margin_data", "1 = 1", 1),
     "tdcc_0050": ("shareholding_distribution", "stock_id = '0050'", 10),
-    "foreign_shareholding_0050": ("foreign_shareholding_data", "ticker = '0050.TW'", 3),
-    "short_balance_0050": ("short_sale_balance_data", "ticker = '0050.TW'", 3),
-    "securities_lending_0050": ("securities_lending_data", "ticker = '0050.TW'", 3),
-    "day_trading_0050": ("day_trading_data", "ticker = '0050.TW'", 3),
+    "foreign_shareholding_0050": ("foreign_shareholding_data", "ticker = '0050.TW'", 1),
+    "short_balance_0050": ("short_sale_balance_data", "ticker = '0050.TW'", 1),
+    "securities_lending_0050": ("securities_lending_data", "ticker = '0050.TW'", 1),
+    "day_trading_0050": ("day_trading_data", "ticker = '0050.TW'", 0),
     "dealer_tx": ("dealer_futures_data", "futures_id = 'TX' AND is_after_hour = 0", 3),
     "dealer_txo": ("dealer_options_data", "option_id = 'TXO' AND is_after_hour = 0", 3),
     "foreign_tx_oi": (
@@ -60,8 +64,40 @@ NCF_TICKER_TAGS = {
     "00631L.TW": "00631l",
     "00632R.TW": "00632r",
 }
+# M5 (2026-07-02 Fable 5 audit): previously only 2026-06-19 was listed here.
+# Expanded to a best-effort TWSE trading-holiday calendar for 2025-2026
+# (standard Taiwan public holidays observed by the exchange; does not
+# include ad hoc typhoon/earthquake closures, which are announced same-day
+# and can't be pre-listed). An earlier attempt to *infer* holidays from
+# ohlcv-table gaps was reverted: it silently masked genuine staleness
+# whenever the table wasn't densely populated for every trading day
+# (confirmed by two existing unit tests breaking against sparse fixtures) --
+# a bad failure mode for a risk-management staleness gate. A hand-maintained
+# explicit list is safer even though it needs periodic upkeep.
 TAIWAN_MARKET_HOLIDAYS = {
-    pd.Timestamp("2026-06-19"),  # Dragon Boat Festival market holiday
+    pd.Timestamp(d)
+    for d in [
+        # 2025
+        "2025-01-01",  # New Year's Day
+        "2025-01-27", "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31",
+        "2025-02-03",  # Lunar New Year (observed dates around 2025-01-29)
+        "2025-02-28",  # Peace Memorial Day
+        "2025-04-03", "2025-04-04",  # Tomb Sweeping Day / Children's Day
+        "2025-05-01",  # Labor Day
+        "2025-05-30", "2025-05-31",  # Dragon Boat Festival (observed)
+        "2025-10-06",  # Mid-Autumn Festival
+        "2025-10-10",  # National Day
+        # 2026
+        "2026-01-01",  # New Year's Day
+        "2026-02-14", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20",
+        # Lunar New Year 2026 (CNY falls 2026-02-17)
+        "2026-02-27",  # Peace Memorial Day (observed, 02-28 is a Saturday)
+        "2026-04-03", "2026-04-06",  # Tomb Sweeping Day / Children's Day (observed)
+        "2026-05-01",  # Labor Day
+        "2026-06-19",  # Dragon Boat Festival
+        "2026-09-25",  # Mid-Autumn Festival
+        "2026-10-09",  # National Day (observed, 10-10 is a Saturday)
+    ]
 }
 
 
@@ -231,8 +267,28 @@ def _a2118_live_hard_overlay_reason(
         return None
     ncf_live_signal = report.get("ncf_live_signal", {})
     if not _a2118_live_signal_is_current(ncf_live_signal, actual_date):
+        # Fail closed, not open: if a hedge/hold was already active as of
+        # yesterday, keep it rather than silently reverting to full-leverage
+        # golden1 just because today's NCF signal is stale/missing/date-
+        # mismatched. NCF outages tend to coincide with market disruption --
+        # exactly when the previous day's defensive posture matters most.
+        if _previous_a2118_hold_active(
+            previous_signal,
+            actual_date,
+            min_generated_at=min_previous_generated_at,
+        ):
+            return "stale_fail_closed"
         return None
-    if ncf_live_signal.get("late_bull_triggered"):
+    # M4 (2026-07-02 Fable 5 audit): use effective_hedge_active (=
+    # late_bull_triggered AND NOT rally_suppressed) when present, not raw
+    # late_bull_triggered alone -- otherwise, if rally_suppress_min is ever
+    # enabled, a rally-suppressed trigger day would still apply hard-hedge
+    # weights here (ncf_live_signal["effective_weights"] already accounts
+    # for suppression, but this reason-check didn't), and the next day's
+    # _previous_a2118_hold_active would wrongly extend an h5_hold chain from
+    # a hedge that was never actually supposed to be active. Falls back to
+    # late_bull_triggered for older payloads that predate this field.
+    if ncf_live_signal.get("effective_hedge_active", ncf_live_signal.get("late_bull_triggered")):
         return "trigger"
     if not _previous_a2118_hold_active(
         previous_signal,
@@ -256,7 +312,7 @@ def _a2118_live_hard_overlay_weights(report: dict[str, Any], reason: str) -> dic
     ncf_live_signal = report.get("ncf_live_signal", {})
     base_weights = report.get("base_weights") or {}
     hedge_weights = base_weights.get("ncf_late_bull_hedge")
-    if reason == "h5_hold" and hedge_weights:
+    if reason in ("h5_hold", "stale_fail_closed") and hedge_weights:
         return _normalize(dict(hedge_weights))
     effective_weights = ncf_live_signal.get("effective_weights")
     if effective_weights:
@@ -559,6 +615,7 @@ def _build_signal_alerts(
     ncf_live_signal: dict[str, Any] | None = None,
     ncf_live_overlay: dict[str, Any] | None = None,
     signal_alignment: dict[str, Any] | None = None,
+    ncf_panel_coverage: dict[str, Any] | None = None,
     cooldown_minutes: int = 5,
 ) -> list[dict[str, Any]]:
     """Build stable alert payloads for downstream notification/cooldown layers."""
@@ -607,6 +664,44 @@ def _build_signal_alerts(
             "Bearish high-risk trim applied",
             str((ncf_live_overlay or {}).get("bearish_high_risk_trim_reason", "High-risk bearish trim applied.")),
         )
+    if (ncf_live_overlay or {}).get("a2118_ncf_stale_fail_closed"):
+        add(
+            "a2118_ncf_stale_fail_closed",
+            "high",
+            "NCF stale -- previous hedge preserved (manual review)",
+            (
+                "Today's NCF signal is stale/missing/date-mismatched. Instead of reverting to"
+                " full-leverage golden1, yesterday's a2118 late-bull hedge was carried forward."
+                " Confirm the NCF pipeline and this holdover decision manually."
+            ),
+        )
+    # M3 (2026-07-02 Fable 5 audit): the NCF panel_631l can be pinned to a
+    # fixed file in strategy.json's runner_params (e.g. results/ncf_00631l_
+    # panel_latest_20260630.csv) -- when pinned, its mtime stops advancing,
+    # which also silently neuters the `min_previous_generated_at` guard that
+    # exists to invalidate a stale hold once the panel is regenerated (see
+    # _previous_a2118_hold_active). Warn explicitly as the panel's *content*
+    # (last_date) ages, independent of that mtime-based mechanism.
+    panel_last_date_raw = (ncf_panel_coverage or {}).get("panel_631l_last_date")
+    if panel_last_date_raw:
+        try:
+            panel_last_date = pd.Timestamp(panel_last_date_raw).normalize()
+            panel_age_days = _business_days_between(panel_last_date, actual_date)
+        except Exception:
+            panel_age_days = None
+        if panel_age_days is not None and panel_age_days >= 3:
+            add(
+                "ncf_panel_stale",
+                "high" if panel_age_days >= 10 else "medium",
+                "NCF panel stale",
+                (
+                    f"ncf_panel_631l last covers {panel_last_date.date()}, "
+                    f"{panel_age_days} trading day(s) behind signal date {date_key}. "
+                    "If this panel is pinned in strategy.json runner_params, the "
+                    "reproducibility guard that invalidates stale holds on panel "
+                    "regeneration is not firing -- confirm whether to refresh the panel."
+                ),
+            )
     factor_generated_at = (factor_lens_gate or {}).get("report_generated_at")
     if factor_generated_at:
         try:
@@ -719,10 +814,20 @@ def build_daily_signal(
             target_weights = hard_weights
             ncf_live_overlay["a2118_late_bull_hard_overlay_applied"] = True
             ncf_live_overlay["a2118_late_bull_overlay_reason"] = a2118_overlay_reason
-            ncf_live_overlay["a2118_late_bull_hold_active"] = a2118_overlay_reason == "h5_hold"
+            ncf_live_overlay["a2118_late_bull_hold_active"] = a2118_overlay_reason in (
+                "h5_hold",
+                "stale_fail_closed",
+            )
             ncf_live_overlay["a2118_h20_prob"] = ncf_live_signal.get("h20_prob_up")
             ncf_live_overlay["a2118_h5_prob"] = ncf_live_signal.get("h5_prob_up")
             ncf_live_overlay["a2118_confidence"] = ncf_live_signal.get("confidence")
+            if a2118_overlay_reason == "stale_fail_closed":
+                # H1/H5 (2026-07-02 Fable 5 audit): NCF was stale/mismatched
+                # today, but yesterday's hedge is preserved instead of
+                # silently falling back to full-leverage golden1. Surfaced
+                # as an alert (see _build_signal_alerts) so it gets manual
+                # review rather than passing silently.
+                ncf_live_overlay["a2118_ncf_stale_fail_closed"] = True
     elif (
         str(report.get("active_strategy_id", "")) == "a2118_a2111_ncf_late_bull_deleverage"
         and execution_regime == "ncf_late_bull_hedge"
@@ -802,6 +907,11 @@ def build_daily_signal(
         signal_alignment,
         ncf_live_overlay,
     )
+    market_state = classify_market_state(
+        execution_regime,
+        latest_features,
+        signal_alignment=signal_alignment,
+    )
     execution_risk = _execution_risk_assessment(
         execution_allowed=execution_allowed,
         business_stale=business_stale,
@@ -825,6 +935,7 @@ def build_daily_signal(
         ncf_live_signal=ncf_live_signal,
         ncf_live_overlay=ncf_live_overlay,
         signal_alignment=signal_alignment,
+        ncf_panel_coverage=report.get("ncf_panel_coverage"),
     )
     target_shares = {
         ticker: (
@@ -883,6 +994,7 @@ def build_daily_signal(
         "symbol_metadata": build_symbol_metadata(tuple(target_weights.keys())),
         "portfolio_value_input": float(portfolio_value),
         "latest_features": latest_features,
+        "market_state": market_state,
         "execution_risk": execution_risk,
         "signal_alerts": signal_alerts,
         "signal_alignment": signal_alignment,

@@ -1,11 +1,11 @@
 {
   "report_type": "decision_policy",
-  "generated_at": "2026-06-18T10:46:59",
+  "generated_at": "2026-06-27T21:06:21",
   "profile": "focused_tdcc_0124_stab5_turn12_fast_cd3",
   "decision": "approved",
   "allowed_for_execution": true,
-  "html": "report/group_a_plus/decision/html/decision_focused_tdcc_0124_stab5_turn12_fast_cd3_20260618_104659.html",
-  "json": "report/group_a_plus/decision/json/decision_focused_tdcc_0124_stab5_turn12_fast_cd3_20260618_104659.json",
-  "signal_json": "results/group_a_plus_policy_signal_20260618_104659.json",
-  "signal_csv": "results/group_a_plus_policy_signal_20260618_104659.csv"
+  "html": "report/group_a_plus/decision/html/decision_focused_tdcc_0124_stab5_turn12_fast_cd3_20260627_210621.html",
+  "json": "report/group_a_plus/decision/json/decision_focused_tdcc_0124_stab5_turn12_fast_cd3_20260627_210621.json",
+  "signal_json": "results/group_a_plus_policy_signal_20260627_210621.json",
+  "signal_csv": "results/group_a_plus_policy_signal_20260627_210621.csv"
 }

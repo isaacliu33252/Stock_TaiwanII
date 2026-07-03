@@ -388,7 +388,11 @@ class BacktestEngine:
             
             # 記錄每日狀態
             total_value = self.cash + self.position * price
-            daily_return = (total_value - self._get_prev_value()) / self._get_prev_value() if step > 0 else 0
+            if step == 0:
+                # 第一天：相對於初始資金的回报率
+                daily_return = (total_value - self.config.initial_capital) / self.config.initial_capital
+            else:
+                daily_return = (total_value - self._get_prev_value()) / self._get_prev_value()
             
             daily = DailyRecord(
                 date=str(current_data['date']),
@@ -465,7 +469,11 @@ class BacktestEngine:
             
             # 記錄每日狀態
             total_value = self.cash + self.position * price
-            daily_return = (total_value - self._get_prev_value()) / self._get_prev_value() if step > 0 else 0
+            if step == 0:
+                # 第一天：相對於初始資金的回报率
+                daily_return = (total_value - self.config.initial_capital) / self.config.initial_capital
+            else:
+                daily_return = (total_value - self._get_prev_value()) / self._get_prev_value()
             
             daily = DailyRecord(
                 date=str(current_data['date']),
@@ -483,7 +491,7 @@ class BacktestEngine:
 
             # 更新歷史
             history.append(state)
-        
+
         return self._calculate_results()
     
     def _get_prev_value(self) -> float:

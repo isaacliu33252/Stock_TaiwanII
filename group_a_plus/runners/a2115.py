@@ -34,8 +34,6 @@ NCF data requirements:
 from __future__ import annotations
 
 import argparse
-import glob
-from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -48,7 +46,6 @@ from backtest_group_a_plus_defensive_basket import (
 )
 from backtest_group_a_plus_policy_signal import (
     DEFAULT_DECISION_POINTER,
-    DEFAULT_GOLDEN_SIGNAL,
     TICKERS,
     _load,
     _load_policy_signal,
@@ -67,7 +64,7 @@ from backtest_group_a_plus_switch_policy import (
 from backtest_group_a_plus_warmup_consistency import _trim_window, _warmup_start
 from group_a_plus.integrations.ncf import load_ncf_signal, ncf_overlay_summary
 from group_a_plus.paths import PROJECT_ROOT
-from group_a_plus.runners.a2111 import _build_switch_rule
+from group_a_plus.runners.a2111 import _build_switch_rule, _resolve_golden_signal_path
 from tw_output_standard import OutputStandardizer, write_standard_output
 
 
@@ -87,32 +84,41 @@ NCF_LB_MA_GAP_MIN = 0.15      # only consider in late-bull (> 15% above MA100)
 NCF_LB_H20_MAX = 0.45         # 631L H20 prob_up < this (bearish)
 NCF_LB_CONF_MIN = 0.55        # 631L confidence > this
 
-# De-leverage basket: half of 00631L moved to 0050
-# Base golden1: {0050: 60%, 00631L: 20%, cash: 20%}
-LATE_BULL_HEDGE_WEIGHTS = {
-    "0050.TW": 0.70,
-    "00631L.TW": 0.10,
-    "00632R.TW": 0.00,
-    "00679B.TWO": 0.00,
-    "cash": 0.20,
-}
+# De-leverage basket: half of 00631L moved to 0050 (computed dynamically
+# elsewhere in this module; removed a dead, never-referenced
+# LATE_BULL_HEDGE_WEIGHTS constant that assumed a fixed 60/20/20 golden1).
 NCF_LB_REGIME = "ncf_late_bull_hedge"
 
 
+def _late_bull_hedge_weights(golden_weights: dict[str, float]) -> dict[str, float]:
+    weights = dict(golden_weights)
+    shift = float(weights.get("00631L.TW", 0.0)) * 0.5
+    weights["00631L.TW"] = float(weights.get("00631L.TW", 0.0)) - shift
+    weights["0050.TW"] = float(weights.get("0050.TW", 0.0)) + shift
+    return _normalize(weights)
+
+
 def _resolve_ncf_path(explicit: str | None, ticker_tag: str) -> Path | None:
+    """M2 (2026-07-02 Fable 5 audit): the old glob `ncf_{tag}_2?????.json`
+    (`?????` = exactly 5 wildcard chars) only matches 6-digit dates and never
+    matched real 8-digit-dated / `_latest_`-prefixed filenames, so this
+    always fell through to `None` -- confirmed a2115 is not on the live
+    daily-signal path (superseded by a2118), so this was inert rather than
+    a live-risk bug, but fixed to match a2118.py's corrected resolver
+    (`_resolve_ncf_path` there) for consistency, and to exclude panel/
+    advisory files that share the naming prefix.
+    """
     if explicit:
         p = Path(explicit)
         if not p.is_absolute():
             p = PROJECT_ROOT / p
         return p if p.exists() else None
-    today_str = date.today().strftime("%Y%m%d")
-    today_path = PROJECT_ROOT / "results" / f"ncf_{ticker_tag}_{today_str}.json"
-    if today_path.exists():
-        return today_path
-    candidates = sorted(
-        glob.glob(str(PROJECT_ROOT / "results" / f"ncf_{ticker_tag}_2?????.json"))
-    )
-    return Path(candidates[-1]) if candidates else None
+    results = PROJECT_ROOT / "results"
+    candidates: list[Path] = []
+    for pattern in (f"ncf_{ticker_tag}_latest_*.json", f"ncf_{ticker_tag}_2*.json"):
+        candidates.extend(results.glob(pattern))
+    candidates = [p for p in candidates if p.is_file() and "panel" not in p.name]
+    return max(candidates, key=lambda p: p.stat().st_mtime) if candidates else None
 
 
 def _load_ncf_panel(path: Path | None) -> pd.DataFrame | None:
@@ -295,7 +301,7 @@ def run_a2115(
 ) -> tuple[dict, pd.DataFrame]:
     """Run A21.15: A21.11 + dual-mode NCF gate."""
     policy_signal, policy_signal_path = _load_policy_signal(_resolve(DEFAULT_DECISION_POINTER))
-    golden_signal_path = _resolve(DEFAULT_GOLDEN_SIGNAL)
+    golden_signal_path = _resolve_golden_signal_path()
     golden_signal = _load(golden_signal_path)
     current_defensive = _normalize(_weights_from_group_a_plus(policy_signal))
     basket = _normalize(DEFENSIVE_BASKETS["bond30_cash30"])
@@ -314,7 +320,7 @@ def run_a2115(
         "golden1": golden_weights,
         "group_a_plus_defensive": basket,
         "group_a_plus_recovery": current_defensive,
-        NCF_LB_REGIME: _normalize(LATE_BULL_HEDGE_WEIGHTS),
+        NCF_LB_REGIME: _late_bull_hedge_weights(golden_weights),
     }
 
     panel_631l = _load_ncf_panel(Path(ncf_panel_631l_path) if ncf_panel_631l_path else None)
@@ -365,7 +371,12 @@ def run_a2115(
     if path_631l and path_632r:
         sig_631l = load_ncf_signal(path_631l)
         sig_632r = load_ncf_signal(path_632r)
-        h20_prob = float(sig_631l.get("prob_up_h20", sig_631l.get("calibrated_prob_up", 0.5)))
+        # M2: "prob_up_h20" is not a key load_ncf_signal() returns (it returns
+        # "horizon_prob_up": {"1":.., "5":.., "20":..} and "calibrated_prob_up")
+        # -- this always missed and silently used the ensemble-average
+        # fallback instead of the raw H=20 probability.
+        raw_h20 = (sig_631l.get("horizon_prob_up") or {}).get("20")
+        h20_prob = float(raw_h20 if raw_h20 is not None else sig_631l.get("calibrated_prob_up", 0.5))
         conf = float(sig_631l.get("confidence", 0.0))
         lb_live = today_ma_gap > NCF_LB_MA_GAP_MIN and h20_prob < NCF_LB_H20_MAX and conf > NCF_LB_CONF_MIN
         ncf_live = ncf_overlay_summary(sig_631l, sig_632r, golden_weights, today_regime)
@@ -421,7 +432,7 @@ def run_a2115(
                 "conf_min": NCF_LB_CONF_MIN,
                 "etf_used": "00631L_only (00632R excluded: AUC<0.5 in late-bull)",
                 "action": "switch_to_ncf_late_bull_hedge",
-                "hedge_weights": _normalize(LATE_BULL_HEDGE_WEIGHTS),
+                "hedge_weights": _late_bull_hedge_weights(golden_weights),
             },
         },
         "cost_assumptions": {

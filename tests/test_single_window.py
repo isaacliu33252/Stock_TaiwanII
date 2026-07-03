@@ -7,20 +7,22 @@ import os
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 import pyarrow.parquet as pq
 
 
 def main() -> None:
-    sys.path.insert(0, "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main")
-    os.chdir("/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL")
+    project_root = Path(__file__).resolve().parents[1]
+    finrl = project_root / "FinRL"
+    sys.path.insert(0, str(project_root))
+    os.chdir(finrl)
 
-    cache = "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/data/cache/0050_2016-01-01_2026-05-05_1d.parquet"
-    finrl = "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL"
-    out = "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/FinRL/models/portfolio/test_reward"
+    cache = project_root / "data" / "cache" / "0050_2016-01-01_2026-05-05_1d.parquet"
+    out = finrl / "FinRL" / "models" / "portfolio" / "test_reward"
 
     df = pq.read_table(cache).to_pandas(timestamp_as_object=True)
-    spec = importlib.util.spec_from_file_location("ta", finrl + "/data/technical_analysis.py")
+    spec = importlib.util.spec_from_file_location("ta", finrl / "data" / "technical_analysis.py")
     tm = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(tm)
@@ -32,7 +34,7 @@ def main() -> None:
     print(f"Train: {len(df_train)} rows  {df_train['ds'].iloc[0]}~{df_train['ds'].iloc[-1]}")
     print(f"Test:  {len(df_test)} rows   {df_test['ds'].iloc[0]}~{df_test['ds'].iloc[-1]}")
 
-    df_train.to_parquet(finrl + "/data/cache/wf_train.parquet", index=False)
+    df_train.to_parquet(finrl / "data" / "cache" / "wf_train.parquet", index=False)
 
     from portfolio_train_v2 import EnhancedStockTrainer
 
@@ -50,20 +52,20 @@ def main() -> None:
         f"hold={trainer.reward_func.holding_bonus}, trade={trainer.reward_func.trade_reward}"
     )
     os.makedirs(out, exist_ok=True)
-    trainer.train(timesteps=30_000, save_path=out, verbose=0)
+    trainer.train(timesteps=30_000, save_path=str(out), verbose=0)
     print(f"訓練完成 ({time.time() - t0:.0f}s)")
 
-    parent = os.path.dirname(out.rstrip("/"))
+    parent = out.parent
     zips = sorted([f for f in os.listdir(parent) if f.endswith(".zip") and "test_reward" in f])
     if not zips:
         zips = sorted([f for f in os.listdir(out) if f.endswith(".zip")])
     if not zips:
         print("沒有 zip")
         sys.exit(1)
-    model_path = parent + "/" + zips[-1]
+    model_path = parent / zips[-1]
     print(f"Model: {zips[-1]} ({os.path.getsize(model_path) // 1024}KB)")
 
-    old_results = sorted(glob.glob(finrl + "/results/backtest_0050_ppo_*.json"), key=os.path.getmtime)
+    old_results = sorted(glob.glob(str(finrl / "results" / "backtest_0050_ppo_*.json")), key=os.path.getmtime)
     for path in old_results[-5:]:
         os.remove(path)
 
@@ -81,7 +83,7 @@ def main() -> None:
             "--end",
             "2025-01-08",
             "--model",
-            model_path,
+            str(model_path),
             "--initial_balance",
             "1000000",
         ],
@@ -93,7 +95,7 @@ def main() -> None:
     print("stdout:", result.stdout[-300:] if result.stdout else "")
     print("stderr:", result.stderr[-300:] if result.stderr else "")
 
-    results = sorted(glob.glob(finrl + "/results/backtest_0050_ppo_*.json"), key=os.path.getmtime)
+    results = sorted(glob.glob(str(finrl / "results" / "backtest_0050_ppo_*.json")), key=os.path.getmtime)
     if results:
         with open(results[-1]) as f:
             bt = json.load(f)

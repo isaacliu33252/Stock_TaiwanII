@@ -9,6 +9,7 @@ import pandas as pd
 
 from group_a_plus.operations.execution_plan import (
     _apply_execution_controls,
+    _apply_buy_staging,
     _build_trades,
     _parse_group_a_plus_holdings,
 )
@@ -68,6 +69,36 @@ class ExecutionPlanV2Tests(unittest.TestCase):
 
         self.assertEqual(targets["00679B.TWO"], 0)
         self.assertEqual(suppressed, [])
+
+    def test_large_buy_is_staged_but_sells_are_not_deferred(self) -> None:
+        targets, staged = _apply_buy_staging(
+            {"0050.TW": 2074, "00631L.TW": 90, "00679B.TWO": 1000},
+            {"0050.TW": 2074, "00631L.TW": 861, "00679B.TWO": 0},
+            {"0050.TW": 108.8, "00631L.TW": 38.88, "00679B.TWO": 26.96},
+            max_initial_buy_fraction=0.4,
+            min_staged_buy_notional=20_000.0,
+            share_lot_size=1,
+        )
+
+        self.assertEqual(targets["00631L.TW"], 398)
+        self.assertEqual(targets["00679B.TWO"], 0)
+        self.assertEqual(staged[0]["ticker"], "00631L.TW")
+        self.assertEqual(staged[0]["staged_delta_shares"], 308)
+        self.assertEqual(staged[0]["deferred_delta_shares"], 463)
+
+    def test_buy_staging_respects_lot_size_and_notional_floor(self) -> None:
+        targets, staged = _apply_buy_staging(
+            {"00631L.TW": 90, "0050.TW": 100},
+            {"00631L.TW": 861, "0050.TW": 120},
+            {"00631L.TW": 38.88, "0050.TW": 108.8},
+            max_initial_buy_fraction=0.4,
+            min_staged_buy_notional=20_000.0,
+            share_lot_size=100,
+        )
+
+        self.assertEqual(targets["00631L.TW"], 390)
+        self.assertEqual(targets["0050.TW"], 120)
+        self.assertEqual(staged[0]["staged_delta_shares"], 300)
 
 
 if __name__ == "__main__":

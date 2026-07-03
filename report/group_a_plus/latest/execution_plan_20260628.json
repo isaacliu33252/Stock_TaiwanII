@@ -1,0 +1,465 @@
+{
+  "success": true,
+  "data": {
+    "plan_version": 2,
+    "generated_at": "2026-06-28T14:28:05",
+    "strategy_id": "a2111_tight_entry_bond30c30",
+    "requested_as_of_date": "2026-06-28",
+    "actual_data_date": "2026-06-26",
+    "workbook": "taiwan_stock_20260626.xlsx",
+    "holdings_row": "即時庫存",
+    "current_holdings": {
+      "0050.TW": 1754,
+      "00631L.TW": 10,
+      "00632R.TW": 0,
+      "00679B.TWO": 5000
+    },
+    "current_cash_input": 0.0,
+    "cash_assumption": "workbook has no cash field; using explicit --cash-balance input",
+    "current_holdings_market_value": 318389.9999771118,
+    "current_total_assets": 318389.9999771118,
+    "current_prices": {
+      "00679B.TWO": 27.440000534057617,
+      "0050.TW": 103.0999984741211,
+      "00631L.TW": 35.2599983215332,
+      "00632R.TW": 10.449999809265137
+    },
+    "execution_regime": "golden1",
+    "target_weights": {
+      "0050.TW": 0.6947173955074174,
+      "00631L.TW": 0.09927623190628077,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.2060063725863018
+    },
+    "theoretical_target_shares": {
+      "0050.TW": 2145,
+      "00631L.TW": 896,
+      "00632R.TW": 0,
+      "00679B.TWO": 0
+    },
+    "target_shares": {
+      "0050.TW": 2145,
+      "00631L.TW": 896,
+      "00632R.TW": 0,
+      "00679B.TWO": 0
+    },
+    "suppressed_trades": [],
+    "execution_controls": {
+      "published_commission_rate": 0.001425,
+      "commission_discount": 1.0,
+      "effective_commission_rate": 0.001425,
+      "min_trade_notional": 5000.0,
+      "min_weight_deviation": 0.005,
+      "share_lot_size": 1,
+      "forced_liquidations_bypass_bands": true
+    },
+    "trades": [
+      {
+        "ticker": "00679B.TWO",
+        "side": "sell",
+        "current_shares": 5000,
+        "target_shares": 0,
+        "delta_shares": -5000,
+        "price": 27.440000534057617,
+        "notional": 137200.0026702881,
+        "commission": 195.51000380516052,
+        "slippage": 68.60000133514404,
+        "sell_tax_rate": 0.0,
+        "sell_tax": 0.0,
+        "estimated_cost": 264.11000514030457
+      },
+      {
+        "ticker": "0050.TW",
+        "side": "buy",
+        "current_shares": 1754,
+        "target_shares": 2145,
+        "delta_shares": 391,
+        "price": 103.0999984741211,
+        "notional": 40312.09940338135,
+        "commission": 57.444741649818425,
+        "slippage": 20.156049701690673,
+        "sell_tax_rate": 0.001,
+        "sell_tax": 0.0,
+        "estimated_cost": 77.6007913515091
+      },
+      {
+        "ticker": "00631L.TW",
+        "side": "buy",
+        "current_shares": 10,
+        "target_shares": 896,
+        "delta_shares": 886,
+        "price": 35.2599983215332,
+        "notional": 31240.358512878418,
+        "commission": 44.517510880851745,
+        "slippage": 15.62017925643921,
+        "sell_tax_rate": 0.001,
+        "sell_tax": 0.0,
+        "estimated_cost": 60.13769013729095
+      }
+    ],
+    "execution_summary": {
+      "buy_notional": 71552.45791625977,
+      "sell_notional": 137200.0026702881,
+      "commission": 297.4722563358307,
+      "sell_tax": 0.0,
+      "slippage": 104.37623029327392,
+      "total_execution_cost": 401.8484866291046,
+      "turnover_notional": 208752.46058654785,
+      "estimated_cash_after_execution": 65245.69626739922,
+      "turnover_ratio": 0.6556501793446857,
+      "max_automatic_turnover_ratio": 0.5
+    },
+    "planning_status": "manual_review_required",
+    "manual_confirmation_required": true,
+    "execution_allowed": false,
+    "execution_guard_reasons": [
+      "turnover ratio 65.57% exceeds automatic limit 50.00%"
+    ],
+    "source_live_signal": {
+      "signal_version": 2,
+      "generated_at": "2026-06-28T14:28:05",
+      "strategy_id": "a2111_tight_entry_bond30c30",
+      "strategy_status": "active",
+      "requested_as_of_date": "2026-06-28",
+      "actual_data_date": "2026-06-26",
+      "business_stale_days": 0,
+      "calendar_stale_days": 2,
+      "max_business_stale_days": 3,
+      "execution_allowed": true,
+      "execution_guard_reasons": [],
+      "execution_warning_reasons": [],
+      "base_regime": "golden1",
+      "execution_regime": "golden1",
+      "regime_reason": "A20.7 formal defensive state is inactive",
+      "last_transition_date": "2025-06-10",
+      "strategy_transition_today": false,
+      "action": "hold_or_align_to_target",
+      "target_weights": {
+        "0050.TW": 0.6947173955074174,
+        "00631L.TW": 0.09927623190628077,
+        "00632R.TW": 0.0,
+        "00679B.TWO": 0.0,
+        "cash": 0.2060063725863018
+      },
+      "target_values": {
+        "0050.TW": 221191.0715397058,
+        "00631L.TW": 31608.55947436848,
+        "00632R.TW": 0.0,
+        "00679B.TWO": 0.0,
+        "cash": 65590.36896303752
+      },
+      "reference_target_shares_before_cost": {
+        "0050.TW": 2145,
+        "00631L.TW": 896,
+        "00632R.TW": 0,
+        "00679B.TWO": 0
+      },
+      "reference_target_market_values": {
+        "0050.TW": 221149.49672698975,
+        "00631L.TW": 31592.95849609375,
+        "00632R.TW": 0.0,
+        "00679B.TWO": 0.0
+      },
+      "estimated_cash_after_rounding_before_cost": 65647.54475402832,
+      "latest_prices": {
+        "0050.TW": 103.0999984741211,
+        "00631L.TW": 35.2599983215332,
+        "00632R.TW": 10.449999809265137,
+        "00679B.TWO": 27.440000534057617
+      },
+      "portfolio_value_input": 318389.9999771118,
+      "latest_features": {
+        "ma_gap": 0.18349306944844357,
+        "drawdown": -0.07242467783397688,
+        "exit_momentum_5d": -0.039142632415497536,
+        "chip_score": 6,
+        "derivative_score": 1,
+        "total_risk_score": 7,
+        "tail_risk_score": 1,
+        "finbert_sentiment_risk": 0.1227
+      },
+      "execution_risk": {
+        "score": 0.2329,
+        "level": "low",
+        "components": {
+          "blocked_guard": 0.0,
+          "business_stale": 0.0,
+          "calendar_stale": 0.2857,
+          "soft_data_warnings": 0.0,
+          "leverage_weight": 0.4964,
+          "total_risk_score": 0.875,
+          "ncf_downside": 0.1141,
+          "ncf_tail_downside": 0.0029,
+          "finbert_sentiment_risk": 0.1227
+        },
+        "method": "weighted_daily_execution_risk_v1"
+      },
+      "signal_alerts": [
+        {
+          "type": "total_risk_score",
+          "level": "medium",
+          "title": "Total risk score elevated",
+          "reason": "Composite market risk score is elevated.",
+          "cooldown_key": "a2111_tight_entry_bond30c30:2026-06-26:total_risk_score",
+          "cooldown_minutes": 5
+        }
+      ],
+      "finbert_sentiment": {
+        "status": "ok",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/sentiment/finbert_market_sentiment_daily.csv",
+        "date": "2026-06-08",
+        "requested_as_of_date": "2026-06-28",
+        "actual_data_date": "2026-06-26",
+        "calendar_stale_days": 20,
+        "actual_calendar_stale_days": 18,
+        "freshness_scale": 0.2143,
+        "finbert_sentiment_score": -0.1356700041109155,
+        "finbert_negative_ratio": 0.4019841840447325,
+        "finbert_positive_ratio": 0.266314179933817,
+        "finbert_neutral_ratio": 0.3317016360214505,
+        "finbert_confidence": 0.606660338770784,
+        "finbert_news_intensity": 4.174387269895637,
+        "raw_risk_score": 0.5728,
+        "risk_score": 0.1227
+      },
+      "ncf_live_overlay": {
+        "date_00631l": "2026-06-26",
+        "date_00632r": "2026-06-26",
+        "ncf_00631l": {
+          "direction": "DOWN",
+          "calibrated_prob_up": 0.4126,
+          "confidence": 0.6507,
+          "votes_up": 0,
+          "tail_reward_risk_score": 0.439082,
+          "prob_fwd_mdd_gt5_h20": 0.289011,
+          "prob_fwd_gain_gt5_h20": 0.728093
+        },
+        "ncf_00632r": {
+          "direction": "UP",
+          "calibrated_prob_up": 0.7016,
+          "confidence": 0.5139,
+          "votes_up": 2,
+          "tail_reward_risk_score": 0.011456,
+          "prob_fwd_mdd_gt5_h20": 0.428342,
+          "prob_fwd_gain_gt5_h20": 0.439798
+        },
+        "composite_downside_signal": 0.1141,
+        "directional_downside_signal": 0.1511,
+        "tail_downside_signal": 0.0029,
+        "gated_downside_signal": 0.1141,
+        "composite_upside_signal": 0.0,
+        "dynamic_horizon_00631l": {
+          "probability_up": 0.3667,
+          "direction": "DOWN",
+          "confidence": 0.1735,
+          "weights": {
+            "1": 0.1982,
+            "5": 0.3593,
+            "20": 0.4426
+          },
+          "prior_weights": {
+            "1": 0.1894,
+            "5": 0.3425,
+            "20": 0.4681
+          },
+          "live_weights": {
+            "1": 0.2145,
+            "5": 0.3905,
+            "20": 0.3951
+          },
+          "source": "multi_year_auc_blend"
+        },
+        "dynamic_horizon_00632r": {
+          "probability_up": 0.7571,
+          "direction": "UP",
+          "confidence": 0.2643,
+          "weights": {
+            "1": 0.178,
+            "5": 0.2907,
+            "20": 0.5313
+          },
+          "prior_weights": {
+            "1": 0.218,
+            "5": 0.3152,
+            "20": 0.4668
+          },
+          "live_weights": {
+            "1": 0.1038,
+            "5": 0.2451,
+            "20": 0.6511
+          },
+          "source": "multi_year_auc_blend"
+        },
+        "cross_ticker_consistency": {
+          "market_direction": "DOWN",
+          "market_probability_up": 0.3172,
+          "agreement_score": 0.7524,
+          "conflict_flag": false,
+          "confidence": 0.08,
+          "00631l_probability_up": 0.3667,
+          "00632r_probability_up": 0.7571
+        },
+        "bull_suppression": 0.0,
+        "bull_suppression_applied": false,
+        "ma_gap": 0.18349306944844357,
+        "current_regime": "golden1",
+        "action": "reduce_00631l",
+        "base_golden1_weights": {
+          "0050.TW": 0.6947173955074174,
+          "00631L.TW": 0.1052826044925826,
+          "00632R.TW": 0.0,
+          "00679B.TWO": 0.0,
+          "cash": 0.19999999999999996
+        },
+        "adjusted_golden1_weights": {
+          "0050.TW": 0.6947173955074174,
+          "00631L.TW": 0.09927623190628077,
+          "00632R.TW": 0.0,
+          "00679B.TWO": 0.0,
+          "cash": 0.2060063725863018
+        },
+        "00631l_reduction": 0.006,
+        "status": "applied",
+        "files": {
+          "00631L.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260628.json",
+          "00632R.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260628.json"
+        }
+      },
+      "data_freshness": {
+        "price_data_as_of": "2026-06-26",
+        "ohlcv_by_ticker": {
+          "0050.TW": "2026-06-26",
+          "00631L.TW": "2026-06-26",
+          "00632R.TW": "2026-06-26",
+          "00679B.TWO": "2026-06-26"
+        },
+        "latest_prices": {
+          "0050.TW": 103.0999984741211,
+          "00631L.TW": 35.2599983215332,
+          "00632R.TW": 10.449999809265137,
+          "00679B.TWO": 27.440000534057617
+        },
+        "optional_sources": {
+          "institutional_0050": {
+            "table": "institutional_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-06-26",
+            "business_stale_days": 0,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "margin_0050": {
+            "table": "margin_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-06-26",
+            "business_stale_days": 0,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "market_margin": {
+            "table": "market_margin_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-06-26",
+            "business_stale_days": 0,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "tdcc_0050": {
+            "table": "shareholding_distribution",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-06-18",
+            "business_stale_days": 5,
+            "max_business_stale_days": 10,
+            "status": "ok"
+          },
+          "foreign_shareholding_0050": {
+            "table": "foreign_shareholding_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-06-26",
+            "business_stale_days": 0,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "short_balance_0050": {
+            "table": "short_sale_balance_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-06-26",
+            "business_stale_days": 0,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "securities_lending_0050": {
+            "table": "securities_lending_data",
+            "severity": "soft",
+            "exists": true,
+            "latest_date": "2026-06-26",
+            "business_stale_days": 0,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "day_trading_0050": {
+            "table": "day_trading_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-06-26",
+            "business_stale_days": 0,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "dealer_tx": {
+            "table": "dealer_futures_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-06-24",
+            "business_stale_days": 2,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "dealer_txo": {
+            "table": "dealer_options_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-06-24",
+            "business_stale_days": 2,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "foreign_tx_oi": {
+            "table": "derivative_institutional_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-06-25",
+            "business_stale_days": 1,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "foreign_txo_oi": {
+            "table": "derivative_institutional_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-06-25",
+            "business_stale_days": 1,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          }
+        }
+      },
+      "manifest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/strategy.json"
+    }
+  },
+  "metadata": {
+    "script": "group_a_plus.operations.execution_plan",
+    "timestamp": "2026-06-28T14:28:05",
+    "output_type": "OutputType.DICT",
+    "version": "1.0.0",
+    "execution_time_ms": 1395
+  },
+  "error": null
+}

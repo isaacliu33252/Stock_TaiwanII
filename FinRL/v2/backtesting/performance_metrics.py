@@ -40,7 +40,7 @@ PerformanceMetrics - 績效指標計算模組 (v2新版)
 
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union, Any
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -182,9 +182,19 @@ def calculate_sharpe_ratio(
         - 1.0 ~ 2.0: 良好
         - 0.5 ~ 1.0: 一般
         - < 0.5: 較差
+
+    M6 (2026-07-02 Fable 5 audit): Group A+'s own `_metrics()` in
+    `backtest_group_a_plus_switch_policy.py` uses risk_free_rate=0 (no
+    subtraction) and reports every ratio/volatility as a decimal fraction,
+    not a percentage. Passing the same equity curve through both systems'
+    defaults yields Sharpe values that differ systematically by ~0.1-0.3 --
+    not a bug in either system, just a different convention. Use
+    `_metrics_finrl_comparable()` in `backtest_group_a_plus_switch_policy.py`
+    (which calls these FinRL functions directly) to get a Group A+ curve's
+    numbers under this module's convention before comparing.
     """
     returns = np.array(returns)
-    
+
     if len(returns) < 2:
         return 0.0
     
@@ -220,21 +230,20 @@ def calculate_sortino_ratio(
     對於不對稱報酬分佈的策略更為合適。
     
     公式:
-        Sortino = (平均報酬 - 目標報酬) / 下行標準差 × √252
+        Sortino = (年化超額報酬 - 年化目標報酬) / 年化下行標準差
         
     參數:
         returns: 報酬率序列
         risk_free_rate: 年化無風險利率
         periods_per_year: 每年交易日數
-        target_return: 目標報酬（通常為 0）
+        target_return: 年化目標報酬（通常為 0）
         
     返回:
-        年化索提諾比率
-        
-    參考值:
+        年化索提諾比率（正值=優於目標，負值=低於目標）
         - > 2.0: 優秀
         - 1.0 ~ 2.0: 良好
         - < 1.0: 一般
+        - 負值: 策略表現不如目標
     """
     returns = np.array(returns)
     
@@ -243,29 +252,32 @@ def calculate_sortino_ratio(
     
     # 日無風險利率
     daily_rf = risk_free_rate / periods_per_year
-    daily_target = target_return / periods_per_year
     
     # 計算超額報酬（超過無風險利率的部分）
     excess_returns = returns - daily_rf
     
-    # 只看負報酬（下行標準差）
+    # 年化下行標準差
     negative_returns = excess_returns[excess_returns < 0]
-    
     if len(negative_returns) == 0:
-        return 0.0
+        # 無負報酬：說明策略從未虧損，視為極優秀
+        # 使用全部超額報酬計算（無下行風險）
+        ann_return = np.mean(excess_returns) * periods_per_year
+        ann_target = target_return
+        if ann_return - ann_target > 0:
+            return float('inf')  # 無下行風險的正報酬 = 無限大 Sortino
+        return (ann_return - ann_target) / 0.001  # 除以極小值避免除零
     
-    # 下行標準差
     downside_std = np.std(negative_returns, ddof=1)
-    
     if downside_std == 0:
+        # 負報酬標準差為0（全為相同負報酬或樣本不足）
         return 0.0
     
-    # 年化索提諾比率
-    # Sortino = (年化超額報酬 - 目標報酬) / 年化下行標準差
-    # 注意: ann_return 已經是超額報酬 (excess_returns 的均值年化)，target_return 再減一次是錯誤的
-    ann_return = np.mean(excess_returns) * periods_per_year
     ann_downside_std = downside_std * np.sqrt(periods_per_year)
-    sortino = ann_return / ann_downside_std
+    
+    # 年化超額報酬 - 年化目標報酬（修正：正確使用 target_return）
+    ann_return = np.mean(excess_returns) * periods_per_year
+    ann_target = target_return
+    sortino = (ann_return - ann_target) / ann_downside_std
     
     return sortino
 
@@ -402,6 +414,69 @@ def calculate_volatility(
     volatility = np.std(returns, ddof=1) * np.sqrt(periods_per_year) * 100
     
     return volatility
+
+
+def calculate_return_skewness(
+    returns: Union[pd.Series, np.ndarray],
+    periods_per_year: int = 252
+) -> Dict[str, Any]:
+    """
+    計算報酬偏態（Skewness）和相關風險指標
+    
+    偏態衡量報酬分佈的對稱性：
+    - 正偏（右偏）: 大額收益較常見，大額損失罕見（適合趨勢策略）
+    - 負偏（左偏）: 大額損失較常見，大額收益罕見（風險較高）
+    - 零偏: 對稱分佈
+    
+    同時計算：
+    - 偏態係數 (Skewness): 衡量分佈對稱性
+    - 超額峰度 (Excess Kurtosis): 衡量尾部厚度
+    - VaR 5%: 95% 信心水準的最大單日損失
+    - CVaR 5%: 條件在險值（平均損失超過 VaR 的情況）
+    
+    參數:
+        returns: 報酬率序列
+        periods_per_year: 每年交易日數
+        
+    返回:
+        包含 skewness, kurtosis, var_5, cvar_5 的字典
+    """
+    from scipy import stats
+    
+    returns = np.array(returns)
+    
+    if len(returns) < 4:
+        return {
+            'skewness': 0.0,
+            'excess_kurtosis': 0.0,
+            'var_5': 0.0,
+            'cvar_5': 0.0,
+            'skewness_interpretation': '樣本不足'
+        }
+    
+    # 偏態和超額峰度
+    skewness = stats.skew(returns)
+    excess_kurtosis = stats.kurtosis(returns)  # scipy 返回超額峰度（不含 Fisher 修正）
+    
+    # VaR 和 CVaR (5% 尾部風險)
+    var_5 = np.percentile(returns, 5)  # 5% 分位數（最大 5% 損失）
+    cvar_5 = returns[returns <= var_5].mean() if len(returns[returns <= var_5]) > 0 else var_5
+    
+    # 解釋
+    if skewness > 0.5:
+        interpretation = '正偏（右偏）：大額收益常見，適合趨勢策略'
+    elif skewness < -0.5:
+        interpretation = '負偏（左偏）：大額損失常見，風險較高'
+    else:
+        interpretation = '近似對稱分佈'
+    
+    return {
+        'skewness': float(skewness),
+        'excess_kurtosis': float(excess_kurtosis),
+        'var_5': float(var_5 * 100),      # 轉為百分比
+        'cvar_5': float(cvar_5 * 100),   # 轉為百分比
+        'skewness_interpretation': interpretation
+    }
 
 
 # =============================================================================

@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-03T01:14:08Z",
+  "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+  "signal_date": "2026-07-02",
+  "alignment": "bullish_alignment",
+  "dominant_direction": "bullish",
+  "direction_counts": {
+    "bullish": 4,
+    "bearish": 0,
+    "neutral": 5
+  },
+  "weighted_share": {
+    "bullish": 0.6216,
+    "bearish": 0.0,
+    "neutral": 0.3784
+  },
+  "available_sources": 9,
+  "total_sources": 10,
+  "divergent_sources": [],
+  "confidence_penalty": 0.0,
+  "sources": [
+    {
+      "name": "ncf_00631l",
+      "available": true,
+      "direction": "neutral",
+      "strength": 0.2094,
+      "reason": "00631L calibrated_prob_up=0.5108, direction=UP"
+    },
+    {
+      "name": "ncf_00632r_inverse",
+      "available": true,
+      "direction": "neutral",
+      "strength": 0.2132,
+      "reason": "00632R calibrated_prob_up=0.5446, inverse_direction=neutral"
+    },
+    {
+      "name": "ncf_cross_ticker",
+      "available": true,
+      "direction": "neutral",
+      "strength": 0.461,
+      "reason": "market_probability_up=0.4756, agreement=0.9220"
+    },
+    {
+      "name": "finbert_sentiment",
+      "available": true,
+      "direction": "neutral",
+      "strength": 0.1386,
+      "reason": "finbert_risk_score=0.5193, status=ok"
+    },
+    {
+      "name": "lm_dictionary_sentiment",
+      "available": false,
+      "direction": "neutral",
+      "strength": 0.0,
+      "reason": "lm_status=no_dictionary_hits, risk_score=0.0000, pos=0, neg=0, hits=0"
+    },
+    {
+      "name": "composite_risk_score",
+      "available": true,
+      "direction": "neutral",
+      "strength": 0.5,
+      "reason": "total_risk_score=5, chip=3, derivative=2"
+    },
+    {
+      "name": "factor_lens",
+      "available": true,
+      "direction": "bullish",
+      "strength": 0.55,
+      "reason": "all_key_factors_pass=True, ic_20d_warnings=0"
+    },
+    {
+      "name": "tbrain_kdj",
+      "available": true,
+      "direction": "bullish",
+      "strength": 1.0,
+      "reason": "J=0.965, K=0.730, D=0.613 (fast); K_slow=0.655, D_slow=0.651, J_q_low=0.129, J_q_high=1.071"
+    },
+    {
+      "name": "weekly_ma_bull",
+      "available": true,
+      "direction": "bullish",
+      "strength": 0.6,
+      "reason": "weekly MA short=105.29, mid=97.37, long=85.67, bull_aligned=True"
+    },
+    {
+      "name": "execution_regime",
+      "available": true,
+      "direction": "bullish",
+      "strength": 0.35,
+      "reason": "execution_regime=golden1"
+    }
+  ]
+}

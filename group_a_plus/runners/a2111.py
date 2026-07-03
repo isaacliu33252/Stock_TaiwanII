@@ -22,8 +22,11 @@ Baseline comparisons (2025-01-02 ~ 2026-06-18):
 from __future__ import annotations
 
 import argparse
+import hashlib
+from datetime import datetime, timezone
 from pathlib import Path
 
+import duckdb
 import pandas as pd
 
 from backtest_group_a_plus_defensive_basket import (
@@ -57,6 +60,62 @@ from tw_output_standard import OutputStandardizer, write_standard_output
 
 
 A2111_ID = "a2111_tight_entry_bond30c30"
+LATEST_GROUP_A_SIGNAL = PROJECT_ROOT / "results" / "group_a_combined_live_latest.json"
+
+
+def _resolve_golden_signal_path() -> Path:
+    candidates = []
+    if LATEST_GROUP_A_SIGNAL.exists():
+        candidates.append(LATEST_GROUP_A_SIGNAL)
+    candidates.extend((PROJECT_ROOT / "results").glob("signal_group_a_*.json"))
+    candidates = [
+        path
+        for path in candidates
+        if path.exists()
+        and not path.name.startswith("signal_group_a_tdcc")
+        and "shareholding" not in path.name
+    ]
+    if not candidates:
+        return _resolve(DEFAULT_GOLDEN_SIGNAL)
+    return max(candidates, key=lambda path: path.stat().st_mtime).resolve()
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _golden_signal_metadata(path: Path, golden_weights: dict[str, float]) -> dict:
+    """Reproducibility metadata for the golden1 weights a backtest actually used.
+
+    H3 (2026-07-02 Fable 5 audit): `_resolve_golden_signal_path()` picks
+    whichever `signal_group_a_*.json` file has the newest mtime, so a
+    backtest run today replays the *entire* history under *today's* golden1
+    weights, not the weights that were actually in force on each historical
+    date -- a drift channel distinct from (and in addition to) the known NCF
+    panel weight drift. This does not change that resolution behavior (doing
+    so would change live signal generation); it only makes the choice
+    auditable, mirroring the existing `ncf_panel_coverage` sha256/mtime guard.
+    """
+    stat = path.stat()
+    return {
+        "golden_signal_path": str(path.resolve()),
+        "golden_signal_sha256": _file_sha256(path),
+        "golden_signal_modified_at": datetime.fromtimestamp(
+            stat.st_mtime,
+            timezone.utc,
+        ).isoformat(timespec="seconds").replace("+00:00", "Z"),
+        "golden_weights": dict(golden_weights),
+        "caveat": (
+            "golden1 weights are resolved by newest-mtime among "
+            "results/signal_group_a_*.json at backtest run time, not the "
+            "weights actually in force on each historical date -- see H3 in "
+            "GROUP_A_PLUS_FABLE5_AUDIT_A214_REVERT_HANDOFF_20260702.md."
+        ),
+    }
 
 
 def _build_switch_rule() -> SwitchRule:
@@ -85,7 +144,7 @@ def run_a2111(
 ) -> tuple[dict, pd.DataFrame]:
     """Run A21.11: A21.7 tight-entry switch rule + A21.4 bond30_cash30 defensive basket."""
     policy_signal, policy_signal_path = _load_policy_signal(_resolve(DEFAULT_DECISION_POINTER))
-    golden_signal_path = _resolve(DEFAULT_GOLDEN_SIGNAL)
+    golden_signal_path = _resolve_golden_signal_path()
     golden_signal = _load(golden_signal_path)
     current_defensive = _normalize(_weights_from_group_a_plus(policy_signal))
     basket = _normalize(DEFENSIVE_BASKETS["bond30_cash30"])
@@ -158,6 +217,7 @@ def run_a2111(
         },
         "dividend_coverage": dividend_coverage,
         "weights": weights_by_regime,
+        "golden_signal_coverage": _golden_signal_metadata(golden_signal_path, golden_weights),
         "inputs": {
             "policy_signal": str(policy_signal_path.relative_to(PROJECT_ROOT)),
             "golden_signal": str(golden_signal_path.relative_to(PROJECT_ROOT)),
@@ -166,10 +226,23 @@ def run_a2111(
     return report, out_frame
 
 
+def _resolve_end_date(db_path: Path, requested_end: str, ticker: str = "0050.TW") -> str:
+    """Resolve 'latest' to the newest available OHLCV date for this ticker."""
+    if str(requested_end).lower() != "latest":
+        return requested_end
+    con = duckdb.connect(str(db_path), read_only=True)
+    max_dt = con.execute("SELECT MAX(dt) FROM ohlcv WHERE ticker = ?", [ticker]).fetchone()[0]
+    con.close()
+    if max_dt is None:
+        raise ValueError(f"No OHLCV rows found for {ticker}")
+    return pd.Timestamp(max_dt).strftime("%Y-%m-%d")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--start", default="2025-01-02")
-    parser.add_argument("--end", default="2026-06-25")
+    parser.add_argument("--end", default="latest",
+                        help="'latest' resolves to the newest OHLCV date in --db (default)")
     parser.add_argument("--initial-value", type=float, default=1_000_000.0)
     parser.add_argument("--db", default=str(DB_PATH))
     parser.add_argument("--warmup-days", type=int, default=180)
@@ -181,9 +254,10 @@ def main() -> None:
     args = parser.parse_args()
     std = OutputStandardizer("group_a_plus.runners.a2111")
     try:
+        resolved_end = _resolve_end_date(Path(args.db), args.end)
         report, frame = run_a2111(
             args.start,
-            args.end,
+            resolved_end,
             args.initial_value,
             Path(args.db),
             args.warmup_days,

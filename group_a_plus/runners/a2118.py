@@ -54,10 +54,12 @@ import hashlib
 from datetime import date, datetime, timezone
 from pathlib import Path
 
+import duckdb
 import pandas as pd
 
 from backtest_group_a_plus_defensive_basket import (
     DEFENSIVE_BASKETS,
+    _delayed_regime,
     _load_total_return_prices,
     _recovery_ramp_regime,
     _simulate_costed_curve,
@@ -82,7 +84,11 @@ from backtest_group_a_plus_switch_policy import (
 from backtest_group_a_plus_warmup_consistency import _trim_window, _warmup_start
 from group_a_plus.integrations.ncf import load_ncf_signal, ncf_overlay_summary
 from group_a_plus.paths import PROJECT_ROOT
-from group_a_plus.runners.a2111 import _build_switch_rule, _resolve_golden_signal_path
+from group_a_plus.runners.a2111 import (
+    _build_switch_rule,
+    _golden_signal_metadata,
+    _resolve_golden_signal_path,
+)
 from tw_output_standard import OutputStandardizer, write_standard_output
 
 
@@ -93,16 +99,12 @@ NCF_LB_MA_GAP_MIN = 0.10    # price > 10% above MA100 (late-bull regime)
 NCF_LB_H20_MAX = 0.45       # NCF H20 prob_up < 45% (expects drop)
 NCF_LB_CONF_MIN = 0.55      # model confidence > 55%
 
-# De-leveraged golden1 basket: replace half of 00631L weight with 0050
-# Base golden1: {0050: 60%, 00631L: 20%, cash: 20%}
-# Hedge:        {0050: 70%, 00631L: 10%, cash: 20%}
-LATE_BULL_HEDGE_WEIGHTS = {
-    "0050.TW": 0.70,
-    "00631L.TW": 0.10,
-    "00632R.TW": 0.00,
-    "00679B.TWO": 0.00,
-    "cash": 0.20,
-}
+# De-leveraged golden1 basket: halve 00631L's weight, moving it to 0050.
+# Actual hedge weights are computed dynamically from the *current* golden1
+# basket by _late_bull_hedge_weights() below -- golden1 itself drifts daily
+# (see [[project_group_a_plus_fable5_audit_20260702]] H3), so a static
+# example here would go stale. (Removed a dead LATE_BULL_HEDGE_WEIGHTS
+# constant that assumed a fixed 60/20/20 golden1 and was never referenced.)
 
 NCF_LB_REGIME = "ncf_late_bull_hedge"
 NCF_LB_SOFT_REGIME = "ncf_late_bull_hedge_soft"
@@ -332,6 +334,7 @@ def run_a2118(
     gain_prob_soft_min: float | None = None,
     soft_hedge_intensity: float = 0.5,
     rally_suppress_min: float | None = None,
+    regime_execution_delay_days: int = 0,
 ) -> tuple[dict, pd.DataFrame]:
     """Run A21.18: A21.11 base + NCF late-bull de-leverage overlay on golden1.
 
@@ -339,6 +342,15 @@ def run_a2118(
     _simulate_costed_curve as A21.11, with trigger days pre-converted to
     "ncf_late_bull_hedge" regime (share-tracked, not daily-rebalanced).
     Without the panel, backtest is identical to A21.11.
+
+    regime_execution_delay_days: H4 (2026-07-02 Fable 5 audit) analysis knob,
+    default 0 (no behavior change). The panel's prediction for day t needs
+    day t's close, which isn't available live until ~23:30 that night, so
+    live execution can only act on it starting day t+1 -- the default
+    same-day backtest has a 1-trading-day look-ahead versus live. Set to 1
+    to shift `modified_regime` by that many trading days (via
+    `_delayed_regime`) before simulating, to see the same-day-lookahead-free
+    comparison. Left off by default so no existing caller's numbers change.
     """
     policy_signal, policy_signal_path = _load_policy_signal(_resolve(DEFAULT_DECISION_POINTER))
     golden_signal_path = _resolve_golden_signal_path()
@@ -381,9 +393,14 @@ def run_a2118(
             gain_prob_soft_min=gain_prob_soft_min,
             rally_suppress_min=rally_suppress_min,
         )
+        # H4: by default (regime_execution_delay_days=0) this simulates as if
+        # the panel's day-t prediction were tradable at day-t's own close --
+        # in live trading the NCF signal isn't produced until ~23:30 that
+        # night, so execution can only start day t+1. See docstring above.
+        executed_regime = _delayed_regime(modified_regime, regime_execution_delay_days)
         curve, sim_result = _simulate_costed_curve(
             total_return_prices,
-            modified_regime,
+            executed_regime,
             weights_by_regime,
             initial_value,
             commission_rate,
@@ -395,9 +412,10 @@ def run_a2118(
     else:
         modified_regime = execution_regime
         overlay_info = {"late_bull_trigger_days": 0, "late_bull_trigger_events": []}
+        executed_regime = _delayed_regime(modified_regime, regime_execution_delay_days)
         curve, sim_result = _simulate_costed_curve(
             total_return_prices,
-            execution_regime,
+            executed_regime,
             weights_by_regime,
             initial_value,
             commission_rate,
@@ -409,17 +427,17 @@ def run_a2118(
 
     recovery_dates = [
         str(dt.date())
-        for dt in modified_regime.index
-        if modified_regime.loc[dt] == "group_a_plus_recovery"
-        and (dt == modified_regime.index[0] or modified_regime.shift(1).loc[dt] != "group_a_plus_recovery")
+        for dt in executed_regime.index
+        if executed_regime.loc[dt] == "group_a_plus_recovery"
+        and (dt == executed_regime.index[0] or executed_regime.shift(1).loc[dt] != "group_a_plus_recovery")
     ]
     out_frame = frame.copy()
     out_frame = out_frame.rename(columns={"regime": "base_regime"})
-    out_frame["execution_regime"] = modified_regime
+    out_frame["execution_regime"] = executed_regime
     out_frame["portfolio_value"] = curve
 
     # --- Live NCF signal (today) ---
-    today_regime = str(modified_regime.iloc[-1])
+    today_regime = str(executed_regime.iloc[-1])
     ncf_live: dict = {}
     path_631l = _resolve_ncf_path(ncf_00631l_path, "00631l")
     today_ma_gap = float(ma_gap_series.iloc[-1]) if len(ma_gap_series) > 0 else 0.0
@@ -432,15 +450,24 @@ def run_a2118(
         date_matches = _signal_date_matches(sig_631l, frame_data_date)
         # Use raw H=20 probability (horizon_prob_up["20"]) to match panel backtest behavior.
         # calibrated_prob_up is the AUC-weighted ensemble across all horizons — different metric.
-        h20_prob = float(
-            (sig_631l.get("horizon_prob_up") or {}).get("20")
-            or sig_631l.get("calibrated_prob_up", 0.5)
-        )
-        h5_prob = float(
-            (sig_631l.get("horizon_prob_up") or {}).get("5")
-            or sig_631l.get("calibrated_prob_up", 0.5)
-        )
-        conf = float(sig_631l.get("confidence", 0.0))
+        # `is None` (not `or`) so a genuine 0.0 probability isn't discarded in favor
+        # of the calibrated fallback -- `or` treats 0.0 as falsy and silently
+        # substitutes the ensemble value, diluting an extreme bearish reading.
+        raw_h20 = (sig_631l.get("horizon_prob_up") or {}).get("20")
+        h20_prob = float(raw_h20 if raw_h20 is not None else sig_631l.get("calibrated_prob_up", 0.5))
+        raw_h5 = (sig_631l.get("horizon_prob_up") or {}).get("5")
+        h5_prob = float(raw_h5 if raw_h5 is not None else sig_631l.get("calibrated_prob_up", 0.5))
+        # H2 (2026-07-02 Fable 5 audit, Option A): use confidence_panel_aligned
+        # (same expanding-AUC prob_magnitude computation as the panel CSV
+        # this strategy's conf_min was actually swept/calibrated against),
+        # not the composite `confidence` field -- those two were observed
+        # to differ by ~18x on the same day (different formula AND
+        # different underlying ensemble weighting). Falls back to 0.0 (never
+        # triggers) rather than silently reading the differently-scaled
+        # composite value for JSON payloads generated before this field
+        # existed.
+        conf_aligned = sig_631l.get("confidence_panel_aligned")
+        conf = float(conf_aligned) if conf_aligned is not None else 0.0
         late_bull_triggered = bool(
             date_matches
             and
@@ -510,12 +537,16 @@ def run_a2118(
             "end": str(close_prices.index[-1].date()),
             "rows": int(len(close_prices)),
         },
+        "regime_execution_delay_days": regime_execution_delay_days,
         "metrics": _metrics(curve, initial_value),
         "execution": {**sim_result, **overlay_info},
         "backtest_live_discrepancy": {
             "trim_layer": "bearish_high_risk_trim",
             "trim_condition": "total_risk_score>=9 AND signal_alignment bearish/wide_divergence",
-            "trim_fraction": 0.25,
+            # Matches _apply_bearish_high_risk_trim's live default in
+            # daily_signal.py (trim_fraction=0.20) -- this field previously
+            # said 0.25, which didn't match the actual live behavior.
+            "trim_fraction": 0.20,
             "in_backtest": False,
             "reason": "signal_alignment requires real-time multi-source inputs, not reconstructable historically",
             "high_chip_golden1_days": int(
@@ -562,6 +593,7 @@ def run_a2118(
         },
         "dividend_coverage": dividend_coverage,
         "ncf_panel_coverage": ncf_panel_coverage,
+        "golden_signal_coverage": _golden_signal_metadata(golden_signal_path, golden_weights),
         "today_regime": today_regime,
         "live_weights": live_weights,
         "base_weights": weights_by_regime,
@@ -609,10 +641,23 @@ def run_a2118(
     return report, out_frame
 
 
+def _resolve_end_date(db_path: Path, requested_end: str, ticker: str = "0050.TW") -> str:
+    """Resolve 'latest' to the newest available OHLCV date for this ticker."""
+    if str(requested_end).lower() != "latest":
+        return requested_end
+    con = duckdb.connect(str(db_path), read_only=True)
+    max_dt = con.execute("SELECT MAX(dt) FROM ohlcv WHERE ticker = ?", [ticker]).fetchone()[0]
+    con.close()
+    if max_dt is None:
+        raise ValueError(f"No OHLCV rows found for {ticker}")
+    return pd.Timestamp(max_dt).strftime("%Y-%m-%d")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--start", default="2025-01-02")
-    parser.add_argument("--end", default="2026-06-25")
+    parser.add_argument("--end", default="latest",
+                        help="'latest' resolves to the newest OHLCV date in --db (default)")
     parser.add_argument("--initial-value", type=float, default=1_000_000.0)
     parser.add_argument("--db", default=str(DB_PATH))
     parser.add_argument("--warmup-days", type=int, default=180)
@@ -630,14 +675,19 @@ def main() -> None:
     parser.add_argument("--soft-hedge-intensity", type=float, default=0.5)
     parser.add_argument("--rally-suppress-min", type=float, default=None,
                         help="suppress hedge when prob_fwd_gain_gt5_h20 >= threshold (rally too likely)")
+    parser.add_argument("--regime-execution-delay-days", type=int, default=0,
+                        help="H4 analysis: shift regime by N trading days before simulating, "
+                             "to model the real 1-day gap between NCF signal generation (23:30) "
+                             "and live execution (default 0 = same-day, i.e. existing behavior)")
     parser.add_argument("--output", default="results/group_a_plus_runner_a2118.json")
     parser.add_argument("--frame-output", default="results/group_a_plus_runner_a2118_frame.csv")
     args = parser.parse_args()
     std = OutputStandardizer("group_a_plus.runners.a2118")
     try:
+        resolved_end = _resolve_end_date(Path(args.db), args.end)
         report, frame = run_a2118(
             args.start,
-            args.end,
+            resolved_end,
             args.initial_value,
             Path(args.db),
             args.warmup_days,
@@ -653,6 +703,7 @@ def main() -> None:
             gain_prob_soft_min=args.gain_prob_soft_min,
             soft_hedge_intensity=args.soft_hedge_intensity,
             rally_suppress_min=args.rally_suppress_min,
+            regime_execution_delay_days=args.regime_execution_delay_days,
         )
         Path(args.frame_output).parent.mkdir(parents=True, exist_ok=True)
         frame.to_csv(args.frame_output, encoding="utf-8-sig")
