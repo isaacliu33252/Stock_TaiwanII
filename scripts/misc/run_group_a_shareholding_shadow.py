@@ -13,7 +13,7 @@ import duckdb
 import pandas as pd
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONFIG = PROJECT_ROOT / "group_a_shareholding_shadow_config.json"
 DEFAULT_DB = PROJECT_ROOT / "FinRL" / "data" / "stock_data.db"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "results"

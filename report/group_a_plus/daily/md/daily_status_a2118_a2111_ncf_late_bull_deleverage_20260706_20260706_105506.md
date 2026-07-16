@@ -1,0 +1,31 @@
+# GroupA+ Daily Status
+
+Generated: `2026-07-06T10:55:06`
+Check date: `2026-07-06`
+Overall: `warn`
+
+## Checks
+
+| Check | Status | Detail |
+| --- | --- | --- |
+| live_signal_success | `ok` | live signal loaded |
+| execution_allowed | `ok` | allowed |
+| data_freshness | `warn` | 2 business days stale, 4 calendar days stale |
+| strategy_status | `ok` | strategy_status=active, strategy_id=a2118_a2111_ncf_late_bull_deleverage |
+| source_freshness | `warn` | soft strategy sources are stale or missing: ['securities_lending_0050']; securities_lending_0050 |
+| cash_constraint | `ok` | estimated_cash_after_rounding_before_cost=201,207 |
+
+## Signal
+
+- Group A status: `hold_or_align_to_target`
+- Reason: `A20.7 formal defensive state is inactive`
+- Actual data date: `2026-07-02`
+- Business stale days: `2`
+- Calendar stale days: `4`
+
+## GroupA+
+
+- Profile: `a2118_a2111_ncf_late_bull_deleverage`
+- Overlay regime: `golden1`
+- 00679B target weight: `0.00%`
+- Cash after cost: `201,207`

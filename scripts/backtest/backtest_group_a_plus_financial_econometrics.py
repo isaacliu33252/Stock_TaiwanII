@@ -85,6 +85,41 @@ def _garch_proxy_vol(
     return pd.Series(variance, index=returns.index).pow(0.5) * math.sqrt(252)
 
 
+def _garch_proxy_vol_downside(
+    returns: pd.Series,
+    alpha: float = 0.08,
+    beta: float = 0.90,
+    floor_window: int = 252,
+) -> pd.Series:
+    """Downside-only variant of _garch_proxy_vol.
+
+    Follows Wang & Yan (2021, J. Banking & Finance) "Downside risk and the
+    performance of volatility-managed portfolios": the shock term only fires
+    on negative-return days, so up days only decay the variance state toward
+    baseline rather than reinforcing it -- the same asymmetry as their daily
+    exponential-smoothing downside volatility estimator (Section 3.5.4),
+    adapted to this module's existing GARCH(1,1)-style recursion so it plugs
+    into the same ratio/percentile/regime-gate plumbing as the symmetric
+    proxy. Research-only; not wired into any selector/guard/gate yet.
+    """
+    returns = returns.fillna(0.0).astype(float)
+    unconditional_var = float(returns.rolling(floor_window, min_periods=40).var().median())
+    if not math.isfinite(unconditional_var) or unconditional_var <= 0:
+        unconditional_var = float(returns.var()) if float(returns.var()) > 0 else 1e-8
+    omega = max(unconditional_var * max(1.0 - alpha - beta, 1e-6), 1e-12)
+    variance = []
+    prev_var = unconditional_var
+    prev_ret = 0.0
+    for ret in returns:
+        shock = alpha * prev_ret * prev_ret if prev_ret < 0.0 else 0.0
+        next_var = omega + shock + beta * prev_var
+        next_var = max(float(next_var), 1e-12)
+        variance.append(next_var)
+        prev_var = next_var
+        prev_ret = float(ret)
+    return pd.Series(variance, index=returns.index).pow(0.5) * math.sqrt(252)
+
+
 def _garch_features(prices: pd.DataFrame, chip_features: pd.DataFrame) -> pd.DataFrame:
     base_features = _regime_features(prices, A207_RULE, chip_features)
     close = prices["0050.TW"].astype(float)
@@ -93,6 +128,14 @@ def _garch_features(prices: pd.DataFrame, chip_features: pd.DataFrame) -> pd.Dat
     garch_base = garch_vol.rolling(252, min_periods=60).median()
     garch_ratio = (garch_vol / garch_base.replace(0.0, math.nan)).replace([math.inf, -math.inf], math.nan).fillna(1.0)
     garch_percentile = garch_vol.rolling(252, min_periods=60).rank(pct=True).fillna(0.5)
+    garch_vol_downside = _garch_proxy_vol_downside(returns)
+    garch_downside_base = garch_vol_downside.rolling(252, min_periods=60).median()
+    garch_downside_ratio = (
+        (garch_vol_downside / garch_downside_base.replace(0.0, math.nan))
+        .replace([math.inf, -math.inf], math.nan)
+        .fillna(1.0)
+    )
+    garch_downside_percentile = garch_vol_downside.rolling(252, min_periods=60).rank(pct=True).fillna(0.5)
     frame = pd.DataFrame(
         {
             "return_0050_1d": returns,
@@ -100,6 +143,9 @@ def _garch_features(prices: pd.DataFrame, chip_features: pd.DataFrame) -> pd.Dat
             "garch_proxy_vol_0050": garch_vol,
             "garch_proxy_vol_ratio": garch_ratio,
             "garch_proxy_vol_percentile": garch_percentile,
+            "garch_proxy_vol_downside_0050": garch_vol_downside,
+            "garch_proxy_vol_downside_ratio": garch_downside_ratio,
+            "garch_proxy_vol_downside_percentile": garch_downside_percentile,
             "ma_gap": base_features["ma_gap"],
             "drawdown": base_features["drawdown"],
             "exit_momentum": base_features["exit_momentum"],

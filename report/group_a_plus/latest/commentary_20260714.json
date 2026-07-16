@@ -1,0 +1,253 @@
+{
+  "date": "2026-07-14",
+  "mode": "template",
+  "headline": "NCF H=20 機率 0.466，維持觀察（未觸發去槓桿）",
+  "market_pulse": "台灣股市維持中性格局，NCF H=20 機率 0.466，多空拉鋸，建議維持現有配置。H=5 機率 0.617（略偏多），本週走勢偏多。",
+  "signal_interpretation": {
+    "h1_note": "隔日機率 0.4898（中性），明日方向不明。",
+    "h5_note": "5 日機率 0.6169（略偏多），本週偏多。",
+    "h20_note": "20 日機率 0.4661 高於觸發閾值 0.35，去槓桿條件未達成，維持觀察配置。",
+    "deleverage_status": "INACTIVE"
+  },
+  "risk_alerts": [
+    "信心值 0.454 偏低，信號可靠性下降，請保守看待"
+  ],
+  "positive_catalysts": [
+    "H=1 機率 0.490 接近中性，短線可能有技術性反彈",
+    "整體 Regime 仍維持 BULL，大趨勢尚未反轉"
+  ],
+  "action_today": "H=20 機率 0.466（略偏空），信號中性，維持現有配置，無需調整。",
+  "watch_levels": {
+    "ncf_h20_reentry": "h20 ≥ 0.40（目前 0.466）→ 可考慮解除去槓桿，恢復 00631L 標準配置",
+    "ncf_conf_floor": "信心值跌破 0.50（目前 0.454）→ 信號可靠性下降，去槓桿決策參考性降低"
+  },
+  "_ncf_snapshot": {
+    "ticker": "00631L.TW",
+    "last_close_date": "2026-07-14",
+    "last_close": 35.88,
+    "regime": "BULL",
+    "h1_prob_up": 0.4898,
+    "h5_prob_up": 0.6169,
+    "h20_prob_up": 0.4661,
+    "calibrated_prob_up": 0.5309,
+    "confidence": 0.4537
+  },
+  "_ncf_source": "ncf_00631l_latest_20260714.json",
+  "watchlist_news": {
+    "schema_version": 1,
+    "generated_at": "2026-07-14T16:00:55Z",
+    "signal_date": "2026-07-14",
+    "lookback_days": 7,
+    "source": "local_ltn_jsonl",
+    "config": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/config/group_a_plus_watchlist.json",
+    "news_glob": "news/ltn_mainstream_*.jsonl",
+    "watchlist": [
+      {
+        "symbol": "0050.TW",
+        "label": "元大台灣50",
+        "matched_count": 0
+      },
+      {
+        "symbol": "00631L.TW",
+        "label": "元大台灣50正2",
+        "matched_count": 0
+      },
+      {
+        "symbol": "00632R.TW",
+        "label": "元大台灣50反1",
+        "matched_count": 0
+      },
+      {
+        "symbol": "00679B.TWO",
+        "label": "元大美債20年",
+        "matched_count": 0
+      }
+    ],
+    "fallback_used": true,
+    "article_count": 0,
+    "articles": []
+  },
+  "signal_alignment": {
+    "schema_version": 1,
+    "generated_at": "2026-07-14T16:00:55Z",
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "signal_date": "2026-07-14",
+    "alignment": "wide_divergence",
+    "dominant_direction": "bullish",
+    "direction_counts": {
+      "bullish": 4,
+      "bearish": 2,
+      "neutral": 4
+    },
+    "weighted_share": {
+      "bullish": 0.4723,
+      "bearish": 0.3593,
+      "neutral": 0.1684
+    },
+    "available_sources": 10,
+    "total_sources": 10,
+    "divergent_sources": [
+      "composite_risk_score",
+      "tbrain_kdj"
+    ],
+    "confidence_penalty": 0.25,
+    "leverage_suitability": {
+      "schema_version": 1,
+      "tier": 1,
+      "label_zh": "只適合 0050",
+      "action": "0050_only",
+      "policy": "advisory_only_no_weight_change",
+      "reason": "risk is elevated or TSMC-led breadth is narrow; do not add leverage",
+      "shadow_momentum_candidate": false,
+      "shadow_momentum_note": null,
+      "inputs": {
+        "execution_regime": "golden1",
+        "alignment": "wide_divergence",
+        "dominant_direction": "bullish",
+        "weighted_share": {
+          "bullish": 0.4723,
+          "bearish": 0.3593,
+          "neutral": 0.1684
+        },
+        "total_risk_score": 9,
+        "chip_data_stale": false,
+        "tail_risk_score": 0,
+        "ncf_2330_tsmc_state": "stale",
+        "ncf_2330_reference_action": "diagnostic_only",
+        "ncf_2330_market_state": {
+          "state": 2,
+          "label_zh": "高檔震盪",
+          "bias": "neutral_bullish",
+          "policy": "diagnostic_only_no_weight_change",
+          "rule_version": "tsmc_market_state_v1",
+          "reasons": [
+            "direction remains constructive but not strong enough for leadership",
+            "expected return is flat or signals are mixed",
+            "severe drawdown risk remains contained"
+          ],
+          "inputs": {
+            "h1_direction": "UP",
+            "h5_direction": "UP",
+            "h20_direction": "UP",
+            "h1_probability_up": 0.55003,
+            "h5_probability_up": 0.79933,
+            "h20_probability_up": 0.902641,
+            "h1_return": 0.000254,
+            "h5_return": 0.006198,
+            "h20_return": 0.032832,
+            "combined_probability_up": 0.719099,
+            "calibrated_probability_up": 0.666474,
+            "confidence": 0.656872,
+            "weighted_return": 0.002342,
+            "prob_fwd_mdd_gt5_h20": 0.454952,
+            "prob_fwd_mdd_gt8_h20": 0.097585,
+            "prob_fwd_gain_gt5_h20": 0.441882,
+            "tail_reward_risk_score": -0.01307
+          },
+          "state_map": {
+            "1": "強勢領漲",
+            "2": "高檔震盪",
+            "3": "假突破",
+            "4": "拉回整理",
+            "5": "趨勢轉弱"
+          }
+        },
+        "ncf_00631l_direction": "neutral",
+        "ncf_00631l_prob_up": 0.5309,
+        "ncf_00631l_prob_fwd_mdd_gt5_h20": 0.183954,
+        "ncf_2330_prob_fwd_mdd_gt5_h20": 0.454952,
+        "ncf_2330_prob_fwd_mdd_gt8_h20": 0.097585,
+        "ncf_cross_ticker_direction": "neutral",
+        "ncf_2330_factor_quality_signal": "bearish",
+        "ncf_2330_factor_quality_risk_score": 5.0,
+        "ncf_2330_factor_quality_net_score": -4.0
+      },
+      "tier_map": {
+        "0": "不利 00631L",
+        "1": "只適合 0050",
+        "2": "可持有 0050 + 小 00631L",
+        "3": "適合提高 00631L"
+      }
+    },
+    "sources": [
+      {
+        "name": "ncf_00631l",
+        "available": true,
+        "direction": "neutral",
+        "strength": 0.0618,
+        "reason": "00631L calibrated_prob_up=0.5309, direction=UP"
+      },
+      {
+        "name": "ncf_00632r_inverse",
+        "available": true,
+        "direction": "neutral",
+        "strength": 0.0524,
+        "reason": "00632R calibrated_prob_up=0.5262, inverse_direction=neutral"
+      },
+      {
+        "name": "ncf_cross_ticker",
+        "available": true,
+        "direction": "neutral",
+        "strength": 0.4326,
+        "reason": "market_probability_up=0.4977, agreement=0.8652"
+      },
+      {
+        "name": "ncf_2330_tsmc",
+        "available": true,
+        "direction": "neutral",
+        "strength": 0.15,
+        "reason": "state=stale, 2330_h20_prob_up=0.9026, 2330_tail_risk=0.454952, 2330_severe_tail=0.097585, 2330_market_state=2, 2330_5d=-0.00813, 0050_ex_tsmc_5d=-0.029284"
+      },
+      {
+        "name": "finbert_sentiment",
+        "available": true,
+        "direction": "bullish",
+        "strength": 0.4548,
+        "reason": "finbert_risk_score=0.2226, status=ok"
+      },
+      {
+        "name": "lm_dictionary_sentiment",
+        "available": false,
+        "direction": "neutral",
+        "strength": 0.0,
+        "reason": "lm_status=no_dictionary_hits, risk_score=0.0000, pos=0, neg=0, hits=0",
+        "structural_limitation": "english_only_dictionary_vs_chinese_news_source"
+      },
+      {
+        "name": "composite_risk_score",
+        "available": true,
+        "direction": "bearish",
+        "strength": 0.9,
+        "reason": "total_risk_score=9, chip=7, derivative=2"
+      },
+      {
+        "name": "factor_lens",
+        "available": true,
+        "direction": "bullish",
+        "strength": 0.55,
+        "reason": "all_key_factors_pass=True, ic_20d_warnings=0"
+      },
+      {
+        "name": "tbrain_kdj",
+        "available": true,
+        "direction": "bearish",
+        "strength": 0.5871,
+        "reason": "J=0.148, K=0.307, D=0.386 (fast); K_slow=0.536, D_slow=0.612, J_q_low=0.148, J_q_high=1.072"
+      },
+      {
+        "name": "weekly_ma_bull",
+        "available": true,
+        "direction": "bullish",
+        "strength": 0.6,
+        "reason": "weekly MA short=105.41, mid=100.82, long=88.47, bull_aligned=True"
+      },
+      {
+        "name": "execution_regime",
+        "available": true,
+        "direction": "bullish",
+        "strength": 0.35,
+        "reason": "execution_regime=golden1"
+      }
+    ]
+  }
+}

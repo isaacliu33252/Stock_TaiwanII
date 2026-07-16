@@ -2,57 +2,57 @@
   "success": true,
   "data": {
     "signal_version": 2,
-    "generated_at": "2026-07-03T09:14:02",
+    "generated_at": "2026-07-15T00:00:22",
     "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
     "strategy_status": "active",
-    "requested_as_of_date": "2026-07-03",
-    "actual_data_date": "2026-07-02",
-    "business_stale_days": 1,
-    "calendar_stale_days": 1,
+    "requested_as_of_date": "2026-07-14",
+    "actual_data_date": "2026-07-14",
+    "business_stale_days": 0,
+    "calendar_stale_days": 0,
     "max_business_stale_days": 3,
-    "execution_allowed": true,
-    "execution_guard_reasons": [],
-    "execution_warning_reasons": [
-      "soft strategy sources are stale or missing: ['securities_lending_0050']"
+    "execution_allowed": false,
+    "execution_guard_reasons": [
+      "required strategy sources are stale or missing: ['institutional_0050']"
     ],
+    "execution_warning_reasons": [],
     "base_regime": "golden1",
     "execution_regime": "golden1",
     "regime_reason": "A20.7 formal defensive state is inactive",
-    "last_transition_date": "2025-11-05",
+    "last_transition_date": "2025-06-10",
     "strategy_transition_today": false,
     "action": "hold_or_align_to_target",
     "target_weights": {
-      "0050.TW": 0.6949319837027067,
-      "00631L.TW": 0.10391752151883793,
+      "0050.TW": 0.5737386478789711,
+      "00631L.TW": 0.12590782033509004,
       "00632R.TW": 0.0,
       "00679B.TWO": 0.0,
-      "cash": 0.2011504947784553
+      "cash": 0.3003535317859388
     },
     "target_values": {
-      "0050.TW": 694931.9837027068,
-      "00631L.TW": 103917.52151883792,
+      "0050.TW": 573738.6478789711,
+      "00631L.TW": 125907.82033509004,
       "00632R.TW": 0.0,
       "00679B.TWO": 0.0,
-      "cash": 201150.49477845532
+      "cash": 300353.53178593883
     },
     "reference_target_shares_before_cost": {
-      "0050.TW": 6387,
-      "00631L.TW": 2672,
+      "0050.TW": 5495,
+      "00631L.TW": 3509,
       "00632R.TW": 0,
       "00679B.TWO": 0
     },
     "reference_target_market_values": {
-      "0050.TW": 694905.6194915771,
-      "00631L.TW": 103887.3628540039,
+      "0050.TW": 573678.0083847046,
+      "00631L.TW": 125902.92374801636,
       "00632R.TW": 0.0,
       "00679B.TWO": 0.0
     },
-    "estimated_cash_after_rounding_before_cost": 201207.01765441895,
+    "estimated_cash_after_rounding_before_cost": 300419.06786727905,
     "latest_prices": {
-      "0050.TW": 108.80000305175781,
-      "00631L.TW": 38.880001068115234,
-      "00632R.TW": 9.899999618530273,
-      "00679B.TWO": 26.959999084472656
+      "0050.TW": 104.4000015258789,
+      "00631L.TW": 35.880001068115234,
+      "00632R.TW": 10.350000381469727,
+      "00679B.TWO": 26.729999542236328
     },
     "symbol_metadata": {
       "0050.TW": {
@@ -86,95 +86,464 @@
     },
     "portfolio_value_input": 1000000.0,
     "latest_features": {
-      "ma_gap": 0.22897724178826873,
-      "drawdown": -0.021142586071615566,
-      "exit_momentum_5d": 0.014925430495003944,
-      "chip_score": 3,
+      "ma_gap": 0.15026747873936142,
+      "drawdown": -0.06072874410558071,
+      "exit_momentum_5d": -0.035565805765552794,
+      "chip_score": 7,
       "derivative_score": 2,
-      "total_risk_score": 5,
+      "total_risk_score": 9,
       "tail_risk_score": 0,
-      "finbert_sentiment_risk": 0.5193
+      "chip_data_core_days_since_source_update": 0,
+      "finbert_sentiment_risk": 0.2226
+    },
+    "market_state": {
+      "state": "crash_risk",
+      "bucket": "crash_risk",
+      "label_zh": "崩跌風險",
+      "allocation_bias": "00632R hedge or full defense",
+      "risk_level": "severe",
+      "inputs": {
+        "execution_regime": "golden1",
+        "ma_gap": 0.15026747873936142,
+        "drawdown": -0.06072874410558071,
+        "exit_momentum_5d": -0.035565805765552794,
+        "total_risk_score": 9,
+        "tail_risk_score": 0,
+        "signal_alignment": "wide_divergence",
+        "dominant_direction": "bullish"
+      },
+      "reason": "execution_regime=golden1; ma_gap=0.1503; drawdown=-0.0607; exit_momentum_5d=-0.0356; total_risk_score=9; tail_risk_score=0; signal_alignment=wide_divergence; dominant_direction=bullish"
+    },
+    "trough_nowcast": {
+      "state": "CAPITULATION_WARNING",
+      "state_space": [
+        "NO_TROUGH",
+        "CAPITULATION_WARNING",
+        "PARTIAL_REENTRY",
+        "FULL_REENTRY"
+      ],
+      "policy": "diagnostic_reentry_timing_only_no_target_weight_change",
+      "recommended_execution_staging_fraction": null,
+      "context_active": true,
+      "context_reasons": [
+        "market_state=crash_risk",
+        "market_risk_level=severe",
+        "high_total_risk_with_drawdown"
+      ],
+      "capitulation_score": 2,
+      "reentry_confirmation_score": 1,
+      "capitulation_reasons": [
+        "0050_strategy_drawdown_le_6pct",
+        "0050_volume_z60_ge_1"
+      ],
+      "reentry_confirmation_reasons": [
+        "soxx_rebound_from_5d_low_ge_3pct"
+      ],
+      "full_reentry_checks": {
+        "local_price_confirm": false,
+        "risk_unwind_confirm": false,
+        "cross_market_confirm": true,
+        "partial_reentry_confirmed": false,
+        "full_reentry_candidate": false,
+        "full_reentry_disabled_reason": "shadow_audit_false_reentry_rate_too_high",
+        "full_reentry_confirmed": false
+      },
+      "inputs": {
+        "latest_features": {
+          "ma_gap": 0.15026747873936142,
+          "drawdown": -0.06072874410558071,
+          "exit_momentum_5d": -0.035565805765552794,
+          "total_risk_score": 9,
+          "tail_risk_score": 0
+        },
+        "market_proxy": {
+          "status": "ok",
+          "ret_0050_1d": -0.015094325227557492,
+          "ret_0050_5d": -0.016949109925497696,
+          "ret_00631l_5d": -0.03522445837502508,
+          "latest_0050_close": 104.4000015258789,
+          "prior_0050_3d_low": 105.80000305175781,
+          "no_fresh_0050_lower_low_3d": false,
+          "rebound_0050_from_5d_low": 0.0,
+          "rebound_00631l_from_5d_low": 0.0,
+          "volume_z60": 2.711339247568644,
+          "amihud_z60": -0.6688248162378705,
+          "panic_volume_contracting": false,
+          "breadth_up_fraction_groupa": 0.25,
+          "limit_down_count_groupa": 0
+        },
+        "multisource": {
+          "status": "ok",
+          "feature_date": "2026-07-14",
+          "txo_pcr_volume_z20": null,
+          "txo_pcr_oi_z20": null,
+          "txo_foreign_put_call_net_oi_chg5_z60": 0.4460524688824531,
+          "tx_foreign_net_oi_z60": -1.4510256159386492,
+          "market_margin_forced_repay_z60": -0.8276459467484687,
+          "market_margin_balance_chg20_z252": 1.4189280241239508,
+          "securities_lending_0050_volume_z60": -0.2604089341084526,
+          "soxx_ret1": -0.0477002102433941,
+          "tsm_adr_ret1": -0.028863650231748306,
+          "usdtwd_ret5_z60": 0.8675414662345439,
+          "soxx_put_call_iv_skew_z252": null,
+          "soxx_put_call_volume_ratio_z60": null,
+          "soxx_put_call_oi_ratio_z60": null,
+          "txo_pcr_volume_z20_chg5": null,
+          "usdtwd_ret5_z60_chg5": 0.4021614626923945
+        },
+        "cross_market_rebound": {
+          "status": "ok",
+          "soxx_rebound_from_5d_low": 0.04129124718756927,
+          "soxx_ret5": 0.04129124718756927,
+          "tsm_adr_rebound_from_5d_low": 0.008883309820314933,
+          "tsm_adr_ret5": -0.016748722737397803,
+          "tw_2330_rebound_from_5d_low": 0.010351966873705987,
+          "tw_2330_ret5": -0.008130081300813052,
+          "usdtwd_ret5": 0.0017812685945495232,
+          "usdtwd_ret1": 0.00040192114026771364
+        },
+        "signal_alignment": {
+          "alignment": "wide_divergence",
+          "dominant_direction": "bullish"
+        }
+      },
+      "rationale": "Rare-event trough nowcast adapted for Taiwan proxies: options tail demand, liquidity stress, breadth/liquidity capitulation, USD/TWD and SOXX/TSM/2330 rebound. It only activates after an H20/crash/defensive warning context."
+    },
+    "garch_regime_shadow": {
+      "status": "available",
+      "policy": "shadow_only_no_weight_change",
+      "date": "2026-07-14",
+      "params": {
+        "ratio_threshold": 1.05,
+        "percentile_threshold": 0.7,
+        "require_negative_5d": true,
+        "source": "walk-forward research 2026-07-05"
+      },
+      "garch_proxy_vol_ratio": 1.1578,
+      "garch_proxy_vol_percentile": 0.6111,
+      "return_0050_5d": -0.0169,
+      "high_vol_flag": true,
+      "selected_rule": "ma20",
+      "a207_regime": "golden1",
+      "ma20_regime": "golden1",
+      "shadow_selected_regime": "golden1",
+      "volatility_gate": {
+        "policy": "shadow_only_no_weight_change",
+        "gate": "high_vol_defensive",
+        "low_vol_gate": false,
+        "high_vol_gate": true,
+        "signal_reliability": "suppress_return_prediction",
+        "reference_00631l_scale": 0.5,
+        "inputs": {
+          "garch_proxy_vol_ratio": 1.1578,
+          "garch_proxy_vol_percentile": 0.6111,
+          "return_0050_5d": -0.0169
+        },
+        "rationale": "High volatility with negative 5d confirmation; use return signals defensively only."
+      }
+    },
+    "specialist_routing": {
+      "status": "available",
+      "policy": "advisory_only_no_weight_change",
+      "route": "crash_deleverage",
+      "risk_level": "high",
+      "trusted_specialists": [
+        "risk_control",
+        "drawdown_control"
+      ],
+      "signal_reliability": "do_not_forecast_returns",
+      "recommended_action": "reduce_leverage",
+      "allow_return_prediction": false,
+      "allow_00631l_add": false,
+      "inputs": {
+        "volatility_gate": "high_vol_defensive",
+        "high_vol_gate": true,
+        "low_vol_gate": false,
+        "market_state": "crash_risk",
+        "market_state_bucket": "crash_risk",
+        "tsmc_0050_health_state": "stale",
+        "signal_alignment": "wide_divergence",
+        "dominant_direction": "bullish",
+        "total_risk_score": 9,
+        "tail_risk_score": 0,
+        "drawdown": -0.060729
+      },
+      "rationale": "Crash-risk conditions override return forecasts; priority is leverage reduction."
     },
     "execution_risk": {
-      "score": 0.2552,
-      "level": "low",
+      "score": 0.5427,
+      "level": "high",
       "components": {
-        "blocked_guard": 0.0,
-        "business_stale": 0.3333,
-        "calendar_stale": 0.1429,
-        "soft_data_warnings": 0.3333,
-        "leverage_weight": 0.5196,
-        "total_risk_score": 0.5,
-        "ncf_downside": 0.0219,
-        "ncf_tail_downside": 0.0421,
-        "finbert_sentiment_risk": 0.5193
+        "blocked_guard": 1.0,
+        "business_stale": 0.0,
+        "calendar_stale": 0.0,
+        "soft_data_warnings": 0.0,
+        "leverage_weight": 0.6295,
+        "total_risk_score": 0.9,
+        "ncf_downside": 0.0056,
+        "ncf_tail_downside": 0.0,
+        "finbert_sentiment_risk": 0.2226
       },
       "method": "weighted_daily_execution_risk_v2"
     },
-    "signal_alerts": [],
+    "signal_alerts": [
+      {
+        "type": "execution_blocked",
+        "level": "high",
+        "title": "Execution blocked",
+        "reason": "Execution guard is not satisfied.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:execution_blocked",
+        "cooldown_minutes": 1200
+      },
+      {
+        "type": "execution_risk",
+        "level": "high",
+        "title": "Execution risk elevated",
+        "reason": "Daily execution risk score is 0.5427.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:execution_risk",
+        "cooldown_minutes": 1200
+      },
+      {
+        "type": "total_risk_score",
+        "level": "high",
+        "title": "Total risk score high",
+        "reason": "Composite market risk score is high.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:total_risk_score",
+        "cooldown_minutes": 1200
+      },
+      {
+        "type": "volatility_gate_high_vol",
+        "level": "medium",
+        "title": "Volatility gate high-vol manual review",
+        "reason": "High-volatility gate is active; advisory-only review of 00631L exposure. Reference scale=0.5, vol_ratio=1.1578, vol_percentile=0.6111, 0050_5d=-0.0169.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:volatility_gate_high_vol",
+        "cooldown_minutes": 1200,
+        "metadata": {
+          "allow_00631l_add": false,
+          "trade_policy": "advisory_no_auto_weight_change",
+          "reference_00631l_scale": 0.5,
+          "volatility_gate": "high_vol_defensive",
+          "signal_reliability": "suppress_return_prediction",
+          "inputs": {
+            "garch_proxy_vol_ratio": 1.1578,
+            "garch_proxy_vol_percentile": 0.6111,
+            "return_0050_5d": -0.0169
+          }
+        }
+      },
+      {
+        "type": "specialist_router_crash_deleverage",
+        "level": "high",
+        "title": "Specialist router: crash deleverage",
+        "reason": "Crash-risk conditions override return forecasts; priority is leverage reduction.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:specialist_router_crash_deleverage",
+        "cooldown_minutes": 1200,
+        "metadata": {
+          "route": "crash_deleverage",
+          "trusted_specialists": [
+            "risk_control",
+            "drawdown_control"
+          ],
+          "recommended_action": "reduce_leverage",
+          "allow_00631l_add": false
+        }
+      },
+      {
+        "type": "signal_wide_divergence",
+        "level": "medium",
+        "title": "Signal alignment diverged",
+        "reason": "Cross-source signals show wide divergence; dominant direction is bullish.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:signal_wide_divergence",
+        "cooldown_minutes": 1200
+      },
+      {
+        "type": "market_trough_nowcast",
+        "level": "medium",
+        "title": "Market trough nowcast: CAPITULATION_WARNING",
+        "reason": "Post-warning trough nowcast is active. This is a re-entry timing diagnostic, not an independent buy signal.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:market_trough_nowcast",
+        "cooldown_minutes": 1200,
+        "metadata": {
+          "state": "CAPITULATION_WARNING",
+          "policy": "diagnostic_reentry_timing_only_no_target_weight_change",
+          "recommended_execution_staging_fraction": null,
+          "capitulation_score": 2,
+          "reentry_confirmation_score": 1,
+          "context_reasons": [
+            "market_state=crash_risk",
+            "market_risk_level=severe",
+            "high_total_risk_with_drawdown"
+          ],
+          "capitulation_reasons": [
+            "0050_strategy_drawdown_le_6pct",
+            "0050_volume_z60_ge_1"
+          ],
+          "reentry_confirmation_reasons": [
+            "soxx_rebound_from_5d_low_ge_3pct"
+          ]
+        }
+      },
+      {
+        "type": "ncf_panel_stale",
+        "level": "medium",
+        "title": "NCF panel stale",
+        "reason": "ncf_panel_631l last covers 2026-07-06, 6 trading day(s) behind signal date 2026-07-14. If this panel is pinned in strategy.json runner_params, the reproducibility guard that invalidates stale holds on panel regeneration is not firing -- confirm whether to refresh the panel.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:ncf_panel_stale",
+        "cooldown_minutes": 1200
+      }
+    ],
     "signal_alignment": {
       "schema_version": 1,
-      "generated_at": "2026-07-03T01:14:02Z",
+      "generated_at": "2026-07-14T16:00:19Z",
       "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
-      "signal_date": "2026-07-02",
-      "alignment": "bullish_alignment",
+      "signal_date": "2026-07-14",
+      "alignment": "wide_divergence",
       "dominant_direction": "bullish",
       "direction_counts": {
         "bullish": 4,
-        "bearish": 0,
-        "neutral": 5
+        "bearish": 2,
+        "neutral": 4
       },
       "weighted_share": {
-        "bullish": 0.6216,
-        "bearish": 0.0,
-        "neutral": 0.3784
+        "bullish": 0.4723,
+        "bearish": 0.3593,
+        "neutral": 0.1684
       },
-      "available_sources": 9,
+      "available_sources": 10,
       "total_sources": 10,
-      "divergent_sources": [],
-      "confidence_penalty": 0.0,
+      "divergent_sources": [
+        "composite_risk_score",
+        "tbrain_kdj"
+      ],
+      "confidence_penalty": 0.25,
+      "leverage_suitability": {
+        "schema_version": 1,
+        "tier": 1,
+        "label_zh": "只適合 0050",
+        "action": "0050_only",
+        "policy": "advisory_only_no_weight_change",
+        "reason": "risk is elevated or TSMC-led breadth is narrow; do not add leverage",
+        "shadow_momentum_candidate": false,
+        "shadow_momentum_note": null,
+        "inputs": {
+          "execution_regime": "golden1",
+          "alignment": "wide_divergence",
+          "dominant_direction": "bullish",
+          "weighted_share": {
+            "bullish": 0.4723,
+            "bearish": 0.3593,
+            "neutral": 0.1684
+          },
+          "total_risk_score": 9,
+          "chip_data_stale": false,
+          "tail_risk_score": 0,
+          "ncf_2330_tsmc_state": "stale",
+          "ncf_2330_reference_action": "diagnostic_only",
+          "ncf_2330_market_state": {
+            "state": 2,
+            "label_zh": "高檔震盪",
+            "bias": "neutral_bullish",
+            "policy": "diagnostic_only_no_weight_change",
+            "rule_version": "tsmc_market_state_v1",
+            "reasons": [
+              "direction remains constructive but not strong enough for leadership",
+              "expected return is flat or signals are mixed",
+              "severe drawdown risk remains contained"
+            ],
+            "inputs": {
+              "h1_direction": "UP",
+              "h5_direction": "UP",
+              "h20_direction": "UP",
+              "h1_probability_up": 0.55003,
+              "h5_probability_up": 0.79933,
+              "h20_probability_up": 0.902641,
+              "h1_return": 0.000254,
+              "h5_return": 0.006198,
+              "h20_return": 0.032832,
+              "combined_probability_up": 0.719099,
+              "calibrated_probability_up": 0.666474,
+              "confidence": 0.656872,
+              "weighted_return": 0.002342,
+              "prob_fwd_mdd_gt5_h20": 0.454952,
+              "prob_fwd_mdd_gt8_h20": 0.097585,
+              "prob_fwd_gain_gt5_h20": 0.441882,
+              "tail_reward_risk_score": -0.01307
+            },
+            "state_map": {
+              "1": "強勢領漲",
+              "2": "高檔震盪",
+              "3": "假突破",
+              "4": "拉回整理",
+              "5": "趨勢轉弱"
+            }
+          },
+          "ncf_00631l_direction": "neutral",
+          "ncf_00631l_prob_up": 0.5309,
+          "ncf_00631l_prob_fwd_mdd_gt5_h20": 0.183954,
+          "ncf_2330_prob_fwd_mdd_gt5_h20": 0.454952,
+          "ncf_2330_prob_fwd_mdd_gt8_h20": 0.097585,
+          "ncf_cross_ticker_direction": "neutral",
+          "ncf_2330_factor_quality_signal": "bearish",
+          "ncf_2330_factor_quality_risk_score": 5.0,
+          "ncf_2330_factor_quality_net_score": -4.0
+        },
+        "tier_map": {
+          "0": "不利 00631L",
+          "1": "只適合 0050",
+          "2": "可持有 0050 + 小 00631L",
+          "3": "適合提高 00631L"
+        }
+      },
       "sources": [
         {
           "name": "ncf_00631l",
           "available": true,
           "direction": "neutral",
-          "strength": 0.2094,
-          "reason": "00631L calibrated_prob_up=0.5108, direction=UP"
+          "strength": 0.0618,
+          "reason": "00631L calibrated_prob_up=0.5309, direction=UP"
         },
         {
           "name": "ncf_00632r_inverse",
           "available": true,
           "direction": "neutral",
-          "strength": 0.2132,
-          "reason": "00632R calibrated_prob_up=0.5446, inverse_direction=neutral"
+          "strength": 0.0524,
+          "reason": "00632R calibrated_prob_up=0.5262, inverse_direction=neutral"
         },
         {
           "name": "ncf_cross_ticker",
           "available": true,
           "direction": "neutral",
-          "strength": 0.461,
-          "reason": "market_probability_up=0.4756, agreement=0.9220"
+          "strength": 0.4326,
+          "reason": "market_probability_up=0.4977, agreement=0.8652"
+        },
+        {
+          "name": "ncf_2330_tsmc",
+          "available": true,
+          "direction": "neutral",
+          "strength": 0.15,
+          "reason": "state=stale, 2330_h20_prob_up=0.9026, 2330_tail_risk=0.454952, 2330_severe_tail=0.097585, 2330_market_state=2, 2330_5d=-0.00813, 0050_ex_tsmc_5d=-0.029284"
         },
         {
           "name": "finbert_sentiment",
           "available": true,
-          "direction": "neutral",
-          "strength": 0.1386,
-          "reason": "finbert_risk_score=0.5193, status=ok"
+          "direction": "bullish",
+          "strength": 0.4548,
+          "reason": "finbert_risk_score=0.2226, status=ok"
         },
         {
           "name": "lm_dictionary_sentiment",
           "available": false,
           "direction": "neutral",
           "strength": 0.0,
-          "reason": "lm_status=no_dictionary_hits, risk_score=0.0000, pos=0, neg=0, hits=0"
+          "reason": "lm_status=no_dictionary_hits, risk_score=0.0000, pos=0, neg=0, hits=0",
+          "structural_limitation": "english_only_dictionary_vs_chinese_news_source"
         },
         {
           "name": "composite_risk_score",
           "available": true,
-          "direction": "neutral",
-          "strength": 0.5,
-          "reason": "total_risk_score=5, chip=3, derivative=2"
+          "direction": "bearish",
+          "strength": 0.9,
+          "reason": "total_risk_score=9, chip=7, derivative=2"
         },
         {
           "name": "factor_lens",
@@ -186,16 +555,16 @@
         {
           "name": "tbrain_kdj",
           "available": true,
-          "direction": "bullish",
-          "strength": 1.0,
-          "reason": "J=0.965, K=0.730, D=0.613 (fast); K_slow=0.655, D_slow=0.651, J_q_low=0.129, J_q_high=1.071"
+          "direction": "bearish",
+          "strength": 0.5871,
+          "reason": "J=0.148, K=0.307, D=0.386 (fast); K_slow=0.536, D_slow=0.612, J_q_low=0.148, J_q_high=1.072"
         },
         {
           "name": "weekly_ma_bull",
           "available": true,
           "direction": "bullish",
           "strength": 0.6,
-          "reason": "weekly MA short=105.29, mid=97.37, long=85.67, bull_aligned=True"
+          "reason": "weekly MA short=105.41, mid=100.82, long=88.47, bull_aligned=True"
         },
         {
           "name": "execution_regime",
@@ -210,11 +579,11 @@
       "status": "ok",
       "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/sentiment/finbert_market_sentiment_daily.csv",
       "date": "2026-06-29",
-      "requested_as_of_date": "2026-07-03",
-      "actual_data_date": "2026-07-02",
-      "calendar_stale_days": 4,
-      "actual_calendar_stale_days": 3,
-      "freshness_scale": 1.0,
+      "requested_as_of_date": "2026-07-14",
+      "actual_data_date": "2026-07-14",
+      "calendar_stale_days": 15,
+      "actual_calendar_stale_days": 15,
+      "freshness_scale": 0.4286,
       "finbert_sentiment_score": 0.0774857857375993,
       "finbert_negative_ratio": 0.2956432863012175,
       "finbert_positive_ratio": 0.3731290720388168,
@@ -222,22 +591,22 @@
       "finbert_confidence": 0.6269229673449117,
       "finbert_news_intensity": 5.0,
       "raw_risk_score": 0.5193,
-      "risk_score": 0.5193
+      "risk_score": 0.2226
     },
     "lm_dictionary_sentiment": {
       "status": "no_dictionary_hits",
       "reason": "no_positive_or_negative_dictionary_hits",
-      "signal_date": "2026-07-02",
+      "signal_date": "2026-07-14",
       "dictionary_dir": "/mnt/c/Users/isaac/Downloads/StocksProject-master/StocksProject-master/SentimentAnalysis",
       "source": {
         "status": "available",
         "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/watchlist_news.json",
-        "article_count": 8,
-        "source": "local_ltn_jsonl",
-        "signal_date": "2026-07-02"
+        "article_count": 20,
+        "source": "finmind_stock_news",
+        "signal_date": "2026-07-11"
       },
       "active_allocation_impact": "none",
-      "token_count": 13,
+      "token_count": 31,
       "positive_count": 0,
       "negative_count": 0,
       "uncertainty_count": 0,
@@ -249,20 +618,20 @@
     "tbrain_shadow": {
       "status": "available",
       "ticker": "0050.TW",
-      "date": "2026-07-02",
+      "date": "2026-07-14",
       "features": {
-        "tbrain_close_ma6_loc": 0.018345,
-        "tbrain_close_ma22_loc": 0.029975,
-        "tbrain_close_ma65_loc": 0.140776,
-        "tbrain_close_ma130_loc": 0.298438,
-        "tbrain_volume_ma22_loc": -0.410605,
-        "tbrain_kdj_k_9_3_3": 0.730484,
-        "tbrain_kdj_d_9_3_3": 0.613104,
-        "tbrain_kdj_j_9_3_3": 0.965245,
-        "tbrain_kdj_k_5_21_11": 0.655355,
-        "tbrain_kdj_d_5_21_11": 0.650791,
-        "tbrain_kdj_j_9_3_3_q_low": 0.12924,
-        "tbrain_kdj_j_9_3_3_q_high": 1.070509
+        "tbrain_close_ma6_loc": -0.012377,
+        "tbrain_close_ma22_loc": -0.021118,
+        "tbrain_close_ma65_loc": 0.053768,
+        "tbrain_close_ma130_loc": 0.207334,
+        "tbrain_volume_ma22_loc": 1.550932,
+        "tbrain_kdj_k_9_3_3": 0.306526,
+        "tbrain_kdj_d_9_3_3": 0.385942,
+        "tbrain_kdj_j_9_3_3": 0.147694,
+        "tbrain_kdj_k_5_21_11": 0.536108,
+        "tbrain_kdj_d_5_21_11": 0.612176,
+        "tbrain_kdj_j_9_3_3_q_low": 0.147694,
+        "tbrain_kdj_j_9_3_3_q_high": 1.072286
       },
       "weekly_ma": {
         "status": "available",
@@ -271,9 +640,9 @@
           13,
           26
         ],
-        "ma_short": 105.2875,
-        "ma_mid": 97.3654,
-        "ma_long": 85.6654,
+        "ma_short": 105.4125,
+        "ma_mid": 100.8154,
+        "ma_long": 88.4712,
         "bull_aligned": true,
         "bear_aligned": false,
         "weeks_available": 57
@@ -281,22 +650,23 @@
       "method": "tbrain_multi_kdj_location_shadow_v1"
     },
     "ncf_live_overlay": {
-      "date_00631l": "2026-07-02",
-      "date_00632r": "2026-07-02",
+      "date_00631l": "2026-07-14",
+      "date_00632r": "2026-07-14",
       "ncf_00631l": {
         "direction": "UP",
-        "calibrated_prob_up": 0.5108,
-        "confidence": 0.4188,
-        "votes_up": 2,
-        "tail_reward_risk_score": -0.081257,
-        "prob_fwd_mdd_gt5_h20": 0.530625,
-        "prob_fwd_gain_gt5_h20": 0.449368,
+        "calibrated_prob_up": 0.5309,
+        "confidence": 0.4537,
+        "confidence_panel_aligned": 0.0265,
+        "votes_up": 1,
+        "tail_reward_risk_score": 0.500208,
+        "prob_fwd_mdd_gt5_h20": 0.183954,
+        "prob_fwd_gain_gt5_h20": 0.684163,
         "direction_magnitude_gate": {
           "passed": false,
           "direction": "UP",
           "return_side": "DOWN",
-          "probability_edge": 0.0108,
-          "predicted_return": -0.00742,
+          "probability_edge": 0.0309,
+          "predicted_return": -0.004217,
           "min_probability_edge": 0.05,
           "min_abs_return": 0.002,
           "method": "direction_magnitude_gate"
@@ -305,37 +675,40 @@
       },
       "ncf_00632r": {
         "direction": "UP",
-        "calibrated_prob_up": 0.5446,
-        "confidence": 0.4263,
+        "calibrated_prob_up": 0.5262,
+        "confidence": 0.3555,
+        "confidence_panel_aligned": 0.099,
         "votes_up": 1,
-        "tail_reward_risk_score": 0.026044,
-        "prob_fwd_mdd_gt5_h20": 0.352865,
-        "prob_fwd_gain_gt5_h20": 0.378909,
+        "tail_reward_risk_score": -0.075201,
+        "prob_fwd_mdd_gt5_h20": 0.234761,
+        "prob_fwd_gain_gt5_h20": 0.15956,
         "direction_magnitude_gate": {
           "passed": false,
           "direction": "UP",
           "return_side": "UP",
-          "probability_edge": 0.0446,
-          "predicted_return": 0.048199,
+          "probability_edge": 0.0262,
+          "predicted_return": 0.021387,
           "min_probability_edge": 0.05,
           "min_abs_return": 0.002,
           "method": "direction_magnitude_gate"
         },
         "direction_conflict": false
       },
-      "composite_downside_signal": 0.0219,
-      "directional_downside_signal": 0.0152,
-      "tail_downside_signal": 0.0421,
-      "gated_downside_signal": 0.0219,
-      "composite_upside_signal": 0.0,
+      "composite_downside_signal": 0.0056,
+      "directional_downside_signal": 0.0075,
+      "tail_downside_signal": 0.0,
+      "gated_downside_signal": 0.0056,
+      "composite_upside_signal": 0.059,
+      "directional_upside_signal": 0.0,
+      "tail_upside_signal": 0.2359,
       "dynamic_horizon_00631l": {
-        "probability_up": 0.4912,
-        "direction": "DOWN",
-        "confidence": 0.0073,
+        "probability_up": 0.5247,
+        "direction": "UP",
+        "confidence": 0.0224,
         "weights": {
-          "1": 0.1929,
-          "5": 0.3726,
-          "20": 0.4345
+          "1": 0.1971,
+          "5": 0.3578,
+          "20": 0.4451
         },
         "prior_weights": {
           "1": 0.1894,
@@ -343,20 +716,20 @@
           "20": 0.4681
         },
         "live_weights": {
-          "1": 0.1996,
-          "5": 0.4284,
-          "20": 0.372
+          "1": 0.2115,
+          "5": 0.3862,
+          "20": 0.4023
         },
         "source": "multi_year_auc_blend"
       },
       "dynamic_horizon_00632r": {
-        "probability_up": 0.5478,
+        "probability_up": 0.5427,
         "direction": "UP",
-        "confidence": 0.0408,
+        "confidence": 0.0304,
         "weights": {
-          "1": 0.1674,
-          "5": 0.3249,
-          "20": 0.5077
+          "1": 0.1862,
+          "5": 0.3008,
+          "20": 0.513
         },
         "prior_weights": {
           "1": 0.218,
@@ -364,51 +737,492 @@
           "20": 0.4668
         },
         "live_weights": {
-          "1": 0.0733,
-          "5": 0.3429,
-          "20": 0.5838
+          "1": 0.1271,
+          "5": 0.274,
+          "20": 0.5989
         },
         "source": "multi_year_auc_blend"
       },
       "cross_ticker_consistency": {
         "market_direction": "DOWN",
-        "market_probability_up": 0.4756,
-        "agreement_score": 0.922,
-        "conflict_flag": false,
-        "confidence": 0.0012,
-        "00631l_probability_up": 0.4912,
-        "00632r_probability_up": 0.5478
+        "market_probability_up": 0.4977,
+        "agreement_score": 0.8652,
+        "conflict_flag": true,
+        "confidence": 0.0001,
+        "00631l_probability_up": 0.5247,
+        "00632r_probability_up": 0.5427
       },
       "bull_suppression": 0.0,
       "bull_suppression_applied": false,
-      "ma_gap": 0.22897724178826873,
+      "ma_gap": 0.15026747873936142,
       "current_regime": "golden1",
-      "action": "reduce_00631l",
+      "action": "hold",
       "base_golden1_weights": {
-        "0050.TW": 0.6949319837027067,
-        "00631L.TW": 0.10506801629729329,
+        "0050.TW": 0.5737386478789711,
+        "00631L.TW": 0.12626135212102893,
         "00632R.TW": 0.0,
         "00679B.TWO": 0.0,
-        "cash": 0.19999999999999996
+        "cash": 0.29999999999999993
       },
       "adjusted_golden1_weights": {
-        "0050.TW": 0.6949319837027067,
-        "00631L.TW": 0.10391752151883793,
+        "0050.TW": 0.5737386478789711,
+        "00631L.TW": 0.12590782033509004,
         "00632R.TW": 0.0,
         "00679B.TWO": 0.0,
-        "cash": 0.2011504947784553
+        "cash": 0.3003535317859388
       },
-      "00631l_reduction": 0.0012,
+      "00631l_reduction": 0.0004,
       "status": "applied",
       "files": {
-        "00631L.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260703.json",
-        "00632R.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260703.json"
+        "00631L.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260714.json",
+        "00632R.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260714.json",
+        "2330.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_latest_20260714.json",
+        "ncf_2330_checklist": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_checklist_20260711.json"
+      },
+      "ncf_2330": {
+        "ticker": "2330.TW",
+        "date": "2026-07-13",
+        "direction": "UP",
+        "calibrated_prob_up": 0.6665,
+        "confidence": 0.6569,
+        "confidence_panel_aligned": null,
+        "weighted_return": 0.002342,
+        "votes_up": 3,
+        "raw_combined_prob_up": 0.7191,
+        "horizon_prob_up": {
+          "1": 0.55,
+          "5": 0.7993,
+          "20": 0.9026
+        },
+        "horizon_val_auc": {
+          "1": 0.7646,
+          "5": 0.658,
+          "20": 0.6736
+        },
+        "direction_weights": {
+          "1": 0.4501,
+          "5": 0.2403,
+          "20": 0.3096
+        },
+        "direction_magnitude_gate": {
+          "passed": true,
+          "direction": "UP",
+          "return_side": "UP",
+          "probability_edge": 0.1665,
+          "predicted_return": 0.002342,
+          "min_probability_edge": 0.05,
+          "min_abs_return": 0.002,
+          "method": "direction_magnitude_gate"
+        },
+        "direction_conflict": false,
+        "tail_reward_risk_score": -0.01307,
+        "prob_fwd_mdd_gt5_h20": 0.454952,
+        "prob_fwd_mdd_gt8_h20": 0.097585,
+        "prob_fwd_gain_gt5_h20": 0.441882,
+        "tsmc_market_state": {
+          "state": 2,
+          "label_zh": "高檔震盪",
+          "bias": "neutral_bullish",
+          "policy": "diagnostic_only_no_weight_change",
+          "rule_version": "tsmc_market_state_v1",
+          "reasons": [
+            "direction remains constructive but not strong enough for leadership",
+            "expected return is flat or signals are mixed",
+            "severe drawdown risk remains contained"
+          ],
+          "inputs": {
+            "h1_direction": "UP",
+            "h5_direction": "UP",
+            "h20_direction": "UP",
+            "h1_probability_up": 0.55003,
+            "h5_probability_up": 0.79933,
+            "h20_probability_up": 0.902641,
+            "h1_return": 0.000254,
+            "h5_return": 0.006198,
+            "h20_return": 0.032832,
+            "combined_probability_up": 0.719099,
+            "calibrated_probability_up": 0.666474,
+            "confidence": 0.656872,
+            "weighted_return": 0.002342,
+            "prob_fwd_mdd_gt5_h20": 0.454952,
+            "prob_fwd_mdd_gt8_h20": 0.097585,
+            "prob_fwd_gain_gt5_h20": 0.441882,
+            "tail_reward_risk_score": -0.01307
+          },
+          "state_map": {
+            "1": "強勢領漲",
+            "2": "高檔震盪",
+            "3": "假突破",
+            "4": "拉回整理",
+            "5": "趨勢轉弱"
+          }
+        }
+      },
+      "tsmc_0050_health": {
+        "status": "available",
+        "date": "2026-07-14",
+        "state": "stale",
+        "label_zh": "ncf_2330 日期未對齊，僅供參考",
+        "reference_guidance": {
+          "reference_action": "diagnostic_only",
+          "reference_action_zh": "台積與 0050 廣度訊號混合，僅作輔助判讀",
+          "trade_policy": "diagnostic_only_no_weight_change",
+          "manual_review_required": false,
+          "allow_00631l_add": false
+        },
+        "price_latest_dates": {
+          "0050.TW": "2026-07-14",
+          "00631L.TW": "2026-07-14",
+          "2330.TW": "2026-07-13"
+        },
+        "tsmc_weight_assumption": 0.5831,
+        "returns": {
+          "2330.TW": {
+            "1d": 0.010352,
+            "5d": -0.00813,
+            "10d": 0.029536,
+            "20d": 0.056277
+          },
+          "0050.TW": {
+            "1d": -0.015094,
+            "5d": -0.016949,
+            "10d": -0.03154,
+            "20d": -0.008076
+          },
+          "00631L.TW": {
+            "1d": -0.026587,
+            "5d": -0.035224,
+            "10d": -0.066111,
+            "20d": -0.032101
+          },
+          "0050_ex_tsmc_proxy": {
+            "1d": -0.050685,
+            "5d": -0.029284,
+            "10d": -0.116964,
+            "20d": -0.098084
+          }
+        },
+        "ncf_2330_h20_prob_up": 0.9026,
+        "ncf_2330_calibrated_prob_up": 0.6665,
+        "ncf_2330_prob_fwd_mdd_gt5_h20": 0.454952,
+        "ncf_2330_prob_fwd_mdd_gt8_h20": 0.097585,
+        "ncf_2330_tail_reward_risk_score": -0.01307,
+        "ncf_2330_market_state": {
+          "state": 2,
+          "label_zh": "高檔震盪",
+          "bias": "neutral_bullish",
+          "policy": "diagnostic_only_no_weight_change",
+          "rule_version": "tsmc_market_state_v1",
+          "reasons": [
+            "direction remains constructive but not strong enough for leadership",
+            "expected return is flat or signals are mixed",
+            "severe drawdown risk remains contained"
+          ],
+          "inputs": {
+            "h1_direction": "UP",
+            "h5_direction": "UP",
+            "h20_direction": "UP",
+            "h1_probability_up": 0.55003,
+            "h5_probability_up": 0.79933,
+            "h20_probability_up": 0.902641,
+            "h1_return": 0.000254,
+            "h5_return": 0.006198,
+            "h20_return": 0.032832,
+            "combined_probability_up": 0.719099,
+            "calibrated_probability_up": 0.666474,
+            "confidence": 0.656872,
+            "weighted_return": 0.002342,
+            "prob_fwd_mdd_gt5_h20": 0.454952,
+            "prob_fwd_mdd_gt8_h20": 0.097585,
+            "prob_fwd_gain_gt5_h20": 0.441882,
+            "tail_reward_risk_score": -0.01307
+          },
+          "state_map": {
+            "1": "強勢領漲",
+            "2": "高檔震盪",
+            "3": "假突破",
+            "4": "拉回整理",
+            "5": "趨勢轉弱"
+          }
+        },
+        "trim_policy": "trim_00631l_only_when_tsmc_weak_and_00631l_ncf_is_weak"
+      },
+      "ncf_2330_checklist": {
+        "report": "ncf_2330_checklist",
+        "mode": "daily",
+        "as_of": "2026-07-11",
+        "generated_at": "2026-07-11T23:27:41",
+        "overall_signal": "neutral",
+        "available_layer_score": 0,
+        "available_layer_count": 9,
+        "factor_quality_overlay": {
+          "status": "research_only",
+          "signal": "bearish",
+          "label": "risk_off",
+          "risk_score": 5.0,
+          "opportunity_score": 1.0,
+          "net_score": -4.0,
+          "components": {
+            "technical_extension": {
+              "risk_points": 1.0,
+              "opportunity_points": 0.0,
+              "close_vs_ma60": 0.079313,
+              "close_vs_ma120": 0.201425,
+              "reason": "technical extension is not extreme; price is extended versus 120MA"
+            },
+            "valuation_heat": {
+              "risk_points": 1.0,
+              "opportunity_points": 0.0,
+              "pe": 32.47,
+              "pb": 10.63,
+              "reason": "PE/PB are in historically riskier zones"
+            },
+            "fx_tail_pressure": {
+              "risk_points": 1.0,
+              "opportunity_points": 0.0,
+              "usdtwd_5d_change": 0.007346,
+              "dxy_5d_change": -0.000306,
+              "reason": "USD/TWD or DXY is rising enough to add tail-risk pressure"
+            },
+            "chip_crowding": {
+              "risk_points": 2.0,
+              "opportunity_points": 0.0,
+              "foreign_net_5d_shares": -29598185.0,
+              "investment_trust_net_5d_shares": 2512854.0,
+              "reason": "foreign investors are net sellers"
+            },
+            "fundamental_growth": {
+              "risk_points": 0.0,
+              "opportunity_points": 1.0,
+              "revenue_yoy": 0.30095,
+              "revenue_yoy_accel": 0.125996,
+              "reason": "monthly revenue growth remains strong without material deceleration"
+            }
+          },
+          "source": "evaluate_ncf_2330_checklist_factor_quality.py",
+          "reason": "factor-quality overlay has clustered risk from high-IC checklist fields"
+        },
+        "factor_quality_signal": "bearish",
+        "factor_quality_label": "risk_off",
+        "factor_quality_risk_score": 5.0,
+        "factor_quality_opportunity_score": 1.0,
+        "factor_quality_net_score": -4.0,
+        "layers": {
+          "fundamental": {
+            "status": "available_partial",
+            "signal": "bullish",
+            "values": {
+              "latest_revenue_month": "2026-06-01",
+              "revenue": 416975163000.0,
+              "revenue_yoy": 0.30095,
+              "revenue_qoq_proxy_3m": 0.31266,
+              "revenue_yoy_accel": 0.125996,
+              "gross_margin": null,
+              "eps": null,
+              "missing": [
+                "gross_margin",
+                "eps"
+              ]
+            },
+            "reason": "monthly revenue YoY remains above 10% and growth is not materially decelerating"
+          },
+          "valuation": {
+            "status": "available_partial",
+            "signal": "neutral",
+            "values": {
+              "date": "2026-07-09",
+              "pe": 32.47,
+              "forward_pe": null,
+              "pb": 10.63,
+              "dividend_yield": 0.91,
+              "missing": [
+                "forward_pe"
+              ]
+            },
+            "reason": "valuation is not cheap, but not extreme enough for an overheating veto"
+          },
+          "technical": {
+            "status": "available",
+            "signal": "bullish",
+            "values": {
+              "date": "2026-07-08",
+              "close": 2465.0,
+              "ma20": 2402.95,
+              "ma60": 2283.8606,
+              "ma120": 2051.7307,
+              "prior_60d_high": 2510.0,
+              "close_vs_ma20": 0.025822,
+              "close_vs_ma60": 0.079313,
+              "close_vs_ma120": 0.201425
+            },
+            "reason": "price is above 20/60/120MA and remains near the recent high"
+          },
+          "adr": {
+            "status": "available",
+            "signal": "bearish",
+            "values": {
+              "date": "2026-07-07",
+              "tsm_adr_close_usd": 436.07,
+              "usdtwd": 32.1,
+              "tsmc_close_twd": 2440.0,
+              "implied_twd_per_share": 2799.5693,
+              "adr_premium_discount": 0.147364,
+              "adr_1d_return": -0.034795,
+              "usdtwd_1d_change": 0.005387,
+              "fx_adjusted_adr_1d_return": -0.029408
+            },
+            "reason": "ADR FX-adjusted return or discount implies next-session pressure"
+          },
+          "global_semiconductor": {
+            "status": "available",
+            "signal": "bearish",
+            "values": {
+              "SOX/SOXX proxy": {
+                "date": "2026-07-07",
+                "return_5d": -0.098234
+              },
+              "NVDA": {
+                "date": "2026-07-07",
+                "return_5d": 0.010053
+              },
+              "AMD": {
+                "date": "2026-07-07",
+                "return_5d": -0.043337
+              },
+              "ASML": {
+                "date": "2026-07-07",
+                "return_5d": -0.072131
+              },
+              "average_available_5d_return": -0.050912,
+              "missing": []
+            },
+            "reason": "available global semiconductor proxies have negative 5d momentum"
+          },
+          "fx": {
+            "status": "available",
+            "signal": "neutral",
+            "values": {
+              "date": "2026-07-07",
+              "usdtwd": 32.1,
+              "usdtwd_5d_change": 0.007346,
+              "usdtwd_20d_change": 0.016402,
+              "dxy_ticker": "DX-Y.NYB",
+              "dxy_date": "2026-07-08",
+              "dxy": 101.159,
+              "dxy_5d_change": -0.000306,
+              "missing": []
+            },
+            "reason": "USD/TWD and DXY moves are not large enough for a clear FX pressure signal"
+          },
+          "chip": {
+            "status": "available",
+            "signal": "neutral",
+            "values": {
+              "date": "2026-07-09",
+              "foreign_net_1d_shares": -12748541.0,
+              "foreign_net_5d_shares": -29598185.0,
+              "investment_trust_net_5d_shares": 2512854.0,
+              "dealer_net_5d_shares": 0.0,
+              "institutional_total_net_5d_shares": 0.0,
+              "foreign_holding_ratio": 69.59
+            },
+            "reason": "institutional flows are mixed"
+          },
+          "relation_0050": {
+            "status": "available",
+            "signal": "neutral",
+            "values": {
+              "date_2330": "2026-07-08",
+              "date_0050": "2026-07-10",
+              "tsmc_weight_assumption": 0.5831,
+              "ret_2330_5d": -0.015968,
+              "ret_0050_5d": -0.023535,
+              "ret_0050_ex_tsmc_proxy_5d": -0.034118,
+              "ret_2330_20d": 0.072267,
+              "ret_0050_20d": 0.059589,
+              "ret_0050_ex_tsmc_proxy_20d": 0.041857
+            },
+            "reason": "TSMC and 0050 breadth relationship is mixed"
+          },
+          "ncf_2330": {
+            "status": "available",
+            "signal": "neutral",
+            "values": {
+              "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_latest_20260711.json",
+              "date": "2026-07-08",
+              "state": {
+                "state": 3,
+                "label_zh": "假突破",
+                "bias": "failed_breakout_risk",
+                "policy": "diagnostic_only_no_weight_change",
+                "rule_version": "tsmc_market_state_v1",
+                "reasons": [
+                  "H20 remains UP, but short horizon turned DOWN",
+                  "weighted return is flat or weak",
+                  "drawdown risk is elevated",
+                  "upside reward does not compensate tail risk"
+                ],
+                "inputs": {
+                  "h1_direction": "DOWN",
+                  "h5_direction": "DOWN",
+                  "h20_direction": "UP",
+                  "h1_probability_up": 0.185587,
+                  "h5_probability_up": 0.276189,
+                  "h20_probability_up": 0.905552,
+                  "h1_return": -0.00556,
+                  "h5_return": -0.00924,
+                  "h20_return": 0.031876,
+                  "combined_probability_up": 0.427998,
+                  "calibrated_probability_up": 0.462056,
+                  "confidence": 0.324268,
+                  "weighted_return": -0.005038,
+                  "prob_fwd_mdd_gt5_h20": 0.631548,
+                  "prob_fwd_mdd_gt8_h20": 0.153089,
+                  "prob_fwd_gain_gt5_h20": 0.501855,
+                  "tail_reward_risk_score": -0.129693
+                },
+                "state_map": {
+                  "1": "強勢領漲",
+                  "2": "高檔震盪",
+                  "3": "假突破",
+                  "4": "拉回整理",
+                  "5": "趨勢轉弱"
+                }
+              },
+              "h20_probability_up": 0.9056,
+              "prob_fwd_mdd_gt8_h20": 0.153089
+            },
+            "reason": "ncf_2330 market state is 假突破"
+          }
+        },
+        "policy": "diagnostic_only_no_weight_change",
+        "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_checklist_20260711.json"
+      },
+      "a2118_extreme_risk_warning": {
+        "active": false,
+        "policy": "warning_only_no_weight_change",
+        "recommended_action": "none",
+        "allow_new_0050_add": true,
+        "allow_new_00631l_add": true,
+        "thresholds": {
+          "h20_prob_up_max": 0.22,
+          "prob_fwd_mdd_gt5_h20_min": 0.85
+        },
+        "inputs": {
+          "signal_current": true,
+          "current_regime": "golden1",
+          "h20_prob_up": 0.4661,
+          "prob_fwd_mdd_gt5_h20": 0.183954,
+          "prob_fwd_gain_gt5_h20": 0.684163,
+          "confidence": 0.0265
+        },
+        "rationale": "Extreme A21.18 NCF warning: H20 probability is very bearish and 20-day drawdown-risk probability is very high. Research-only; do not auto-sell, but pause new 0050/00631L risk adds."
       }
     },
     "factor_lens_gate": {
       "status": "available",
-      "report_file": "group_a_plus_factor_lens_20260703.json",
-      "report_generated_at": "2026-07-03T09:13:53",
+      "report_file": "group_a_plus_factor_lens_20260714.json",
+      "report_generated_at": "2026-07-15T00:00:11",
       "all_key_factors_pass": true,
       "factors": {
         "ncf_00631l_prob_up": {
@@ -419,7 +1233,7 @@
             "spread_5d_positive": true
           },
           "ic_20d_warning": false,
-          "ic_20d_recent_mean": 0.6147
+          "ic_20d_recent_mean": 0.4628
         },
         "ncf_cross_ticker_market_up": {
           "passed": true,
@@ -429,7 +1243,7 @@
             "spread_5d_positive": true
           },
           "ic_20d_warning": false,
-          "ic_20d_recent_mean": 0.6181
+          "ic_20d_recent_mean": 0.4603
         },
         "ncf_market_probability_up": {
           "passed": true,
@@ -439,42 +1253,42 @@
             "spread_5d_positive": true
           },
           "ic_20d_warning": false,
-          "ic_20d_recent_mean": 0.6214
+          "ic_20d_recent_mean": 0.4647
         }
       }
     },
     "data_freshness": {
-      "price_data_as_of": "2026-07-02",
+      "price_data_as_of": "2026-07-14",
       "ohlcv_by_ticker": {
-        "0050.TW": "2026-07-02",
-        "00631L.TW": "2026-07-02",
-        "00632R.TW": "2026-07-02",
-        "00679B.TWO": "2026-07-02"
+        "0050.TW": "2026-07-14",
+        "00631L.TW": "2026-07-14",
+        "00632R.TW": "2026-07-14",
+        "00679B.TWO": "2026-07-14"
       },
       "latest_prices": {
-        "0050.TW": 108.80000305175781,
-        "00631L.TW": 38.880001068115234,
-        "00632R.TW": 9.899999618530273,
-        "00679B.TWO": 26.959999084472656
+        "0050.TW": 104.4000015258789,
+        "00631L.TW": 35.880001068115234,
+        "00632R.TW": 10.350000381469727,
+        "00679B.TWO": 26.729999542236328
       },
       "optional_sources": {
         "institutional_0050": {
           "table": "institutional_data",
           "severity": "hard",
           "exists": true,
-          "latest_date": "2026-07-02",
-          "freshness_as_of": "2026-07-02",
-          "business_stale_days": 0,
+          "latest_date": "2026-07-13",
+          "freshness_as_of": "2026-07-14",
+          "business_stale_days": 1,
           "max_business_stale_days": 0,
-          "status": "ok"
+          "status": "block"
         },
         "margin_0050": {
           "table": "margin_data",
           "severity": "hard",
           "exists": true,
-          "latest_date": "2026-07-01",
-          "freshness_as_of": "2026-07-02",
-          "business_stale_days": 1,
+          "latest_date": "2026-07-14",
+          "freshness_as_of": "2026-07-14",
+          "business_stale_days": 0,
           "max_business_stale_days": 1,
           "status": "ok"
         },
@@ -482,9 +1296,9 @@
           "table": "market_margin_data",
           "severity": "hard",
           "exists": true,
-          "latest_date": "2026-07-01",
-          "freshness_as_of": "2026-07-02",
-          "business_stale_days": 1,
+          "latest_date": "2026-07-14",
+          "freshness_as_of": "2026-07-14",
+          "business_stale_days": 0,
           "max_business_stale_days": 1,
           "status": "ok"
         },
@@ -492,9 +1306,9 @@
           "table": "shareholding_distribution",
           "severity": "hard",
           "exists": true,
-          "latest_date": "2026-06-26",
-          "freshness_as_of": "2026-07-02",
-          "business_stale_days": 4,
+          "latest_date": "2026-07-09",
+          "freshness_as_of": "2026-07-14",
+          "business_stale_days": 3,
           "max_business_stale_days": 10,
           "status": "ok"
         },
@@ -502,9 +1316,9 @@
           "table": "foreign_shareholding_data",
           "severity": "hard",
           "exists": true,
-          "latest_date": "2026-07-01",
-          "freshness_as_of": "2026-07-02",
-          "business_stale_days": 1,
+          "latest_date": "2026-07-14",
+          "freshness_as_of": "2026-07-14",
+          "business_stale_days": 0,
           "max_business_stale_days": 1,
           "status": "ok"
         },
@@ -512,9 +1326,9 @@
           "table": "short_sale_balance_data",
           "severity": "hard",
           "exists": true,
-          "latest_date": "2026-07-01",
-          "freshness_as_of": "2026-07-02",
-          "business_stale_days": 1,
+          "latest_date": "2026-07-14",
+          "freshness_as_of": "2026-07-14",
+          "business_stale_days": 0,
           "max_business_stale_days": 1,
           "status": "ok"
         },
@@ -522,18 +1336,18 @@
           "table": "securities_lending_data",
           "severity": "soft",
           "exists": true,
-          "latest_date": "2026-06-30",
-          "freshness_as_of": "2026-07-02",
-          "business_stale_days": 2,
+          "latest_date": "2026-07-14",
+          "freshness_as_of": "2026-07-14",
+          "business_stale_days": 0,
           "max_business_stale_days": 1,
-          "status": "warn"
+          "status": "ok"
         },
         "day_trading_0050": {
           "table": "day_trading_data",
           "severity": "hard",
           "exists": true,
-          "latest_date": "2026-07-02",
-          "freshness_as_of": "2026-07-02",
+          "latest_date": "2026-07-14",
+          "freshness_as_of": "2026-07-14",
           "business_stale_days": 0,
           "max_business_stale_days": 0,
           "status": "ok"
@@ -542,9 +1356,9 @@
           "table": "dealer_futures_data",
           "severity": "hard",
           "exists": true,
-          "latest_date": "2026-06-30",
-          "freshness_as_of": "2026-07-02",
-          "business_stale_days": 2,
+          "latest_date": "2026-07-14",
+          "freshness_as_of": "2026-07-14",
+          "business_stale_days": 0,
           "max_business_stale_days": 3,
           "status": "ok"
         },
@@ -552,9 +1366,9 @@
           "table": "dealer_options_data",
           "severity": "hard",
           "exists": true,
-          "latest_date": "2026-06-30",
-          "freshness_as_of": "2026-07-02",
-          "business_stale_days": 2,
+          "latest_date": "2026-07-14",
+          "freshness_as_of": "2026-07-14",
+          "business_stale_days": 0,
           "max_business_stale_days": 3,
           "status": "ok"
         },
@@ -562,9 +1376,9 @@
           "table": "derivative_institutional_data",
           "severity": "hard",
           "exists": true,
-          "latest_date": "2026-07-01",
-          "freshness_as_of": "2026-07-02",
-          "business_stale_days": 1,
+          "latest_date": "2026-07-14",
+          "freshness_as_of": "2026-07-14",
+          "business_stale_days": 0,
           "max_business_stale_days": 3,
           "status": "ok"
         },
@@ -572,9 +1386,9 @@
           "table": "derivative_institutional_data",
           "severity": "hard",
           "exists": true,
-          "latest_date": "2026-07-01",
-          "freshness_as_of": "2026-07-02",
-          "business_stale_days": 1,
+          "latest_date": "2026-07-14",
+          "freshness_as_of": "2026-07-14",
+          "business_stale_days": 0,
           "max_business_stale_days": 3,
           "status": "ok"
         }
@@ -584,10 +1398,10 @@
   },
   "metadata": {
     "script": "group_a_plus.operations.daily_signal",
-    "timestamp": "2026-07-03T09:14:02",
+    "timestamp": "2026-07-15T00:00:22",
     "output_type": "OutputType.DICT",
     "version": "1.0.0",
-    "execution_time_ms": 2944
+    "execution_time_ms": 5240
   },
   "error": null
 }

@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-07-06T10:54:01",
+  "check_date": "2026-07-06",
+  "overall_status": "warn",
+  "profile": "a2118_a2111_ncf_late_bull_deleverage",
+  "mode": "live_signal",
+  "source_paths": {
+    "live_signal": "report/group_a_plus/latest/live_signal.json"
+  },
+  "checks": [
+    {
+      "name": "live_signal_success",
+      "status": "ok",
+      "detail": "live signal loaded"
+    },
+    {
+      "name": "execution_allowed",
+      "status": "ok",
+      "detail": "allowed"
+    },
+    {
+      "name": "data_freshness",
+      "status": "ok",
+      "detail": "1 business days stale, 1 calendar days stale"
+    },
+    {
+      "name": "strategy_status",
+      "status": "ok",
+      "detail": "strategy_status=active, strategy_id=a2118_a2111_ncf_late_bull_deleverage"
+    },
+    {
+      "name": "source_freshness",
+      "status": "warn",
+      "detail": "soft strategy sources are stale or missing: ['securities_lending_0050']; securities_lending_0050"
+    },
+    {
+      "name": "cash_constraint",
+      "status": "ok",
+      "detail": "estimated_cash_after_rounding_before_cost=201,207"
+    }
+  ],
+  "signal": {
+    "signal_status": "hold_or_align_to_target",
+    "signal_reason": "A20.7 formal defensive state is inactive",
+    "actual_data_date": "2026-07-02",
+    "requested_as_of_date": "2026-07-03",
+    "business_stale_days": 1,
+    "calendar_stale_days": 1
+  },
+  "group_a_plus": {
+    "overlay_regime": "golden1",
+    "overlay_00679b_weight": 0.0,
+    "cash_after_cost": 201207.01765441895,
+    "target_shares": {
+      "0050.TW": 6387,
+      "00631L.TW": 2672,
+      "00632R.TW": 0,
+      "00679B.TWO": 0
+    }
+  }
+}

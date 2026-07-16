@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GroupA+ Daily Status - a2118_a2111_ncf_late_bull_deleverage</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #20242a;
+      --muted: #67717f;
+      --line: #d9dee7;
+      --ok: #177245;
+      --ok-bg: #e9f6ef;
+      --warn: #9a5b00;
+      --warn-bg: #fff3d6;
+      --block: #a32020;
+      --block-bg: #fde7e7;
+      --accent: #2457a6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 24px auto 40px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 22px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+    .subtle { color: var(--muted); font-size: 14px; }
+    .status-card {
+      min-width: 180px;
+      padding: 14px 16px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      text-align: right;
+    }
+    .status-label { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+    .status-value { margin-top: 4px; font-size: 26px; font-weight: 700; }
+    .status-value.ok { color: var(--ok); }
+    .status-value.warn { color: var(--warn); }
+    .status-value.block { color: var(--block); }
+    section {
+      margin-top: 18px;
+      padding: 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .metric {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfcfe;
+    }
+    .metric .label { color: var(--muted); font-size: 12px; }
+    .metric .value { margin-top: 4px; font-size: 18px; font-weight: 650; overflow-wrap: anywhere; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: var(--muted); font-weight: 600; }
+    code { font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .pill {
+      display: inline-block;
+      min-width: 52px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .pill.ok { color: var(--ok); background: var(--ok-bg); }
+    .pill.warn { color: var(--warn); background: var(--warn-bg); }
+    .pill.block { color: var(--block); background: var(--block-bg); }
+    .pill.neutral { color: var(--accent); background: #e8eef8; }
+    footer {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    @media (max-width: 820px) {
+      header { display: block; }
+      .status-card { margin-top: 14px; text-align: left; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 520px) {
+      main { width: min(100% - 20px, 1120px); margin-top: 12px; }
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 22px; }
+      section { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>GroupA+ Daily Status</h1>
+        <div class="subtle">Profile: <code>a2118_a2111_ncf_late_bull_deleverage</code></div>
+        <div class="subtle">Generated: 2026-07-11T23:27:38 · Check date: 2026-07-11</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Overall</div>
+        <div class="status-value block">block</div>
+      </div>
+    </header>
+
+    <section>
+      <h2>Key Metrics</h2>
+      <div class="grid">
+        <div class="metric"><div class="label">Signal</div><div class="value">hold_or_align_to_target</div></div>
+        <div class="metric"><div class="label">Reason</div><div class="value">A20.7 formal defensive state is inactive</div></div>
+        <div class="metric"><div class="label">Overlay Regime</div><div class="value">golden1</div></div>
+        <div class="metric"><div class="label">Cash After Cost</div><div class="value">200,069</div></div>
+        <div class="metric"><div class="label">Actual Data Date</div><div class="value">2026-07-10</div></div>
+        <div class="metric"><div class="label">Business Stale Days</div><div class="value">0</div></div>
+        <div class="metric"><div class="label">Calendar Stale Days</div><div class="value">1</div></div>
+        <div class="metric"><div class="label">00679B Weight</div><div class="value">0.00%</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Checks</h2>
+      <table>
+        <thead><tr><th>Check</th><th>Status</th><th>Detail</th></tr></thead>
+        <tbody><tr><td>live_signal_success</td><td><span class="pill ok">ok</span></td><td>live signal loaded</td></tr><tr><td>execution_allowed</td><td><span class="pill block">block</span></td><td>required strategy sources are stale or missing: [&#x27;day_trading_0050&#x27;, &#x27;dealer_tx&#x27;, &#x27;dealer_txo&#x27;, &#x27;foreign_shareholding_0050&#x27;, &#x27;institutional_0050&#x27;, &#x27;short_balance_0050&#x27;]</td></tr><tr><td>data_freshness</td><td><span class="pill warn">warn</span></td><td>0 business days stale, 1 calendar days stale</td></tr><tr><td>strategy_status</td><td><span class="pill ok">ok</span></td><td>strategy_status=active, strategy_id=a2118_a2111_ncf_late_bull_deleverage</td></tr><tr><td>source_freshness</td><td><span class="pill block">block</span></td><td>required strategy sources are stale or missing: [&#x27;day_trading_0050&#x27;, &#x27;dealer_tx&#x27;, &#x27;dealer_txo&#x27;, &#x27;foreign_shareholding_0050&#x27;, &#x27;institutional_0050&#x27;, &#x27;short_balance_0050&#x27;]; soft strategy sources are stale or missing: [&#x27;securities_lending_0050&#x27;]; institutional_0050; foreign_shareholding_0050; short_balance_0050; day_trading_0050; dealer_tx; dealer_txo; securities_lending_0050</td></tr><tr><td>cash_constraint</td><td><span class="pill ok">ok</span></td><td>estimated_cash_after_rounding_before_cost=200,069</td></tr><tr><td>execution_plan_pre_trade_guard</td><td><span class="pill warn">warn</span></td><td>execution plan has no aligned pre_trade_guard</td></tr></tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Target Shares</h2>
+      <table>
+        <thead><tr><th>Ticker</th><th class="num">Target Shares</th></tr></thead>
+        <tbody><tr><td>0050.TW</td><td class="num">6529</td></tr><tr><td>00631L.TW</td><td class="num">2968</td></tr><tr><td>00632R.TW</td><td class="num">0</td></tr><tr><td>00679B.TWO</td><td class="num">0</td></tr></tbody>
+      </table>
+    </section>
+
+    
+
+    <section>
+      <h2>Source Files</h2>
+      <table>
+        <thead><tr><th>Source</th><th>Path</th></tr></thead>
+        <tbody><tr><td>live_signal</td><td><code>/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260711.json</code></td></tr><tr><td>execution_plan</td><td><code>/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json</code></td></tr></tbody>
+      </table>
+    </section>
+
+    <footer>For operational review only. This report is not investment advice.</footer>
+  </main>
+</body>
+</html>

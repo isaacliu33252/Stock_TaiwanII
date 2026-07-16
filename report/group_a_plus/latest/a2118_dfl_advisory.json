@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "report_type": "a2118_dfl_advisory",
+  "status": "available",
+  "policy": "advisory_only_no_auto_weight_change",
+  "active_allocation_impact": "none",
+  "generated_at": "2026-07-15T00:00:28",
+  "as_of": "2026-07-14",
+  "action": "KEEP",
+  "advisory_active": false,
+  "recommended_action": "keep_a2118",
+  "selected_decision": null,
+  "input": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json",
+  "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260714.json",
+  "method": {
+    "actions": [
+      "KEEP",
+      "NO_ADD",
+      "CAP10",
+      "REENTER"
+    ],
+    "target": "action_regret = Utility(action) - Utility(KEEP)",
+    "stabilizers": {
+      "regret_clip": 0.02,
+      "edge_threshold": 0.0005,
+      "adjustment_fraction": 0.75,
+      "turnover_cap": 0.05,
+      "finite_actions_only": true,
+      "stateful_actions": true,
+      "reenter_edge_threshold": -0.0005,
+      "require_panel_signal": true
+    },
+    "model": {
+      "type": "expanding_ridge_linear_per_action",
+      "min_train_days": 60,
+      "train_window_days": 420,
+      "ridge_alpha": 10.0,
+      "features": [
+        "prob_up_h1",
+        "prob_up_h5",
+        "prob_up_h20",
+        "prob_fwd_mdd_gt5_h20",
+        "prob_fwd_gain_gt5_h20",
+        "confidence",
+        "ma_gap",
+        "total_risk_score",
+        "w_0050",
+        "w_00631l",
+        "ret_0050_5d",
+        "ret_00631l_5d",
+        "spread_00631l_0050_5d"
+      ]
+    }
+  },
+  "evidence": {
+    "source_status": "research_only",
+    "summary": {
+      "windows": 7,
+      "triple_pass_windows": 7,
+      "all_windows_triple_pass": true
+    },
+    "matched_decision_count": 0,
+    "note": "No DFL non-KEEP action matched the live signal date."
+  },
+  "selective_variants": {
+    "p50": {
+      "schema_version": 1,
+      "report_type": "a2118_dfl_advisory",
+      "status": "available",
+      "policy": "advisory_only_no_auto_weight_change",
+      "active_allocation_impact": "none",
+      "generated_at": "2026-07-15T00:00:28",
+      "as_of": "2026-07-14",
+      "action": "KEEP",
+      "advisory_active": false,
+      "recommended_action": "keep_a2118",
+      "selected_decision": null,
+      "input": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_decision_focused_action_shadow_selective_p50_7win_20260714.json",
+      "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260714.json",
+      "method": {
+        "actions": [
+          "KEEP",
+          "NO_ADD",
+          "CAP10",
+          "REENTER"
+        ],
+        "target": "action_regret = Utility(action) - Utility(KEEP)",
+        "stabilizers": {
+          "regret_clip": 0.02,
+          "edge_threshold": 0.0005,
+          "adjustment_fraction": 0.75,
+          "turnover_cap": 0.05,
+          "finite_actions_only": true,
+          "stateful_actions": true,
+          "reenter_edge_threshold": -0.0005,
+          "require_panel_signal": true,
+          "selective_reliability": true,
+          "reliability_max_error_percentile": 0.5,
+          "reliability_min_train_days": 60
+        },
+        "model": {
+          "type": "expanding_ridge_linear_per_action",
+          "min_train_days": 60,
+          "train_window_days": 420,
+          "ridge_alpha": 10.0,
+          "features": [
+            "prob_up_h1",
+            "prob_up_h5",
+            "prob_up_h20",
+            "prob_fwd_mdd_gt5_h20",
+            "prob_fwd_gain_gt5_h20",
+            "confidence",
+            "ma_gap",
+            "total_risk_score",
+            "w_0050",
+            "w_00631l",
+            "ret_0050_5d",
+            "ret_00631l_5d",
+            "spread_00631l_0050_5d"
+          ]
+        }
+      },
+      "evidence": {
+        "source_status": "research_only",
+        "summary": {
+          "windows": 7,
+          "triple_pass_windows": 7,
+          "all_windows_triple_pass": true,
+          "total_candidate_non_keep_days": 7,
+          "total_rejected_to_keep_days": 5
+        },
+        "matched_decision_count": 0,
+        "note": "No DFL non-KEEP action matched the live signal date."
+      }
+    },
+    "p70": {
+      "schema_version": 1,
+      "report_type": "a2118_dfl_advisory",
+      "status": "available",
+      "policy": "advisory_only_no_auto_weight_change",
+      "active_allocation_impact": "none",
+      "generated_at": "2026-07-15T00:00:28",
+      "as_of": "2026-07-14",
+      "action": "KEEP",
+      "advisory_active": false,
+      "recommended_action": "keep_a2118",
+      "selected_decision": null,
+      "input": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_decision_focused_action_shadow_selective_p70_7win_20260714.json",
+      "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260714.json",
+      "method": {
+        "actions": [
+          "KEEP",
+          "NO_ADD",
+          "CAP10",
+          "REENTER"
+        ],
+        "target": "action_regret = Utility(action) - Utility(KEEP)",
+        "stabilizers": {
+          "regret_clip": 0.02,
+          "edge_threshold": 0.0005,
+          "adjustment_fraction": 0.75,
+          "turnover_cap": 0.05,
+          "finite_actions_only": true,
+          "stateful_actions": true,
+          "reenter_edge_threshold": -0.0005,
+          "require_panel_signal": true,
+          "selective_reliability": true,
+          "reliability_max_error_percentile": 0.7,
+          "reliability_min_train_days": 60
+        },
+        "model": {
+          "type": "expanding_ridge_linear_per_action",
+          "min_train_days": 60,
+          "train_window_days": 420,
+          "ridge_alpha": 10.0,
+          "features": [
+            "prob_up_h1",
+            "prob_up_h5",
+            "prob_up_h20",
+            "prob_fwd_mdd_gt5_h20",
+            "prob_fwd_gain_gt5_h20",
+            "confidence",
+            "ma_gap",
+            "total_risk_score",
+            "w_0050",
+            "w_00631l",
+            "ret_0050_5d",
+            "ret_00631l_5d",
+            "spread_00631l_0050_5d"
+          ]
+        }
+      },
+      "evidence": {
+        "source_status": "research_only",
+        "summary": {
+          "windows": 7,
+          "triple_pass_windows": 7,
+          "all_windows_triple_pass": true,
+          "total_candidate_non_keep_days": 7,
+          "total_rejected_to_keep_days": 3
+        },
+        "matched_decision_count": 0,
+        "note": "No DFL non-KEEP action matched the live signal date."
+      }
+    }
+  }
+}

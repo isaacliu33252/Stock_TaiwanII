@@ -15,18 +15,20 @@ import pandas as pd
 
 from backtest_group_a_plus_policy_signal import TICKERS
 from group_a_plus.governance.latest import DEFAULT_LATEST_STRATEGY, resolve_latest
+from group_a_plus.operations.alert_state import DEFAULT_COOLDOWN_MINUTES
 from group_a_plus.integrations.finbert import load_finbert_daily_snapshot
 from group_a_plus.operations.daily_signal import (
     _apply_ncf_live_overlay,
     _build_signal_alerts,
     _execution_risk_assessment,
+    _latest_ncf_2330_checklist_path,
     _source_freshness,
 )
 from group_a_plus.runners.a213 import A213_ID, run_a213
 from group_a_plus.runners.a214 import A214_ID, run_a214
 from group_a_plus.runners.a2111 import A2111_ID, _resolve_golden_signal_path
 from group_a_plus.runners.a2112 import A2112_ID
-from group_a_plus.runners.a2118 import A2118_ID
+from group_a_plus.runners.a2118 import A2118_ID, CHIP_DATA_FALLBACK_MAX_STALE_DAYS
 from group_a_plus.runners.a2119 import A2119_ID, _apply_finbert_gate
 from group_a_plus.runners.a2120 import A2120_ID
 from group_a_plus.runners.latest import run_latest
@@ -40,10 +42,11 @@ class LatestStrategyTests(unittest.TestCase):
 
         self.assertEqual(A2118_ID, active["id"])
         self.assertEqual("group_a_plus.runners.a2118", active["runner"])
-        self.assertEqual("results/ncf_00631l_panel_latest_20260630.csv", runner_params["ncf_panel_631l_path"])
+        self.assertEqual("results/ncf_00631l_panel_latest_20260707.csv", runner_params["ncf_panel_631l_path"])
         self.assertAlmostEqual(0.33, runner_params["h20_max"], places=4)
         self.assertAlmostEqual(0.55, runner_params["conf_min"], places=4)
         self.assertAlmostEqual(0.55, runner_params["h5_reentry_min"], places=4)
+        self.assertEqual(CHIP_DATA_FALLBACK_MAX_STALE_DAYS, runner_params["chip_data_fallback_max_stale_days"])
         self.assertEqual(A2111_ID, active["promoted_from"])
         self.assertNotEqual(A2111_ID, A213_ID)
         self.assertNotEqual(A2111_ID, A2112_ID)
@@ -339,6 +342,13 @@ class LatestStrategyTests(unittest.TestCase):
                 pd.Timestamp("2026-06-25"),
                 pd.Series({"ma_gap": 0.2}),
                 root,
+                # No ncf_2330_*.json fixture is seeded, so the tsmc_path
+                # branch (the only one that opens db_path) is never taken --
+                # pass a path under the tmp dir explicitly rather than
+                # relying on the real DB_PATH default never being reached,
+                # so a future test that *does* add a 2330 fixture can't
+                # silently inherit a connection to the real production DB.
+                db_path=root / "unused.db",
             )
 
         self.assertEqual([], warnings)
@@ -346,6 +356,32 @@ class LatestStrategyTests(unittest.TestCase):
         self.assertLess(weights["00631L.TW"], 0.1)
         self.assertGreater(weights["cash"], 0.2)
         self.assertAlmostEqual(sum(weights.values()), 1.0, places=6)
+
+    def test_latest_ncf_2330_checklist_path_excludes_external_cache_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            results = root / "results"
+            results.mkdir()
+            older = results / "ncf_2330_checklist_20260703.json"
+            newer = results / "ncf_2330_checklist_20260704.json"
+            external_cache = results / "ncf_2330_checklist_external_cache_20260705.json"
+            for path in (older, newer, external_cache):
+                path.write_text("{}", encoding="utf-8")
+            older_ts = 1_700_000_000
+            os.utime(older, (older_ts, older_ts))
+            os.utime(newer, (older_ts + 10, older_ts + 10))
+            os.utime(external_cache, (older_ts + 20, older_ts + 20))
+
+            found = _latest_ncf_2330_checklist_path(root)
+
+            self.assertEqual(newer.resolve(), found)
+
+    def test_latest_ncf_2330_checklist_path_none_when_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            (root / "results").mkdir()
+
+            self.assertIsNone(_latest_ncf_2330_checklist_path(root))
 
     def test_execution_risk_assessment_levels(self) -> None:
         low = _execution_risk_assessment(
@@ -453,7 +489,10 @@ class LatestStrategyTests(unittest.TestCase):
         self.assertTrue(
             all(str(alert["cooldown_key"]).startswith("a2111_tight_entry_bond30c30:2026-06-25:") for alert in alerts)
         )
-        self.assertTrue(all(alert["cooldown_minutes"] == 5 for alert in alerts))
+        # Fable audit (2026-07-08, #7): default cooldown moved from 5 minutes
+        # to DEFAULT_COOLDOWN_MINUTES (20h) so cooldown spans across days
+        # instead of resetting on every new signal-date state_key.
+        self.assertTrue(all(alert["cooldown_minutes"] == DEFAULT_COOLDOWN_MINUTES for alert in alerts))
 
     def test_signal_alerts_raise_high_for_extreme_total_risk(self) -> None:
         alerts = _build_signal_alerts(

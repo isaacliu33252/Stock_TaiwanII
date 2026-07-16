@@ -45,12 +45,17 @@ from backtest_group_a_plus_defensive_basket import _load_total_return_prices
 from backtest_group_a_plus_switch_policy import DB_PATH
 from FinRL.backtesting.backtest_engine import BacktestConfig, BacktestEngine
 from FinRL.strategies.base_strategy import StrategyResult
-from group_a_plus.runners.a2118 import _resolve_end_date, run_a2118
+from group_a_plus.runners.a2118 import CHIP_DATA_FALLBACK_MAX_STALE_DAYS, _resolve_end_date, run_a2118
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PRODUCTION_H20_MAX = 0.33
 PRODUCTION_CONF_MIN = 0.55
 PRODUCTION_H5_REENTRY_MIN = 0.55
+# Explicit, not just inherited from run_a2118's default: pin to whatever
+# strategy.json's production runner_params actually use, so this
+# reconciliation can't silently start reflecting a different chip-data-outage
+# policy than production just because a2118.py's own default changed (2026-07-06).
+PRODUCTION_CHIP_DATA_FALLBACK_MAX_STALE_DAYS = CHIP_DATA_FALLBACK_MAX_STALE_DAYS
 
 
 def _daily_weights_from_regime(frame: pd.DataFrame, base_weights: dict[str, dict[str, float]]) -> pd.DataFrame:
@@ -82,6 +87,7 @@ def main() -> None:
         h20_max=PRODUCTION_H20_MAX,
         conf_min=PRODUCTION_CONF_MIN,
         h5_reentry_min=PRODUCTION_H5_REENTRY_MIN,
+        chip_data_fallback_max_stale_days=PRODUCTION_CHIP_DATA_FALLBACK_MAX_STALE_DAYS,
     )
 
     daily_weights = _daily_weights_from_regime(frame, report["base_weights"])

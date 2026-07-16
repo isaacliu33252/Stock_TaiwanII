@@ -2,49 +2,289 @@
   "success": true,
   "data": {
     "plan_version": 2,
-    "generated_at": "2026-06-28T17:51:59",
+    "generated_at": "2026-07-15T21:11:12",
     "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
-    "requested_as_of_date": "2026-06-28",
-    "actual_data_date": "2026-06-26",
-    "workbook": "taiwan_stock_20260626.xlsx",
+    "requested_as_of_date": "2026-07-15",
+    "actual_data_date": "2026-07-15",
+    "workbook": "taiwan_stock_20260619.xlsx",
     "holdings_row": "即時庫存",
     "current_holdings": {
-      "0050.TW": 1754,
-      "00631L.TW": 10,
+      "0050.TW": 1342,
+      "00631L.TW": 0,
       "00632R.TW": 0,
       "00679B.TWO": 5000
     },
     "current_cash_input": 0.0,
     "cash_assumption": "workbook has no cash field; using explicit --cash-balance input",
-    "current_holdings_market_value": 318389.9999771118,
-    "current_total_assets": 318389.9999771118,
+    "current_holdings_market_value": 276404.604095459,
+    "current_total_assets": 276404.604095459,
     "current_prices": {
-      "00679B.TWO": 27.440000534057617,
-      "00631L.TW": 35.2599983215332,
-      "0050.TW": 103.0999984741211,
-      "00632R.TW": 10.449999809265137
+      "0050.TW": 106.30000305175781,
+      "00679B.TWO": 26.75,
+      "00631L.TW": 37.040000915527344,
+      "00632R.TW": 10.149999618530273
     },
     "execution_regime": "golden1",
     "target_weights": {
-      "0050.TW": 0.7473586977537088,
-      "00631L.TW": 0.05264130224629131,
+      "0050.TW": 0.5737386478789711,
+      "00631L.TW": 0.12626135212102893,
       "00632R.TW": 0.0,
       "00679B.TWO": 0.0,
-      "cash": 0.19999999999999998
+      "cash": 0.29999999999999993
     },
     "theoretical_target_shares": {
-      "0050.TW": 2307,
-      "00631L.TW": 475,
+      "0050.TW": 1491,
+      "00631L.TW": 942,
       "00632R.TW": 0,
       "00679B.TWO": 0
     },
     "target_shares": {
-      "0050.TW": 2307,
-      "00631L.TW": 475,
+      "0050.TW": 1491,
+      "00631L.TW": 376,
       "00632R.TW": 0,
       "00679B.TWO": 0
     },
     "suppressed_trades": [],
+    "staged_buys": [
+      {
+        "ticker": "00631L.TW",
+        "current_shares": 0,
+        "full_target_shares": 942,
+        "staged_target_shares": 376,
+        "full_delta_shares": 942,
+        "staged_delta_shares": 376,
+        "deferred_delta_shares": 566,
+        "price": 37.040000915527344,
+        "full_buy_notional": 34891.68086242676,
+        "staged_buy_notional": 13927.040344238281,
+        "deferred_buy_notional": 20964.640518188477,
+        "max_initial_buy_fraction": 0.4,
+        "reason": "large_buy_staged"
+      }
+    ],
+    "staged_target_shares_before_guards": {
+      "0050.TW": 1491,
+      "00631L.TW": 376,
+      "00632R.TW": 0,
+      "00679B.TWO": 0
+    },
+    "pre_trade_guard": {
+      "name": "volatility_gate_no_00631l_add",
+      "status": "inactive",
+      "ticker": "00631L.TW",
+      "current_shares": 0,
+      "requested_target_shares": 376,
+      "guarded_target_shares": 376,
+      "blocked_trades": [],
+      "policy": "advisory_no_auto_weight_change",
+      "allow_00631l_add": true
+    },
+    "risk_add_pre_trade_guard": {
+      "name": "a2118_extreme_risk_no_new_adds",
+      "status": "inactive",
+      "tickers": [
+        "0050.TW",
+        "00631L.TW"
+      ],
+      "blocked_trades": [],
+      "policy": "warning_only_no_weight_change",
+      "recommended_action": "none",
+      "source_alert_type": null
+    },
+    "compounding_regime_pre_trade_guard": {
+      "name": "compounding_regime_no_00631l_add",
+      "status": "inactive",
+      "ticker": "00631L.TW",
+      "current_shares": 0,
+      "requested_target_shares": 376,
+      "guarded_target_shares": 376,
+      "blocked_trades": [],
+      "policy": "diagnostic_no_auto_weight_change",
+      "allow_00631l_add": true,
+      "compounding_regime": "TRANSITIONAL",
+      "recommended_policy": "maintain_a2118_no_active_overlay",
+      "date": "2026-07-15"
+    },
+    "pre_trade_guards": [
+      {
+        "name": "volatility_gate_no_00631l_add",
+        "status": "inactive",
+        "ticker": "00631L.TW",
+        "current_shares": 0,
+        "requested_target_shares": 376,
+        "guarded_target_shares": 376,
+        "blocked_trades": [],
+        "policy": "advisory_no_auto_weight_change",
+        "allow_00631l_add": true
+      },
+      {
+        "name": "a2118_extreme_risk_no_new_adds",
+        "status": "inactive",
+        "tickers": [
+          "0050.TW",
+          "00631L.TW"
+        ],
+        "blocked_trades": [],
+        "policy": "warning_only_no_weight_change",
+        "recommended_action": "none",
+        "source_alert_type": null
+      },
+      {
+        "name": "compounding_regime_no_00631l_add",
+        "status": "inactive",
+        "ticker": "00631L.TW",
+        "current_shares": 0,
+        "requested_target_shares": 376,
+        "guarded_target_shares": 376,
+        "blocked_trades": [],
+        "policy": "diagnostic_no_auto_weight_change",
+        "allow_00631l_add": true,
+        "compounding_regime": "TRANSITIONAL",
+        "recommended_policy": "maintain_a2118_no_active_overlay",
+        "date": "2026-07-15"
+      }
+    ],
+    "guard_impact_summary": {
+      "active_guard_names": [],
+      "blocked_guard_names": [],
+      "by_guard": [
+        {
+          "name": "volatility_gate_no_00631l_add",
+          "status": "inactive",
+          "allow_00631l_add": true,
+          "blocked_trade_count": 0,
+          "blocked_buy_notional": 0.0,
+          "blocked_trades": []
+        },
+        {
+          "name": "a2118_extreme_risk_no_new_adds",
+          "status": "inactive",
+          "allow_00631l_add": null,
+          "blocked_trade_count": 0,
+          "blocked_buy_notional": 0.0,
+          "blocked_trades": []
+        },
+        {
+          "name": "compounding_regime_no_00631l_add",
+          "status": "inactive",
+          "allow_00631l_add": true,
+          "blocked_trade_count": 0,
+          "blocked_buy_notional": 0.0,
+          "blocked_trades": []
+        }
+      ],
+      "combined_blocked_buys": [],
+      "combined_blocked_buy_notional": 0,
+      "combined_blocked_trade_count": 0
+    },
+    "trough_high_vol_override_watch": {
+      "name": "trough_high_vol_00631l_override_watch",
+      "research_only": true,
+      "live_execution_effect": "none",
+      "status": "inactive",
+      "candidate_policy": "partial_reentry_high_vol_no_lower_low_3d_cap_25pct",
+      "max_override_fraction_of_blocked_00631l_buy": 0.25,
+      "trough_state": "NO_TROUGH",
+      "volatility_guard_status": "inactive",
+      "risk_guard_blocks_00631l": false,
+      "compounding_guard_blocks_00631l": false,
+      "blocked_00631l_buy_shares": 0,
+      "research_candidate_00631l_shares": 0,
+      "no_fresh_0050_lower_low_3d": true,
+      "latest_0050_close": 106.30000305175781,
+      "prior_0050_3d_low": 104.4000015258789,
+      "reason": "conditions_not_met_or_other_guard_blocks_00631l"
+    },
+    "cross_market_graph_advisory": {
+      "status": "available",
+      "policy": "shadow_only_no_weight_change",
+      "live_execution_effect": "none",
+      "latest_shadow_action": "NO_ADD",
+      "no_add_active": false,
+      "recommended_action": "none",
+      "latest_probabilities": {
+        "REENTER": 0.5597137628023908,
+        "NO_ADD": 0.5920958930833974
+      },
+      "thresholds": {
+        "no_add_alert_probability": 0.65
+      },
+      "recommended_use": "NO_ADD_ONLY_SHADOW_FILTER",
+      "promote_to_execution_guard": false,
+      "promote_to_reentry_signal": false,
+      "auto_weight_change": false,
+      "overall_metrics": {
+        "NO_ADD_auc": 0.5320128454965811,
+        "REENTER_auc": 0.4845623973688792
+      },
+      "stress_year_metrics": {
+        "2021": {
+          "NO_ADD_auc": 0.5007678806494076,
+          "NO_ADD_balanced_accuracy": 0.49813514699429573,
+          "REENTER_auc": 0.42875770507349453
+        },
+        "2022": {
+          "NO_ADD_auc": 0.5585416666666666,
+          "NO_ADD_balanced_accuracy": 0.540625,
+          "REENTER_auc": 0.4487291155277535
+        },
+        "2026": {
+          "NO_ADD_auc": 0.521931115690315,
+          "NO_ADD_balanced_accuracy": 0.5183985869885193,
+          "REENTER_auc": 0.5056056877221766
+        }
+      },
+      "condition_metrics": {
+        "condition_0050_5d_le_minus2pct": {
+          "rows": 239,
+          "frequency": 0.18147304479878512,
+          "NO_ADD_auc": 0.4766096579476861,
+          "NO_ADD_balanced_accuracy": 0.4540995975855131,
+          "REENTER_auc": 0.4833683473389356
+        },
+        "condition_0050_10d_le_minus3pct": {
+          "rows": 204,
+          "frequency": 0.1548974943052392,
+          "NO_ADD_auc": 0.4668276972624798,
+          "NO_ADD_balanced_accuracy": 0.46682769726247986,
+          "REENTER_auc": 0.4499176595950789
+        },
+        "condition_0050_60d_drawdown_le_minus5pct": {
+          "rows": 464,
+          "frequency": 0.35231586940015186,
+          "NO_ADD_auc": 0.5198394906743184,
+          "NO_ADD_balanced_accuracy": 0.49928263988522237,
+          "REENTER_auc": 0.4560840604184257
+        },
+        "condition_0050_5d_abs_ge_2pct": {
+          "rows": 622,
+          "frequency": 0.47228549734244496,
+          "NO_ADD_auc": 0.5377632584024443,
+          "NO_ADD_balanced_accuracy": 0.5162319947621127,
+          "REENTER_auc": 0.5001825198164372
+        },
+        "condition_00631l_5d_le_minus4pct": {
+          "rows": 216,
+          "frequency": 0.16400911161731208,
+          "NO_ADD_auc": 0.5242485990830362,
+          "NO_ADD_balanced_accuracy": 0.4818135506877229,
+          "REENTER_auc": 0.4856775300171527
+        }
+      },
+      "selected_features": [
+        "src_AMD_ret1d",
+        "src_ASML_ret1d",
+        "src_AVGO_ret1d",
+        "src_NVDA_ret1d",
+        "src_QQQ_ret1d",
+        "src_SOXX_minus_QQQ_ret1d",
+        "src_SOXX_ret1d",
+        "src_TSM_ret1d",
+        "src_US_SEMI_BASKET_ret1d"
+      ],
+      "report_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/cross_market_directed_graph_shadow_latest.json",
+      "rationale": "NO_ADD has weak but repeatable signal in selected stress years; REENTER is unstable and should not drive re-entry."
+    },
     "execution_controls": {
       "published_commission_rate": 0.001425,
       "commission_discount": 1.0,
@@ -52,7 +292,22 @@
       "min_trade_notional": 5000.0,
       "min_weight_deviation": 0.005,
       "share_lot_size": 1,
-      "forced_liquidations_bypass_bands": true
+      "forced_liquidations_bypass_bands": true,
+      "max_initial_buy_fraction": 0.4,
+      "effective_max_initial_buy_fraction": 0.4,
+      "trough_reentry_staging": {
+        "state": "NO_TROUGH",
+        "default_max_initial_buy_fraction": 0.4,
+        "recommended_execution_staging_fraction": null,
+        "effective_max_initial_buy_fraction": 0.4,
+        "applied": false,
+        "policy": "diagnostic_reentry_timing_only_no_target_weight_change",
+        "capitulation_score": 0,
+        "reentry_confirmation_score": 4
+      },
+      "min_staged_buy_notional": 20000.0,
+      "buy_staging_applies_to_sells": false,
+      "compounding_regime_source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_20260715.json"
     },
     "trades": [
       {
@@ -61,139 +316,1433 @@
         "current_shares": 5000,
         "target_shares": 0,
         "delta_shares": -5000,
-        "price": 27.440000534057617,
-        "notional": 137200.0026702881,
-        "commission": 195.51000380516052,
-        "slippage": 68.60000133514404,
+        "price": 26.75,
+        "notional": 133750.0,
+        "commission": 190.59375,
+        "slippage": 66.875,
         "sell_tax_rate": 0.0,
         "sell_tax": 0.0,
-        "estimated_cost": 264.11000514030457
+        "estimated_cost": 257.46875
       },
       {
         "ticker": "0050.TW",
         "side": "buy",
-        "current_shares": 1754,
-        "target_shares": 2307,
-        "delta_shares": 553,
-        "price": 103.0999984741211,
-        "notional": 57014.299156188965,
-        "commission": 81.24537629756928,
-        "slippage": 28.507149578094484,
+        "current_shares": 1342,
+        "target_shares": 1491,
+        "delta_shares": 149,
+        "price": 106.30000305175781,
+        "notional": 15838.700454711914,
+        "commission": 22.570148147964478,
+        "slippage": 7.919350227355957,
         "sell_tax_rate": 0.001,
         "sell_tax": 0.0,
-        "estimated_cost": 109.75252587566376
+        "estimated_cost": 30.489498375320434
       },
       {
         "ticker": "00631L.TW",
         "side": "buy",
-        "current_shares": 10,
-        "target_shares": 475,
-        "delta_shares": 465,
-        "price": 35.2599983215332,
-        "notional": 16395.89921951294,
-        "commission": 23.364156387805938,
-        "slippage": 8.19794960975647,
+        "current_shares": 0,
+        "target_shares": 376,
+        "delta_shares": 376,
+        "price": 37.040000915527344,
+        "notional": 13927.040344238281,
+        "commission": 19.846032490539553,
+        "slippage": 6.963520172119141,
         "sell_tax_rate": 0.001,
         "sell_tax": 0.0,
-        "estimated_cost": 31.56210599756241
+        "estimated_cost": 26.809552662658696
       }
     ],
     "execution_summary": {
-      "buy_notional": 73410.1983757019,
-      "sell_notional": 137200.0026702881,
-      "commission": 300.1195364905357,
+      "buy_notional": 29765.740798950195,
+      "sell_notional": 133750.0,
+      "commission": 233.00993063850404,
       "sell_tax": 0.0,
-      "slippage": 105.30510052299499,
-      "total_execution_cost": 405.42463701353074,
-      "turnover_notional": 210610.20104599,
-      "estimated_cash_after_execution": 63384.37965757265,
-      "turnover_ratio": 0.6614849745944602,
-      "max_automatic_turnover_ratio": 0.5
+      "slippage": 81.7578703994751,
+      "total_execution_cost": 314.76780103797915,
+      "turnover_notional": 163515.7407989502,
+      "estimated_cash_after_execution": 103669.49140001183,
+      "turnover_ratio": 0.5915811038461518,
+      "max_automatic_turnover_ratio": 0.5,
+      "cross_market_graph_no_add_active": false,
+      "cross_market_graph_recommended_use": "NO_ADD_ONLY_SHADOW_FILTER"
     },
     "planning_status": "manual_review_required",
     "manual_confirmation_required": true,
     "execution_allowed": false,
     "execution_guard_reasons": [
-      "turnover ratio 66.15% exceeds automatic limit 50.00%"
+      "turnover ratio 59.16% exceeds automatic limit 50.00%"
     ],
     "source_live_signal": {
       "signal_version": 2,
-      "generated_at": "2026-06-28T17:51:59",
+      "generated_at": "2026-07-15T21:11:12",
       "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
       "strategy_status": "active",
-      "requested_as_of_date": "2026-06-28",
-      "actual_data_date": "2026-06-26",
+      "requested_as_of_date": "2026-07-15",
+      "actual_data_date": "2026-07-15",
       "business_stale_days": 0,
-      "calendar_stale_days": 2,
+      "calendar_stale_days": 0,
       "max_business_stale_days": 3,
       "execution_allowed": true,
       "execution_guard_reasons": [],
-      "execution_warning_reasons": [],
+      "execution_warning_reasons": [
+        "NCF live overlay skipped: date mismatch {'00631L.TW': '2026-07-14', '00632R.TW': '2026-07-14'}, actual 2026-07-15"
+      ],
       "base_regime": "golden1",
       "execution_regime": "golden1",
       "regime_reason": "A20.7 formal defensive state is inactive",
-      "last_transition_date": "2026-02-24",
+      "last_transition_date": "2025-06-10",
       "strategy_transition_today": false,
       "action": "hold_or_align_to_target",
       "target_weights": {
-        "0050.TW": 0.7473586977537088,
-        "00631L.TW": 0.05264130224629131,
+        "0050.TW": 0.5737386478789711,
+        "00631L.TW": 0.12626135212102893,
         "00632R.TW": 0.0,
         "00679B.TWO": 0.0,
-        "cash": 0.19999999999999998
+        "cash": 0.29999999999999993
       },
       "target_values": {
-        "0050.TW": 237951.53576069765,
-        "00631L.TW": 16760.464220991827,
+        "0050.TW": 158584.00382125095,
+        "00631L.TW": 34899.21904557034,
         "00632R.TW": 0.0,
         "00679B.TWO": 0.0,
-        "cash": 63677.99999542236
+        "cash": 82921.38122863768
       },
       "reference_target_shares_before_cost": {
-        "0050.TW": 2307,
-        "00631L.TW": 475,
+        "0050.TW": 1491,
+        "00631L.TW": 942,
         "00632R.TW": 0,
         "00679B.TWO": 0
       },
       "reference_target_market_values": {
-        "0050.TW": 237851.69647979736,
-        "00631L.TW": 16748.49920272827,
+        "0050.TW": 158493.3045501709,
+        "00631L.TW": 34891.68086242676,
         "00632R.TW": 0.0,
         "00679B.TWO": 0.0
       },
-      "estimated_cash_after_rounding_before_cost": 63789.80429458618,
+      "estimated_cash_after_rounding_before_cost": 83019.61868286133,
       "latest_prices": {
-        "0050.TW": 103.0999984741211,
-        "00631L.TW": 35.2599983215332,
-        "00632R.TW": 10.449999809265137,
-        "00679B.TWO": 27.440000534057617
+        "0050.TW": 106.30000305175781,
+        "00631L.TW": 37.040000915527344,
+        "00632R.TW": 10.149999618530273,
+        "00679B.TWO": 26.75
       },
-      "portfolio_value_input": 318389.9999771118,
+      "symbol_metadata": {
+        "0050.TW": {
+          "symbol": "0050.TW",
+          "root": "0050",
+          "suffix": ".TW",
+          "exchange": "TWSE",
+          "tradingview_symbol": "TWSE:0050"
+        },
+        "00631L.TW": {
+          "symbol": "00631L.TW",
+          "root": "00631L",
+          "suffix": ".TW",
+          "exchange": "TWSE",
+          "tradingview_symbol": "TWSE:00631L"
+        },
+        "00632R.TW": {
+          "symbol": "00632R.TW",
+          "root": "00632R",
+          "suffix": ".TW",
+          "exchange": "TWSE",
+          "tradingview_symbol": "TWSE:00632R"
+        },
+        "00679B.TWO": {
+          "symbol": "00679B.TWO",
+          "root": "00679B",
+          "suffix": ".TWO",
+          "exchange": "TPEX",
+          "tradingview_symbol": "TPEX:00679B"
+        }
+      },
+      "portfolio_value_input": 276404.604095459,
       "latest_features": {
-        "ma_gap": 0.18349306944844357,
-        "drawdown": -0.07242467783397688,
-        "exit_momentum_5d": -0.039142632415497536,
-        "chip_score": 6,
-        "derivative_score": 1,
-        "total_risk_score": 7,
-        "tail_risk_score": 1,
-        "finbert_sentiment_risk": 0.1227
+        "ma_gap": 0.16672798407841216,
+        "drawdown": -0.043634713518126866,
+        "exit_momentum_5d": 0.0009416770846459865,
+        "chip_score": 4,
+        "derivative_score": 2,
+        "total_risk_score": 6,
+        "tail_risk_score": 0,
+        "chip_data_core_days_since_source_update": 0,
+        "finbert_sentiment_risk": 0.1855
+      },
+      "market_state": {
+        "state": "late_bull_overheat",
+        "bucket": "bull_trend",
+        "label_zh": "多頭末段過熱",
+        "allocation_bias": "0050 core with reduced 00631L",
+        "risk_level": "medium",
+        "inputs": {
+          "execution_regime": "golden1",
+          "ma_gap": 0.16672798407841216,
+          "drawdown": -0.043634713518126866,
+          "exit_momentum_5d": 0.0009416770846459865,
+          "total_risk_score": 6,
+          "tail_risk_score": 0,
+          "signal_alignment": "mixed",
+          "dominant_direction": "bullish"
+        },
+        "reason": "execution_regime=golden1; ma_gap=0.1667; drawdown=-0.0436; exit_momentum_5d=0.0009; total_risk_score=6; tail_risk_score=0; signal_alignment=mixed; dominant_direction=bullish"
+      },
+      "trough_nowcast": {
+        "state": "NO_TROUGH",
+        "state_space": [
+          "NO_TROUGH",
+          "CAPITULATION_WARNING",
+          "PARTIAL_REENTRY",
+          "FULL_REENTRY"
+        ],
+        "policy": "diagnostic_reentry_timing_only_no_target_weight_change",
+        "recommended_execution_staging_fraction": null,
+        "context_active": false,
+        "context_reasons": [],
+        "capitulation_score": 0,
+        "reentry_confirmation_score": 4,
+        "capitulation_reasons": [],
+        "reentry_confirmation_reasons": [
+          "0050_1d_rebound_ge_1pct",
+          "groupa_breadth_up_fraction_ge_50pct",
+          "soxx_rebound_from_5d_low_ge_3pct",
+          "usdtwd_riskoff_z_falling"
+        ],
+        "full_reentry_checks": {
+          "local_price_confirm": true,
+          "risk_unwind_confirm": true,
+          "cross_market_confirm": true,
+          "partial_reentry_confirmed": false,
+          "full_reentry_candidate": false,
+          "full_reentry_disabled_reason": "shadow_audit_false_reentry_rate_too_high",
+          "full_reentry_confirmed": false
+        },
+        "inputs": {
+          "latest_features": {
+            "ma_gap": 0.16672798407841216,
+            "drawdown": -0.043634713518126866,
+            "exit_momentum_5d": 0.0009416770846459865,
+            "total_risk_score": 6,
+            "tail_risk_score": 0
+          },
+          "market_proxy": {
+            "status": "ok",
+            "ret_0050_1d": 0.018199248066178786,
+            "ret_0050_5d": 0.0023573785271651104,
+            "ret_00631l_5d": -0.002692473768563519,
+            "latest_0050_close": 106.30000305175781,
+            "prior_0050_3d_low": 104.4000015258789,
+            "no_fresh_0050_lower_low_3d": true,
+            "rebound_0050_from_5d_low": 0.018199248066178786,
+            "rebound_00631l_from_5d_low": 0.03232998363656536,
+            "volume_z60": 0.00015099556053453495,
+            "amihud_z60": 0.1115059302867751,
+            "panic_volume_contracting": false,
+            "breadth_up_fraction_groupa": 0.75,
+            "limit_down_count_groupa": 0
+          },
+          "multisource": {
+            "status": "ok",
+            "feature_date": "2026-07-15",
+            "txo_pcr_volume_z20": null,
+            "txo_pcr_oi_z20": null,
+            "txo_foreign_put_call_net_oi_chg5_z60": null,
+            "tx_foreign_net_oi_z60": null,
+            "market_margin_forced_repay_z60": null,
+            "market_margin_balance_chg20_z252": null,
+            "securities_lending_0050_volume_z60": null,
+            "soxx_ret1": 0.037679929740276785,
+            "tsm_adr_ret1": 0.008883309820314933,
+            "usdtwd_ret5_z60": 0.04480543308846566,
+            "soxx_put_call_iv_skew_z252": null,
+            "soxx_put_call_volume_ratio_z60": null,
+            "soxx_put_call_oi_ratio_z60": null,
+            "txo_pcr_volume_z20_chg5": null,
+            "usdtwd_ret5_z60_chg5": -1.0748059205069431
+          },
+          "cross_market_rebound": {
+            "status": "ok",
+            "soxx_rebound_from_5d_low": 0.04129124718756927,
+            "soxx_ret5": 0.04129124718756927,
+            "tsm_adr_rebound_from_5d_low": 0.008883309820314933,
+            "tsm_adr_ret5": -0.016748722737397803,
+            "tw_2330_rebound_from_5d_low": 0.008281573498964745,
+            "tw_2330_ret5": -0.012170385395537497,
+            "usdtwd_ret5": 0.0017812685945495232,
+            "usdtwd_ret1": 0.00040192114026771364
+          },
+          "signal_alignment": {
+            "alignment": "mixed",
+            "dominant_direction": "bullish"
+          }
+        },
+        "rationale": "Rare-event trough nowcast adapted for Taiwan proxies: options tail demand, liquidity stress, breadth/liquidity capitulation, USD/TWD and SOXX/TSM/2330 rebound. It only activates after an H20/crash/defensive warning context."
+      },
+      "tail_conformal": {
+        "status": "ok",
+        "policy": "diagnostic_warning_only_no_weight_change",
+        "ticker": "00631L.TW",
+        "actual_date": "2026-07-15",
+        "state": "TAIL_RISK_NORMAL",
+        "recommended_action": "none",
+        "allow_00631l_add": true,
+        "auto_reduce_00631l": false,
+        "current_risk_bucket": "elevated",
+        "min_lower_tail_confidence_bound": -0.05502668953383372,
+        "max_prob_mdd_lt_8pct": 0.14838709677419354,
+        "high_tail_reasons": [],
+        "diagnostics": {
+          "h5": {
+            "horizon_days": 5,
+            "point_forecast_return": 0.028471051372978007,
+            "lower_tail_confidence_bound": -0.05502668953383372,
+            "alpha": 0.1,
+            "nominal_lower_tail_coverage": 0.9,
+            "calibration_scope": "elevated",
+            "calibration_count": 150,
+            "lower_tail_residual_quantile": 0.08349774090681172,
+            "prob_mdd_lt_8pct": 0.06918238993710692,
+            "mdd_threshold": -0.08
+          },
+          "h10": {
+            "horizon_days": 10,
+            "point_forecast_return": 0.05577865453797859,
+            "lower_tail_confidence_bound": -0.05379380171295456,
+            "alpha": 0.1,
+            "nominal_lower_tail_coverage": 0.9,
+            "calibration_scope": "elevated",
+            "calibration_count": 147,
+            "lower_tail_residual_quantile": 0.10957245625093315,
+            "prob_mdd_lt_8pct": 0.14838709677419354,
+            "mdd_threshold": -0.08
+          }
+        },
+        "rationale": "Tail-specific conformal diagnostic controls lower-tail error separately. It is used to pause additional leverage and trigger trough monitoring, not to automatically liquidate 00631L."
+      },
+      "cross_market_graph_shadow": {
+        "status": "available",
+        "report_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/cross_market_directed_graph_shadow_latest.json",
+        "report_type": "cross_market_directed_graph_shadow",
+        "generated_at": "2026-07-15T17:44:53",
+        "policy": "shadow_only_no_weight_change",
+        "latest_shadow_action": "NO_ADD",
+        "no_add_active": false,
+        "recommended_action": "none",
+        "allow_auto_weight_change": false,
+        "allow_00631l_add_reference": true,
+        "thresholds": {
+          "no_add_alert_probability": 0.65
+        },
+        "latest_probabilities": {
+          "REENTER": 0.5597137628023908,
+          "NO_ADD": 0.5920958930833974
+        },
+        "metrics": {
+          "REENTER": {
+            "auc": 0.4845623973688792,
+            "balanced_accuracy": 0.49679932057609877,
+            "positive_rate": 0.42976461655277143,
+            "mean_probability": 0.5016295644921446,
+            "threshold_metrics": [
+              {
+                "threshold": 0.55,
+                "alerts": 203,
+                "true_positives": 78,
+                "false_positives": 125,
+                "false_negatives": 488,
+                "precision": 0.3842364532019704,
+                "recall": 0.13780918727915195,
+                "false_positive_rate": 0.16644474034620507
+              },
+              {
+                "threshold": 0.6,
+                "alerts": 52,
+                "true_positives": 14,
+                "false_positives": 38,
+                "false_negatives": 552,
+                "precision": 0.2692307692307692,
+                "recall": 0.024734982332155476,
+                "false_positive_rate": 0.05059920106524634
+              },
+              {
+                "threshold": 0.65,
+                "alerts": 12,
+                "true_positives": 4,
+                "false_positives": 8,
+                "false_negatives": 562,
+                "precision": 0.3333333333333333,
+                "recall": 0.007067137809187279,
+                "false_positive_rate": 0.010652463382157125
+              }
+            ]
+          },
+          "NO_ADD": {
+            "auc": 0.5320128454965811,
+            "balanced_accuracy": 0.5273154180551872,
+            "positive_rate": 0.27638572513287774,
+            "mean_probability": 0.4993725152346376,
+            "threshold_metrics": [
+              {
+                "threshold": 0.55,
+                "alerts": 279,
+                "true_positives": 88,
+                "false_positives": 191,
+                "false_negatives": 276,
+                "precision": 0.3154121863799283,
+                "recall": 0.24175824175824176,
+                "false_positive_rate": 0.20041972717733472
+              },
+              {
+                "threshold": 0.6,
+                "alerts": 92,
+                "true_positives": 30,
+                "false_positives": 62,
+                "false_negatives": 334,
+                "precision": 0.32608695652173914,
+                "recall": 0.08241758241758242,
+                "false_positive_rate": 0.06505771248688352
+              },
+              {
+                "threshold": 0.65,
+                "alerts": 25,
+                "true_positives": 10,
+                "false_positives": 15,
+                "false_negatives": 354,
+                "precision": 0.4,
+                "recall": 0.027472527472527472,
+                "false_positive_rate": 0.015739769150052464
+              }
+            ]
+          }
+        },
+        "promotion_assessment": {
+          "recommended_use": "NO_ADD_ONLY_SHADOW_FILTER",
+          "promote_to_execution_guard": false,
+          "promote_to_reentry_signal": false,
+          "rationale": "NO_ADD has weak but repeatable signal in selected stress years; REENTER is unstable and should not drive re-entry.",
+          "minimum_live_alert_policy": {
+            "no_add_probability_min": 0.65,
+            "require_no_add_gt_reenter": true,
+            "auto_weight_change": false
+          },
+          "summary_metrics": {
+            "NO_ADD_auc": 0.5320128454965811,
+            "REENTER_auc": 0.4845623973688792
+          }
+        },
+        "metrics_by_year": {
+          "2021": {
+            "REENTER": {
+              "rows": 225,
+              "auc": 0.42875770507349453,
+              "balanced_accuracy": 0.4617117117117117,
+              "positive_rate": 0.49333333333333335,
+              "mean_probability": 0.4962057859307961,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 43,
+                  "true_positives": 17,
+                  "false_positives": 26,
+                  "false_negatives": 94,
+                  "precision": 0.3953488372093023,
+                  "recall": 0.15315315315315314,
+                  "false_positive_rate": 0.22807017543859648
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 12,
+                  "true_positives": 5,
+                  "false_positives": 7,
+                  "false_negatives": 106,
+                  "precision": 0.4166666666666667,
+                  "recall": 0.04504504504504504,
+                  "false_positive_rate": 0.06140350877192982
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 4,
+                  "true_positives": 2,
+                  "false_positives": 2,
+                  "false_negatives": 109,
+                  "precision": 0.5,
+                  "recall": 0.018018018018018018,
+                  "false_positive_rate": 0.017543859649122806
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 225,
+              "auc": 0.5007678806494076,
+              "balanced_accuracy": 0.49813514699429573,
+              "positive_rate": 0.23555555555555555,
+              "mean_probability": 0.5131221396781288,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 78,
+                  "true_positives": 19,
+                  "false_positives": 59,
+                  "false_negatives": 34,
+                  "precision": 0.24358974358974358,
+                  "recall": 0.3584905660377358,
+                  "false_positive_rate": 0.3430232558139535
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 22,
+                  "true_positives": 4,
+                  "false_positives": 18,
+                  "false_negatives": 49,
+                  "precision": 0.18181818181818182,
+                  "recall": 0.07547169811320754,
+                  "false_positive_rate": 0.10465116279069768
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 4,
+                  "true_positives": 1,
+                  "false_positives": 3,
+                  "false_negatives": 52,
+                  "precision": 0.25,
+                  "recall": 0.018867924528301886,
+                  "false_positive_rate": 0.01744186046511628
+                }
+              ]
+            }
+          },
+          "2022": {
+            "REENTER": {
+              "rows": 246,
+              "auc": 0.4487291155277535,
+              "balanced_accuracy": 0.47735370971573365,
+              "positive_rate": 0.2967479674796748,
+              "mean_probability": 0.5146079738247281,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 75,
+                  "true_positives": 16,
+                  "false_positives": 59,
+                  "false_negatives": 57,
+                  "precision": 0.21333333333333335,
+                  "recall": 0.2191780821917808,
+                  "false_positive_rate": 0.34104046242774566
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 25,
+                  "true_positives": 4,
+                  "false_positives": 21,
+                  "false_negatives": 69,
+                  "precision": 0.16,
+                  "recall": 0.0547945205479452,
+                  "false_positive_rate": 0.12138728323699421
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 7,
+                  "true_positives": 2,
+                  "false_positives": 5,
+                  "false_negatives": 71,
+                  "precision": 0.2857142857142857,
+                  "recall": 0.0273972602739726,
+                  "false_positive_rate": 0.028901734104046242
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 246,
+              "auc": 0.5585416666666666,
+              "balanced_accuracy": 0.540625,
+              "positive_rate": 0.3902439024390244,
+              "mean_probability": 0.5102749793831435,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 84,
+                  "true_positives": 38,
+                  "false_positives": 46,
+                  "false_negatives": 58,
+                  "precision": 0.4523809523809524,
+                  "recall": 0.3958333333333333,
+                  "false_positive_rate": 0.30666666666666664
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 47,
+                  "true_positives": 20,
+                  "false_positives": 27,
+                  "false_negatives": 76,
+                  "precision": 0.425531914893617,
+                  "recall": 0.20833333333333334,
+                  "false_positive_rate": 0.18
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 18,
+                  "true_positives": 8,
+                  "false_positives": 10,
+                  "false_negatives": 88,
+                  "precision": 0.4444444444444444,
+                  "recall": 0.08333333333333333,
+                  "false_positive_rate": 0.06666666666666667
+                }
+              ]
+            }
+          },
+          "2023": {
+            "REENTER": {
+              "rows": 239,
+              "auc": 0.5185786435786436,
+              "balanced_accuracy": 0.5310966810966811,
+              "positive_rate": 0.41422594142259417,
+              "mean_probability": 0.49762534375510226,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 28,
+                  "true_positives": 15,
+                  "false_positives": 13,
+                  "false_negatives": 84,
+                  "precision": 0.5357142857142857,
+                  "recall": 0.15151515151515152,
+                  "false_positive_rate": 0.09285714285714286
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 6,
+                  "true_positives": 1,
+                  "false_positives": 5,
+                  "false_negatives": 98,
+                  "precision": 0.16666666666666666,
+                  "recall": 0.010101010101010102,
+                  "false_positive_rate": 0.03571428571428571
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 0,
+                  "true_positives": 0,
+                  "false_positives": 0,
+                  "false_negatives": 99,
+                  "precision": null,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 239,
+              "auc": 0.5346560846560846,
+              "balanced_accuracy": 0.5351322751322751,
+              "positive_rate": 0.20920502092050208,
+              "mean_probability": 0.4905047628897755,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 41,
+                  "true_positives": 8,
+                  "false_positives": 33,
+                  "false_negatives": 42,
+                  "precision": 0.1951219512195122,
+                  "recall": 0.16,
+                  "false_positive_rate": 0.1746031746031746
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 8,
+                  "true_positives": 1,
+                  "false_positives": 7,
+                  "false_negatives": 49,
+                  "precision": 0.125,
+                  "recall": 0.02,
+                  "false_positive_rate": 0.037037037037037035
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 0,
+                  "true_positives": 0,
+                  "false_positives": 0,
+                  "false_negatives": 50,
+                  "precision": null,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0
+                }
+              ]
+            }
+          },
+          "2024": {
+            "REENTER": {
+              "rows": 242,
+              "auc": 0.5572471324296142,
+              "balanced_accuracy": 0.5280152937087244,
+              "positive_rate": 0.43388429752066116,
+              "mean_probability": 0.5019132189990445,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 23,
+                  "true_positives": 13,
+                  "false_positives": 10,
+                  "false_negatives": 92,
+                  "precision": 0.5652173913043478,
+                  "recall": 0.12380952380952381,
+                  "false_positive_rate": 0.072992700729927
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 2,
+                  "true_positives": 0,
+                  "false_positives": 2,
+                  "false_negatives": 105,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.014598540145985401
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 0,
+                  "true_positives": 0,
+                  "false_positives": 0,
+                  "false_negatives": 105,
+                  "precision": null,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 242,
+              "auc": 0.5261900299850075,
+              "balanced_accuracy": 0.5276424287856072,
+              "positive_rate": 0.2396694214876033,
+              "mean_probability": 0.4977951401228775,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 34,
+                  "true_positives": 9,
+                  "false_positives": 25,
+                  "false_negatives": 49,
+                  "precision": 0.2647058823529412,
+                  "recall": 0.15517241379310345,
+                  "false_positive_rate": 0.1358695652173913
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 8,
+                  "true_positives": 3,
+                  "false_positives": 5,
+                  "false_negatives": 55,
+                  "precision": 0.375,
+                  "recall": 0.05172413793103448,
+                  "false_positive_rate": 0.02717391304347826
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 2,
+                  "true_positives": 1,
+                  "false_positives": 1,
+                  "false_negatives": 57,
+                  "precision": 0.5,
+                  "recall": 0.017241379310344827,
+                  "false_positive_rate": 0.005434782608695652
+                }
+              ]
+            }
+          },
+          "2025": {
+            "REENTER": {
+              "rows": 243,
+              "auc": 0.5199917841982747,
+              "balanced_accuracy": 0.5063330138299329,
+              "positive_rate": 0.448559670781893,
+              "mean_probability": 0.500677570873218,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 22,
+                  "true_positives": 10,
+                  "false_positives": 12,
+                  "false_negatives": 99,
+                  "precision": 0.45454545454545453,
+                  "recall": 0.09174311926605505,
+                  "false_positive_rate": 0.08955223880597014
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 6,
+                  "true_positives": 3,
+                  "false_positives": 3,
+                  "false_negatives": 106,
+                  "precision": 0.5,
+                  "recall": 0.027522935779816515,
+                  "false_positive_rate": 0.022388059701492536
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 1,
+                  "true_positives": 0,
+                  "false_positives": 1,
+                  "false_negatives": 109,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.007462686567164179
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 243,
+              "auc": 0.5086417597765363,
+              "balanced_accuracy": 0.5209933659217877,
+              "positive_rate": 0.26337448559670784,
+              "mean_probability": 0.4921699416618264,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 19,
+                  "true_positives": 5,
+                  "false_positives": 14,
+                  "false_negatives": 59,
+                  "precision": 0.2631578947368421,
+                  "recall": 0.078125,
+                  "false_positive_rate": 0.0782122905027933
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 2,
+                  "true_positives": 0,
+                  "false_positives": 2,
+                  "false_negatives": 64,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0111731843575419
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 0,
+                  "true_positives": 0,
+                  "false_positives": 0,
+                  "false_negatives": 64,
+                  "precision": null,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0
+                }
+              ]
+            }
+          },
+          "2026": {
+            "REENTER": {
+              "rows": 122,
+              "auc": 0.5056056877221766,
+              "balanced_accuracy": 0.5243368881596937,
+              "positive_rate": 0.5655737704918032,
+              "mean_probability": 0.49464071445419594,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 12,
+                  "true_positives": 7,
+                  "false_positives": 5,
+                  "false_negatives": 62,
+                  "precision": 0.5833333333333334,
+                  "recall": 0.10144927536231885,
+                  "false_positive_rate": 0.09433962264150944
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 1,
+                  "true_positives": 1,
+                  "false_positives": 0,
+                  "false_negatives": 68,
+                  "precision": 1.0,
+                  "recall": 0.014492753623188406,
+                  "false_positive_rate": 0.0
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 0,
+                  "true_positives": 0,
+                  "false_positives": 0,
+                  "false_negatives": 69,
+                  "precision": null,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 122,
+              "auc": 0.521931115690315,
+              "balanced_accuracy": 0.5183985869885193,
+              "positive_rate": 0.3524590163934426,
+              "mean_probability": 0.4868780175735152,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 23,
+                  "true_positives": 9,
+                  "false_positives": 14,
+                  "false_negatives": 34,
+                  "precision": 0.391304347826087,
+                  "recall": 0.20930232558139536,
+                  "false_positive_rate": 0.17721518987341772
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 5,
+                  "true_positives": 2,
+                  "false_positives": 3,
+                  "false_negatives": 41,
+                  "precision": 0.4,
+                  "recall": 0.046511627906976744,
+                  "false_positive_rate": 0.0379746835443038
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 1,
+                  "true_positives": 0,
+                  "false_positives": 1,
+                  "false_negatives": 43,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.012658227848101266
+                }
+              ]
+            }
+          }
+        },
+        "metrics_by_condition": {
+          "condition_0050_5d_le_minus2pct": {
+            "REENTER": {
+              "rows": 239,
+              "auc": 0.4833683473389356,
+              "balanced_accuracy": 0.501750700280112,
+              "positive_rate": 0.502092050209205,
+              "mean_probability": 0.5108960967822584,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 51,
+                  "true_positives": 22,
+                  "false_positives": 29,
+                  "false_negatives": 98,
+                  "precision": 0.43137254901960786,
+                  "recall": 0.18333333333333332,
+                  "false_positive_rate": 0.24369747899159663
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 15,
+                  "true_positives": 7,
+                  "false_positives": 8,
+                  "false_negatives": 113,
+                  "precision": 0.4666666666666667,
+                  "recall": 0.058333333333333334,
+                  "false_positive_rate": 0.06722689075630252
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 2,
+                  "true_positives": 1,
+                  "false_positives": 1,
+                  "false_negatives": 119,
+                  "precision": 0.5,
+                  "recall": 0.008333333333333333,
+                  "false_positive_rate": 0.008403361344537815
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 239,
+              "auc": 0.4766096579476861,
+              "balanced_accuracy": 0.4540995975855131,
+              "positive_rate": 0.29707112970711297,
+              "mean_probability": 0.5473935458064411,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 111,
+                  "true_positives": 33,
+                  "false_positives": 78,
+                  "false_negatives": 38,
+                  "precision": 0.2972972972972973,
+                  "recall": 0.4647887323943662,
+                  "false_positive_rate": 0.4642857142857143
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 55,
+                  "true_positives": 18,
+                  "false_positives": 37,
+                  "false_negatives": 53,
+                  "precision": 0.32727272727272727,
+                  "recall": 0.2535211267605634,
+                  "false_positive_rate": 0.22023809523809523
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 18,
+                  "true_positives": 7,
+                  "false_positives": 11,
+                  "false_negatives": 64,
+                  "precision": 0.3888888888888889,
+                  "recall": 0.09859154929577464,
+                  "false_positive_rate": 0.06547619047619048
+                }
+              ]
+            },
+            "condition_rows": 239,
+            "condition_frequency": 0.18147304479878512
+          },
+          "condition_0050_10d_le_minus3pct": {
+            "REENTER": {
+              "rows": 204,
+              "auc": 0.4499176595950789,
+              "balanced_accuracy": 0.4723917465852949,
+              "positive_rate": 0.45588235294117646,
+              "mean_probability": 0.5110715157933132,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 48,
+                  "true_positives": 18,
+                  "false_positives": 30,
+                  "false_negatives": 75,
+                  "precision": 0.375,
+                  "recall": 0.1935483870967742,
+                  "false_positive_rate": 0.2702702702702703
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 14,
+                  "true_positives": 4,
+                  "false_positives": 10,
+                  "false_negatives": 89,
+                  "precision": 0.2857142857142857,
+                  "recall": 0.043010752688172046,
+                  "false_positive_rate": 0.09009009009009009
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 3,
+                  "true_positives": 1,
+                  "false_positives": 2,
+                  "false_negatives": 92,
+                  "precision": 0.3333333333333333,
+                  "recall": 0.010752688172043012,
+                  "false_positive_rate": 0.018018018018018018
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 204,
+              "auc": 0.4668276972624798,
+              "balanced_accuracy": 0.46682769726247986,
+              "positive_rate": 0.3382352941176471,
+              "mean_probability": 0.5369980208961685,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 81,
+                  "true_positives": 28,
+                  "false_positives": 53,
+                  "false_negatives": 41,
+                  "precision": 0.345679012345679,
+                  "recall": 0.4057971014492754,
+                  "false_positive_rate": 0.3925925925925926
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 40,
+                  "true_positives": 13,
+                  "false_positives": 27,
+                  "false_negatives": 56,
+                  "precision": 0.325,
+                  "recall": 0.18840579710144928,
+                  "false_positive_rate": 0.2
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 17,
+                  "true_positives": 6,
+                  "false_positives": 11,
+                  "false_negatives": 63,
+                  "precision": 0.35294117647058826,
+                  "recall": 0.08695652173913043,
+                  "false_positive_rate": 0.08148148148148149
+                }
+              ]
+            },
+            "condition_rows": 204,
+            "condition_frequency": 0.1548974943052392
+          },
+          "condition_0050_60d_drawdown_le_minus5pct": {
+            "REENTER": {
+              "rows": 464,
+              "auc": 0.4560840604184257,
+              "balanced_accuracy": 0.47711792851111734,
+              "positive_rate": 0.4504310344827586,
+              "mean_probability": 0.5057939373265881,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 90,
+                  "true_positives": 35,
+                  "false_positives": 55,
+                  "false_negatives": 174,
+                  "precision": 0.3888888888888889,
+                  "recall": 0.1674641148325359,
+                  "false_positive_rate": 0.21568627450980393
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 26,
+                  "true_positives": 7,
+                  "false_positives": 19,
+                  "false_negatives": 202,
+                  "precision": 0.2692307692307692,
+                  "recall": 0.03349282296650718,
+                  "false_positive_rate": 0.07450980392156863
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 6,
+                  "true_positives": 2,
+                  "false_positives": 4,
+                  "false_negatives": 207,
+                  "precision": 0.3333333333333333,
+                  "recall": 0.009569377990430622,
+                  "false_positive_rate": 0.01568627450980392
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 464,
+              "auc": 0.5198394906743184,
+              "balanced_accuracy": 0.49928263988522237,
+              "positive_rate": 0.29310344827586204,
+              "mean_probability": 0.5149525797482519,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 136,
+                  "true_positives": 45,
+                  "false_positives": 91,
+                  "false_negatives": 91,
+                  "precision": 0.33088235294117646,
+                  "recall": 0.33088235294117646,
+                  "false_positive_rate": 0.2774390243902439
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 61,
+                  "true_positives": 20,
+                  "false_positives": 41,
+                  "false_negatives": 116,
+                  "precision": 0.32786885245901637,
+                  "recall": 0.14705882352941177,
+                  "false_positive_rate": 0.125
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 22,
+                  "true_positives": 9,
+                  "false_positives": 13,
+                  "false_negatives": 127,
+                  "precision": 0.4090909090909091,
+                  "recall": 0.0661764705882353,
+                  "false_positive_rate": 0.039634146341463415
+                }
+              ]
+            },
+            "condition_rows": 464,
+            "condition_frequency": 0.35231586940015186
+          },
+          "condition_0050_5d_abs_ge_2pct": {
+            "REENTER": {
+              "rows": 622,
+              "auc": 0.5001825198164372,
+              "balanced_accuracy": 0.5047559449311639,
+              "positive_rate": 0.4533762057877814,
+              "mean_probability": 0.5022513044569147,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 99,
+                  "true_positives": 41,
+                  "false_positives": 58,
+                  "false_negatives": 241,
+                  "precision": 0.41414141414141414,
+                  "recall": 0.1453900709219858,
+                  "false_positive_rate": 0.17058823529411765
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 24,
+                  "true_positives": 10,
+                  "false_positives": 14,
+                  "false_negatives": 272,
+                  "precision": 0.4166666666666667,
+                  "recall": 0.03546099290780142,
+                  "false_positive_rate": 0.041176470588235294
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 4,
+                  "true_positives": 2,
+                  "false_positives": 2,
+                  "false_negatives": 280,
+                  "precision": 0.5,
+                  "recall": 0.0070921985815602835,
+                  "false_positive_rate": 0.0058823529411764705
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 622,
+              "auc": 0.5377632584024443,
+              "balanced_accuracy": 0.5162319947621127,
+              "positive_rate": 0.2540192926045016,
+              "mean_probability": 0.4983156290748982,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 140,
+                  "true_positives": 43,
+                  "false_positives": 97,
+                  "false_negatives": 115,
+                  "precision": 0.30714285714285716,
+                  "recall": 0.2721518987341772,
+                  "false_positive_rate": 0.20905172413793102
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 57,
+                  "true_positives": 18,
+                  "false_positives": 39,
+                  "false_negatives": 140,
+                  "precision": 0.3157894736842105,
+                  "recall": 0.11392405063291139,
+                  "false_positive_rate": 0.08405172413793104
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 19,
+                  "true_positives": 7,
+                  "false_positives": 12,
+                  "false_negatives": 151,
+                  "precision": 0.3684210526315789,
+                  "recall": 0.04430379746835443,
+                  "false_positive_rate": 0.02586206896551724
+                }
+              ]
+            },
+            "condition_rows": 622,
+            "condition_frequency": 0.47228549734244496
+          },
+          "condition_00631l_5d_le_minus4pct": {
+            "REENTER": {
+              "rows": 216,
+              "auc": 0.4856775300171527,
+              "balanced_accuracy": 0.505746140651801,
+              "positive_rate": 0.49074074074074076,
+              "mean_probability": 0.5092469918333735,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 45,
+                  "true_positives": 18,
+                  "false_positives": 27,
+                  "false_negatives": 88,
+                  "precision": 0.4,
+                  "recall": 0.16981132075471697,
+                  "false_positive_rate": 0.24545454545454545
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 13,
+                  "true_positives": 6,
+                  "false_positives": 7,
+                  "false_negatives": 100,
+                  "precision": 0.46153846153846156,
+                  "recall": 0.05660377358490566,
+                  "false_positive_rate": 0.06363636363636363
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 2,
+                  "true_positives": 1,
+                  "false_positives": 1,
+                  "false_negatives": 105,
+                  "precision": 0.5,
+                  "recall": 0.009433962264150943,
+                  "false_positive_rate": 0.00909090909090909
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 216,
+              "auc": 0.5242485990830362,
+              "balanced_accuracy": 0.4818135506877229,
+              "positive_rate": 0.30092592592592593,
+              "mean_probability": 0.5507006230050536,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 103,
+                  "true_positives": 35,
+                  "false_positives": 68,
+                  "false_negatives": 30,
+                  "precision": 0.33980582524271846,
+                  "recall": 0.5384615384615384,
+                  "false_positive_rate": 0.4503311258278146
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 51,
+                  "true_positives": 18,
+                  "false_positives": 33,
+                  "false_negatives": 47,
+                  "precision": 0.35294117647058826,
+                  "recall": 0.27692307692307694,
+                  "false_positive_rate": 0.2185430463576159
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 18,
+                  "true_positives": 7,
+                  "false_positives": 11,
+                  "false_negatives": 58,
+                  "precision": 0.3888888888888889,
+                  "recall": 0.1076923076923077,
+                  "false_positive_rate": 0.0728476821192053
+                }
+              ]
+            },
+            "condition_rows": 216,
+            "condition_frequency": 0.16400911161731208
+          }
+        },
+        "selected_features": [
+          "src_AMD_ret1d",
+          "src_ASML_ret1d",
+          "src_AVGO_ret1d",
+          "src_NVDA_ret1d",
+          "src_QQQ_ret1d",
+          "src_SOXX_minus_QQQ_ret1d",
+          "src_SOXX_ret1d",
+          "src_TSM_ret1d",
+          "src_US_SEMI_BASKET_ret1d"
+        ],
+        "source": {
+          "start": "2019-01-02",
+          "end": "2026-07-15",
+          "edge_window": 250,
+          "tstat_threshold": 2.0,
+          "stability_threshold": 0.2,
+          "min_windows": 3,
+          "walk_forward_edge_selection": true,
+          "min_train_days": 504,
+          "retrain_step": 252,
+          "source_tickers_available": [
+            "AMD",
+            "ASML",
+            "AVGO",
+            "NVDA",
+            "QQQ",
+            "SOXX",
+            "TSM",
+            "TWD=X",
+            "^TNX"
+          ],
+          "target_tickers_available": [
+            "0050.TW",
+            "00631L.TW",
+            "2308.TW",
+            "2317.TW",
+            "2382.TW",
+            "2454.TW",
+            "2330.TW"
+          ]
+        }
+      },
+      "garch_regime_shadow": {
+        "status": "available",
+        "policy": "shadow_only_no_weight_change",
+        "date": "2026-07-15",
+        "params": {
+          "ratio_threshold": 1.05,
+          "percentile_threshold": 0.7,
+          "require_negative_5d": true,
+          "source": "walk-forward research 2026-07-05"
+        },
+        "garch_proxy_vol_ratio": 1.1503,
+        "garch_proxy_vol_percentile": 0.6032,
+        "return_0050_5d": 0.0024,
+        "high_vol_flag": false,
+        "selected_rule": "a207",
+        "a207_regime": "golden1",
+        "ma20_regime": "golden1",
+        "shadow_selected_regime": "golden1",
+        "volatility_gate": {
+          "policy": "shadow_only_no_weight_change",
+          "gate": "neutral_vol",
+          "low_vol_gate": false,
+          "high_vol_gate": false,
+          "signal_reliability": "calibrate_thresholds",
+          "reference_00631l_scale": 0.75,
+          "inputs": {
+            "garch_proxy_vol_ratio": 1.1503,
+            "garch_proxy_vol_percentile": 0.6032,
+            "return_0050_5d": 0.0024
+          },
+          "rationale": "Intermediate volatility; require calibrated thresholds and turnover discipline."
+        }
+      },
+      "specialist_routing": {
+        "status": "available",
+        "policy": "advisory_only_no_weight_change",
+        "route": "neutral",
+        "risk_level": "low",
+        "trusted_specialists": [
+          "calibrated_ensemble",
+          "risk_score"
+        ],
+        "signal_reliability": "calibrate_thresholds",
+        "recommended_action": "hold_or_align",
+        "allow_return_prediction": true,
+        "allow_00631l_add": true,
+        "inputs": {
+          "volatility_gate": "neutral_vol",
+          "high_vol_gate": false,
+          "low_vol_gate": false,
+          "market_state": "late_bull_overheat",
+          "market_state_bucket": "bull_trend",
+          "tsmc_0050_health_state": null,
+          "signal_alignment": "mixed",
+          "dominant_direction": "bullish",
+          "total_risk_score": 6,
+          "tail_risk_score": 0,
+          "drawdown": -0.043635
+        },
+        "rationale": "No dominant specialist regime; use the active calibrated strategy and normal risk gates."
       },
       "execution_risk": {
-        "score": 0.1979,
+        "score": 0.2013,
         "level": "low",
         "components": {
           "blocked_guard": 0.0,
           "business_stale": 0.0,
-          "calendar_stale": 0.2857,
+          "calendar_stale": 0.0,
           "soft_data_warnings": 0.0,
-          "leverage_weight": 0.2632,
-          "total_risk_score": 0.875,
-          "ncf_downside": 0.1141,
-          "ncf_tail_downside": 0.0029,
-          "finbert_sentiment_risk": 0.1227
+          "leverage_weight": 0.6313,
+          "total_risk_score": 0.6,
+          "ncf_downside": 0.0,
+          "ncf_tail_downside": 0.0,
+          "finbert_sentiment_risk": 0.1855
         },
-        "method": "weighted_daily_execution_risk_v1"
+        "method": "weighted_daily_execution_risk_v2"
       },
       "signal_alerts": [
         {
@@ -201,182 +1750,360 @@
           "level": "medium",
           "title": "Total risk score elevated",
           "reason": "Composite market risk score is elevated.",
-          "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-06-26:total_risk_score",
-          "cooldown_minutes": 5
+          "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-15:total_risk_score",
+          "cooldown_minutes": 1200
+        },
+        {
+          "type": "ncf_panel_stale",
+          "level": "medium",
+          "title": "NCF panel stale",
+          "reason": "ncf_panel_631l last covers 2026-07-06, 7 trading day(s) behind signal date 2026-07-15. If this panel is pinned in strategy.json runner_params, the reproducibility guard that invalidates stale holds on panel regeneration is not firing -- confirm whether to refresh the panel.",
+          "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-15:ncf_panel_stale",
+          "cooldown_minutes": 1200
         }
       ],
+      "signal_alignment": {
+        "schema_version": 1,
+        "generated_at": "2026-07-15T13:11:09Z",
+        "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+        "signal_date": "2026-07-15",
+        "alignment": "mixed",
+        "dominant_direction": "bullish",
+        "direction_counts": {
+          "bullish": 4,
+          "bearish": 1,
+          "neutral": 1
+        },
+        "weighted_share": {
+          "bullish": 0.7301,
+          "bearish": 0.2159,
+          "neutral": 0.054
+        },
+        "available_sources": 6,
+        "total_sources": 10,
+        "divergent_sources": [
+          "composite_risk_score"
+        ],
+        "confidence_penalty": 0.1,
+        "leverage_suitability": {
+          "schema_version": 1,
+          "tier": 1,
+          "label_zh": "只適合 0050",
+          "action": "0050_only",
+          "policy": "advisory_only_no_weight_change",
+          "reason": "risk is elevated or TSMC-led breadth is narrow; do not add leverage",
+          "shadow_momentum_candidate": false,
+          "shadow_momentum_note": null,
+          "inputs": {
+            "execution_regime": "golden1",
+            "alignment": "mixed",
+            "dominant_direction": "bullish",
+            "weighted_share": {
+              "bullish": 0.7301,
+              "bearish": 0.2159,
+              "neutral": 0.054
+            },
+            "total_risk_score": 6,
+            "chip_data_stale": false,
+            "tail_risk_score": 0,
+            "ncf_2330_tsmc_state": "unavailable",
+            "ncf_2330_reference_action": null,
+            "ncf_2330_market_state": {},
+            "ncf_00631l_direction": "neutral",
+            "ncf_00631l_prob_up": 0.5,
+            "ncf_00631l_prob_fwd_mdd_gt5_h20": null,
+            "ncf_2330_prob_fwd_mdd_gt5_h20": null,
+            "ncf_2330_prob_fwd_mdd_gt8_h20": null,
+            "ncf_cross_ticker_direction": "neutral",
+            "ncf_2330_factor_quality_signal": null,
+            "ncf_2330_factor_quality_risk_score": null,
+            "ncf_2330_factor_quality_net_score": null
+          },
+          "tier_map": {
+            "0": "不利 00631L",
+            "1": "只適合 0050",
+            "2": "可持有 0050 + 小 00631L",
+            "3": "適合提高 00631L"
+          }
+        },
+        "sources": [
+          {
+            "name": "ncf_00631l",
+            "available": false,
+            "direction": "neutral",
+            "strength": 0.0,
+            "reason": "00631L calibrated_prob_up=0.5000, direction=?"
+          },
+          {
+            "name": "ncf_00632r_inverse",
+            "available": false,
+            "direction": "neutral",
+            "strength": 0.0,
+            "reason": "00632R calibrated_prob_up=0.5000, inverse_direction=neutral"
+          },
+          {
+            "name": "ncf_cross_ticker",
+            "available": false,
+            "direction": "neutral",
+            "strength": 0.0,
+            "reason": "market_probability_up=0.5000, agreement=0.0000"
+          },
+          {
+            "name": "ncf_2330_tsmc",
+            "available": false,
+            "direction": "neutral",
+            "strength": 0.0,
+            "reason": "tsmc_0050_health unavailable: unknown"
+          },
+          {
+            "name": "finbert_sentiment",
+            "available": true,
+            "direction": "bullish",
+            "strength": 0.529,
+            "reason": "finbert_risk_score=0.1855, status=ok"
+          },
+          {
+            "name": "lm_dictionary_sentiment",
+            "available": false,
+            "direction": "neutral",
+            "strength": 0.0,
+            "reason": "lm_status=no_dictionary_hits, risk_score=0.0000, pos=0, neg=0, hits=0",
+            "structural_limitation": "english_only_dictionary_vs_chinese_news_source"
+          },
+          {
+            "name": "composite_risk_score",
+            "available": true,
+            "direction": "bearish",
+            "strength": 0.6,
+            "reason": "total_risk_score=6, chip=4, derivative=2"
+          },
+          {
+            "name": "factor_lens",
+            "available": true,
+            "direction": "bullish",
+            "strength": 0.55,
+            "reason": "all_key_factors_pass=True, ic_20d_warnings=0"
+          },
+          {
+            "name": "tbrain_kdj",
+            "available": true,
+            "direction": "neutral",
+            "strength": 0.15,
+            "reason": "J=0.391, K=0.388, D=0.387 (fast); K_slow=0.547, D_slow=0.606, J_q_low=0.149, J_q_high=1.072"
+          },
+          {
+            "name": "weekly_ma_bull",
+            "available": true,
+            "direction": "bullish",
+            "strength": 0.6,
+            "reason": "weekly MA short=105.89, mid=100.96, long=88.54, bull_aligned=True"
+          },
+          {
+            "name": "execution_regime",
+            "available": true,
+            "direction": "bullish",
+            "strength": 0.35,
+            "reason": "execution_regime=golden1"
+          }
+        ]
+      },
       "finbert_sentiment": {
         "status": "ok",
         "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/sentiment/finbert_market_sentiment_daily.csv",
-        "date": "2026-06-08",
-        "requested_as_of_date": "2026-06-28",
-        "actual_data_date": "2026-06-26",
-        "calendar_stale_days": 20,
-        "actual_calendar_stale_days": 18,
-        "freshness_scale": 0.2143,
-        "finbert_sentiment_score": -0.1356700041109155,
-        "finbert_negative_ratio": 0.4019841840447325,
-        "finbert_positive_ratio": 0.266314179933817,
-        "finbert_neutral_ratio": 0.3317016360214505,
-        "finbert_confidence": 0.606660338770784,
-        "finbert_news_intensity": 4.174387269895637,
-        "raw_risk_score": 0.5728,
-        "risk_score": 0.1227
+        "date": "2026-06-29",
+        "requested_as_of_date": "2026-07-15",
+        "actual_data_date": "2026-07-15",
+        "calendar_stale_days": 16,
+        "actual_calendar_stale_days": 16,
+        "freshness_scale": 0.3571,
+        "finbert_sentiment_score": 0.0774857857375993,
+        "finbert_negative_ratio": 0.2956432863012175,
+        "finbert_positive_ratio": 0.3731290720388168,
+        "finbert_neutral_ratio": 0.3312276416599656,
+        "finbert_confidence": 0.6269229673449117,
+        "finbert_news_intensity": 5.0,
+        "raw_risk_score": 0.5193,
+        "risk_score": 0.1855
+      },
+      "lm_dictionary_sentiment": {
+        "status": "no_dictionary_hits",
+        "reason": "no_positive_or_negative_dictionary_hits",
+        "signal_date": "2026-07-15",
+        "dictionary_dir": "/mnt/c/Users/isaac/Downloads/StocksProject-master/StocksProject-master/SentimentAnalysis",
+        "source": {
+          "status": "available",
+          "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/watchlist_news.json",
+          "article_count": 20,
+          "source": "finmind_stock_news",
+          "signal_date": "2026-07-14"
+        },
+        "active_allocation_impact": "none",
+        "token_count": 39,
+        "positive_count": 0,
+        "negative_count": 0,
+        "uncertainty_count": 0,
+        "litigious_count": 0,
+        "dictionary_hit_count": 0,
+        "sentiment_score": 0.0,
+        "risk_score": 0.0
+      },
+      "tbrain_shadow": {
+        "status": "available",
+        "ticker": "0050.TW",
+        "date": "2026-07-15",
+        "features": {
+          "tbrain_close_ma6_loc": 0.005439,
+          "tbrain_close_ma22_loc": -0.005147,
+          "tbrain_close_ma65_loc": 0.06868,
+          "tbrain_close_ma130_loc": 0.224741,
+          "tbrain_volume_ma22_loc": 0.076593,
+          "tbrain_kdj_k_9_3_3": 0.388024,
+          "tbrain_kdj_d_9_3_3": 0.386636,
+          "tbrain_kdj_j_9_3_3": 0.390801,
+          "tbrain_kdj_k_5_21_11": 0.546968,
+          "tbrain_kdj_d_5_21_11": 0.606248,
+          "tbrain_kdj_j_9_3_3_q_low": 0.14859,
+          "tbrain_kdj_j_9_3_3_q_high": 1.072274
+        },
+        "weekly_ma": {
+          "status": "available",
+          "ma_periods_weeks": [
+            4,
+            13,
+            26
+          ],
+          "ma_short": 105.8875,
+          "ma_mid": 100.9615,
+          "ma_long": 88.5442,
+          "bull_aligned": true,
+          "bear_aligned": false,
+          "weeks_available": 57
+        },
+        "method": "tbrain_multi_kdj_location_shadow_v1"
       },
       "ncf_live_overlay": {
-        "date_00631l": "2026-06-26",
-        "date_00632r": "2026-06-26",
-        "ncf_00631l": {
-          "direction": "DOWN",
-          "calibrated_prob_up": 0.4126,
-          "confidence": 0.6507,
-          "votes_up": 0,
-          "tail_reward_risk_score": 0.439082,
-          "prob_fwd_mdd_gt5_h20": 0.289011,
-          "prob_fwd_gain_gt5_h20": 0.728093
+        "status": "stale",
+        "reason": "ncf_date_mismatch",
+        "actual_data_date": "2026-07-15",
+        "ncf_dates": {
+          "00631L.TW": "2026-07-14",
+          "00632R.TW": "2026-07-14"
         },
-        "ncf_00632r": {
-          "direction": "UP",
-          "calibrated_prob_up": 0.7016,
-          "confidence": 0.5139,
-          "votes_up": 2,
-          "tail_reward_risk_score": 0.011456,
-          "prob_fwd_mdd_gt5_h20": 0.428342,
-          "prob_fwd_gain_gt5_h20": 0.439798
-        },
-        "composite_downside_signal": 0.1141,
-        "directional_downside_signal": 0.1511,
-        "tail_downside_signal": 0.0029,
-        "gated_downside_signal": 0.1141,
-        "composite_upside_signal": 0.0,
-        "dynamic_horizon_00631l": {
-          "probability_up": 0.3667,
-          "direction": "DOWN",
-          "confidence": 0.1735,
-          "weights": {
-            "1": 0.1982,
-            "5": 0.3593,
-            "20": 0.4426
-          },
-          "prior_weights": {
-            "1": 0.1894,
-            "5": 0.3425,
-            "20": 0.4681
-          },
-          "live_weights": {
-            "1": 0.2145,
-            "5": 0.3905,
-            "20": 0.3951
-          },
-          "source": "multi_year_auc_blend"
-        },
-        "dynamic_horizon_00632r": {
-          "probability_up": 0.7571,
-          "direction": "UP",
-          "confidence": 0.2643,
-          "weights": {
-            "1": 0.178,
-            "5": 0.2907,
-            "20": 0.5313
-          },
-          "prior_weights": {
-            "1": 0.218,
-            "5": 0.3152,
-            "20": 0.4668
-          },
-          "live_weights": {
-            "1": 0.1038,
-            "5": 0.2451,
-            "20": 0.6511
-          },
-          "source": "multi_year_auc_blend"
-        },
-        "cross_ticker_consistency": {
-          "market_direction": "DOWN",
-          "market_probability_up": 0.3172,
-          "agreement_score": 0.7524,
-          "conflict_flag": false,
-          "confidence": 0.08,
-          "00631l_probability_up": 0.3667,
-          "00632r_probability_up": 0.7571
-        },
-        "bull_suppression": 0.0,
-        "bull_suppression_applied": false,
-        "ma_gap": 0.18349306944844357,
-        "current_regime": "golden1",
-        "action": "reduce_00631l",
-        "base_golden1_weights": {
-          "0050.TW": 0.6947173955074174,
-          "00631L.TW": 0.1052826044925826,
-          "00632R.TW": 0.0,
-          "00679B.TWO": 0.0,
-          "cash": 0.19999999999999996
-        },
-        "adjusted_golden1_weights": {
-          "0050.TW": 0.6947173955074174,
-          "00631L.TW": 0.09927623190628077,
-          "00632R.TW": 0.0,
-          "00679B.TWO": 0.0,
-          "cash": 0.2060063725863018
-        },
-        "00631l_reduction": 0.006,
-        "status": "applied",
         "files": {
-          "00631L.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260628.json",
-          "00632R.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260628.json"
+          "00631L.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260714.json",
+          "00632R.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260714.json"
         },
-        "a2118_late_bull_hard_overlay_applied": true,
-        "a2118_h20_prob": 0.3081,
-        "a2118_confidence": 0.6507
+        "a2118_extreme_risk_warning": {
+          "active": false,
+          "policy": "warning_only_no_weight_change",
+          "recommended_action": "none",
+          "allow_new_0050_add": true,
+          "allow_new_00631l_add": true,
+          "thresholds": {
+            "h20_prob_up_max": 0.22,
+            "prob_fwd_mdd_gt5_h20_min": 0.85
+          },
+          "inputs": {
+            "signal_current": false,
+            "current_regime": null,
+            "h20_prob_up": 0.4661,
+            "prob_fwd_mdd_gt5_h20": 0.183954,
+            "prob_fwd_gain_gt5_h20": 0.684163,
+            "confidence": 0.0265
+          },
+          "rationale": "Extreme A21.18 NCF warning: H20 probability is very bearish and 20-day drawdown-risk probability is very high. Research-only; do not auto-sell, but pause new 0050/00631L risk adds."
+        }
+      },
+      "factor_lens_gate": {
+        "status": "available",
+        "report_file": "group_a_plus_factor_lens_20260714.json",
+        "report_generated_at": "2026-07-15T00:00:11",
+        "all_key_factors_pass": true,
+        "factors": {
+          "ncf_00631l_prob_up": {
+            "passed": true,
+            "checks": {
+              "recent_ic_1d_positive": true,
+              "recent_ic_5d_positive": true,
+              "spread_5d_positive": true
+            },
+            "ic_20d_warning": false,
+            "ic_20d_recent_mean": 0.4628
+          },
+          "ncf_cross_ticker_market_up": {
+            "passed": true,
+            "checks": {
+              "recent_ic_1d_positive": true,
+              "recent_ic_5d_positive": true,
+              "spread_5d_positive": true
+            },
+            "ic_20d_warning": false,
+            "ic_20d_recent_mean": 0.4603
+          },
+          "ncf_market_probability_up": {
+            "passed": true,
+            "checks": {
+              "recent_ic_1d_positive": true,
+              "recent_ic_5d_positive": true,
+              "spread_5d_positive": true
+            },
+            "ic_20d_warning": false,
+            "ic_20d_recent_mean": 0.4647
+          }
+        }
       },
       "data_freshness": {
-        "price_data_as_of": "2026-06-26",
+        "price_data_as_of": "2026-07-15",
         "ohlcv_by_ticker": {
-          "0050.TW": "2026-06-26",
-          "00631L.TW": "2026-06-26",
-          "00632R.TW": "2026-06-26",
-          "00679B.TWO": "2026-06-26"
+          "0050.TW": "2026-07-15",
+          "00631L.TW": "2026-07-15",
+          "00632R.TW": "2026-07-15",
+          "00679B.TWO": "2026-07-15"
         },
         "latest_prices": {
-          "0050.TW": 103.0999984741211,
-          "00631L.TW": 35.2599983215332,
-          "00632R.TW": 10.449999809265137,
-          "00679B.TWO": 27.440000534057617
+          "0050.TW": 106.30000305175781,
+          "00631L.TW": 37.040000915527344,
+          "00632R.TW": 10.149999618530273,
+          "00679B.TWO": 26.75
         },
         "optional_sources": {
           "institutional_0050": {
             "table": "institutional_data",
             "severity": "hard",
             "exists": true,
-            "latest_date": "2026-06-26",
+            "latest_date": "2026-07-15",
+            "freshness_as_of": "2026-07-15",
             "business_stale_days": 0,
-            "max_business_stale_days": 3,
+            "max_business_stale_days": 0,
             "status": "ok"
           },
           "margin_0050": {
             "table": "margin_data",
             "severity": "hard",
             "exists": true,
-            "latest_date": "2026-06-26",
-            "business_stale_days": 0,
-            "max_business_stale_days": 3,
+            "latest_date": "2026-07-14",
+            "freshness_as_of": "2026-07-15",
+            "business_stale_days": 1,
+            "max_business_stale_days": 1,
             "status": "ok"
           },
           "market_margin": {
             "table": "market_margin_data",
             "severity": "hard",
             "exists": true,
-            "latest_date": "2026-06-26",
-            "business_stale_days": 0,
-            "max_business_stale_days": 3,
+            "latest_date": "2026-07-14",
+            "freshness_as_of": "2026-07-15",
+            "business_stale_days": 1,
+            "max_business_stale_days": 1,
             "status": "ok"
           },
           "tdcc_0050": {
             "table": "shareholding_distribution",
             "severity": "hard",
             "exists": true,
-            "latest_date": "2026-06-18",
-            "business_stale_days": 5,
+            "latest_date": "2026-07-09",
+            "freshness_as_of": "2026-07-15",
+            "business_stale_days": 4,
             "max_business_stale_days": 10,
             "status": "ok"
           },
@@ -384,44 +2111,49 @@
             "table": "foreign_shareholding_data",
             "severity": "hard",
             "exists": true,
-            "latest_date": "2026-06-26",
-            "business_stale_days": 0,
-            "max_business_stale_days": 3,
+            "latest_date": "2026-07-14",
+            "freshness_as_of": "2026-07-15",
+            "business_stale_days": 1,
+            "max_business_stale_days": 1,
             "status": "ok"
           },
           "short_balance_0050": {
             "table": "short_sale_balance_data",
             "severity": "hard",
             "exists": true,
-            "latest_date": "2026-06-26",
-            "business_stale_days": 0,
-            "max_business_stale_days": 3,
+            "latest_date": "2026-07-14",
+            "freshness_as_of": "2026-07-15",
+            "business_stale_days": 1,
+            "max_business_stale_days": 1,
             "status": "ok"
           },
           "securities_lending_0050": {
             "table": "securities_lending_data",
             "severity": "soft",
             "exists": true,
-            "latest_date": "2026-06-26",
-            "business_stale_days": 0,
-            "max_business_stale_days": 3,
+            "latest_date": "2026-07-14",
+            "freshness_as_of": "2026-07-15",
+            "business_stale_days": 1,
+            "max_business_stale_days": 1,
             "status": "ok"
           },
           "day_trading_0050": {
             "table": "day_trading_data",
             "severity": "hard",
             "exists": true,
-            "latest_date": "2026-06-26",
+            "latest_date": "2026-07-15",
+            "freshness_as_of": "2026-07-15",
             "business_stale_days": 0,
-            "max_business_stale_days": 3,
+            "max_business_stale_days": 0,
             "status": "ok"
           },
           "dealer_tx": {
             "table": "dealer_futures_data",
             "severity": "hard",
             "exists": true,
-            "latest_date": "2026-06-24",
-            "business_stale_days": 2,
+            "latest_date": "2026-07-14",
+            "freshness_as_of": "2026-07-15",
+            "business_stale_days": 1,
             "max_business_stale_days": 3,
             "status": "ok"
           },
@@ -429,8 +2161,9 @@
             "table": "dealer_options_data",
             "severity": "hard",
             "exists": true,
-            "latest_date": "2026-06-24",
-            "business_stale_days": 2,
+            "latest_date": "2026-07-14",
+            "freshness_as_of": "2026-07-15",
+            "business_stale_days": 1,
             "max_business_stale_days": 3,
             "status": "ok"
           },
@@ -438,7 +2171,8 @@
             "table": "derivative_institutional_data",
             "severity": "hard",
             "exists": true,
-            "latest_date": "2026-06-25",
+            "latest_date": "2026-07-14",
+            "freshness_as_of": "2026-07-15",
             "business_stale_days": 1,
             "max_business_stale_days": 3,
             "status": "ok"
@@ -447,7 +2181,8 @@
             "table": "derivative_institutional_data",
             "severity": "hard",
             "exists": true,
-            "latest_date": "2026-06-25",
+            "latest_date": "2026-07-14",
+            "freshness_as_of": "2026-07-15",
             "business_stale_days": 1,
             "max_business_stale_days": 3,
             "status": "ok"
@@ -459,10 +2194,10 @@
   },
   "metadata": {
     "script": "group_a_plus.operations.execution_plan",
-    "timestamp": "2026-06-28T17:51:59",
+    "timestamp": "2026-07-15T21:11:12",
     "output_type": "OutputType.DICT",
     "version": "1.0.0",
-    "execution_time_ms": 1626
+    "execution_time_ms": 5538
   },
   "error": null
 }

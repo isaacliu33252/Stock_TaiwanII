@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "report_type": "group_a_plus_shadow_strategy",
+  "activated_at": "2026-07-11",
+  "active_strategy": {
+    "id": "a2129_recovery_00631l_boost_age_guard_aggressive_shadow",
+    "runner": "group_a_plus.runners.a2129",
+    "status": "shadow",
+    "role": "preferred_recovery_boost_shadow",
+    "runner_params": {
+      "recovery_00631l_boost_fraction": 0.15,
+      "recovery_00631l_boost_max_age_days": 20,
+      "ncf_panel_631l_path": "results/ncf_00631l_panel_latest_20260707.csv"
+    },
+    "decision_record": "report/group_a_plus/shadow/recovery_boost_age_guard_scorecard_20260711.json"
+  },
+  "parallel_shadow": {
+    "id": "a2128_recovery_00631l_boost_age_guard_shadow",
+    "runner": "group_a_plus.runners.a2128",
+    "status": "shadow",
+    "role": "conservative_recovery_boost_shadow",
+    "runner_params": {
+      "recovery_00631l_boost_fraction": 0.1,
+      "recovery_00631l_boost_max_age_days": 20,
+      "ncf_panel_631l_path": "results/ncf_00631l_panel_latest_20260707.csv"
+    }
+  },
+  "compatibility": {
+    "production_strategy": "a2118_a2111_ncf_late_bull_deleverage",
+    "production_runner": "group_a_plus.runners.a2118",
+    "production_manifest": "report/group_a_plus/latest/strategy.json",
+    "note": "Shadow-only manifest. It must not be used for automatic production execution."
+  }
+}

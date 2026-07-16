@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "report_type": "a2120_variant_comparison",
+  "generated_at": "2026-07-15T16:24:06+00:00",
+  "research_only": true,
+  "production_effect": "none",
+  "main_candidate": "score3_ar0_persist50_rev50_trend100",
+  "variant_candidate": "score3_ar0_persist50_rev50_trend100_ce20_negative_to_trend90",
+  "decision": {
+    "main_candidate": "keep_as_primary_shadow_candidate",
+    "variant_candidate": "keep_as_risk_sensitive_shadow_variant",
+    "production": "do_not_promote",
+    "reason": "CE20 weak-edge variant remains 7/7 positive under event and 20 bps stress, but gives up final-value upside versus the main candidate."
+  },
+  "summary": {
+    "main_7win_delta_final_value_sum": 27106.570555398706,
+    "variant_7win_delta_final_value_sum": 24501.948538091034,
+    "variant_minus_main_7win_delta_final_value_sum": -2604.6220173076726,
+    "main_7win_positive_windows": 7,
+    "variant_7win_positive_windows": 7,
+    "main_cost20_delta_final_value_sum": 25359.94387167727,
+    "variant_cost20_delta_final_value_sum": 22965.918527487782,
+    "variant_minus_main_cost20_delta_final_value_sum": -2394.0253441894893,
+    "main_cost20_positive_windows": 7,
+    "variant_cost20_positive_windows": 7
+  },
+  "cost20_windows": [
+    {
+      "label": "covid_2020",
+      "main_delta_final_value": 3130.9654301330447,
+      "variant_delta_final_value": 3102.0915835609194,
+      "variant_minus_main_final_value": -28.87384657212533,
+      "main_delta_max_drawdown": -3.245114746819322e-05,
+      "variant_delta_max_drawdown": -3.245114746819322e-05,
+      "variant_minus_main_max_drawdown": 0.0,
+      "variant_event_days": 48
+    },
+    {
+      "label": "inflation_2022",
+      "main_delta_final_value": 3242.9361142053967,
+      "variant_delta_final_value": 3021.4757983509917,
+      "variant_minus_main_final_value": -221.46031585440505,
+      "main_delta_max_drawdown": 1.3866500309211993e-05,
+      "variant_delta_max_drawdown": 1.3866500309211993e-05,
+      "variant_minus_main_max_drawdown": 0.0,
+      "variant_event_days": 21
+    },
+    {
+      "label": "live_2024_2026",
+      "main_delta_final_value": 12654.818549224176,
+      "variant_delta_final_value": 11457.382423171308,
+      "variant_minus_main_final_value": -1197.4361260528676,
+      "main_delta_max_drawdown": 0.00045396561444377426,
+      "variant_delta_max_drawdown": 0.0004715332974902786,
+      "variant_minus_main_max_drawdown": 1.7567683046504357e-05,
+      "variant_event_days": 170
+    },
+    {
+      "label": "active_2025_2026",
+      "main_delta_final_value": 5681.72969421139,
+      "variant_delta_final_value": 4755.270076160552,
+      "variant_minus_main_final_value": -926.4596180508379,
+      "main_delta_max_drawdown": 2.7239081994423486e-06,
+      "variant_delta_max_drawdown": 2.7239081994423486e-06,
+      "variant_minus_main_max_drawdown": 0.0,
+      "variant_event_days": 109
+    },
+    {
+      "label": "2017_bull",
+      "main_delta_final_value": 230.20720696030185,
+      "variant_delta_final_value": 226.66968021634966,
+      "variant_minus_main_final_value": -3.537526743952185,
+      "main_delta_max_drawdown": -1.7958687480112978e-05,
+      "variant_delta_max_drawdown": -1.7871199201602295e-05,
+      "variant_minus_main_max_drawdown": 8.748827851068341e-08,
+      "variant_event_days": 82
+    },
+    {
+      "label": "2018_correction",
+      "main_delta_final_value": 342.1090375361964,
+      "variant_delta_final_value": 335.8123245694442,
+      "variant_minus_main_final_value": -6.296712966752239,
+      "main_delta_max_drawdown": 0.00021014914355810266,
+      "variant_delta_max_drawdown": 0.00021113675736139648,
+      "variant_minus_main_max_drawdown": 9.876138032938186e-07,
+      "variant_event_days": 76
+    },
+    {
+      "label": "2019_recovery",
+      "main_delta_final_value": 77.177839406766,
+      "variant_delta_final_value": 67.21664145821705,
+      "variant_minus_main_final_value": -9.961197948548943,
+      "main_delta_max_drawdown": 3.284682988047294e-05,
+      "variant_delta_max_drawdown": 2.810455431956349e-05,
+      "variant_minus_main_max_drawdown": -4.742275560909448e-06,
+      "variant_event_days": 67
+    }
+  ]
+}

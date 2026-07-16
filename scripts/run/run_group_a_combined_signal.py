@@ -15,7 +15,7 @@ from datetime import date
 from pathlib import Path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_NAME = "latest_group_a_improved_0050_step0300bp_stepgate105_ma60_brake30_631l0_tdcc18"
 RELEASE_HANDOFF = PROJECT_ROOT / "GROUP_A_GOLDEN1_0531_RELEASE.md"
 DEFAULT_TDCC_CONFIG = PROJECT_ROOT / "group_a_tdcc_improved_config_destination_primary.json"
@@ -256,6 +256,9 @@ def _apply_tdcc_overlay_to_signal(signal: dict[str, object], args: argparse.Name
         signal["tdcc_overlay"] = {"enabled": False, "reason": "disabled"}
         return signal
 
+    scripts_misc_dir = str(PROJECT_ROOT / "scripts" / "misc")
+    if scripts_misc_dir not in sys.path:
+        sys.path.insert(0, scripts_misc_dir)
     from run_group_a_tdcc_improved_signal import _build_tdcc_assessment, apply_tdcc_overlay
 
     config_path = Path(args.group_a_tdcc_config)

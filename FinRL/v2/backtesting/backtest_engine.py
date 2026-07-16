@@ -297,14 +297,15 @@ class BacktestEngine:
                 self.avg_cost = 0
 
         elif action == 'stop_loss':
-            # 停損：賣出全部持股，不計交易稅（符合台股規則：虧損時免稅）
+            # 停損：賣出全部持股
+            # 注意：台灣股票交易稅（0.3%）適用於所有賣出交易，無論盈虧
             if self.position > 0:
                 shares = -self.position
                 turnover = abs(shares) * price
                 commission = turnover * self.config.brokerage_fee_rate
-                # 停損不計交易稅（虧損減免）
+                tax = turnover * self.config.transaction_tax_rate  # 交易稅需計入（台股規則）
 
-                self.cash += (turnover - commission)
+                self.cash += (turnover - commission - tax)
                 self.position = 0
                 self.avg_cost = 0
 

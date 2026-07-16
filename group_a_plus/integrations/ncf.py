@@ -76,7 +76,8 @@ def load_ncf_signal(path: Path) -> dict[str, Any]:
 
     Returns a dict with:
       ticker, date, direction, calibrated_prob_up, confidence, weighted_return,
-      tail_reward_risk_score, prob_fwd_mdd_gt5_h20, prob_fwd_gain_gt5_h20
+      tail_reward_risk_score, prob_fwd_mdd_gt5_h20, prob_fwd_mdd_gt8_h20,
+      prob_fwd_gain_gt5_h20, tsmc_market_state
     """
     payload = json.loads(path.read_text(encoding="utf-8"))
     ensemble = payload["horizon_ensemble"]
@@ -97,6 +98,7 @@ def load_ncf_signal(path: Path) -> dict[str, Any]:
     }
 
     fwd_mdd = payload.get("forward_drawdown_risk") or {}
+    fwd_severe_mdd = payload.get("forward_severe_drawdown_risk") or {}
     fwd_gain = payload.get("forward_upside_reward") or {}
 
     _gate = direction_magnitude_gate(
@@ -143,9 +145,44 @@ def load_ncf_signal(path: Path) -> dict[str, Any]:
         "prob_fwd_mdd_gt5_h20": (
             float(fwd_mdd["probability"]) if fwd_mdd.get("available") else None
         ),
+        "prob_fwd_mdd_gt8_h20": (
+            float(fwd_severe_mdd["probability"]) if fwd_severe_mdd.get("available") else None
+        ),
         "prob_fwd_gain_gt5_h20": (
             float(fwd_gain["probability"]) if fwd_gain.get("available") else None
         ),
+        "tsmc_market_state": payload.get("tsmc_market_state"),
+    }
+
+
+def load_ncf_2330_checklist(path: Path) -> dict[str, Any]:
+    """Load the diagnostic ncf_2330 checklist report.
+
+    The checklist is intentionally separate from the NCF model JSON. It carries
+    fundamental/valuation/technical/ADR/FX/chip diagnostics plus the
+    research-only factor-quality overlay.
+    """
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("report") != "ncf_2330_checklist":
+        raise ValueError(f"not an ncf_2330_checklist report: {path}")
+    overlay = payload.get("factor_quality_overlay") or {}
+    return {
+        "report": payload.get("report"),
+        "mode": payload.get("mode"),
+        "as_of": payload.get("as_of"),
+        "generated_at": payload.get("generated_at"),
+        "overall_signal": payload.get("overall_signal"),
+        "available_layer_score": payload.get("available_layer_score"),
+        "available_layer_count": payload.get("available_layer_count"),
+        "factor_quality_overlay": overlay,
+        "factor_quality_signal": overlay.get("signal"),
+        "factor_quality_label": overlay.get("label"),
+        "factor_quality_risk_score": overlay.get("risk_score"),
+        "factor_quality_opportunity_score": overlay.get("opportunity_score"),
+        "factor_quality_net_score": overlay.get("net_score"),
+        "layers": payload.get("layers") or {},
+        "policy": payload.get("policy"),
+        "source": str(path),
     }
 
 
@@ -299,7 +336,15 @@ def ncf_downside_signal(
     raw = directional
     if include_tail_risk and ncf_has_tail_downside_inputs(ncf_00631l, ncf_00632r):
         tail = ncf_tail_downside_signal(ncf_00631l, ncf_00632r)
-        raw = float(min(max(0.75 * directional + 0.25 * tail, 0.0), 1.0))
+        if l_conflict and r_conflict:
+            # Both models' direction/return heads disagree internally, so
+            # `directional` is guaranteed 0 and carries no information for
+            # today. Diluting tail to its usual 25% blend weight would throw
+            # away the only signal actually available; use it at full weight
+            # instead of the standard 0.75/0.25 blend.
+            raw = tail
+        else:
+            raw = float(min(max(0.75 * directional + 0.25 * tail, 0.0), 1.0))
 
     if ma_gap is not None and ma_gap > ma_gap_bull_threshold:
         suppression = min(1.0, (ma_gap - ma_gap_bull_threshold) / ma_gap_bull_threshold)
@@ -356,14 +401,71 @@ def ncf_tail_downside_signal(
     return float(min(max(sum(components) / len(components), 0.0), 1.0))
 
 
+def ncf_has_tail_upside_inputs(
+    ncf_00631l: dict[str, Any],
+    ncf_00632r: dict[str, Any],
+) -> bool:
+    return any(
+        signal.get(key) is not None
+        for signal, key in (
+            (ncf_00631l, "prob_fwd_gain_gt5_h20"),
+            (ncf_00631l, "tail_reward_risk_score"),
+            (ncf_00632r, "prob_fwd_mdd_gt5_h20"),
+            (ncf_00632r, "tail_reward_risk_score"),
+        )
+    )
+
+
+def ncf_tail_upside_signal(
+    ncf_00631l: dict[str, Any],
+    ncf_00632r: dict[str, Any],
+) -> float:
+    """Compute auxiliary upside opportunity from NCF tail/drawdown heads.
+
+    Mirror image of ncf_tail_downside_signal: high forward gain probability
+    for 00631L, high forward drawdown probability for 00632R (the inverse
+    ETF dropping implies the market rising), and tail_reward_risk_score
+    signed the opposite way per ticker from the downside version.
+    """
+    components: list[float] = []
+
+    gain_631l = ncf_00631l.get("prob_fwd_gain_gt5_h20")
+    if gain_631l is not None:
+        components.append(max(0.0, float(gain_631l) - 0.5) * 2.0)
+
+    mdd_632r = ncf_00632r.get("prob_fwd_mdd_gt5_h20")
+    if mdd_632r is not None:
+        components.append(max(0.0, float(mdd_632r) - 0.5) * 2.0)
+
+    tail_631l = ncf_00631l.get("tail_reward_risk_score")
+    if tail_631l is not None:
+        components.append(max(0.0, float(tail_631l)))
+
+    tail_632r = ncf_00632r.get("tail_reward_risk_score")
+    if tail_632r is not None:
+        components.append(max(0.0, -float(tail_632r)))
+
+    if not components:
+        return 0.0
+    return float(min(max(sum(components) / len(components), 0.0), 1.0))
+
+
 def ncf_upside_signal(
     ncf_00631l: dict[str, Any],
     ncf_00632r: dict[str, Any],
+    *,
+    include_tail_risk: bool = True,
 ) -> float:
     """Compute composite upside signal in [0.0, 1.0].
 
     High value means both NCF models agree the market is heading up:
       00631L (bull) expected to rise  AND  00632R (inverse) expected to fall.
+
+    Mirrors ncf_downside_signal's structure, including the both-conflict
+    fallback (2026-07-11): when both tickers' direction/return heads
+    disagree internally, `directional` is guaranteed 0, so the composite
+    falls back fully to the tail-upside component instead of diluting it to
+    a 25% blend weight.
     """
     l_prob = ncf_00631l["calibrated_prob_up"]
     l_conf = ncf_00631l["confidence"]
@@ -375,8 +477,16 @@ def ncf_upside_signal(
     r_conflict = bool(ncf_00632r.get("direction_conflict", False))
     r_bear = 0.0 if r_conflict else max(0.0, (0.5 - r_prob)) * 2.0 * r_conf
 
-    combined = 0.6 * l_bull + 0.4 * r_bear
-    return float(min(max(combined, 0.0), 1.0))
+    directional = float(min(max(0.6 * l_bull + 0.4 * r_bear, 0.0), 1.0))
+    raw = directional
+    if include_tail_risk and ncf_has_tail_upside_inputs(ncf_00631l, ncf_00632r):
+        tail = ncf_tail_upside_signal(ncf_00631l, ncf_00632r)
+        if l_conflict and r_conflict:
+            raw = tail
+        else:
+            raw = float(min(max(0.75 * directional + 0.25 * tail, 0.0), 1.0))
+
+    return raw
 
 
 def ncf_regime_gated_signal(
@@ -398,6 +508,8 @@ def ncf_regime_gated_signal(
     Returns:
         raw_downside_signal:    unfiltered downside signal [0, 1]
         raw_upside_signal:      unfiltered upside signal [0, 1]
+        directional_upside_signal: upside signal without the tail component [0, 1]
+        tail_upside_signal:     upside signal's tail-only component [0, 1]
         gated_downside_signal:  downside after regime suppression [0, 1]
         ma_gap:                 passed-in ma_gap value (may be None)
         bull_suppression:       fraction suppressed due to strong bull trend [0, 1]
@@ -408,6 +520,8 @@ def ncf_regime_gated_signal(
     directional_down = ncf_downside_signal(ncf_00631l, ncf_00632r, include_tail_risk=False)
     tail_down = ncf_tail_downside_signal(ncf_00631l, ncf_00632r)
     raw_down = ncf_downside_signal(ncf_00631l, ncf_00632r)
+    directional_up = ncf_upside_signal(ncf_00631l, ncf_00632r, include_tail_risk=False)
+    tail_up = ncf_tail_upside_signal(ncf_00631l, ncf_00632r)
     raw_up = ncf_upside_signal(ncf_00631l, ncf_00632r)
 
     suppression = 0.0
@@ -421,6 +535,8 @@ def ncf_regime_gated_signal(
         "directional_downside_signal": round(directional_down, 4),
         "tail_downside_signal": round(tail_down, 4),
         "raw_upside_signal": round(raw_up, 4),
+        "directional_upside_signal": round(directional_up, 4),
+        "tail_upside_signal": round(tail_up, 4),
         "gated_downside_signal": gated_down,
         "ma_gap": ma_gap,
         "bull_suppression": round(suppression, 4),
@@ -506,6 +622,7 @@ def ncf_overlay_summary(
             "direction": ncf_00631l["direction"],
             "calibrated_prob_up": ncf_00631l["calibrated_prob_up"],
             "confidence": ncf_00631l["confidence"],
+            "confidence_panel_aligned": ncf_00631l.get("confidence_panel_aligned"),
             "votes_up": ncf_00631l["votes_up"],
             "tail_reward_risk_score": ncf_00631l.get("tail_reward_risk_score"),
             "prob_fwd_mdd_gt5_h20": ncf_00631l.get("prob_fwd_mdd_gt5_h20"),
@@ -517,6 +634,7 @@ def ncf_overlay_summary(
             "direction": ncf_00632r["direction"],
             "calibrated_prob_up": ncf_00632r["calibrated_prob_up"],
             "confidence": ncf_00632r["confidence"],
+            "confidence_panel_aligned": ncf_00632r.get("confidence_panel_aligned"),
             "votes_up": ncf_00632r["votes_up"],
             "tail_reward_risk_score": ncf_00632r.get("tail_reward_risk_score"),
             "prob_fwd_mdd_gt5_h20": ncf_00632r.get("prob_fwd_mdd_gt5_h20"),
@@ -529,6 +647,8 @@ def ncf_overlay_summary(
         "tail_downside_signal": gated["tail_downside_signal"],
         "gated_downside_signal": round(down, 4),
         "composite_upside_signal": round(up, 4),
+        "directional_upside_signal": gated["directional_upside_signal"],
+        "tail_upside_signal": gated["tail_upside_signal"],
         "dynamic_horizon_00631l": dynamic_631l,
         "dynamic_horizon_00632r": dynamic_632r,
         "cross_ticker_consistency": cross_ticker,

@@ -17,7 +17,7 @@ def test_strategy_env_health_reports_ok_when_required_artifacts_exist(tmp_path: 
     for rel_path in (
         "report/group_a_plus/latest/strategy.json",
         "report/group_a_plus/latest/live_signal.json",
-        "results/ncf_00631l_20260630.json",
+        "results/ncf_00631l_latest_20260630.json",
         "results/ncf_00631l_panel_latest_20260630.csv",
         "config/group_a_plus_watchlist.json",
         ".venv/bin/python",
@@ -30,6 +30,35 @@ def test_strategy_env_health_reports_ok_when_required_artifacts_exist(tmp_path: 
     assert report["status"] in {"ok", "warning"}
     assert report["missing_files"] == []
     assert report["bad_dirs"] == []
+
+
+def test_strategy_env_health_tracks_panel_path_from_strategy_json(tmp_path: Path) -> None:
+    """Fable audit (2026-07-08, #4): the ncf panel/json checks must follow
+    strategy.json's active_strategy.runner_params.ncf_panel_631l_path instead
+    of a fixed filename."""
+    for rel_path in (
+        "report/group_a_plus/latest/live_signal.json",
+        "results/ncf_00631l_latest_20260707.json",
+        "results/ncf_00631l_panel_latest_20260707.csv",
+        "config/group_a_plus_watchlist.json",
+        ".venv/bin/python",
+    ):
+        _touch(tmp_path / rel_path)
+    (tmp_path / "news").mkdir(parents=True)
+    strategy_path = tmp_path / "report/group_a_plus/latest/strategy.json"
+    strategy_path.parent.mkdir(parents=True, exist_ok=True)
+    strategy_path.write_text(
+        '{"active_strategy": {"runner_params": {"ncf_panel_631l_path": '
+        '"results/ncf_00631l_panel_latest_20260707.csv"}}}',
+        encoding="utf-8",
+    )
+
+    report = build_strategy_env_health(tmp_path)
+
+    assert report["missing_files"] == []
+    labels = {item["label"]: item for item in report["files"]}
+    assert labels["ncf_panel_00631l"]["path"].endswith("results/ncf_00631l_panel_latest_20260707.csv")
+    assert labels["ncf_00631l"]["path"].endswith("results/ncf_00631l_latest_20260707.json")
 
 
 def test_strategy_env_health_reports_missing_required_files(tmp_path: Path) -> None:

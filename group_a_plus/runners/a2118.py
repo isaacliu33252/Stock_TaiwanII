@@ -51,6 +51,7 @@ from __future__ import annotations
 import argparse
 import glob
 import hashlib
+from dataclasses import replace
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -108,6 +109,26 @@ NCF_LB_CONF_MIN = 0.55      # model confidence > 55%
 
 NCF_LB_REGIME = "ncf_late_bull_hedge"
 NCF_LB_SOFT_REGIME = "ncf_late_bull_hedge_soft"
+GOLDEN_TAIL_TRIM_REGIME = "golden1_tail_risk_trim"
+GOLDEN_FOLLOW_THROUGH_TRIM_REGIME = "golden1_follow_through_trim"
+GOLDEN_REBOUND_RECAPTURE_REGIME = "golden1_rebound_recapture"
+GOLDEN_LEVERAGE_CAP_REGIME = "golden1_leverage_cap"
+RECOVERY_00631L_BOOST_REGIME = "group_a_plus_recovery_00631l_boost"
+CHIP_DATA_FALLBACK_MAX_STALE_DAYS = 10
+
+# 2020 V-shaped-crash switch-rule fix (2026-07-06). See
+# GROUP_A_PLUS_2020_COVID_SWITCH_RULE_FIX_HANDOFF_20260706.md for the full
+# derivation and validation (multi-window gate 6/6 pass, promotion_ready).
+# Entry-side: total_risk_score and price/drawdown crossed their thresholds on
+# different days during the 2020 crash (total_risk_score peaked 2020-03-06,
+# drawdown didn't clear -11% until 2020-03-09) -- a rolling lookback fixes
+# the misalignment. Exit-side: exit_momentum recovered three weeks before
+# ma_gap during the March-April 2020 rebound; a guarded fast-exit path
+# (momentum burst + ma_gap not too deep below trend) releases exposure
+# without also firing on 2008-11-03's larger-magnitude dead-cat bounce.
+RISK_SCORE_LOOKBACK_DAYS = 5
+MOMENTUM_FAST_EXIT_MIN = 0.10
+MOMENTUM_FAST_EXIT_MA_GAP_MIN = -0.08
 
 
 def _late_bull_hedge_weights(golden_weights: dict[str, float], intensity: float = 1.0) -> dict[str, float]:
@@ -117,6 +138,349 @@ def _late_bull_hedge_weights(golden_weights: dict[str, float], intensity: float 
     weights["00631L.TW"] = float(weights.get("00631L.TW", 0.0)) - shift
     weights["0050.TW"] = float(weights.get("0050.TW", 0.0)) + shift
     return _normalize(weights)
+
+
+def _golden_tail_trim_weights(golden_weights: dict[str, float], trim_fraction: float = 0.5) -> dict[str, float]:
+    weights = dict(golden_weights)
+    trim_fraction = min(max(float(trim_fraction), 0.0), 1.0)
+    shift = float(weights.get("00631L.TW", 0.0)) * trim_fraction
+    weights["00631L.TW"] = float(weights.get("00631L.TW", 0.0)) - shift
+    weights["0050.TW"] = float(weights.get("0050.TW", 0.0)) + shift
+    return _normalize(weights)
+
+
+def _golden_rebound_recapture_weights(golden_weights: dict[str, float], boost_fraction: float = 0.25) -> dict[str, float]:
+    weights = dict(golden_weights)
+    boost_fraction = min(max(float(boost_fraction), 0.0), 1.0)
+    shift = float(weights.get("0050.TW", 0.0)) * boost_fraction
+    weights["0050.TW"] = float(weights.get("0050.TW", 0.0)) - shift
+    weights["00631L.TW"] = float(weights.get("00631L.TW", 0.0)) + shift
+    return _normalize(weights)
+
+
+def _recovery_boost_weights(recovery_weights: dict[str, float], boost_fraction: float = 0.0) -> dict[str, float]:
+    weights = dict(recovery_weights)
+    boost_fraction = min(max(float(boost_fraction), 0.0), 1.0)
+    shift = float(weights.get("0050.TW", 0.0)) * boost_fraction
+    weights["0050.TW"] = float(weights.get("0050.TW", 0.0)) - shift
+    weights["00631L.TW"] = float(weights.get("00631L.TW", 0.0)) + shift
+    return _normalize(weights)
+
+
+def _apply_recovery_boost_age_guard(
+    execution_regime: pd.Series,
+    *,
+    max_age_days: int,
+    boosted_regime: str = RECOVERY_00631L_BOOST_REGIME,
+) -> tuple[pd.Series, dict]:
+    modified = execution_regime.copy()
+    age = 0
+    events: list[dict] = []
+    boosted_days = 0
+    recovery_days = 0
+    max_age_days = max(int(max_age_days), 0)
+
+    for dt, state in execution_regime.astype(str).items():
+        if state != "group_a_plus_recovery":
+            age = 0
+            continue
+        age += 1
+        recovery_days += 1
+        if age <= max_age_days:
+            modified.loc[dt] = boosted_regime
+            boosted_days += 1
+            if age == 1:
+                events.append({"date": str(pd.Timestamp(dt).date()), "recovery_age": age})
+
+    return modified, {
+        "recovery_00631l_boost_regime": boosted_regime,
+        "recovery_00631l_boost_max_age_days": max_age_days,
+        "recovery_00631l_boost_recovery_days": recovery_days,
+        "recovery_00631l_boost_days": boosted_days,
+        "recovery_00631l_boost_events": events,
+    }
+
+
+def _golden_leverage_cap_weights(golden_weights: dict[str, float], max_00631l_weight: float = 0.15) -> dict[str, float]:
+    weights = dict(golden_weights)
+    current = float(weights.get("00631L.TW", 0.0))
+    cap = min(max(float(max_00631l_weight), 0.0), current)
+    shift = max(current - cap, 0.0)
+    weights["00631L.TW"] = current - shift
+    weights["0050.TW"] = float(weights.get("0050.TW", 0.0)) + shift
+    return _normalize(weights)
+
+
+def _apply_golden_tail_trim_overlay(
+    execution_regime: pd.Series,
+    frame: pd.DataFrame,
+    tail_risk_score_min: int = 2,
+    drawdown_max: float = -0.08,
+    return_var_breach: bool = True,
+    exit_momentum_max: float | None = None,
+) -> tuple[pd.Series, dict]:
+    """Trim leverage inside golden1 during acute, already-observable stress.
+
+    This is intentionally regime-local: it does not force a defensive state and
+    does not change recovery logic. It only maps stressed golden1 days to a
+    reduced-leverage golden1 basket so _simulate_costed_curve can charge costs
+    through the normal share-tracking path.
+    """
+    required = {"tail_risk_score", "drawdown", "return_0050_1d", "hist_var_0050_20d_5pct"}
+    missing = sorted(required - set(frame.columns))
+    if missing:
+        return execution_regime.copy(), {
+            "golden_tail_trim_days": 0,
+            "golden_tail_trim_events": [],
+            "skipped_reason": "missing_required_frame_columns",
+            "missing_columns": missing,
+        }
+
+    modified = execution_regime.copy()
+    events: list[dict] = []
+    for dt in execution_regime.index:
+        if str(execution_regime.loc[dt]) != "golden1" or dt not in frame.index:
+            continue
+        row = frame.loc[dt]
+        tail_score = int(row.get("tail_risk_score", 0))
+        if tail_score < int(tail_risk_score_min):
+            continue
+        drawdown = float(row.get("drawdown", 0.0))
+        ret_1d = float(row.get("return_0050_1d", 0.0))
+        hist_var = float(row.get("hist_var_0050_20d_5pct", -1.0))
+        exit_momentum = float(row.get("exit_momentum", 0.0))
+        drawdown_trigger = drawdown <= float(drawdown_max)
+        var_trigger = bool(return_var_breach and ret_1d <= hist_var)
+        momentum_trigger = exit_momentum_max is not None and exit_momentum <= float(exit_momentum_max)
+        if not (drawdown_trigger or var_trigger or momentum_trigger):
+            continue
+
+        modified.loc[dt] = GOLDEN_TAIL_TRIM_REGIME
+        events.append({
+            "date": str(dt.date()),
+            "tail_risk_score": tail_score,
+            "drawdown": round(drawdown, 4),
+            "return_0050_1d": round(ret_1d, 4),
+            "hist_var_0050_20d_5pct": round(hist_var, 4),
+            "exit_momentum": round(exit_momentum, 4),
+            "trigger": {
+                "drawdown": drawdown_trigger,
+                "var_breach": var_trigger,
+                "exit_momentum": momentum_trigger,
+            },
+        })
+
+    return modified, {
+        "golden_tail_trim_days": len(events),
+        "golden_tail_trim_events": events,
+    }
+
+
+def _apply_golden_follow_through_trim_overlay(
+    execution_regime: pd.Series,
+    frame: pd.DataFrame,
+    previous_return_max: float = -0.03,
+    previous_return_floor: float | None = None,
+    previous_tail_risk_score_min: int = 2,
+    previous_drawdown_max: float = -0.08,
+    hold_days: int = 1,
+) -> tuple[pd.Series, dict]:
+    """Trim golden1 after a prior-day shock, using only prior close data."""
+    required = {"tail_risk_score", "drawdown", "return_0050_1d", "hist_var_0050_20d_5pct"}
+    missing = sorted(required - set(frame.columns))
+    if missing:
+        return execution_regime.copy(), {
+            "golden_follow_through_trim_days": 0,
+            "golden_follow_through_trim_events": [],
+            "skipped_reason": "missing_required_frame_columns",
+            "missing_columns": missing,
+        }
+
+    modified = execution_regime.copy()
+    events: list[dict] = []
+    trim_until_position = -1
+    index = list(execution_regime.index)
+    hold_days = max(int(hold_days), 1)
+
+    for pos, dt in enumerate(index):
+        if str(execution_regime.loc[dt]) != "golden1" or dt not in frame.index:
+            continue
+
+        active_from_prior = pos <= trim_until_position
+        triggered_today = False
+        previous_date: pd.Timestamp | None = None
+        if pos > 0:
+            previous_date = pd.Timestamp(index[pos - 1])
+            if previous_date in frame.index:
+                prev = frame.loc[previous_date]
+                prev_return = float(prev.get("return_0050_1d", 0.0))
+                prev_hist_var = float(prev.get("hist_var_0050_20d_5pct", -1.0))
+                prev_tail_score = int(prev.get("tail_risk_score", 0))
+                prev_drawdown = float(prev.get("drawdown", 0.0))
+                not_capitulation = previous_return_floor is None or prev_return >= float(previous_return_floor)
+                shock_trigger = not_capitulation and (
+                    prev_return <= float(previous_return_max) or prev_return <= prev_hist_var
+                )
+                risk_trigger = (
+                    prev_tail_score >= int(previous_tail_risk_score_min)
+                    and prev_drawdown <= float(previous_drawdown_max)
+                )
+                triggered_today = bool(shock_trigger and risk_trigger)
+                if triggered_today:
+                    trim_until_position = max(trim_until_position, pos + hold_days - 1)
+
+        if not (active_from_prior or triggered_today or pos <= trim_until_position):
+            continue
+
+        modified.loc[dt] = GOLDEN_FOLLOW_THROUGH_TRIM_REGIME
+        event: dict = {
+            "date": str(dt.date()),
+            "source_date": str(previous_date.date()) if previous_date is not None else None,
+            "hold_days": hold_days,
+            "triggered_today": triggered_today,
+        }
+        if previous_date is not None and previous_date in frame.index:
+            prev = frame.loc[previous_date]
+            event.update({
+                "previous_return_0050_1d": round(float(prev.get("return_0050_1d", 0.0)), 4),
+                "previous_hist_var_0050_20d_5pct": round(float(prev.get("hist_var_0050_20d_5pct", -1.0)), 4),
+                "previous_tail_risk_score": int(prev.get("tail_risk_score", 0)),
+                "previous_drawdown": round(float(prev.get("drawdown", 0.0)), 4),
+            })
+        events.append(event)
+
+    return modified, {
+        "golden_follow_through_trim_days": len(events),
+        "golden_follow_through_trim_events": events,
+    }
+
+
+def _apply_golden_rebound_recapture_overlay(
+    execution_regime: pd.Series,
+    frame: pd.DataFrame,
+    previous_return_min: float = 0.03,
+    previous_drawdown_max: float = -0.08,
+    lookback_days: int = 3,
+    hold_days: int = 1,
+    shock_tail_risk_score_min: int = 2,
+    shock_return_max: float = -0.03,
+) -> tuple[pd.Series, dict]:
+    """Briefly boost 00631L after a rebound confirms shock stabilization."""
+    required = {"tail_risk_score", "drawdown", "return_0050_1d"}
+    missing = sorted(required - set(frame.columns))
+    if missing:
+        return execution_regime.copy(), {
+            "golden_rebound_recapture_days": 0,
+            "golden_rebound_recapture_events": [],
+            "skipped_reason": "missing_required_frame_columns",
+            "missing_columns": missing,
+        }
+
+    modified = execution_regime.copy()
+    index = list(execution_regime.index)
+    events: list[dict] = []
+    recapture_until_position = -1
+    lookback_days = max(int(lookback_days), 1)
+    hold_days = max(int(hold_days), 1)
+
+    for pos, dt in enumerate(index):
+        if str(execution_regime.loc[dt]) != "golden1" or dt not in frame.index:
+            continue
+
+        active_from_prior = pos <= recapture_until_position
+        triggered_today = False
+        previous_date: pd.Timestamp | None = None
+        recent_shock_date: pd.Timestamp | None = None
+        if pos > 0:
+            previous_date = pd.Timestamp(index[pos - 1])
+            if previous_date in frame.index:
+                prev = frame.loc[previous_date]
+                rebound_ok = (
+                    float(prev.get("return_0050_1d", 0.0)) >= float(previous_return_min)
+                    and float(prev.get("drawdown", 0.0)) <= float(previous_drawdown_max)
+                )
+                lookback_start = max(0, pos - lookback_days - 1)
+                for shock_pos in range(pos - 2, lookback_start - 1, -1):
+                    shock_dt = pd.Timestamp(index[shock_pos])
+                    if shock_dt not in frame.index:
+                        continue
+                    shock = frame.loc[shock_dt]
+                    if (
+                        int(shock.get("tail_risk_score", 0)) >= int(shock_tail_risk_score_min)
+                        and float(shock.get("return_0050_1d", 0.0)) <= float(shock_return_max)
+                    ):
+                        recent_shock_date = shock_dt
+                        break
+                triggered_today = bool(rebound_ok and recent_shock_date is not None)
+                if triggered_today:
+                    recapture_until_position = max(recapture_until_position, pos + hold_days - 1)
+
+        if not (active_from_prior or triggered_today or pos <= recapture_until_position):
+            continue
+
+        modified.loc[dt] = GOLDEN_REBOUND_RECAPTURE_REGIME
+        event: dict = {
+            "date": str(dt.date()),
+            "source_date": str(previous_date.date()) if previous_date is not None else None,
+            "recent_shock_date": str(recent_shock_date.date()) if recent_shock_date is not None else None,
+            "hold_days": hold_days,
+            "triggered_today": triggered_today,
+        }
+        if previous_date is not None and previous_date in frame.index:
+            prev = frame.loc[previous_date]
+            event.update({
+                "previous_return_0050_1d": round(float(prev.get("return_0050_1d", 0.0)), 4),
+                "previous_drawdown": round(float(prev.get("drawdown", 0.0)), 4),
+                "previous_tail_risk_score": int(prev.get("tail_risk_score", 0)),
+            })
+        events.append(event)
+
+    return modified, {
+        "golden_rebound_recapture_days": len(events),
+        "golden_rebound_recapture_events": events,
+    }
+
+
+def _apply_golden_leverage_cap_overlay(
+    execution_regime: pd.Series,
+    frame: pd.DataFrame,
+    tail_risk_score_min: int = 1,
+    realized_vol_ratio_min: float = 1.25,
+    drawdown_max: float | None = -0.08,
+) -> tuple[pd.Series, dict]:
+    """Cap 00631L inside golden1 during elevated volatility, without going defensive."""
+    required = {"tail_risk_score", "realized_vol_ratio_20_60", "drawdown"}
+    missing = sorted(required - set(frame.columns))
+    if missing:
+        return execution_regime.copy(), {
+            "golden_leverage_cap_days": 0,
+            "golden_leverage_cap_events": [],
+            "skipped_reason": "missing_required_frame_columns",
+            "missing_columns": missing,
+        }
+
+    modified = execution_regime.copy()
+    events: list[dict] = []
+    for dt in execution_regime.index:
+        if str(execution_regime.loc[dt]) != "golden1" or dt not in frame.index:
+            continue
+        row = frame.loc[dt]
+        tail_ok = int(row.get("tail_risk_score", 0)) >= int(tail_risk_score_min)
+        vol_ok = float(row.get("realized_vol_ratio_20_60", 0.0)) >= float(realized_vol_ratio_min)
+        drawdown_ok = drawdown_max is None or float(row.get("drawdown", 0.0)) <= float(drawdown_max)
+        if not (tail_ok and vol_ok and drawdown_ok):
+            continue
+        modified.loc[dt] = GOLDEN_LEVERAGE_CAP_REGIME
+        events.append({
+            "date": str(dt.date()),
+            "tail_risk_score": int(row.get("tail_risk_score", 0)),
+            "realized_vol_ratio_20_60": round(float(row.get("realized_vol_ratio_20_60", 0.0)), 4),
+            "drawdown": round(float(row.get("drawdown", 0.0)), 4),
+        })
+    return modified, {
+        "golden_leverage_cap_days": len(events),
+        "golden_leverage_cap_events": events,
+    }
 
 
 def _resolve_ncf_path(explicit: str | None, ticker_tag: str) -> Path | None:
@@ -335,6 +699,44 @@ def run_a2118(
     soft_hedge_intensity: float = 0.5,
     rally_suppress_min: float | None = None,
     regime_execution_delay_days: int = 0,
+    chip_data_fallback_max_stale_days: int | None = CHIP_DATA_FALLBACK_MAX_STALE_DAYS,
+    risk_score_lookback_days: int | None = RISK_SCORE_LOOKBACK_DAYS,
+    momentum_fast_exit_min: float | None = MOMENTUM_FAST_EXIT_MIN,
+    momentum_fast_exit_ma_gap_min: float | None = MOMENTUM_FAST_EXIT_MA_GAP_MIN,
+    low_risk_exit_ma_gap: float | None = None,
+    low_risk_exit_score_threshold: int = 1,
+    override_tail_risk_score: int = 0,
+    override_tail_drawdown_threshold: float = -0.10,
+    override_tail_use_var_breach: bool = True,
+    golden_tail_trim_enabled: bool = False,
+    golden_tail_trim_fraction: float = 0.5,
+    golden_tail_trim_tail_risk_score_min: int = 2,
+    golden_tail_trim_drawdown_max: float = -0.08,
+    golden_tail_trim_return_var_breach: bool = True,
+    golden_tail_trim_exit_momentum_max: float | None = None,
+    golden_follow_through_trim_enabled: bool = False,
+    golden_follow_through_trim_fraction: float = 0.5,
+    golden_follow_through_previous_return_max: float = -0.03,
+    golden_follow_through_previous_return_floor: float | None = None,
+    golden_follow_through_previous_tail_risk_score_min: int = 2,
+    golden_follow_through_previous_drawdown_max: float = -0.08,
+    golden_follow_through_hold_days: int = 1,
+    golden_rebound_recapture_enabled: bool = False,
+    golden_rebound_recapture_boost_fraction: float = 0.25,
+    golden_rebound_recapture_previous_return_min: float = 0.03,
+    golden_rebound_recapture_previous_drawdown_max: float = -0.08,
+    golden_rebound_recapture_lookback_days: int = 3,
+    golden_rebound_recapture_hold_days: int = 1,
+    golden_rebound_recapture_shock_tail_risk_score_min: int = 2,
+    golden_rebound_recapture_shock_return_max: float = -0.03,
+    golden_leverage_cap_enabled: bool = False,
+    golden_leverage_cap_max_00631l_weight: float = 0.15,
+    golden_leverage_cap_tail_risk_score_min: int = 1,
+    golden_leverage_cap_realized_vol_ratio_min: float = 1.25,
+    golden_leverage_cap_drawdown_max: float | None = -0.08,
+    recovery_00631l_boost_fraction: float = 0.0,
+    recovery_00631l_boost_max_age_days: int | None = None,
+    exclude_zero_volume_rows: bool = False,
 ) -> tuple[dict, pd.DataFrame]:
     """Run A21.18: A21.11 base + NCF late-bull de-leverage overlay on golden1.
 
@@ -351,6 +753,19 @@ def run_a2118(
     to shift `modified_regime` by that many trading days (via
     `_delayed_regime`) before simulating, to see the same-day-lookahead-free
     comparison. Left off by default so no existing caller's numbers change.
+
+    exclude_zero_volume_rows: 2026-07-12 fix, opt-in, default False (no
+    behavior change for existing backtest/evaluation callers). Some
+    non-trading days get a spurious ohlcv row (prior close carried forward,
+    volume=0) instead of being skipped. `daily_signal.py` treats this
+    module's frame.index[-1] as "actual_data_date" -- a phantom row there
+    makes chip/derivative sources look falsely one day stale, incorrectly
+    blocking execution. See
+    GROUP_A_PLUS_A2118_CHIP_DATA_CORE_CLOCK_AUDIT_HANDOFF_20260712.md. The
+    live manifest (report/group_a_plus/latest/strategy.json's
+    runner_params) opts into this; historical backtests are intentionally
+    left as-is pending a separate audit of how many/which historical
+    windows this affects.
     """
     policy_signal, policy_signal_path = _load_policy_signal(_resolve(DEFAULT_DECISION_POINTER))
     golden_signal_path = _resolve_golden_signal_path()
@@ -361,9 +776,32 @@ def run_a2118(
 
     load_start = _warmup_start(start, warmup_days)
     switch_rule = _build_switch_rule()
-    full_prices = _load_prices(_resolve(db), list(TICKERS), load_start, end)
+    if low_risk_exit_ma_gap is not None:
+        switch_rule = replace(
+            switch_rule,
+            low_risk_exit_ma_gap=float(low_risk_exit_ma_gap),
+            low_risk_exit_score_threshold=int(low_risk_exit_score_threshold),
+        )
+    if override_tail_risk_score > 0:
+        switch_rule = replace(
+            switch_rule,
+            override_tail_risk_score=int(override_tail_risk_score),
+            override_tail_drawdown_threshold=float(override_tail_drawdown_threshold),
+            override_tail_use_var_breach=bool(override_tail_use_var_breach),
+        )
+    full_prices = _load_prices(
+        _resolve(db), list(TICKERS), load_start, end, exclude_zero_volume=exclude_zero_volume_rows
+    )
     full_chip = _load_chip_features(_resolve(db), full_prices.index, load_start, end)
-    full_events, full_frame = _switch_returns(full_prices, full_chip, switch_rule)
+    full_events, full_frame = _switch_returns(
+        full_prices,
+        full_chip,
+        switch_rule,
+        chip_data_fallback_max_stale_days=chip_data_fallback_max_stale_days,
+        risk_score_lookback_days=risk_score_lookback_days,
+        momentum_fast_exit_min=momentum_fast_exit_min,
+        momentum_fast_exit_ma_gap_min=momentum_fast_exit_ma_gap_min,
+    )
     close_prices, frame, events = _trim_window(full_prices, full_frame, full_events, start, end)
     total_return_prices, dividend_coverage = _load_total_return_prices(_resolve(db), close_prices.index)
 
@@ -371,9 +809,27 @@ def run_a2118(
     weights_by_regime = {
         "golden1": golden_weights,
         "group_a_plus_defensive": basket,
-        "group_a_plus_recovery": current_defensive,
+        "group_a_plus_recovery": (
+            current_defensive
+            if recovery_00631l_boost_max_age_days is not None
+            else _recovery_boost_weights(current_defensive, recovery_00631l_boost_fraction)
+        ),
+        RECOVERY_00631L_BOOST_REGIME: _recovery_boost_weights(current_defensive, recovery_00631l_boost_fraction),
         NCF_LB_REGIME: _late_bull_hedge_weights(golden_weights),
         NCF_LB_SOFT_REGIME: _late_bull_hedge_weights(golden_weights, intensity=soft_hedge_intensity),
+        GOLDEN_TAIL_TRIM_REGIME: _golden_tail_trim_weights(golden_weights, golden_tail_trim_fraction),
+        GOLDEN_FOLLOW_THROUGH_TRIM_REGIME: _golden_tail_trim_weights(
+            golden_weights,
+            golden_follow_through_trim_fraction,
+        ),
+        GOLDEN_REBOUND_RECAPTURE_REGIME: _golden_rebound_recapture_weights(
+            golden_weights,
+            golden_rebound_recapture_boost_fraction,
+        ),
+        GOLDEN_LEVERAGE_CAP_REGIME: _golden_leverage_cap_weights(
+            golden_weights,
+            golden_leverage_cap_max_00631l_weight,
+        ),
     }
 
     panel_631l = _load_ncf_panel(
@@ -393,43 +849,89 @@ def run_a2118(
             gain_prob_soft_min=gain_prob_soft_min,
             rally_suppress_min=rally_suppress_min,
         )
-        # H4: by default (regime_execution_delay_days=0) this simulates as if
-        # the panel's day-t prediction were tradable at day-t's own close --
-        # in live trading the NCF signal isn't produced until ~23:30 that
-        # night, so execution can only start day t+1. See docstring above.
-        executed_regime = _delayed_regime(modified_regime, regime_execution_delay_days)
-        curve, sim_result = _simulate_costed_curve(
-            total_return_prices,
-            executed_regime,
-            weights_by_regime,
-            initial_value,
-            commission_rate,
-            slippage_rate,
-            equity_etf_sell_tax,
-        )
         backtest_mode = "ncf_late_bull_regime_overlay"
         ncf_panel_coverage = _ncf_panel_metadata(Path(ncf_panel_631l_path), panel_631l)
     else:
         modified_regime = execution_regime
         overlay_info = {"late_bull_trigger_days": 0, "late_bull_trigger_events": []}
-        executed_regime = _delayed_regime(modified_regime, regime_execution_delay_days)
-        curve, sim_result = _simulate_costed_curve(
-            total_return_prices,
-            executed_regime,
-            weights_by_regime,
-            initial_value,
-            commission_rate,
-            slippage_rate,
-            equity_etf_sell_tax,
-        )
         backtest_mode = "base_a2111_no_ncf_panel"
         ncf_panel_coverage = {"status": "no_panel_provided"}
+
+    # Golden1-regime shadow overlays apply the same way regardless of
+    # whether a late-bull panel was available above -- previously
+    # duplicated verbatim in both branches (fixed 2026-07-06).
+    if golden_tail_trim_enabled:
+        modified_regime, tail_trim_info = _apply_golden_tail_trim_overlay(
+            modified_regime,
+            frame,
+            tail_risk_score_min=golden_tail_trim_tail_risk_score_min,
+            drawdown_max=golden_tail_trim_drawdown_max,
+            return_var_breach=golden_tail_trim_return_var_breach,
+            exit_momentum_max=golden_tail_trim_exit_momentum_max,
+        )
+        overlay_info = {**overlay_info, **tail_trim_info}
+    if golden_follow_through_trim_enabled:
+        modified_regime, follow_through_info = _apply_golden_follow_through_trim_overlay(
+            modified_regime,
+            frame,
+            previous_return_max=golden_follow_through_previous_return_max,
+            previous_return_floor=golden_follow_through_previous_return_floor,
+            previous_tail_risk_score_min=golden_follow_through_previous_tail_risk_score_min,
+            previous_drawdown_max=golden_follow_through_previous_drawdown_max,
+            hold_days=golden_follow_through_hold_days,
+        )
+        overlay_info = {**overlay_info, **follow_through_info}
+    if golden_rebound_recapture_enabled:
+        modified_regime, recapture_info = _apply_golden_rebound_recapture_overlay(
+            modified_regime,
+            frame,
+            previous_return_min=golden_rebound_recapture_previous_return_min,
+            previous_drawdown_max=golden_rebound_recapture_previous_drawdown_max,
+            lookback_days=golden_rebound_recapture_lookback_days,
+            hold_days=golden_rebound_recapture_hold_days,
+            shock_tail_risk_score_min=golden_rebound_recapture_shock_tail_risk_score_min,
+            shock_return_max=golden_rebound_recapture_shock_return_max,
+        )
+        overlay_info = {**overlay_info, **recapture_info}
+    if golden_leverage_cap_enabled:
+        modified_regime, leverage_cap_info = _apply_golden_leverage_cap_overlay(
+            modified_regime,
+            frame,
+            tail_risk_score_min=golden_leverage_cap_tail_risk_score_min,
+            realized_vol_ratio_min=golden_leverage_cap_realized_vol_ratio_min,
+            drawdown_max=golden_leverage_cap_drawdown_max,
+        )
+        overlay_info = {**overlay_info, **leverage_cap_info}
+    if recovery_00631l_boost_max_age_days is not None and recovery_00631l_boost_fraction > 0.0:
+        modified_regime, recovery_boost_info = _apply_recovery_boost_age_guard(
+            modified_regime,
+            max_age_days=recovery_00631l_boost_max_age_days,
+        )
+        overlay_info = {**overlay_info, **recovery_boost_info}
+
+    # H4: by default (regime_execution_delay_days=0) this simulates as if
+    # the panel's day-t prediction were tradable at day-t's own close --
+    # in live trading the NCF signal isn't produced until ~23:30 that
+    # night, so execution can only start day t+1. See docstring above.
+    executed_regime = _delayed_regime(modified_regime, regime_execution_delay_days)
+    curve, sim_result = _simulate_costed_curve(
+        total_return_prices,
+        executed_regime,
+        weights_by_regime,
+        initial_value,
+        commission_rate,
+        slippage_rate,
+        equity_etf_sell_tax,
+    )
 
     recovery_dates = [
         str(dt.date())
         for dt in executed_regime.index
-        if executed_regime.loc[dt] == "group_a_plus_recovery"
-        and (dt == executed_regime.index[0] or executed_regime.shift(1).loc[dt] != "group_a_plus_recovery")
+        if executed_regime.loc[dt] in {"group_a_plus_recovery", RECOVERY_00631L_BOOST_REGIME}
+        and (
+            dt == executed_regime.index[0]
+            or executed_regime.shift(1).loc[dt] not in {"group_a_plus_recovery", RECOVERY_00631L_BOOST_REGIME}
+        )
     ]
     out_frame = frame.copy()
     out_frame = out_frame.rename(columns={"regime": "base_regime"})
@@ -501,6 +1003,7 @@ def run_a2118(
             "h20_prob_up": round(h20_prob, 4),
             "h5_prob_up": round(h5_prob, 4),
             "confidence": round(conf, 4),
+            "prob_fwd_mdd_gt5_h20": sig_631l.get("prob_fwd_mdd_gt5_h20"),
             "prob_fwd_gain_gt5_h20": gain_prob,
             "late_bull_triggered": late_bull_triggered,
             "rally_suppressed": rally_suppressed,
@@ -577,12 +1080,69 @@ def run_a2118(
             "ncf_late_bull_gain_prob_soft_min": gain_prob_soft_min,
             "ncf_late_bull_soft_hedge_intensity": soft_hedge_intensity,
             "ncf_late_bull_rally_suppress_min": rally_suppress_min,
+            "chip_data_fallback_max_stale_days": chip_data_fallback_max_stale_days,
+            "chip_data_fallback_source_clock": "chip_data_core_days_since_source_update",
+            "risk_score_lookback_days": risk_score_lookback_days,
+            "momentum_fast_exit_min": momentum_fast_exit_min,
+            "momentum_fast_exit_ma_gap_min": momentum_fast_exit_ma_gap_min,
+            "low_risk_exit_ma_gap": low_risk_exit_ma_gap,
+            "low_risk_exit_score_threshold": low_risk_exit_score_threshold,
+            "override_tail_risk_score": override_tail_risk_score,
+            "override_tail_drawdown_threshold": override_tail_drawdown_threshold,
+            "override_tail_use_var_breach": override_tail_use_var_breach,
+            "recovery_00631l_boost_fraction": recovery_00631l_boost_fraction,
+            "recovery_00631l_boost_max_age_days": recovery_00631l_boost_max_age_days,
+            "recovery_00631l_boost_regime": RECOVERY_00631L_BOOST_REGIME,
+            "recovery_boost_weights": _recovery_boost_weights(current_defensive, recovery_00631l_boost_fraction),
             "late_bull_hedge_regime": NCF_LB_REGIME,
             "late_bull_hedge_weights": _late_bull_hedge_weights(golden_weights),
             "late_bull_soft_hedge_regime": NCF_LB_SOFT_REGIME,
             "late_bull_soft_hedge_weights": _late_bull_hedge_weights(
                 golden_weights,
                 intensity=soft_hedge_intensity,
+            ),
+            "golden_tail_trim_enabled": golden_tail_trim_enabled,
+            "golden_tail_trim_regime": GOLDEN_TAIL_TRIM_REGIME,
+            "golden_tail_trim_fraction": golden_tail_trim_fraction,
+            "golden_tail_trim_tail_risk_score_min": golden_tail_trim_tail_risk_score_min,
+            "golden_tail_trim_drawdown_max": golden_tail_trim_drawdown_max,
+            "golden_tail_trim_return_var_breach": golden_tail_trim_return_var_breach,
+            "golden_tail_trim_exit_momentum_max": golden_tail_trim_exit_momentum_max,
+            "golden_tail_trim_weights": _golden_tail_trim_weights(golden_weights, golden_tail_trim_fraction),
+            "golden_follow_through_trim_enabled": golden_follow_through_trim_enabled,
+            "golden_follow_through_trim_regime": GOLDEN_FOLLOW_THROUGH_TRIM_REGIME,
+            "golden_follow_through_trim_fraction": golden_follow_through_trim_fraction,
+            "golden_follow_through_previous_return_max": golden_follow_through_previous_return_max,
+            "golden_follow_through_previous_return_floor": golden_follow_through_previous_return_floor,
+            "golden_follow_through_previous_tail_risk_score_min": golden_follow_through_previous_tail_risk_score_min,
+            "golden_follow_through_previous_drawdown_max": golden_follow_through_previous_drawdown_max,
+            "golden_follow_through_hold_days": golden_follow_through_hold_days,
+            "golden_follow_through_trim_weights": _golden_tail_trim_weights(
+                golden_weights,
+                golden_follow_through_trim_fraction,
+            ),
+            "golden_rebound_recapture_enabled": golden_rebound_recapture_enabled,
+            "golden_rebound_recapture_regime": GOLDEN_REBOUND_RECAPTURE_REGIME,
+            "golden_rebound_recapture_boost_fraction": golden_rebound_recapture_boost_fraction,
+            "golden_rebound_recapture_previous_return_min": golden_rebound_recapture_previous_return_min,
+            "golden_rebound_recapture_previous_drawdown_max": golden_rebound_recapture_previous_drawdown_max,
+            "golden_rebound_recapture_lookback_days": golden_rebound_recapture_lookback_days,
+            "golden_rebound_recapture_hold_days": golden_rebound_recapture_hold_days,
+            "golden_rebound_recapture_shock_tail_risk_score_min": golden_rebound_recapture_shock_tail_risk_score_min,
+            "golden_rebound_recapture_shock_return_max": golden_rebound_recapture_shock_return_max,
+            "golden_rebound_recapture_weights": _golden_rebound_recapture_weights(
+                golden_weights,
+                golden_rebound_recapture_boost_fraction,
+            ),
+            "golden_leverage_cap_enabled": golden_leverage_cap_enabled,
+            "golden_leverage_cap_regime": GOLDEN_LEVERAGE_CAP_REGIME,
+            "golden_leverage_cap_max_00631l_weight": golden_leverage_cap_max_00631l_weight,
+            "golden_leverage_cap_tail_risk_score_min": golden_leverage_cap_tail_risk_score_min,
+            "golden_leverage_cap_realized_vol_ratio_min": golden_leverage_cap_realized_vol_ratio_min,
+            "golden_leverage_cap_drawdown_max": golden_leverage_cap_drawdown_max,
+            "golden_leverage_cap_weights": _golden_leverage_cap_weights(
+                golden_weights,
+                golden_leverage_cap_max_00631l_weight,
             ),
         },
         "cost_assumptions": {
@@ -679,6 +1239,59 @@ def main() -> None:
                         help="H4 analysis: shift regime by N trading days before simulating, "
                              "to model the real 1-day gap between NCF signal generation (23:30) "
                              "and live execution (default 0 = same-day, i.e. existing behavior)")
+    parser.add_argument("--chip-data-fallback-max-stale-days", type=int,
+                        default=CHIP_DATA_FALLBACK_MAX_STALE_DAYS,
+                        help="Bypass chip/derivative/total-risk entry gates after N trading days "
+                             "without core chip/derivative source updates.")
+    parser.add_argument("--risk-score-lookback-days", type=int, default=RISK_SCORE_LOOKBACK_DAYS,
+                        help="Entry-side 2020 fix: use a rolling max of total_risk_score over this "
+                             "many trading days instead of only today's value. None/0 to disable.")
+    parser.add_argument("--momentum-fast-exit-min", type=float, default=MOMENTUM_FAST_EXIT_MIN,
+                        help="Exit-side 2020 fix: exit defensive immediately once exit_momentum "
+                             "reaches this threshold, regardless of ma_gap. None to disable.")
+    parser.add_argument("--momentum-fast-exit-ma-gap-min", type=float, default=MOMENTUM_FAST_EXIT_MA_GAP_MIN,
+                        help="Guard for --momentum-fast-exit-min: also require ma_gap >= this value, "
+                             "so a bear-market dead-cat bounce (e.g. 2008-11-03) doesn't trigger the "
+                             "fast exit the way a genuine V-shaped recovery (2020-03-26) does.")
+    parser.add_argument("--low-risk-exit-ma-gap", type=float, default=None,
+                        help="Use this lower exit MA gap when total_risk_score is low.")
+    parser.add_argument("--low-risk-exit-score-threshold", type=int, default=1)
+    parser.add_argument("--override-tail-risk-score", type=int, default=0)
+    parser.add_argument("--override-tail-drawdown-threshold", type=float, default=-0.10)
+    parser.add_argument("--override-tail-use-var-breach", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--golden-tail-trim-enabled", action="store_true",
+                        help="Enable shadow golden1 tail-risk trim overlay.")
+    parser.add_argument("--golden-tail-trim-fraction", type=float, default=0.5)
+    parser.add_argument("--golden-tail-trim-tail-risk-score-min", type=int, default=2)
+    parser.add_argument("--golden-tail-trim-drawdown-max", type=float, default=-0.08)
+    parser.add_argument("--golden-tail-trim-return-var-breach", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--golden-tail-trim-exit-momentum-max", type=float, default=None)
+    parser.add_argument("--golden-follow-through-trim-enabled", action="store_true",
+                        help="Enable prior-day shock follow-through trim overlay.")
+    parser.add_argument("--golden-follow-through-trim-fraction", type=float, default=0.5)
+    parser.add_argument("--golden-follow-through-previous-return-max", type=float, default=-0.03)
+    parser.add_argument("--golden-follow-through-previous-return-floor", type=float, default=None)
+    parser.add_argument("--golden-follow-through-previous-tail-risk-score-min", type=int, default=2)
+    parser.add_argument("--golden-follow-through-previous-drawdown-max", type=float, default=-0.08)
+    parser.add_argument("--golden-follow-through-hold-days", type=int, default=1)
+    parser.add_argument("--golden-rebound-recapture-enabled", action="store_true",
+                        help="Enable rebound recapture overlay after recent shock stabilization.")
+    parser.add_argument("--golden-rebound-recapture-boost-fraction", type=float, default=0.25)
+    parser.add_argument("--golden-rebound-recapture-previous-return-min", type=float, default=0.03)
+    parser.add_argument("--golden-rebound-recapture-previous-drawdown-max", type=float, default=-0.08)
+    parser.add_argument("--golden-rebound-recapture-lookback-days", type=int, default=3)
+    parser.add_argument("--golden-rebound-recapture-hold-days", type=int, default=1)
+    parser.add_argument("--golden-rebound-recapture-shock-tail-risk-score-min", type=int, default=2)
+    parser.add_argument("--golden-rebound-recapture-shock-return-max", type=float, default=-0.03)
+    parser.add_argument("--golden-leverage-cap-enabled", action="store_true",
+                        help="Enable golden1 00631L cap under elevated volatility.")
+    parser.add_argument("--golden-leverage-cap-max-00631l-weight", type=float, default=0.15)
+    parser.add_argument("--golden-leverage-cap-tail-risk-score-min", type=int, default=1)
+    parser.add_argument("--golden-leverage-cap-realized-vol-ratio-min", type=float, default=1.25)
+    parser.add_argument("--golden-leverage-cap-drawdown-max", type=float, default=-0.08)
+    parser.add_argument("--recovery-00631l-boost-fraction", type=float, default=0.0)
+    parser.add_argument("--recovery-00631l-boost-max-age-days", type=int, default=None,
+                        help="Only apply recovery 00631L boost to the first N days of each recovery episode.")
     parser.add_argument("--output", default="results/group_a_plus_runner_a2118.json")
     parser.add_argument("--frame-output", default="results/group_a_plus_runner_a2118_frame.csv")
     args = parser.parse_args()
@@ -704,6 +1317,43 @@ def main() -> None:
             soft_hedge_intensity=args.soft_hedge_intensity,
             rally_suppress_min=args.rally_suppress_min,
             regime_execution_delay_days=args.regime_execution_delay_days,
+            chip_data_fallback_max_stale_days=args.chip_data_fallback_max_stale_days,
+            risk_score_lookback_days=args.risk_score_lookback_days,
+            momentum_fast_exit_min=args.momentum_fast_exit_min,
+            momentum_fast_exit_ma_gap_min=args.momentum_fast_exit_ma_gap_min,
+            low_risk_exit_ma_gap=args.low_risk_exit_ma_gap,
+            low_risk_exit_score_threshold=args.low_risk_exit_score_threshold,
+            override_tail_risk_score=args.override_tail_risk_score,
+            override_tail_drawdown_threshold=args.override_tail_drawdown_threshold,
+            override_tail_use_var_breach=args.override_tail_use_var_breach,
+            golden_tail_trim_enabled=args.golden_tail_trim_enabled,
+            golden_tail_trim_fraction=args.golden_tail_trim_fraction,
+            golden_tail_trim_tail_risk_score_min=args.golden_tail_trim_tail_risk_score_min,
+            golden_tail_trim_drawdown_max=args.golden_tail_trim_drawdown_max,
+            golden_tail_trim_return_var_breach=args.golden_tail_trim_return_var_breach,
+            golden_tail_trim_exit_momentum_max=args.golden_tail_trim_exit_momentum_max,
+            golden_follow_through_trim_enabled=args.golden_follow_through_trim_enabled,
+            golden_follow_through_trim_fraction=args.golden_follow_through_trim_fraction,
+            golden_follow_through_previous_return_max=args.golden_follow_through_previous_return_max,
+            golden_follow_through_previous_return_floor=args.golden_follow_through_previous_return_floor,
+            golden_follow_through_previous_tail_risk_score_min=args.golden_follow_through_previous_tail_risk_score_min,
+            golden_follow_through_previous_drawdown_max=args.golden_follow_through_previous_drawdown_max,
+            golden_follow_through_hold_days=args.golden_follow_through_hold_days,
+            golden_rebound_recapture_enabled=args.golden_rebound_recapture_enabled,
+            golden_rebound_recapture_boost_fraction=args.golden_rebound_recapture_boost_fraction,
+            golden_rebound_recapture_previous_return_min=args.golden_rebound_recapture_previous_return_min,
+            golden_rebound_recapture_previous_drawdown_max=args.golden_rebound_recapture_previous_drawdown_max,
+            golden_rebound_recapture_lookback_days=args.golden_rebound_recapture_lookback_days,
+            golden_rebound_recapture_hold_days=args.golden_rebound_recapture_hold_days,
+            golden_rebound_recapture_shock_tail_risk_score_min=args.golden_rebound_recapture_shock_tail_risk_score_min,
+            golden_rebound_recapture_shock_return_max=args.golden_rebound_recapture_shock_return_max,
+            golden_leverage_cap_enabled=args.golden_leverage_cap_enabled,
+            golden_leverage_cap_max_00631l_weight=args.golden_leverage_cap_max_00631l_weight,
+            golden_leverage_cap_tail_risk_score_min=args.golden_leverage_cap_tail_risk_score_min,
+            golden_leverage_cap_realized_vol_ratio_min=args.golden_leverage_cap_realized_vol_ratio_min,
+            golden_leverage_cap_drawdown_max=args.golden_leverage_cap_drawdown_max,
+            recovery_00631l_boost_fraction=args.recovery_00631l_boost_fraction,
+            recovery_00631l_boost_max_age_days=args.recovery_00631l_boost_max_age_days,
         )
         Path(args.frame_output).parent.mkdir(parents=True, exist_ok=True)
         frame.to_csv(args.frame_output, encoding="utf-8-sig")

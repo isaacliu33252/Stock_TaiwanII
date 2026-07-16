@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-07-06T13:21:01",
+  "check_date": "2026-07-06",
+  "overall_status": "warn",
+  "profile": "a2118_a2111_ncf_late_bull_deleverage",
+  "mode": "live_signal",
+  "source_paths": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260706.json"
+  },
+  "checks": [
+    {
+      "name": "live_signal_success",
+      "status": "ok",
+      "detail": "live signal loaded"
+    },
+    {
+      "name": "execution_allowed",
+      "status": "ok",
+      "detail": "allowed"
+    },
+    {
+      "name": "data_freshness",
+      "status": "warn",
+      "detail": "1 business days stale, 3 calendar days stale"
+    },
+    {
+      "name": "strategy_status",
+      "status": "ok",
+      "detail": "strategy_status=active, strategy_id=a2118_a2111_ncf_late_bull_deleverage"
+    },
+    {
+      "name": "source_freshness",
+      "status": "ok",
+      "detail": "all required sources ok"
+    },
+    {
+      "name": "cash_constraint",
+      "status": "ok",
+      "detail": "estimated_cash_after_rounding_before_cost=201,517"
+    }
+  ],
+  "signal": {
+    "signal_status": "hold_or_align_to_target",
+    "signal_reason": "A20.7 formal defensive state is inactive",
+    "actual_data_date": "2026-07-03",
+    "requested_as_of_date": "2026-07-06",
+    "business_stale_days": 1,
+    "calendar_stale_days": 3
+  },
+  "group_a_plus": {
+    "overlay_regime": "golden1",
+    "overlay_00679b_weight": 0.0,
+    "cash_after_cost": 201516.6618232727,
+    "target_shares": {
+      "0050.TW": 6413,
+      "00631L.TW": 2671,
+      "00632R.TW": 0,
+      "00679B.TWO": 0
+    }
+  }
+}

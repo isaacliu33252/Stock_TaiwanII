@@ -1572,7 +1572,10 @@ def cmd_build() -> dict:
     for i, f in enumerate(files):
         ticker = _extract_ticker(f.name)
         try:
-            df = conn.execute(f"SELECT * FROM '{f}'").fetchdf()
+            # SQL injection prevention: sanitize table name from file glob
+            # f.name comes from Path.glob("*.parquet"), safe but still validate
+            safe_table = f.name.replace("'", "_").replace(";", "_").replace("--", "_")
+            df = conn.execute(f"SELECT * FROM '{safe_table}'").fetchdf()
             date_col = next((c for c in ["date", "datetime", "timestamp"] if c in df.columns), None)
             if not date_col:
                 errors.append((f.name, "No date column"))
@@ -1642,7 +1645,9 @@ def cmd_update() -> dict:
     for f in files:
         ticker = _extract_ticker(f.name)
         try:
-            df = conn.execute(f"SELECT * FROM '{f}'").fetchdf()
+            # SQL injection prevention: sanitize table name
+            safe_table = f.name.replace("'", "_").replace(";", "_").replace("--", "_")
+            df = conn.execute(f"SELECT * FROM '{safe_table}'").fetchdf()
             date_col = next((c for c in ["date", "datetime", "timestamp"] if c in df.columns), None)
             if not date_col:
                 continue
@@ -2191,13 +2196,17 @@ def main() -> None:
     elif args.query:
         tic = args.query.upper()
         conn = _conn()
-        sql = f"SELECT ticker, dt, open, high, low, close, volume FROM ohlcv WHERE ticker = '{tic}'"
+        # 參數化查詢，防止 SQL injection（攻擊者可能輸入 ' OR 1=1 -- 等）
+        sql = "SELECT ticker, dt, open, high, low, close, volume FROM ohlcv WHERE ticker = ?"
+        params = [tic]
         if args.start_dt:
-            sql += f" AND dt >= '{args.start_dt}'"
+            sql += " AND dt >= ?"
+            params.append(args.start_dt)
         if args.end_dt:
-            sql += f" AND dt <= '{args.end_dt}'"
+            sql += " AND dt <= ?"
+            params.append(args.end_dt)
         sql += " ORDER BY dt LIMIT 200"
-        df = conn.execute(sql).fetchdf()
+        df = conn.execute(sql, params).fetchdf()
         conn.close()
         if df.empty:
             print("No data.")

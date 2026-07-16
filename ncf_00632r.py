@@ -634,12 +634,22 @@ def load_data(db_path: Path, ticker: str, start: str, end: str) -> pd.DataFrame:
 
 
 def resolve_end_date(db_path: Path, ticker: str, requested_end: str) -> str:
-    """Resolve 'latest' to the newest available OHLCV date for this ticker."""
+    """Resolve 'latest' to the newest available OHLCV date for this ticker.
+
+    2026-07-12 fix: a non-trading day (market holiday, or a ticker-specific
+    trading halt) can leave a spurious `ohlcv` row behind -- prior close
+    carried forward, volume=0 -- instead of the date being skipped. Since
+    this function only ever runs for the "latest" (live) case, excluding
+    volume=0 rows here is always correct: no historical backtest depends on
+    this path, only same-day/live panel generation does. See
+    GROUP_A_PLUS_A2118_CHIP_DATA_CORE_CLOCK_AUDIT_HANDOFF_20260712.md for
+    the same bug found and fixed in run_a2118()'s live signal generation.
+    """
     if str(requested_end).lower() != "latest":
         return requested_end
     con = duckdb.connect(str(db_path), read_only=True)
     max_dt = con.execute(
-        "SELECT MAX(dt) FROM ohlcv WHERE ticker = ?",
+        "SELECT MAX(dt) FROM ohlcv WHERE ticker = ? AND volume > 0",
         [ticker],
     ).fetchone()[0]
     con.close()
@@ -750,6 +760,7 @@ def train_forward_drawdown_risk(
     do_feature_selection: bool = False,
     horizon: int = 20,
     threshold: float = 0.05,
+    expanding_model_weights: bool = False,
 ) -> dict:
     """Train an additive classifier for P(next-H max drawdown worse than threshold)."""
     X = build_feature_matrix(df, ext_df)
@@ -776,6 +787,8 @@ def train_forward_drawdown_risk(
         X_val,
         y_val,
         do_feature_selection=do_feature_selection,
+        horizon=horizon,
+        expanding_model_weights=expanding_model_weights,
     )
     last_row = X.iloc[-1:]
     W_inf = clf["ensemble"]["weights"]
@@ -813,6 +826,7 @@ def train_forward_upside_reward(
     do_feature_selection: bool = False,
     horizon: int = 20,
     threshold: float = 0.05,
+    expanding_model_weights: bool = False,
 ) -> dict:
     """Train an additive classifier for P(next-H max gain exceeds threshold)."""
     X = build_feature_matrix(df, ext_df)
@@ -839,6 +853,8 @@ def train_forward_upside_reward(
         X_val,
         y_val,
         do_feature_selection=do_feature_selection,
+        horizon=horizon,
+        expanding_model_weights=expanding_model_weights,
     )
     last_row = X.iloc[-1:]
     W_inf = clf["ensemble"]["weights"]
@@ -1215,8 +1231,13 @@ def train_regressor(X_train, y_train, X_val, y_val, do_feature_selection=False):
 def train_classifier(
     X_train, y_train, X_val, y_val,
     do_feature_selection=False, n_folds=5, calib_frac=0.20, stable_features=None,
-    late_bull_threshold=0.15,
+    late_bull_threshold=0.15, horizon: int | None = None,
+    expanding_model_weights: bool = False,
 ):
+    """expanding_model_weights: see `_expanding_model_ensemble_weights` docstring.
+    Mirrors the 2026-07-07 ncf_00631l.py panel-drift fix -- default False
+    preserves the original single global-weight behavior exactly.
+    """
     results = {}
     if do_feature_selection:
         X_train, X_val, sel_features = _feature_selection(
@@ -1406,24 +1427,30 @@ def train_classifier(
     # the Brier of always predicting the validation-set base rate.
     p_base      = float(np.mean(y_val_arr))
     naive_brier = p_base * (1.0 - p_base)
-    auc_w   = {name: max(0.0, results[name]["auc"] - 0.5) for name in BASE_NAMES}
-    brier_w = {name: max(0.0, naive_brier - results[name]["brier"]) for name in BASE_NAMES}
-    raw_w   = {name: auc_w[name] * brier_w[name] for name in BASE_NAMES}
-    total_w = sum(raw_w.values())
-    if total_w > 0:
-        W = {name: raw_w[name] / total_w for name in BASE_NAMES}
+    if expanding_model_weights:
+        ens_proba, weight_rows = _expanding_model_ensemble_weights(
+            {name: results[name]["proba"] for name in BASE_NAMES}, y_val_arr, horizon=horizon,
+        )
+        W = weight_rows[-1] if weight_rows else {name: 1.0 / len(BASE_NAMES) for name in BASE_NAMES}
     else:
-        total_auc_w = sum(auc_w.values())
-        W = ({name: auc_w[name] / total_auc_w for name in BASE_NAMES}
-             if total_auc_w > 0 else {name: 1.0 / len(BASE_NAMES) for name in BASE_NAMES})
-
-    ens_proba = sum(W[name] * results[name]["proba"] for name in BASE_NAMES)
+        auc_w   = {name: max(0.0, results[name]["auc"] - 0.5) for name in BASE_NAMES}
+        brier_w = {name: max(0.0, naive_brier - results[name]["brier"]) for name in BASE_NAMES}
+        raw_w   = {name: auc_w[name] * brier_w[name] for name in BASE_NAMES}
+        total_w = sum(raw_w.values())
+        if total_w > 0:
+            W = {name: raw_w[name] / total_w for name in BASE_NAMES}
+        else:
+            total_auc_w = sum(auc_w.values())
+            W = ({name: auc_w[name] / total_auc_w for name in BASE_NAMES}
+                 if total_auc_w > 0 else {name: 1.0 / len(BASE_NAMES) for name in BASE_NAMES})
+        ens_proba = sum(W[name] * results[name]["proba"] for name in BASE_NAMES)
     ens_pred  = (ens_proba >= 0.5).astype(int)
     ens_brier = brier_score_loss(y_val_arr, ens_proba)
     results["ensemble"] = {
         "accuracy": accuracy_score(y_val_arr, ens_pred), "proba": ens_proba,
         "predictions": ens_pred, "auc": roc_auc_score(y_val_arr, ens_proba),
         "brier": ens_brier, "features": sel_features, "weights": W,
+        "ensemble_weight_method": "expanding_prior" if expanding_model_weights else "global",
     }
 
     if use_calibration:
@@ -1498,23 +1525,30 @@ def train_classifier(
             }
             ALL_NAMES = BASE_NAMES + ["stable_rf"]
 
-            auc_w2   = {name: max(0.0, results[name]["auc"] - 0.5) for name in ALL_NAMES}
-            brier_w2 = {name: max(0.0, naive_brier - results[name]["brier"]) for name in ALL_NAMES}
-            raw_w2   = {name: auc_w2[name] * brier_w2[name] for name in ALL_NAMES}
-            total_w2 = sum(raw_w2.values())
-            if total_w2 > 0:
-                W2 = {name: raw_w2[name] / total_w2 for name in ALL_NAMES}
+            if expanding_model_weights:
+                ens_proba2, weight_rows2 = _expanding_model_ensemble_weights(
+                    {name: results[name]["proba"] for name in ALL_NAMES}, y_val_arr, horizon=horizon,
+                )
+                W2 = weight_rows2[-1] if weight_rows2 else {name: 1.0 / len(ALL_NAMES) for name in ALL_NAMES}
             else:
-                total_auc_w2 = sum(auc_w2.values())
-                W2 = ({name: auc_w2[name] / total_auc_w2 for name in ALL_NAMES}
-                      if total_auc_w2 > 0 else {name: 1.0 / len(ALL_NAMES) for name in ALL_NAMES})
-            ens_proba2 = sum(W2[name] * results[name]["proba"] for name in ALL_NAMES)
+                auc_w2   = {name: max(0.0, results[name]["auc"] - 0.5) for name in ALL_NAMES}
+                brier_w2 = {name: max(0.0, naive_brier - results[name]["brier"]) for name in ALL_NAMES}
+                raw_w2   = {name: auc_w2[name] * brier_w2[name] for name in ALL_NAMES}
+                total_w2 = sum(raw_w2.values())
+                if total_w2 > 0:
+                    W2 = {name: raw_w2[name] / total_w2 for name in ALL_NAMES}
+                else:
+                    total_auc_w2 = sum(auc_w2.values())
+                    W2 = ({name: auc_w2[name] / total_auc_w2 for name in ALL_NAMES}
+                          if total_auc_w2 > 0 else {name: 1.0 / len(ALL_NAMES) for name in ALL_NAMES})
+                ens_proba2 = sum(W2[name] * results[name]["proba"] for name in ALL_NAMES)
             ens_pred2  = (ens_proba2 >= 0.5).astype(int)
             results["ensemble"] = {
                 "accuracy": accuracy_score(y_val_arr, ens_pred2), "proba": ens_proba2,
                 "predictions": ens_pred2, "auc": roc_auc_score(y_val_arr, ens_proba2),
                 "brier": brier_score_loss(y_val_arr, ens_proba2),
                 "features": sel_features, "weights": W2,
+                "ensemble_weight_method": "expanding_prior" if expanding_model_weights else "global",
             }
 
     results["_sel_features"] = sel_features
@@ -1569,8 +1603,14 @@ def _build_expanding_horizon_ensemble_panel(
         for horizon in horizons:
             if horizon not in label_df:
                 continue
-            hist_labels = label_df[horizon].iloc[:pos]
-            hist_probs = prob_df[f"prob_up_h{horizon}"].iloc[:pos]
+            # M1 embargo fix (ported from ncf_00631l.py 2026-07-07): label_df[horizon]
+            # .iloc[i] is the forward-looking label for row i (needs `horizon` days of
+            # future price data to resolve), so as of `pos` only rows up to
+            # `pos - horizon` are actually known -- plain `iloc[:pos]` leaked up to
+            # `horizon-1` days of unresolved forward labels near the frontier.
+            resolved_end = max(0, pos - horizon)
+            hist_labels = label_df[horizon].iloc[:resolved_end]
+            hist_probs = prob_df[f"prob_up_h{horizon}"].iloc[:resolved_end]
             valid = hist_labels.notna() & hist_probs.notna()
             if int(valid.sum()) < min_history or hist_labels[valid].nunique() < 2:
                 continue
@@ -1599,6 +1639,71 @@ def _build_expanding_horizon_ensemble_panel(
     return panel_df
 
 
+def _expanding_model_ensemble_weights(
+    probas_by_model: dict[str, np.ndarray],
+    y_val_arr: np.ndarray,
+    *,
+    horizon: int | None = None,
+    min_history: int = 150,
+    full_confidence_history: int = 800,
+) -> tuple[np.ndarray, list[dict[str, float]]]:
+    """Per-row model-ensemble blend using only labels resolved before that row.
+
+    Ported from ncf_00631l.py's 2026-07-07 panel-drift fix (see
+    GROUP_A_PLUS_NCF_PANEL_DRIFT_AUDIT_20260706.md) -- ncf_00632r.py shares the
+    identical global-weight pattern (AUC+Brier ensemble weight recomputed over
+    the *entire* validation set on every retrain, silently shifting every
+    historical row's blended probability). Row `pos`'s weight uses only rows
+    `[:pos - horizon]` -- rows whose forward-looking label had actually
+    resolved as of row `pos`.
+
+    min_history/full_confidence_history reuse ncf_00631l.py's values: this
+    script uses the same --val-start default (2025-01-02), the same
+    HORIZONS=[1,5,20], and the same 7-base-model registry (no TabNet here), so
+    the validation window and per-model resolved-sample dynamics that
+    motivated the 150/800 shrinkage ramp apply unchanged. Default False
+    preserves the original single global-weight behavior exactly.
+    """
+    names = list(probas_by_model)
+    n = len(y_val_arr)
+    h = int(horizon) if horizon else 0
+    equal_weights = {name: 1.0 / len(names) for name in names}
+    ens = np.empty(n, dtype=float)
+    weight_rows: list[dict[str, float]] = []
+    ramp_span = max(1, full_confidence_history - min_history)
+
+    for pos in range(n):
+        resolved_end = max(0, pos - h)
+        hist_y = y_val_arr[:resolved_end]
+        weights = equal_weights
+        if len(hist_y) >= min_history and len(np.unique(hist_y)) >= 2:
+            p_base_hist = float(np.mean(hist_y))
+            naive_brier_hist = p_base_hist * (1.0 - p_base_hist)
+            auc_w: dict[str, float] = {}
+            brier_w: dict[str, float] = {}
+            for name in names:
+                hist_p = probas_by_model[name][:resolved_end]
+                auc_w[name] = max(0.0, roc_auc_score(hist_y, hist_p) - 0.5)
+                brier_w[name] = max(0.0, naive_brier_hist - brier_score_loss(hist_y, hist_p))
+            raw_w = {name: auc_w[name] * brier_w[name] for name in names}
+            total_w = sum(raw_w.values())
+            if total_w > 0:
+                raw_weights = {name: raw_w[name] / total_w for name in names}
+            else:
+                total_auc_w = sum(auc_w.values())
+                raw_weights = ({name: auc_w[name] / total_auc_w for name in names}
+                               if total_auc_w > 0 else equal_weights)
+            shrink = min(1.0, (len(hist_y) - min_history) / ramp_span)
+            weights = {
+                name: shrink * raw_weights[name] + (1.0 - shrink) * equal_weights[name]
+                for name in names
+            }
+        ens[pos] = sum(weights[name] * probas_by_model[name][pos] for name in names)
+        weight_rows.append(weights)
+
+    return np.clip(ens, 0.0, 1.0), weight_rows
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", default=str(DB_PATH))
@@ -1624,10 +1729,20 @@ def main() -> None:
     parser.add_argument("--feature-stability-k", type=int, default=5)
     parser.add_argument("--calib-frac", type=float, default=0.20,
                         help="Fraction of training data held out for calibration (default 0.20)")
+    parser.add_argument(
+        "--no-expanding-model-weights", dest="expanding_model_weights", action="store_false",
+        help="Disable per-row expanding/walk-forward model-ensemble weighting "
+             "(reverts to global AUC+Brier weights recomputed on the full val set).",
+    )
+    parser.set_defaults(expanding_model_weights=True)
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     parser.add_argument(
         "--val-predictions-output", default=None,
         help="If set, save per-day val prediction panel as CSV (enables A21.13 historical backtest)",
+    )
+    parser.add_argument(
+        "--full-panel", action="store_true",
+        help="Extend the panel to include the unlabeled tail without forward labels.",
     )
     args = parser.parse_args()
     if args.no_tbrain_features:
@@ -1678,6 +1793,7 @@ def main() -> None:
 
     HORIZONS = [1, 5, 20]
     val_panels: dict = {}  # per-horizon val prediction panels (used if --val-predictions-output)
+    all_clf_models: dict = {}  # per-horizon classifiers for --full-panel tail extension
     # 00632R 特性：低波動（std ~1.33%/日），close_open_ratio 在 H=1 不穩定
     HORIZON_DROP_FEATURES: dict[int, list[str]] = {
         1: ["close_open_ratio"],
@@ -1801,17 +1917,20 @@ def main() -> None:
                                         y_train_dir_clf[above_ma200_train_clf],
                                         X_val_sel[above_ma200_val], y_val_dir[above_ma200_val],
                                         do_feature_selection=do_fs, stable_features=stable_feats,
-                                        calib_frac=args.calib_frac)
+                                        calib_frac=args.calib_frac,
+                                        horizon=h, expanding_model_weights=args.expanding_model_weights)
         if n_bear > 0 and n_bear_train_clf >= 20:
             clf_bear = train_classifier(X_train_clf_sel[~above_ma200_train_clf],
                                         y_train_dir_clf[~above_ma200_train_clf],
                                         X_val_sel[~above_ma200_val], y_val_dir[~above_ma200_val],
                                         do_feature_selection=do_fs, stable_features=stable_feats,
-                                        calib_frac=args.calib_frac)
+                                        calib_frac=args.calib_frac,
+                                        horizon=h, expanding_model_weights=args.expanding_model_weights)
         if clf_bull is None and clf_bear is None:
             clf_bull = train_classifier(X_train_clf_sel, y_train_dir_clf, X_val_sel, y_val_dir,
                                         do_feature_selection=do_fs, stable_features=stable_feats,
-                                        calib_frac=args.calib_frac)
+                                        calib_frac=args.calib_frac,
+                                        horizon=h, expanding_model_weights=args.expanding_model_weights)
             clf_bear = clf_bull
         elif clf_bull is None:
             clf_bull = clf_bear
@@ -1824,6 +1943,13 @@ def main() -> None:
             best_name = max(active + ["ensemble"], key=lambda nm: clf[nm]["auc"])
             auc_parts = "  ".join(f"{nm.upper()}={clf[nm]['auc']:.4f}" for nm in active)
             print(f"    {regime:5s}  {auc_parts}  Ens={clf['ensemble']['auc']:.4f}  Best={best_name}  (n={n})")
+
+        all_clf_models[h] = {
+            "bull": clf_bull,
+            "bear": clf_bear,
+            "sel_features": sel_features,
+            "drop_cols": HORIZON_DROP_FEATURES.get(h, []),
+        }
 
         # Collect per-day val predictions for panel output (used when --val-predictions-output is set)
         if args.val_predictions_output:
@@ -1924,6 +2050,7 @@ def main() -> None:
         do_feature_selection=args.feature_selection,
         horizon=20,
         threshold=0.05,
+        expanding_model_weights=args.expanding_model_weights,
     )
     if drawdown_risk.get("available"):
         print(
@@ -1945,6 +2072,7 @@ def main() -> None:
         do_feature_selection=args.feature_selection,
         horizon=20,
         threshold=0.05,
+        expanding_model_weights=args.expanding_model_weights,
     )
     if upside_reward.get("available"):
         print(
@@ -1984,6 +2112,70 @@ def main() -> None:
         # Simplified confidence: prob_magnitude-weighted (no WF component for panel)
         panel_df["confidence"] = (panel_df["prob_magnitude"] * 0.6 + 0.4 * panel_df["prob_magnitude"].clip(0, 1))
         panel_df.index.name = "date"
+        if args.full_panel and all_clf_models:
+            try:
+                _full_feat = _build_features(raw.copy())
+                if ext_df is not None:
+                    for _col in ext_df.columns:
+                        _full_feat[_col] = ext_df[_col].reindex(_full_feat.index)
+                _full_feat = _add_interaction_features(_full_feat)
+
+                _last_labeled = panel_df.index[-1]
+                _tail = _full_feat[_full_feat.index > _last_labeled].copy()
+                if not _tail.empty:
+                    _REGIME_COLS = ["above_ma200", "above_ma50", "above_ma20"]
+                    _tail_probs: dict[int, _pd.Series] = {}
+                    for _h, _hm in all_clf_models.items():
+                        _drop_cols = set(_hm["drop_cols"])
+                        _sf = [f for f in _hm["sel_features"] if f not in _drop_cols and f in _tail.columns]
+                        _sf_full = _sf + [c for c in _REGIME_COLS if c in _tail.columns and c not in _sf]
+                        _above = _tail.get("above_ma200", _pd.Series(1.0, index=_tail.index)) >= 0.5
+                        _p = _pd.Series(_np.nan, index=_tail.index)
+                        for _mask, _key in [(_above, "bull"), (~_above, "bear")]:
+                            if int(_mask.sum()) == 0:
+                                continue
+                            _sub = _tail.loc[_mask, _sf_full].fillna(0.0)
+                            _clf = _hm[_key]
+                            _weights = _clf["ensemble"]["weights"]
+                            _ep = _np.zeros(len(_sub))
+                            for _name, _model in _clf["_models"].items():
+                                _weight = _weights.get(_name, 0.0)
+                                if _weight == 0.0:
+                                    continue
+                                _features = _clf.get(_name, {}).get("features")
+                                _sub_model = _sub[_features] if _features else _sub
+                                try:
+                                    _ep += _weight * _model.predict_proba(_sub_model)[:, 1]
+                                except Exception:
+                                    pass
+                            _p[_tail[_mask].index] = _ep
+                        _tail_probs[_h] = _p
+
+                    _combined_probs = {
+                        _h: _pd.concat([panel_df[f"prob_up_h{_h}"], _tail_probs[_h]])
+                        for _h in sorted(_tail_probs)
+                        if f"prob_up_h{_h}" in panel_df.columns
+                    }
+                    _combined_labels = {
+                        _h: val_panels[_h]["label"].reindex(_combined_probs[_h].index)
+                        for _h in _combined_probs
+                        if _h in val_panels and "label" in val_panels[_h]
+                    }
+                    _combined_panel = _build_expanding_horizon_ensemble_panel(_combined_probs, _combined_labels)
+                    _tail_df = _combined_panel.reindex(_tail.index)
+                    _tail_df["confidence"] = (
+                        _tail_df["prob_magnitude"] * 0.6
+                        + 0.4 * _tail_df["prob_magnitude"].clip(0, 1)
+                    )
+                    if 20 in _tail_probs:
+                        _tail_df["h20_prob_up"] = _tail_probs[20]
+                        _tail_df["h20_direction"] = _tail_df["h20_prob_up"].apply(lambda p: "UP" if p > 0.5 else "DOWN")
+                    _tail_df["is_live"] = True
+                    panel_df["is_live"] = False
+                    panel_df = _pd.concat([panel_df, _tail_df], sort=False)
+                    print(f"  [FULL PANEL] Extended by {len(_tail_df)} unlabeled tail rows → total {len(panel_df)}")
+            except Exception as exc:  # noqa: BLE001
+                print(f"  ⚠️  Full panel extension failed: {exc}")
         out_panel = Path(args.val_predictions_output)
         out_panel.parent.mkdir(parents=True, exist_ok=True)
         panel_df.to_csv(out_panel, encoding="utf-8-sig")
@@ -2097,6 +2289,31 @@ def main() -> None:
     prob_std = float(np.std(horizon_probs))
     spread_conf = max(0, 1 - prob_std * 4)
 
+    # H2 (2026-07-09, ported from ncf_00631l.py's 2026-07-02 Fable 5 audit
+    # Option A fix): `combined_prob` above uses fixed per-horizon AUC
+    # weights from this run's own validation set, not the panel's
+    # expanding-window (walk-forward-through-calendar-time) AUC weights --
+    # same drift source as ncf_00631l.py, never ported here until now.
+    # Compute a panel-consistent value from the same val_panels source data
+    # so live and backtest read the same number, and so downstream
+    # consumers (signal_alignment.py) can avoid the drifting composite
+    # `confidence` below.
+    ensemble_prob_up_panel_aligned: float | None = None
+    prob_magnitude_panel_aligned: float | None = None
+    try:
+        avail_h_live = sorted(val_panels.keys())
+        if avail_h_live:
+            panel_probs_live = {h: val_panels[h]["proba"] for h in avail_h_live}
+            panel_labels_live = {
+                h: val_panels[h]["label"] for h in avail_h_live if "label" in val_panels[h]
+            }
+            live_panel_row = _build_expanding_horizon_ensemble_panel(panel_probs_live, panel_labels_live)
+            if len(live_panel_row):
+                ensemble_prob_up_panel_aligned = float(live_panel_row["ensemble_prob_up"].iloc[-1])
+                prob_magnitude_panel_aligned = float(live_panel_row["prob_magnitude"].iloc[-1])
+    except Exception as _panel_align_exc:
+        print(f"  ⚠️  panel-aligned confidence computation failed: {_panel_align_exc}")
+
     # Confidence: WF H=1 RF accuracy as 4th component (when --walk-forward used)
     wf_acc_h1 = all_results.get("walk_forward", {}).get(1, {}).get("avg_accuracy", {})
     wf_h1_rf_acc: float | None = wf_acc_h1.get("rf")
@@ -2187,6 +2404,19 @@ def main() -> None:
             "combined_probability_up": round(float(combined_prob), 4),
             "calibrated_probability_up": round(float(calibrated_prob), 4),
             "confidence": round(float(confidence), 4),
+            # H2 (2026-07-09): panel-consistent alternative to the composite
+            # `confidence` above -- see comment above `wf_acc_h1` for why
+            # these two metrics differ.
+            "ensemble_prob_up_panel_aligned": (
+                round(ensemble_prob_up_panel_aligned, 4)
+                if ensemble_prob_up_panel_aligned is not None
+                else None
+            ),
+            "prob_magnitude_panel_aligned": (
+                round(prob_magnitude_panel_aligned, 4)
+                if prob_magnitude_panel_aligned is not None
+                else None
+            ),
             "shrinkage": round(float(shrinkage), 4),
             "weighted_return": round(ens_horizon_ret, 6),
             "predicted_close": round(last_close * (1 + ens_horizon_ret), 4),

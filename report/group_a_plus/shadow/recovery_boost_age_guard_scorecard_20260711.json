@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_recovery_boost_shadow_scorecard",
+  "generated_at": "2026-07-10T16:39:59+00:00",
+  "inputs": {
+    "clean_report": "results/group_a_plus_reentry_accelerator_clean_20260710.json",
+    "crisis_report": "results/group_a_plus_recovery_boost_five_crises_20260710.json"
+  },
+  "decision": {
+    "production": "do_not_promote",
+    "preferred_shadow": "a2129_recovery_00631l_boost_age_guard_aggressive_shadow",
+    "conservative_shadow": "a2128_recovery_00631l_boost_age_guard_shadow",
+    "reason": "A21.29 has the strongest combined clean/crisis score, while A21.28 remains the conservative parallel shadow. Production stays unchanged because evidence is still research-only and event counts are limited."
+  },
+  "ranked_candidates": [
+    {
+      "strategy_id": "a2129_recovery_00631l_boost_age_guard_aggressive_shadow",
+      "label": "A21.29 aggressive recovery boost age guard",
+      "risk_profile": "aggressive_shadow",
+      "boost_fraction": 0.15,
+      "max_age_days": 20,
+      "clean_variant": "recovery_boost_150_age20",
+      "crisis_variant": "recovery_boost_015_age20",
+      "clean_tuning_delta_final_value": 3827.114,
+      "clean_oos_delta_final_value": 2669.6,
+      "clean_total_delta_final_value": 6496.714,
+      "clean_total_delta_sharpe_ratio": 0.024173,
+      "clean_changed_days": 22,
+      "crisis_rebased_sum_delta_final_value": 13843.174,
+      "crisis_rebased_sum_delta_sharpe_ratio": 0.023033,
+      "crisis_rebased_positive_folds": 3,
+      "crisis_total_folds": 5,
+      "crisis_total_boosted_recovery_days": 114,
+      "age_guarded": true,
+      "clean_gate_pass": true,
+      "five_crisis_gate_pass": true,
+      "preferred_shadow_eligible": true,
+      "production_upgrade_pass": false,
+      "production_blockers": [
+        "research_only_shadow_candidate"
+      ],
+      "composite_score": 23247.515
+    },
+    {
+      "strategy_id": "a2128_recovery_00631l_boost_age_guard_shadow",
+      "label": "A21.28 conservative recovery boost age guard",
+      "risk_profile": "conservative_shadow",
+      "boost_fraction": 0.1,
+      "max_age_days": 20,
+      "clean_variant": "recovery_boost_100_age20",
+      "crisis_variant": "recovery_boost_010_age20",
+      "clean_tuning_delta_final_value": 2655.042,
+      "clean_oos_delta_final_value": 1733.196,
+      "clean_total_delta_final_value": 4388.238,
+      "clean_total_delta_sharpe_ratio": 0.016054,
+      "clean_changed_days": 22,
+      "crisis_rebased_sum_delta_final_value": 9072.22,
+      "crisis_rebased_sum_delta_sharpe_ratio": 0.015104,
+      "crisis_rebased_positive_folds": 3,
+      "crisis_total_folds": 5,
+      "crisis_total_boosted_recovery_days": 114,
+      "age_guarded": true,
+      "clean_gate_pass": true,
+      "five_crisis_gate_pass": true,
+      "preferred_shadow_eligible": true,
+      "production_upgrade_pass": false,
+      "production_blockers": [
+        "research_only_shadow_candidate"
+      ],
+      "composite_score": 15372.254
+    },
+    {
+      "strategy_id": "a2127_recovery_00631l_boost_shadow",
+      "label": "A21.27 recovery boost, no age guard",
+      "risk_profile": "unbounded_recovery",
+      "boost_fraction": 0.1,
+      "max_age_days": null,
+      "clean_variant": "recovery_boost_010",
+      "crisis_variant": "recovery_boost_010",
+      "clean_tuning_delta_final_value": 2655.042,
+      "clean_oos_delta_final_value": 3116.456,
+      "clean_total_delta_final_value": 5771.497,
+      "clean_total_delta_sharpe_ratio": 0.02583,
+      "clean_changed_days": 32,
+      "crisis_rebased_sum_delta_final_value": -2071.194,
+      "crisis_rebased_sum_delta_sharpe_ratio": -0.008155,
+      "crisis_rebased_positive_folds": 2,
+      "crisis_total_folds": 5,
+      "crisis_total_boosted_recovery_days": 236,
+      "age_guarded": false,
+      "clean_gate_pass": true,
+      "five_crisis_gate_pass": false,
+      "preferred_shadow_eligible": false,
+      "production_upgrade_pass": false,
+      "production_blockers": [
+        "research_only_shadow_candidate",
+        "no_recovery_age_guard",
+        "five_crisis_rebased_gate_failed"
+      ],
+      "composite_score": 3530.6
+    }
+  ]
+}

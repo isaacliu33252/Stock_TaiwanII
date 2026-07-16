@@ -11,10 +11,15 @@
     "promoted_from": "a2111_tight_entry_bond30c30",
     "ncf_version": "v5_tabnet",
     "runner_params": {
-      "ncf_panel_631l_path": "results/ncf_00631l_panel_latest_20260630.csv",
+      "ncf_panel_631l_path": "results/ncf_00631l_panel_latest_20260707.csv",
       "h20_max": 0.33,
       "conf_min": 0.55,
-      "h5_reentry_min": 0.55
+      "h5_reentry_min": 0.55,
+      "chip_data_fallback_max_stale_days": 10,
+      "risk_score_lookback_days": 5,
+      "momentum_fast_exit_min": 0.10,
+      "momentum_fast_exit_ma_gap_min": -0.08,
+      "exclude_zero_volume_rows": true
     },
     "improvements": {
       "sharpe_delta": 0.029,
@@ -59,6 +64,43 @@
           "total_hedge_days": 5
         },
         "decision": "Keep A21.18 active, but do not promote A21.20 or LightGBM overlay; refreshed panel improves final value but lowers Sharpe versus the old fixed report."
+      },
+      "switch_rule_2020_covid_fix_20260706": {
+        "reason": "Five-crisis backtest (2008/2011/2015/2018/2020) found the switch rule never triggered defensive at all during 2020's COVID crash. Root cause 1 (entry): total_risk_score peaked at 6 on 2020-03-06 while drawdown didn't clear -11% until 2020-03-09 -- the two conditions were never simultaneously true. Root cause 2 (exit): exit_momentum recovered on 2020-03-25/26 (+12.6% 5-day return), three weeks before ma_gap cleared the exit threshold on 2020-04-17.",
+        "runner_change": "_switch_returns gained three opt-in params (default None, zero behavior change for every other caller): risk_score_lookback_days (rolling max of total_risk_score over N days instead of only today's value), momentum_fast_exit_min (independent fast-exit path once exit_momentum crosses this threshold), momentum_fast_exit_ma_gap_min (required co-condition -- pure momentum magnitude cannot distinguish 2020-03-26's genuine recovery from 2008-11-03's larger +14.4% dead-cat bounce deep in the GFC bear market; ma_gap does: -4.4% vs -23.7%).",
+        "params": {
+          "risk_score_lookback_days": 5,
+          "momentum_fast_exit_min": 0.10,
+          "momentum_fast_exit_ma_gap_min": -0.08
+        },
+        "validation": {
+          "multi_window_gate": "results/group_a_plus_momentum_fast_exit_final_multi_window_gate_20260706.json (candidate_available, 6/6 pass)",
+          "promotion_gate": "results/group_a_plus_momentum_fast_exit_final_promotion_gate_20260706.json (promotion_ready)",
+          "regression_tests": "tests/test_backtest_group_a_plus_switch_policy_2020_fix.py (5 tests)",
+          "full_suite": "639 passed, 9 skipped, 0 failed"
+        },
+        "impact_by_window": {
+          "2008_gfc": "bit-identical to prior behavior",
+          "2011_euro_debt": "bit-identical to prior behavior",
+          "2015_china_crash": "bit-identical to prior behavior",
+          "2018_trade_war": "bit-identical to prior behavior",
+          "2020_covid": "final_value +0.18%, sharpe_ratio 1.253->1.512, max_drawdown -30.97%->-24.05% (all three improve simultaneously, not a trade-off)",
+          "live_2025_2026": "bit-identical to prior behavior"
+        },
+        "decision_record": "GROUP_A_PLUS_2020_COVID_SWITCH_RULE_FIX_HANDOFF_20260706.md",
+        "decision": "Implemented in a2118 by explicit user instruction after gate validation."
+      },
+      "ncf_panel_model_ensemble_drift_fix_20260707": {
+        "reason": "GROUP_A_PLUS_NCF_PANEL_DRIFT_AUDIT_20260706.md found the root cause of NCF panel drift (reproducibility_guard_20260701 above): scripts/misc/ncf_00631l.py's per-model (rf/et/hgb/gb/lgb/xgb/cat/tabnet) ensemble weight was a single global AUC+Brier weight computed over the entire validation set and applied uniformly to every historical row, so every model retrain silently rewrote every historical panel row's blended probability (measured max drift up to 0.48 on prob_up_h1 from just 3 added validation days).",
+        "fix": "New --expanding-model-weights (default ON as of this fix; --no-expanding-model-weights restores old behavior) computes each row's ensemble weight from only validation rows whose forward-looking label had resolved as of that row (mirrors the pre-existing expanding-window horizon-level weighting one level down), with a shrinkage ramp from equal weight at min_history=150 resolved rows to full computed weight at full_confidence_history=800 resolved rows -- a hard cutoff (no shrinkage) was tried first and made drift *worse* (small-sample AUC/Brier estimates let a single model seize almost all weight), the ramp fixes that.",
+        "verification": {
+          "drift_before_after": "results/ncf_00631l_panel_drift_verify_OFF_20260707.json vs results/ncf_00631l_panel_drift_verify_ON_v4_20260707.json -- max drift down from up to 0.48 (original audit) / 0.08-0.23 (this session's off reproduction) to <=0.13 across all 8 reported columns; forward-drawdown-risk (MDD>5%) drift eliminated entirely (0.069->0.000) with its AUC also improving (0.629->0.648)",
+          "quality_tradeoff": "forward-upside-reward AUC 0.652->0.624 (-0.027) is the one real cost, accepted uniformly across all tasks for consistency rather than special-cased -- that task's 8 base models are closely AUC-matched (0.03-0.21 weight spread, no clear winner), so any weight-recomputation scheme trades a little of its accuracy for stability",
+          "a2118_trigger_stability": "re-ran run_a2118 with production params (h20_max=0.33, conf_min=0.55, h5_reentry_min=0.55, ...) on the pinned 20260630 panel (old method) vs the new 20260707 panel (expanding weights): 70 of 75 trigger days bit-identical (2025-02-25~2025-06-09 stretch unchanged); the 5 dropped days (2025-10-29~2025-11-04) are exactly the borderline/drift-prone event originally flagged in the panel drift audit. final_value 2,134,770->2,201,273 (+3.1%), sharpe 2.5045->2.4906 (-0.014), max_drawdown unchanged at -13.82%",
+          "tests": "tests/test_ncf_00631l_paths.py (8 tests, new: equal-weight burn-in, anti-drift/no-rewrite property, forward-label embargo, shrinkage-ramp monotonicity, flag-off-matches-prior-behavior)"
+        },
+        "runner_change": "ncf_panel_631l_path updated from results/ncf_00631l_panel_latest_20260630.csv to results/ncf_00631l_panel_latest_20260707.csv (regenerated with --expanding-model-weights, now default).",
+        "decision": "Implemented in ncf_00631l.py by explicit user instruction after empirical verification (multiple shrinkage-parameter iterations) and a2118 trigger-stability check. ncf_2330.py and ncf_00632r.py have the identical duplicated global-weight pattern but were NOT changed in this session -- deferred as a separate decision."
       },
       "external_research_review_20260630": {
         "stock_prediction_models_master": {

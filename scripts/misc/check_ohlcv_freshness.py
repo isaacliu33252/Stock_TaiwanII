@@ -35,6 +35,27 @@ DEFAULT_TICKERS = (
     "00878.TW",
 )
 
+# external_market_ohlcv (yfinance-cached) tickers feeding ncf_2330.py's TSMC
+# leadership features and the global macro features shared across the NCF
+# models. Unlike DEFAULT_TICKERS (local `ohlcv` table, refreshed by the
+# nightly TWSE/derivative fetchers), these are cached by
+# `ncf_external_cache.fetch_yf_close_cached` and were found (2026-07-07 Fable
+# audit) to go stale silently -- no freshness check previously covered this
+# table at all.
+DEFAULT_EXTERNAL_MARKET_TICKERS = (
+    "2330.TW",
+    "TSM",
+    "^TWII",
+    "^GSPC",
+    "^IXIC",
+    "^VIX",
+    "^TNX",
+    "^IRX",
+    "QQQ",
+    "SOXX",
+    "GC=F",
+)
+
 
 def _safe_ticker(ticker: str) -> str:
     return ticker.replace(".", "_")
@@ -124,6 +145,58 @@ def _db_max_date(db_path: Path, ticker: str) -> str | None:
     return pd.Timestamp(value).date().isoformat()
 
 
+def _external_market_max_date(db_path: Path, ticker: str, provider: str = "yfinance") -> str | None:
+    with duckdb.connect(str(db_path), read_only=True) as con:
+        try:
+            value = con.execute(
+                "SELECT MAX(dt) FROM external_market_ohlcv WHERE ticker=? AND provider=?",
+                [ticker, provider],
+            ).fetchone()[0]
+        except duckdb.CatalogException:
+            return None
+    if value is None:
+        return None
+    return pd.Timestamp(value).date().isoformat()
+
+
+def check_external_ticker(
+    ticker: str,
+    target_date: str,
+    *,
+    db_path: Path = DB_PATH,
+    provider: str = "yfinance",
+    max_lag_days: int = 5,
+) -> dict[str, Any]:
+    """Freshness check for `external_market_ohlcv` (yfinance cache), which
+    unlike the local `ohlcv` table is fetched lazily and can go stale for
+    days without any pipeline step failing outright (see
+    `ncf_external_cache.fetch_yf_close_cached`'s cache_is_usable heuristic).
+    max_lag_days defaults looser than DEFAULT_TICKERS' max_db_lag_days=3
+    because these tickers are calendar-day gated (not trading-day aware) and
+    include non-TW-market instruments with their own holiday calendars.
+    """
+    db_max = _external_market_max_date(db_path, ticker, provider=provider)
+    lag_days = None if db_max is None else (pd.Timestamp(target_date) - pd.Timestamp(db_max)).days
+
+    warnings: list[str] = []
+    errors: list[str] = []
+    if db_max is None:
+        errors.append("external_ohlcv_missing")
+    elif lag_days is not None and lag_days > max_lag_days:
+        errors.append("external_ohlcv_stale")
+
+    return {
+        "ticker": ticker,
+        "provider": provider,
+        "target_date": target_date,
+        "db_max_date": db_max,
+        "db_lag_days": lag_days,
+        "status": "error" if errors else "ok",
+        "warnings": warnings,
+        "errors": errors,
+    }
+
+
 def check_ticker(
     ticker: str,
     target_date: str,
@@ -173,6 +246,8 @@ def build_report(
     db_path: Path = DB_PATH,
     cache_dir: Path = CACHE_DIR,
     max_db_lag_days: int = 3,
+    external_tickers: list[str] | None = None,
+    max_external_lag_days: int = 5,
 ) -> dict[str, Any]:
     rows = [
         check_ticker(
@@ -186,15 +261,27 @@ def build_report(
     ]
     errors = [row["ticker"] for row in rows if row["status"] == "error"]
     warnings = [row["ticker"] for row in rows if row["status"] == "warning"]
-    overall = "error" if errors else ("warning" if warnings else "ok")
+
+    external_rows = [
+        check_external_ticker(
+            ticker, target_date, db_path=db_path, max_lag_days=max_external_lag_days,
+        )
+        for ticker in (external_tickers or [])
+    ]
+    external_errors = [row["ticker"] for row in external_rows if row["status"] == "error"]
+
+    overall = "error" if (errors or external_errors) else ("warning" if warnings else "ok")
     return {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "target_date": target_date,
         "max_db_lag_days": max_db_lag_days,
+        "max_external_lag_days": max_external_lag_days,
         "overall_status": overall,
         "error_tickers": errors,
         "warning_tickers": warnings,
+        "external_error_tickers": external_errors,
         "tickers": rows,
+        "external_market": external_rows,
     }
 
 
@@ -205,6 +292,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--db", default=str(DB_PATH))
     parser.add_argument("--cache-dir", default=str(CACHE_DIR))
     parser.add_argument("--max-db-lag-days", type=int, default=3)
+    parser.add_argument("--external-tickers", default=",".join(DEFAULT_EXTERNAL_MARKET_TICKERS))
+    parser.add_argument("--max-external-lag-days", type=int, default=5)
     parser.add_argument("--output", default=None)
     parser.add_argument("--fail-on-warning", action="store_true")
     return parser.parse_args()
@@ -214,12 +303,15 @@ def main() -> None:
     args = parse_args()
     target = _auto_target_date().isoformat() if args.target_date == "auto" else args.target_date
     tickers = [ticker.strip() for ticker in args.tickers.split(",") if ticker.strip()]
+    external_tickers = [ticker.strip() for ticker in args.external_tickers.split(",") if ticker.strip()]
     report = build_report(
         tickers,
         target,
         db_path=Path(args.db),
         cache_dir=Path(args.cache_dir),
         max_db_lag_days=args.max_db_lag_days,
+        external_tickers=external_tickers,
+        max_external_lag_days=args.max_external_lag_days,
     )
     if args.output:
         out = Path(args.output)
@@ -238,6 +330,14 @@ def main() -> None:
             f"close_valid={row['raw_cache']['target_close_valid']} "
             f"warnings={','.join(row['warnings']) or '-'}"
         )
+    if report["external_market"]:
+        print("External market OHLCV (yfinance cache):")
+        for row in report["external_market"]:
+            print(
+                f"  {row['ticker']}: {row['status']} "
+                f"db={row['db_max_date']} lag={row['db_lag_days']} "
+                f"errors={','.join(row['errors']) or '-'}"
+            )
 
     if report["overall_status"] == "error" or (args.fail_on_warning and report["overall_status"] == "warning"):
         raise SystemExit(1)

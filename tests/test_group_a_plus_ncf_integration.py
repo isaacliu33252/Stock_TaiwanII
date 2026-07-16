@@ -12,6 +12,7 @@ import pandas as pd
 
 from group_a_plus.integrations.ncf import (
     adjust_golden1_weights,
+    load_ncf_2330_checklist,
     load_ncf_signal,
     ncf_cross_ticker_consistency,
     ncf_downside_signal,
@@ -19,6 +20,7 @@ from group_a_plus.integrations.ncf import (
     ncf_overlay_summary,
     ncf_regime_gated_signal,
     ncf_tail_downside_signal,
+    ncf_tail_upside_signal,
     ncf_upside_signal,
 )
 from group_a_plus.governance.latest import SUPPORTED_STRATEGIES
@@ -114,6 +116,25 @@ class NCFSignalLoadTests(unittest.TestCase):
         self.assertAlmostEqual(sig["horizon_prob_up"]["5"], 0.7, places=4)
         self.assertAlmostEqual(sig["horizon_val_auc"]["20"], 0.68, places=4)
 
+    def test_load_ncf_signal_extracts_tsmc_market_state_and_severe_risk(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            payload = _make_ncf_json("2330.TW", "UP", 0.58, 0.49)
+            payload["forward_drawdown_risk"] = {"available": True, "probability": 0.36}
+            payload["forward_severe_drawdown_risk"] = {"available": True, "probability": 0.10}
+            payload["tsmc_market_state"] = {
+                "state": 2,
+                "label_zh": "高檔震盪",
+                "policy": "diagnostic_only_no_weight_change",
+            }
+            path = Path(tmp) / "ncf_2330.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            sig = load_ncf_signal(path)
+
+        self.assertAlmostEqual(sig["prob_fwd_mdd_gt5_h20"], 0.36, places=4)
+        self.assertAlmostEqual(sig["prob_fwd_mdd_gt8_h20"], 0.10, places=4)
+        self.assertEqual(sig["tsmc_market_state"]["state"], 2)
+        self.assertEqual(sig["tsmc_market_state"]["label_zh"], "高檔震盪")
+
     def test_load_ncf_signal_adds_direction_magnitude_gate(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             p = self._write_ncf(tmp, "00631L.TW", 0.7, 0.8, "UP")
@@ -122,6 +143,40 @@ class NCFSignalLoadTests(unittest.TestCase):
         self.assertIn("direction_magnitude_gate", sig)
         self.assertFalse(sig["direction_magnitude_gate"]["passed"])
         self.assertEqual("DOWN", sig["direction_magnitude_gate"]["return_side"])
+
+    def test_load_ncf_2330_checklist_extracts_factor_quality_overlay(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ncf_2330_checklist.json"
+            path.write_text(
+                json.dumps(
+                    {
+                        "report": "ncf_2330_checklist",
+                        "mode": "daily",
+                        "as_of": "2026-07-03",
+                        "overall_signal": "neutral",
+                        "available_layer_score": 1,
+                        "available_layer_count": 9,
+                        "policy": "diagnostic_only_no_weight_change",
+                        "factor_quality_overlay": {
+                            "status": "research_only",
+                            "signal": "bearish",
+                            "label": "risk_off",
+                            "risk_score": 6.0,
+                            "opportunity_score": 1.0,
+                            "net_score": -5.0,
+                        },
+                        "layers": {"technical": {"signal": "neutral"}},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            checklist = load_ncf_2330_checklist(path)
+
+        self.assertEqual("ncf_2330_checklist", checklist["report"])
+        self.assertEqual("bearish", checklist["factor_quality_signal"])
+        self.assertEqual("risk_off", checklist["factor_quality_label"])
+        self.assertEqual(6.0, checklist["factor_quality_risk_score"])
+        self.assertEqual("technical", next(iter(checklist["layers"])))
 
 
 class A2118LateBullHoldTests(unittest.TestCase):
@@ -493,6 +548,59 @@ class NCFDownsideSignalTests(unittest.TestCase):
         d_only_r = ncf_downside_signal(base_l, sig_r_bull)
         self.assertGreater(d_only_l, d_only_r)
 
+    def test_both_conflict_falls_back_to_full_tail_weight(self) -> None:
+        # Both models internally disagree (direction vs. return sign), so
+        # directional is forced to 0 -- the composite should use tail at full
+        # weight (not diluted to 25%) instead of collapsing to 0.
+        sig_l = {
+            **self._sig("00631L.TW", 0.55, 0.5),
+            "direction_conflict": True,
+            "prob_fwd_mdd_gt5_h20": 0.70,
+            "tail_reward_risk_score": -0.40,
+        }
+        sig_r = {
+            **self._sig("00632R.TW", 0.60, 0.5, "UP"),
+            "direction_conflict": True,
+            "prob_fwd_gain_gt5_h20": 0.55,
+            "tail_reward_risk_score": 0.10,
+        }
+
+        down = ncf_downside_signal(sig_l, sig_r)
+        tail_only = ncf_tail_downside_signal(sig_l, sig_r)
+
+        self.assertGreater(down, 0.0)
+        self.assertAlmostEqual(down, tail_only, places=6)
+
+    def test_both_conflict_with_no_tail_risk_stays_zero(self) -> None:
+        # Same as above but no tail-risk inputs available -- should still be
+        # a clean 0.0, not an error, matching pre-fix behavior.
+        sig_l = {**self._sig("00631L.TW", 0.55, 0.5), "direction_conflict": True}
+        sig_r = {**self._sig("00632R.TW", 0.60, 0.5, "UP"), "direction_conflict": True}
+
+        self.assertEqual(ncf_downside_signal(sig_l, sig_r), 0.0)
+
+    def test_single_conflict_unaffected_by_fix(self) -> None:
+        # Only one side conflicts -- behavior must be identical to before
+        # this fix (still uses the 0.75/0.25 blend, not full tail weight).
+        sig_l = {
+            **self._sig("00631L.TW", 0.2, 0.8),
+            "prob_fwd_mdd_gt5_h20": 0.70,
+            "tail_reward_risk_score": -0.40,
+        }
+        sig_r = {
+            **self._sig("00632R.TW", 0.60, 0.5, "UP"),
+            "direction_conflict": True,
+            "prob_fwd_gain_gt5_h20": 0.55,
+            "tail_reward_risk_score": 0.10,
+        }
+
+        down = ncf_downside_signal(sig_l, sig_r)
+        directional = ncf_downside_signal(sig_l, sig_r, include_tail_risk=False)
+        tail = ncf_tail_downside_signal(sig_l, sig_r)
+        expected = min(max(0.75 * directional + 0.25 * tail, 0.0), 1.0)
+
+        self.assertAlmostEqual(down, expected, places=6)
+
     def test_tail_risk_boosts_downside_signal(self) -> None:
         sig_l = {
             **self._sig("00631L.TW", 0.42, 0.6),
@@ -510,6 +618,85 @@ class NCFDownsideSignalTests(unittest.TestCase):
 
         self.assertGreater(boosted, directional)
         self.assertGreater(ncf_tail_downside_signal(sig_l, sig_r), 0.0)
+
+
+class NCFUpsideSignalTailTests(unittest.TestCase):
+    """Mirror of NCFDownsideSignalTests' tail-risk/both-conflict coverage,
+    for the 2026-07-11 fix that gave ncf_upside_signal the same tail-risk
+    fallback ncf_downside_signal already had."""
+
+    def _sig(self, ticker: str, prob: float, conf: float, direction: str = "UP") -> dict:
+        return {
+            "ticker": ticker,
+            "calibrated_prob_up": prob,
+            "confidence": conf,
+            "direction": direction,
+            "votes_up": 1,
+        }
+
+    def test_tail_risk_boosts_upside_signal(self) -> None:
+        sig_l = {
+            **self._sig("00631L.TW", 0.58, 0.6),
+            "prob_fwd_gain_gt5_h20": 0.70,
+            "tail_reward_risk_score": 0.40,
+        }
+        sig_r = {
+            **self._sig("00632R.TW", 0.38, 0.5, "DOWN"),
+            "prob_fwd_mdd_gt5_h20": 0.55,
+            "tail_reward_risk_score": -0.10,
+        }
+
+        directional = ncf_upside_signal(sig_l, sig_r, include_tail_risk=False)
+        boosted = ncf_upside_signal(sig_l, sig_r)
+
+        self.assertGreater(boosted, directional)
+        self.assertGreater(ncf_tail_upside_signal(sig_l, sig_r), 0.0)
+
+    def test_both_conflict_falls_back_to_full_tail_weight(self) -> None:
+        sig_l = {
+            **self._sig("00631L.TW", 0.45, 0.5),
+            "direction_conflict": True,
+            "prob_fwd_gain_gt5_h20": 0.70,
+            "tail_reward_risk_score": 0.40,
+        }
+        sig_r = {
+            **self._sig("00632R.TW", 0.40, 0.5, "DOWN"),
+            "direction_conflict": True,
+            "prob_fwd_mdd_gt5_h20": 0.55,
+            "tail_reward_risk_score": -0.10,
+        }
+
+        up = ncf_upside_signal(sig_l, sig_r)
+        tail_only = ncf_tail_upside_signal(sig_l, sig_r)
+
+        self.assertGreater(up, 0.0)
+        self.assertAlmostEqual(up, tail_only, places=6)
+
+    def test_both_conflict_with_no_tail_risk_stays_zero(self) -> None:
+        sig_l = {**self._sig("00631L.TW", 0.45, 0.5), "direction_conflict": True}
+        sig_r = {**self._sig("00632R.TW", 0.40, 0.5, "DOWN"), "direction_conflict": True}
+
+        self.assertEqual(ncf_upside_signal(sig_l, sig_r), 0.0)
+
+    def test_single_conflict_unaffected_by_fix(self) -> None:
+        sig_l = {
+            **self._sig("00631L.TW", 0.58, 0.6),
+            "prob_fwd_gain_gt5_h20": 0.70,
+            "tail_reward_risk_score": 0.40,
+        }
+        sig_r = {
+            **self._sig("00632R.TW", 0.40, 0.5, "DOWN"),
+            "direction_conflict": True,
+            "prob_fwd_mdd_gt5_h20": 0.55,
+            "tail_reward_risk_score": -0.10,
+        }
+
+        up = ncf_upside_signal(sig_l, sig_r)
+        directional = ncf_upside_signal(sig_l, sig_r, include_tail_risk=False)
+        tail = ncf_tail_upside_signal(sig_l, sig_r)
+        expected = min(max(0.75 * directional + 0.25 * tail, 0.0), 1.0)
+
+        self.assertAlmostEqual(up, expected, places=6)
 
 
 class AdjustGolden1WeightsTests(unittest.TestCase):
@@ -568,6 +755,22 @@ class NCFOverlaySummaryTests(unittest.TestCase):
         for key in ["composite_downside_signal", "action", "base_golden1_weights",
                     "adjusted_golden1_weights", "00631l_reduction"]:
             self.assertIn(key, summary)
+
+    def test_confidence_panel_aligned_passes_through_when_present(self) -> None:
+        sig_l, sig_r = self._make_sigs()
+        sig_l["confidence_panel_aligned"] = 0.07
+        sig_r["confidence_panel_aligned"] = 0.09
+        base = {"0050.TW": 0.6, "00631L.TW": 0.2, "cash": 0.2}
+        summary = ncf_overlay_summary(sig_l, sig_r, base, "golden1")
+        self.assertEqual(summary["ncf_00631l"]["confidence_panel_aligned"], 0.07)
+        self.assertEqual(summary["ncf_00632r"]["confidence_panel_aligned"], 0.09)
+
+    def test_confidence_panel_aligned_absent_is_none(self) -> None:
+        sig_l, sig_r = self._make_sigs()
+        base = {"0050.TW": 0.6, "00631L.TW": 0.2, "cash": 0.2}
+        summary = ncf_overlay_summary(sig_l, sig_r, base, "golden1")
+        self.assertIsNone(summary["ncf_00631l"]["confidence_panel_aligned"])
+        self.assertIsNone(summary["ncf_00632r"]["confidence_panel_aligned"])
 
     def test_defensive_regime_no_adjustment(self) -> None:
         sig_l, sig_r = self._make_sigs()

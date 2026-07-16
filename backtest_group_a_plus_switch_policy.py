@@ -64,6 +64,11 @@ class SwitchRule:
     # None = disabled (use exit_ma_gap always)
     low_risk_exit_ma_gap: float | None = None
     low_risk_exit_score_threshold: int = 1
+    # Tail-risk override entry: bypass total-risk/chip gates when price-derived
+    # tail risk is acute. 0 = disabled.
+    override_tail_risk_score: int = 0
+    override_tail_drawdown_threshold: float = -0.10
+    override_tail_use_var_breach: bool = True
 
 
 RULES = (
@@ -147,15 +152,34 @@ def _confirmation_strength(rule: dict[str, Any] | SwitchRule) -> int:
     return int(total_risk or 0) * 10 + int(tail or 0) * 5 + int(chip or 0) + int(derivative or 0)
 
 
-def _load_prices(db_path: Path, tickers: list[str], start: str, end: str) -> pd.DataFrame:
+def _load_prices(
+    db_path: Path, tickers: list[str], start: str, end: str, exclude_zero_volume: bool = False
+) -> pd.DataFrame:
+    """`exclude_zero_volume` (2026-07-12 fix, opt-in, default False = zero
+    behavior change for every existing caller): some non-trading days (Taiwan
+    market holidays, and at least a few genuine multi-day source outages --
+    see `results/signal_group_a_*.json`/OHLCV freshness discussion in
+    GROUP_A_PLUS_A2118_CHIP_DATA_CORE_CLOCK_AUDIT_HANDOFF_20260712.md) get a
+    spurious `ohlcv` row inserted with open=high=low=close=prior close and
+    volume=0, instead of being skipped. Live signal generation
+    (`daily_signal.py`) uses the last row of this price series as
+    "actual_data_date" -- a phantom zero-volume row makes that one calendar
+    day too new, which then makes every real chip/derivative source look
+    falsely stale by one day. Passing `exclude_zero_volume=True` filters
+    these rows out at the source so the last row is always a genuine trading
+    day. Existing backtest/evaluation callers are intentionally left on the
+    old behavior (see the same handoff doc for why a blanket historical
+    change was not made) -- this is opt-in per caller.
+    """
     placeholders = ", ".join(["?"] * len(tickers))
+    volume_clause = "AND volume > 0" if exclude_zero_volume else ""
     con = duckdb.connect(str(db_path), read_only=True)
     try:
         rows = con.execute(
             f"""
             SELECT dt, ticker, close
             FROM ohlcv
-            WHERE ticker IN ({placeholders}) AND dt BETWEEN ? AND ?
+            WHERE ticker IN ({placeholders}) AND dt BETWEEN ? AND ? {volume_clause}
             ORDER BY dt, ticker
             """,
             [*tickers, start, end],
@@ -194,6 +218,32 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
     features["txo_foreign_put_net_oi"] = 0.0
     features["txo_foreign_put_call_net_oi"] = 0.0
     features["txo_foreign_put_call_net_oi_chg_5d"] = 0.0
+    # 2026-07-04 fix (a2118 chip-data-outage gap): track which trading days
+    # actually had real source rows, so we can distinguish "genuinely no risk
+    # signal" (score == 0 with fresh data) from "data pipeline is down" (score
+    # == 0 only because every input silently defaulted to 0.0). Keep an "any"
+    # clock for diagnostics, but use the "core" clock for fallback decisions:
+    # broad market_margin_data can exist far earlier than ETF/institutional/
+    # derivative coverage and should not mask missing decision-relevant data.
+    #
+    # 2026-07-12 investigation: tried switching this "core" clock from a
+    # union of coverage dates (fresh as long as *any* core table keeps
+    # updating -- which hid a real 9-day dealer_futures_data/
+    # dealer_options_data outage the same day) to a worst-case-per-table
+    # clock. That change was reverted: margin_data and
+    # shareholding_distribution each have a genuine multi-hundred-day
+    # historical void (2022-08-26->2023-10-06 and 2022-05-13->2025-06-06
+    # respectively -- data collection simply hadn't started yet for those
+    # stretches, not an outage), and a worst-case clock flagged ~70% of
+    # 2022-2026 trading days as "core data stale," which would silently
+    # bypass the chip/derivative/total-risk gates across most of a2118's
+    # validated historical backtest range. Keeping the union here is a
+    # known, accepted limitation (see this comment) rather than a fix --
+    # only the dealer_futures_data/dealer_options_data scheduling gap itself
+    # was fixed (scripts/run/run_ncf_daily_pipeline.py's
+    # refresh_dealer_positions step); the clock computation is unchanged.
+    coverage_dates: set[pd.Timestamp] = set()
+    core_coverage_dates: set[pd.Timestamp] = set()
     con = duckdb.connect(str(db_path), read_only=True)
     try:
         if _table_exists(con, "institutional_data"):
@@ -208,6 +258,8 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not inst.empty:
                 inst["dt"] = pd.to_datetime(inst["dt"])
+                coverage_dates.update(inst["dt"])
+                core_coverage_dates.update(inst["dt"])
                 inst = inst.set_index("dt").reindex(index).fillna(0.0)
                 features["inst_0050_5d"] = inst["institutional_total_net_buy"].rolling(5, min_periods=1).sum()
                 features["foreign_0050_5d"] = inst["foreign_net_buy"].rolling(5, min_periods=1).sum()
@@ -223,6 +275,8 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not margin.empty:
                 margin["dt"] = pd.to_datetime(margin["dt"])
+                coverage_dates.update(margin["dt"])
+                core_coverage_dates.update(margin["dt"])
                 margin = margin.set_index("dt").reindex(index).ffill(limit=5)
                 features["margin_0050_balance_chg_5d"] = margin["margin_balance"].diff(5).fillna(0.0)
         if _table_exists(con, "market_margin_data"):
@@ -237,6 +291,7 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not market_margin.empty:
                 market_margin["dt"] = pd.to_datetime(market_margin["dt"])
+                coverage_dates.update(market_margin["dt"])
                 market_margin = market_margin.set_index("dt").reindex(index).ffill(limit=5)
                 features["market_margin_balance_chg_5d"] = market_margin["margin_balance"].diff(5).fillna(0.0)
         if _table_exists(con, "shareholding_distribution"):
@@ -254,6 +309,8 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not tdcc.empty:
                 tdcc["dt"] = pd.to_datetime(tdcc["dt"])
+                coverage_dates.update(tdcc["dt"])
+                core_coverage_dates.update(tdcc["dt"])
                 tdcc = tdcc.set_index("dt").sort_index()
                 observation_gap = tdcc.index.to_series().diff().dt.days
                 valid_weekly_gap = observation_gap.le(21)
@@ -279,6 +336,8 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not foreign_holding.empty:
                 foreign_holding["dt"] = pd.to_datetime(foreign_holding["dt"])
+                coverage_dates.update(foreign_holding["dt"])
+                core_coverage_dates.update(foreign_holding["dt"])
                 foreign_holding = foreign_holding.set_index("dt").reindex(index).ffill(limit=5)
                 features["foreign_shareholding_0050_ratio_chg_5d"] = (
                     foreign_holding["foreign_investment_shares_ratio"].diff(5).fillna(0.0)
@@ -295,6 +354,8 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not short_balance.empty:
                 short_balance["dt"] = pd.to_datetime(short_balance["dt"])
+                coverage_dates.update(short_balance["dt"])
+                core_coverage_dates.update(short_balance["dt"])
                 short_balance = short_balance.set_index("dt").reindex(index).ffill(limit=5)
                 features["short_0050_margin_balance_chg_5d"] = short_balance["margin_short_current_balance"].diff(5).fillna(0.0)
                 features["short_0050_sbl_balance_chg_5d"] = short_balance["sbl_short_current_balance"].diff(5).fillna(0.0)
@@ -311,6 +372,8 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not lending.empty:
                 lending["dt"] = pd.to_datetime(lending["dt"])
+                coverage_dates.update(lending["dt"])
+                core_coverage_dates.update(lending["dt"])
                 lending = lending.set_index("dt").reindex(index).fillna(0.0)
                 features["securities_lending_0050_volume_5d"] = lending["volume"].rolling(5, min_periods=1).sum()
         if _table_exists(con, "day_trading_data"):
@@ -325,6 +388,8 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not day_trade.empty:
                 day_trade["dt"] = pd.to_datetime(day_trade["dt"])
+                coverage_dates.update(day_trade["dt"])
+                core_coverage_dates.update(day_trade["dt"])
                 day_trade = day_trade.set_index("dt").reindex(index).fillna(0.0)
                 features["day_trade_0050_volume_5d"] = day_trade["day_trade_volume"].rolling(5, min_periods=1).sum()
         if _table_exists(con, "dealer_futures_data"):
@@ -340,6 +405,8 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not dealer_fut.empty:
                 dealer_fut["dt"] = pd.to_datetime(dealer_fut["dt"])
+                coverage_dates.update(dealer_fut["dt"])
+                core_coverage_dates.update(dealer_fut["dt"])
                 dealer_fut = dealer_fut.set_index("dt").reindex(index).fillna(0.0)
                 features["dealer_tx_volume_5d"] = dealer_fut["volume"].rolling(5, min_periods=1).sum()
         if _table_exists(con, "dealer_options_data"):
@@ -355,6 +422,8 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not dealer_opt.empty:
                 dealer_opt["dt"] = pd.to_datetime(dealer_opt["dt"])
+                coverage_dates.update(dealer_opt["dt"])
+                core_coverage_dates.update(dealer_opt["dt"])
                 dealer_opt = dealer_opt.set_index("dt").reindex(index).fillna(0.0)
                 features["dealer_txo_volume_5d"] = dealer_opt["volume"].rolling(5, min_periods=1).sum()
         if _table_exists(con, "derivative_institutional_data"):
@@ -372,6 +441,8 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not futures.empty:
                 futures["dt"] = pd.to_datetime(futures["dt"])
+                coverage_dates.update(futures["dt"])
+                core_coverage_dates.update(futures["dt"])
                 futures = futures.set_index("dt").reindex(index).ffill(limit=5)
                 features["tx_foreign_net_oi"] = futures["net_open_interest_balance_volume"].fillna(0.0)
                 features["tx_foreign_net_oi_chg_5d"] = futures["net_open_interest_balance_volume"].diff(5).fillna(0.0)
@@ -389,6 +460,8 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
             ).fetchdf()
             if not options.empty:
                 options["dt"] = pd.to_datetime(options["dt"])
+                coverage_dates.update(options["dt"])
+                core_coverage_dates.update(options["dt"])
                 pivot = options.pivot_table(
                     index="dt",
                     columns="put_call",
@@ -405,7 +478,26 @@ def _load_chip_features(db_path: Path, index: pd.DatetimeIndex, start: str, end:
     finally:
         con.close()
     features = _attach_smart_money_cost_proxy(db_path, features, index, start, end)
+    features["chip_data_days_since_source_update"] = _days_since_coverage(index, coverage_dates)
+    features["chip_data_core_days_since_source_update"] = _days_since_coverage(index, core_coverage_dates)
     return features.fillna(0.0)
+
+
+def _days_since_coverage(index: pd.DatetimeIndex, coverage_dates: set[pd.Timestamp]) -> list[int]:
+    """Trading days (by position in `index`) since the most recent date on
+    or before each entry that appears in `coverage_dates`. A large sentinel
+    means no source table has ever had data up to and including that date
+    (e.g. the entire chip/derivative data ecosystem predates real history,
+    as in the 2008 TWII proxy window).
+    """
+    sentinel = 999_999
+    result: list[int] = []
+    last_seen: int | None = None
+    for position, dt in enumerate(index):
+        if dt in coverage_dates:
+            last_seen = position
+        result.append(sentinel if last_seen is None else position - last_seen)
+    return result
 
 
 def _attach_smart_money_cost_proxy(
@@ -418,16 +510,31 @@ def _attach_smart_money_cost_proxy(
     """用本地台股資料近似 FinGenius 主力成本乖離率。"""
     con = duckdb.connect(str(db_path), read_only=True)
     try:
+        # Guard table existence the same way _load_chip_features does for
+        # every other chip source -- this JOIN previously assumed
+        # institutional_data/margin_data always exist, so a duckdb file
+        # missing either table (e.g. a synthetic/partial fixture, or a real
+        # gap) raised uncaught instead of degrading like every other source.
+        has_institutional = _table_exists(con, "institutional_data")
+        has_margin = _table_exists(con, "margin_data")
+        inst_join = (
+            "LEFT JOIN institutional_data i ON i.ticker = o.ticker AND i.dt = o.dt" if has_institutional else ""
+        )
+        margin_join = "LEFT JOIN margin_data m ON m.ticker = o.ticker AND m.dt = o.dt" if has_margin else ""
+        inst_net_buy_expr = "coalesce(i.institutional_total_net_buy, 0.0)" if has_institutional else "0.0"
+        foreign_net_buy_expr = "coalesce(i.foreign_net_buy, 0.0)" if has_institutional else "0.0"
+        margin_buy_expr = "coalesce(m.margin_buy, 0.0)" if has_margin else "0.0"
+        margin_sell_expr = "coalesce(m.margin_sell, 0.0)" if has_margin else "0.0"
         rows = con.execute(
-            """
+            f"""
             SELECT o.dt, o.close,
-                   coalesce(i.institutional_total_net_buy, 0.0) AS inst_net_buy,
-                   coalesce(i.foreign_net_buy, 0.0) AS foreign_net_buy,
-                   coalesce(m.margin_buy, 0.0) AS margin_buy,
-                   coalesce(m.margin_sell, 0.0) AS margin_sell
+                   {inst_net_buy_expr} AS inst_net_buy,
+                   {foreign_net_buy_expr} AS foreign_net_buy,
+                   {margin_buy_expr} AS margin_buy,
+                   {margin_sell_expr} AS margin_sell
             FROM ohlcv o
-            LEFT JOIN institutional_data i ON i.ticker = o.ticker AND i.dt = o.dt
-            LEFT JOIN margin_data m ON m.ticker = o.ticker AND m.dt = o.dt
+            {inst_join}
+            {margin_join}
             WHERE o.ticker = '0050.TW' AND o.dt BETWEEN ? AND ?
             ORDER BY o.dt
             """,
@@ -700,6 +807,8 @@ def _regime_features(prices: pd.DataFrame, rule: SwitchRule, chip_features: pd.D
         frame["smart_money_cost_gap_60d"] = 0.0
         frame["smart_money_pressure_20d"] = 0.0
         frame["smart_money_cost_risk"] = 0
+        frame["chip_data_days_since_source_update"] = 999_999
+        frame["chip_data_core_days_since_source_update"] = 999_999
     price_5d = close.pct_change(5).reindex(frame.index).fillna(0.0)
     return_1d = close.pct_change().reindex(frame.index).fillna(0.0)
     hist_var_20 = return_1d.rolling(20, min_periods=10).quantile(0.05).fillna(0.0)
@@ -772,12 +881,78 @@ def _regime_features(prices: pd.DataFrame, rule: SwitchRule, chip_features: pd.D
     return frame
 
 
+def _chip_data_is_stale(days_since_update: int, max_stale_days: int) -> bool:
+    """True when no raw chip/derivative source table has had a real data row
+    for at least `max_stale_days` trading days as of the row in question.
+
+    See `chip_data_days_since_source_update` (computed in `_load_chip_features`
+    from real per-table coverage, independent of the always-zero-filled
+    chip_score/derivative_score/total_risk_score values) and the
+    `chip_data_fallback_max_stale_days` opt-in param on `_switch_returns`.
+    """
+    return int(days_since_update) >= int(max_stale_days)
+
+
 def _switch_returns(
     prices: pd.DataFrame,
     chip_features: pd.DataFrame | None,
     rule: SwitchRule,
+    chip_data_fallback_max_stale_days: int | None = None,
+    risk_score_lookback_days: int | None = None,
+    momentum_fast_exit_min: float | None = None,
+    momentum_fast_exit_ma_gap_min: float | None = None,
 ) -> tuple[list[dict[str, Any]], pd.DataFrame]:
+    """Backtest the golden1 <-> defensive switch under `rule`.
+
+    `chip_data_fallback_max_stale_days` (2026-07-04, a2118 data-outage gap
+    fix): opt-in, default None (disabled, zero behavior change vs. all
+    existing callers). When set, `require_chip_score`/`require_derivative_score`/
+    `require_total_risk_score` are treated as satisfied (bypassed) on any day
+    where the underlying chip/derivative source tables have had no real data
+    for at least this many trading days -- see
+    GROUP_A_PLUS_FABLE_AUDIT_MARKET_STATE_ARBITRATION_HANDOFF_20260704.md and
+    project_market_state_arbitration_a2118_gap_20260704 for why this matters:
+    with the current a2111/a2118 rule (require_total_risk_score=6, no
+    override path enabled), a chip-data pipeline outage silently and
+    permanently disables the defensive entry condition regardless of price
+    action, because a missing/NaN input reads as "no risk" (score 0) exactly
+    like a genuinely calm market. `tail_risk_ok` is deliberately NOT bypassed
+    here -- tail_risk_score is computed purely from price/return data
+    (historical VaR, realized-vol ratio), not from chip/derivative sources,
+    so it stays valid even when chip data is stale.
+
+    `risk_score_lookback_days` / `momentum_fast_exit_min` /
+    `momentum_fast_exit_ma_gap_min` (2026-07-06, 2020 V-shaped-crash fix):
+    opt-in, default None (disabled, zero behavior change vs. all existing
+    callers unless explicitly passed). See
+    GROUP_A_PLUS_2020_COVID_SWITCH_RULE_FIX_HANDOFF_20260706.md for the full
+    derivation. Two independent, separately-gated fixes:
+
+    - `risk_score_lookback_days`: entry-side. `total_risk_ok` uses a rolling
+      max of `total_risk_score` over this many trading days (inclusive of
+      today) instead of only today's value. Fixes same-day signal
+      misalignment where `total_risk_score` and `drawdown`/`ma_gap` cross
+      their thresholds on different days during a fast crash (confirmed
+      2020: `total_risk_score` hit 6 on 2020-03-06, `drawdown` didn't clear
+      -11% until 2020-03-09, and the two conditions were never
+      simultaneously true for the rest of the crash).
+    - `momentum_fast_exit_min` + `momentum_fast_exit_ma_gap_min`: exit-side.
+      Adds an independent fast-exit path -- exit once `min_hold_days` is met
+      if `exit_momentum >= momentum_fast_exit_min` AND (if
+      `momentum_fast_exit_ma_gap_min` is set) `ma_gap >=
+      momentum_fast_exit_ma_gap_min` -- regardless of the normal
+      `ma_gap >= exit_ma_gap` exit condition. The ma_gap co-condition is
+      required: pure momentum magnitude cannot distinguish a genuine
+      V-shaped recovery (2020-03-26: +12.6% 5-day return, ma_gap=-4.4%) from
+      a dead-cat bounce deep in a bear market (2008-11-03: +14.4% 5-day
+      return -- bigger than 2020's -- but ma_gap=-23.7%, drawdown=-39.2%).
+    """
     features = _regime_features(prices, rule, chip_features)
+    if risk_score_lookback_days is not None:
+        window = max(int(risk_score_lookback_days), 1)
+        features["total_risk_score_lookback_max"] = (
+            features["total_risk_score"].rolling(window, min_periods=1).max()
+        )
     in_defense = False
     hold_days = 0
     events: list[dict[str, Any]] = []
@@ -795,11 +970,37 @@ def _switch_returns(
             and int(row["total_risk_score"]) >= int(rule.override_risk_score)
             and float(row["drawdown"]) <= float(rule.override_drawdown_threshold)
         )
+        tail_override_enter = False
+        if rule.override_tail_risk_score > 0 and int(row["tail_risk_score"]) >= int(rule.override_tail_risk_score):
+            tail_drawdown_enter = float(row["drawdown"]) <= float(rule.override_tail_drawdown_threshold)
+            tail_var_enter = bool(
+                rule.override_tail_use_var_breach
+                and float(row["return_0050_1d"]) <= float(row["hist_var_0050_20d_5pct"])
+            )
+            tail_override_enter = tail_drawdown_enter or tail_var_enter
         chip_ok = int(row["chip_score"]) >= int(rule.require_chip_score)
         derivative_ok = int(row["derivative_score"]) >= int(rule.require_derivative_score)
-        total_risk_ok = int(row["total_risk_score"]) >= int(rule.require_total_risk_score)
+        effective_total_risk_score = (
+            int(row["total_risk_score_lookback_max"])
+            if risk_score_lookback_days is not None
+            else int(row["total_risk_score"])
+        )
+        total_risk_ok = effective_total_risk_score >= int(rule.require_total_risk_score)
         tail_risk_ok = int(row["tail_risk_score"]) >= int(rule.require_tail_risk_score)
-        enter = (price_enter or cost_enter or override_enter) and chip_ok and derivative_ok and total_risk_ok and tail_risk_ok
+        fallback_days_since_update = row.get(
+            "chip_data_core_days_since_source_update",
+            row.get("chip_data_days_since_source_update", 0),
+        )
+        if chip_data_fallback_max_stale_days is not None and _chip_data_is_stale(
+            fallback_days_since_update, chip_data_fallback_max_stale_days
+        ):
+            chip_ok = True
+            derivative_ok = True
+            total_risk_ok = True
+        enter = (
+            ((price_enter or cost_enter or override_enter) and chip_ok and derivative_ok and total_risk_ok and tail_risk_ok)
+            or tail_override_enter
+        )
         effective_exit_ma_gap = rule.exit_ma_gap
         if (
             rule.low_risk_exit_ma_gap is not None
@@ -817,6 +1018,13 @@ def _switch_returns(
             exit_ = exit_ and int(row["total_risk_score"]) <= int(rule.exit_max_total_risk_score)
         if rule.exit_max_tail_risk_score is not None:
             exit_ = exit_ and int(row["tail_risk_score"]) <= int(rule.exit_max_tail_risk_score)
+        if momentum_fast_exit_min is not None and float(row["exit_momentum"]) >= float(momentum_fast_exit_min):
+            fast_exit_ma_gap_ok = (
+                momentum_fast_exit_ma_gap_min is None
+                or float(row["ma_gap"]) >= float(momentum_fast_exit_ma_gap_min)
+            )
+            if fast_exit_ma_gap_ok:
+                exit_ = True
         if in_defense:
             hold_days += 1
             if hold_days >= rule.min_hold_days and exit_:

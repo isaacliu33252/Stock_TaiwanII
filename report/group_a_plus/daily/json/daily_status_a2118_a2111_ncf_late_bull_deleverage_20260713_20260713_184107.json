@@ -1,0 +1,97 @@
+{
+  "generated_at": "2026-07-13T18:41:07",
+  "check_date": "2026-07-13",
+  "overall_status": "warn",
+  "profile": "a2118_a2111_ncf_late_bull_deleverage",
+  "mode": "live_signal",
+  "source_paths": {
+    "live_signal": "report/group_a_plus/latest/live_signal.json",
+    "execution_plan": "report/group_a_plus/latest/execution_plan.json",
+    "compounding_regime": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_20260713.json"
+  },
+  "checks": [
+    {
+      "name": "live_signal_success",
+      "status": "ok",
+      "detail": "live signal loaded"
+    },
+    {
+      "name": "execution_allowed",
+      "status": "ok",
+      "detail": "allowed"
+    },
+    {
+      "name": "data_freshness",
+      "status": "warn",
+      "detail": "2 business days stale, 4 calendar days stale"
+    },
+    {
+      "name": "strategy_status",
+      "status": "ok",
+      "detail": "strategy_status=active, strategy_id=a2118_a2111_ncf_late_bull_deleverage"
+    },
+    {
+      "name": "source_freshness",
+      "status": "warn",
+      "detail": "NCF live overlay skipped: date mismatch {'00631L.TW': '2026-07-10', '00632R.TW': '2026-07-10'}, actual 2026-07-09"
+    },
+    {
+      "name": "cash_constraint",
+      "status": "ok",
+      "detail": "estimated_cash_after_rounding_before_cost=300,123"
+    },
+    {
+      "name": "execution_plan_pre_trade_guard",
+      "status": "warn",
+      "detail": "execution plan has no aligned pre_trade_guard"
+    }
+  ],
+  "signal": {
+    "signal_status": "hold_or_align_to_target",
+    "signal_reason": "A20.7 formal defensive state is inactive",
+    "actual_data_date": "2026-07-09",
+    "requested_as_of_date": "2026-07-12",
+    "business_stale_days": 2,
+    "calendar_stale_days": 4
+  },
+  "group_a_plus": {
+    "overlay_regime": "golden1",
+    "overlay_00679b_weight": 0.0,
+    "cash_after_cost": 300123.42764282227,
+    "target_shares": {
+      "0050.TW": 5422,
+      "00631L.TW": 3432,
+      "00632R.TW": 0,
+      "00679B.TWO": 0
+    },
+    "pre_trade_guard": {},
+    "compounding_regime_diagnostic": {
+      "status": "ok",
+      "source_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_20260713.json",
+      "report_type": "00631l_leveraged_compounding_regime",
+      "generated_at": "2026-07-13T18:28:34",
+      "date": "2026-07-13",
+      "compounding_regime": "MEAN_REVERTING",
+      "recommended_policy": "prohibit_new_leverage_or_reduce_rebalance_frequency",
+      "trend_score": 3,
+      "mean_reversion_score": 3,
+      "features": {
+        "rolling_AR1_5d": -0.15891126254568375,
+        "rolling_AR1_20d": 0.0872425443275918,
+        "variance_ratio": 0.9567617503213399,
+        "trend_persistence": 0.5263157894736842,
+        "reversal_speed": 0.2777777777777778,
+        "positive_return_streak": 1.0,
+        "negative_return_streak": 0.0,
+        "drawdown_recovery_ratio": 0.26402672050046805,
+        "00631L_vs_0050_relative_momentum": 0.018557664489911918
+      },
+      "regime_policy": {
+        "TREND_PERSISTENT": "Do not reduce 00631L for high volatility alone.",
+        "MEAN_REVERTING": "Prohibit new leverage or reduce rebalance frequency.",
+        "TRANSITIONAL": "Maintain A21.18; do not actively overlay."
+      },
+      "active_allocation_impact": "none"
+    }
+  }
+}

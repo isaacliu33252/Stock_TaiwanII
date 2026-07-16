@@ -3,18 +3,81 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from tw_output_standard import OutputStandardizer, write_standard_output
 
+from group_a_plus.governance.latest import DEFAULT_LATEST_STRATEGY, SUPPORTED_STRATEGIES, resolve_latest
 
-def build_catalog(default_start: str, default_end: str) -> dict[str, Any]:
+# Fable audit (2026-07-16, combination opportunities #4): this catalog was
+# hand-maintained separately from group_a_plus.governance.latest's
+# SUPPORTED_STRATEGIES (the actual live-dispatch registry read from
+# strategy.json), and silently drifted two generations behind -- "active"
+# stayed hardcoded at "a213_runner" through the entire a2111-a2129 era, and
+# the runner list stopped at a216 with none of a217/a2111-a2129 ever added.
+# Modules whose SUPPORTED_STRATEGIES entry duplicates one already hand-curated
+# below (a207/a213/a214/a215, which predate SUPPORTED_STRATEGIES and keep
+# their richer legacy templates with a root-level script) are skipped by
+# _LEGACY_COVERED_MODULES so this never double-lists a runner.
+_LEGACY_COVERED_MODULES = {
+    "group_a_plus.runners.a207",
+    "group_a_plus.runners.a213",
+    "group_a_plus.runners.a214",
+    "group_a_plus.runners.a215",
+}
+_FALLBACK_ACTIVE_STRATEGY_ID = "a2118_a2111_ncf_late_bull_deleverage"
+
+
+def _resolve_active_strategy_id(manifest_path: Path = DEFAULT_LATEST_STRATEGY) -> str:
+    try:
+        manifest = resolve_latest(manifest_path)
+        strategy_id = manifest["active_strategy"]["id"]
+        return str(strategy_id) if strategy_id else _FALLBACK_ACTIVE_STRATEGY_ID
+    except Exception:
+        return _FALLBACK_ACTIVE_STRATEGY_ID
+
+
+def _supported_strategy_runner_entries(active_strategy_id: str) -> list[dict[str, Any]]:
+    entries: list[dict[str, Any]] = []
+    for strategy_id, module_path in SUPPORTED_STRATEGIES.items():
+        if module_path in _LEGACY_COVERED_MODULES:
+            continue
+        short_id = module_path.rsplit(".", 1)[-1]
+        try:
+            description = (importlib.import_module(module_path).__doc__ or "").strip().splitlines()[0]
+        except Exception:
+            description = f"GroupA+ {short_id} strategy runner."
+        entries.append(
+            {
+                "id": strategy_id,
+                "kind": "active_strategy" if strategy_id == active_strategy_id else "shadow_candidate",
+                "module": module_path,
+                "description": description,
+                "module_command_template": (
+                    f"python3 -m {module_path} --start {{start}} --end {{end}} "
+                    f"--output results/group_a_plus_runner_{short_id}_{{label}}.json "
+                    f"--frame-output results/group_a_plus_runner_{short_id}_{{label}}_frame.csv"
+                ),
+                "outputs": ["json", "frame_csv"],
+            }
+        )
+    return entries
+
+
+def build_catalog(
+    default_start: str,
+    default_end: str,
+    *,
+    manifest_path: Path = DEFAULT_LATEST_STRATEGY,
+) -> dict[str, Any]:
+    active_strategy_id = _resolve_active_strategy_id(manifest_path)
     return {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "default_window": {"start": default_start, "end": default_end},
-        "active": "a213_runner",
+        "active": active_strategy_id,
         "baseline": "a207_runner",
         "latest_manifest": "report/group_a_plus/latest/strategy.json",
         "legacy_latest_pointer": "report/group_a_plus/latest/switch_backtest.json",
@@ -223,7 +286,11 @@ def build_catalog(default_start: str, default_end: str) -> dict[str, Any]:
             },
             {
                 "id": "a213_runner",
-                "kind": "active_strategy",
+                # Fable audit (2026-07-16, #4): no longer the active strategy
+                # (superseded by a2118 and later); this hardcoded label was
+                # never updated when active moved on. See
+                # _resolve_active_strategy_id() for the current one.
+                "kind": "legacy_superseded",
                 "script": "group_a_plus_a213_runner.py",
                 "module": "group_a_plus.runners.a213",
                 "description": "A21.3 cash30 recovery-ramp standardized runner.",
@@ -332,18 +399,33 @@ def build_catalog(default_start: str, default_end: str) -> dict[str, Any]:
                 "kind": "active_operation",
                 "script": "group_a_plus_execution_plan.py",
                 "module": "group_a_plus.operations.execution_plan",
-                "description": "Cost-aware trade plan from Group A++ workbook holdings.",
+                "description": (
+                    "Cost-aware trade plan from Group A++ workbook holdings. Requires a real cash "
+                    "balance; unattended daily pipeline intentionally does not regenerate this plan."
+                ),
                 "command_template": (
                     "python3 group_a_plus_execution_plan.py --as-of {end} "
+                    "--cash-balance {cash_balance} --compounding-regime latest "
                     "--output results/group_a_plus_execution_plan_{label}.json"
                 ),
                 "module_command_template": (
                     "python3 -m group_a_plus.operations.execution_plan --as-of {end} "
+                    "--cash-balance {cash_balance} --compounding-regime latest "
                     "--output results/group_a_plus_execution_plan_{label}.json"
                 ),
+                "required_runtime_inputs": ["cash_balance"],
+                "manual_only_reason": "portfolio workbook has no reliable cash field",
+                "guards": [
+                    "volatility_gate_no_00631l_add",
+                    "a2118_extreme_risk_no_new_adds",
+                    "compounding_regime_no_00631l_add",
+                    "portfolio_snapshot_mismatch",
+                    "compounding_regime_date_alignment",
+                ],
                 "outputs": ["json", "latest_pointer_json"],
             },
-        ],
+        ]
+        + _supported_strategy_runner_entries(active_strategy_id),
         "compare_command_template": (
             "python3 compare_group_a_plus_results.py "
             "--baseline results/group_a_plus_runner_a207_{label}.json "

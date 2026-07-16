@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "report_type": "a2118_dfl_shadow_ensemble",
+  "status": "available",
+  "policy": "shadow_only_no_auto_weight_change",
+  "active_allocation_impact": "none",
+  "generated_at": "2026-07-15T00:00:32",
+  "as_of": "2026-07-14",
+  "ensemble_level": "none",
+  "manual_review_required": false,
+  "signals": {
+    "base": {
+      "action": "KEEP",
+      "active": false,
+      "recommended_action": "keep_a2118",
+      "predicted_regret": null,
+      "candidate_action_before_reliability": null,
+      "candidate_predicted_regret_before_reliability": null,
+      "reliability_error_percentile": null,
+      "reliability_gate_pass": null,
+      "action_allowed": null,
+      "window_label": null,
+      "source_list": null
+    },
+    "p50": {
+      "action": "KEEP",
+      "active": false,
+      "recommended_action": "keep_a2118",
+      "predicted_regret": null,
+      "candidate_action_before_reliability": null,
+      "candidate_predicted_regret_before_reliability": null,
+      "reliability_error_percentile": null,
+      "reliability_gate_pass": null,
+      "action_allowed": null,
+      "window_label": null,
+      "source_list": null
+    },
+    "p70": {
+      "action": "KEEP",
+      "active": false,
+      "recommended_action": "keep_a2118",
+      "predicted_regret": null,
+      "candidate_action_before_reliability": null,
+      "candidate_predicted_regret_before_reliability": null,
+      "reliability_error_percentile": null,
+      "reliability_gate_pass": null,
+      "action_allowed": null,
+      "window_label": null,
+      "source_list": null
+    }
+  },
+  "note": "Observation-only DFL ensemble; not an execution instruction."
+}

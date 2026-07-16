@@ -404,8 +404,11 @@ class TechnicalIndicators:
         
         # 避免除以零
         denominator = highest_high - lowest_low
-        denominator = denominator.replace(0, np.nan)
-        
+        # 避免除以零：當 denominator == 0（盤整），設為 np.inf
+        # (close - lowest_low) / inf = 0，最終被 fillna(0) 清除
+        # 這與 v1 的 +1e-10 效果相同，但更精確
+        denominator = denominator.replace(0, np.inf)
+
         rsv = (close - lowest_low) / denominator * 100
         
         # 計算 K, D, J（向量化 EMA 實現，替代 for 迴圈）
@@ -531,20 +534,33 @@ class TechnicalIndicators:
                 self.df['atr_14'] = talib.ATR(high, low, close, timeperiod=period)
             except Exception:
                 # TA-Lib 失敗，使用 Pandas
-                tr1 = high - low
-                tr2 = np.abs(high - pd.Series(close).shift(1).values)
-                tr3 = np.abs(low - pd.Series(close).shift(1).values)
-                tr = np.maximum(tr1, np.maximum(tr2, tr3))
-                self.df['atr_14'] = pd.Series(tr).rolling(window=period).mean()
+                self._atr_pandas_impl(period)
         else:
             # 無 TA-Lib，使用 Pandas
-            tr1 = high - low
-            tr2 = np.abs(high - pd.Series(close).shift(1).values)
-            tr3 = np.abs(low - pd.Series(close).shift(1).values)
-            tr = np.maximum(tr1, np.maximum(tr2, tr3))
-            self.df['atr_14'] = pd.Series(tr).rolling(window=period).mean()
-        
+            self._atr_pandas_impl(period)
+
         return self.df
+
+    def _atr_pandas_impl(self, period: int = 14):
+        """
+        ATR Pandas 實作（供 TA-Lib fallback 使用）
+
+        公式: True Range = max(high-low, |high-prev_close|, |low-prev_close|)
+        修正: 第一筆資料的 shift(1) 會產生 NaN，需妥善處理。
+        """
+        high = self.df['high'].values
+        low = self.df['low'].values
+        close = self.df['close'].values
+
+        tr1 = high - low
+        prev_close = pd.Series(close).shift(1).values
+        tr2 = np.abs(high - prev_close)
+        tr3 = np.abs(low - prev_close)
+        # 第一筆: tr2/tr3 會是 NaN，用 np.finfo(float).eps 替代
+        tr2 = np.where(np.isnan(tr2), tr1, tr2)
+        tr3 = np.where(np.isnan(tr3), tr1, tr3)
+        tr = np.maximum(tr1, np.maximum(tr2, tr3))
+        self.df['atr_14'] = pd.Series(tr).rolling(window=period).mean()
     
     # =========================================================================
     # DMI (方向指標)
@@ -583,16 +599,15 @@ class TechnicalIndicators:
         close = self.df['close'].values
         
         if TALIB_AVAILABLE:
-            # TA-Lib 實作（高效）
             try:
+                # TA-Lib PLUS_DI/MINUS_DI 是 ATR-normalized (0-100 範圍)
+                # ADX 也是 TA-Lib 標準實現
                 self.df['dmi_plus'] = talib.PLUS_DI(high, low, close, timeperiod=period)
                 self.df['dmi_minus'] = talib.MINUS_DI(high, low, close, timeperiod=period)
                 self.df['adx'] = talib.ADX(high, low, close, timeperiod=period)
             except Exception:
-                # TA-Lib 失敗，使用 Pandas fallback
                 self._dmi_pandas_impl(period)
         else:
-            # 無 TA-Lib，使用 Pandas 實作
             self._dmi_pandas_impl(period)
         
         return self.df
@@ -600,12 +615,15 @@ class TechnicalIndicators:
     def _dmi_pandas_impl(self, period: int = 14):
         """
         DMI Pandas 實作（供 TA-Lib fallback 使用）
+        
+        注意：這裡實現的是標准的 DMI/ADX 演算法，
+        +DI/-DI 是 ATR-normalized (0-100 範圍)，與 PLUS_DI/MINUS_DI 一致。
         """
         high = self.df['high'].values
         low = self.df['low'].values
         close = self.df['close'].values
         
-        # 計算 +DM, -DM
+        # 計算 +DM, -DM (Raw Directional Movement)
         high_diff = pd.Series(high).diff()
         low_diff = -pd.Series(low).diff()
         
@@ -616,24 +634,31 @@ class TechnicalIndicators:
             (low_diff > high_diff) & (low_diff > 0), 0
         )
         
-        # 計算 ATR
+        # 計算 True Range
         tr1 = high - low
         tr2 = np.abs(high - pd.Series(close).shift(1).values)
         tr3 = np.abs(low - pd.Series(close).shift(1).values)
         tr = np.maximum(tr1, np.maximum(tr2, tr3))
-        atr = pd.Series(tr).ewm(span=period, adjust=False).mean()
         
-        # 計算 +DI, -DI
-        plus_di = 100 * plus_dm.ewm(span=period, adjust=False).mean() / atr
-        minus_di = 100 * minus_dm.ewm(span=period, adjust=False).mean() / atr
+        # 計算 ATR (使用 EMA 方式，與 TA-Lib 一致)
+        atr = pd.Series(tr).ewm(span=period, adjust=False).mean()
+        atr = atr.replace(0, np.nan).bfill()
+
+        # 計算 +DI, -DI (ATR-normalized，範圍 0-100)
+        # 當 atr 為 NaN（波動初期），用 np.errstate 避免 warning
+        with np.errstate(divide='ignore', invalid='ignore'):
+            plus_di = 100 * plus_dm.ewm(span=period, adjust=False).mean() / atr
+            minus_di = 100 * minus_dm.ewm(span=period, adjust=False).mean() / atr
+        plus_di = plus_di.replace([np.inf, -np.inf], np.nan).fillna(0)
+        minus_di = minus_di.replace([np.inf, -np.inf], np.nan).fillna(0)
         
         # 計算 ADX
-        dx = 100 * np.abs(plus_di - minus_di) / (plus_di + minus_di)
+        dx = 100 * np.abs(plus_di - minus_di) / (plus_di + minus_di + 1e-10)
         adx = dx.ewm(span=period, adjust=False).mean()
         
-        self.df['dmi_plus'] = plus_di
-        self.df['dmi_minus'] = minus_di
-        self.df['adx'] = adx
+        self.df['dmi_plus'] = plus_di.values
+        self.df['dmi_minus'] = minus_di.values
+        self.df['adx'] = adx.values
     
     # =========================================================================
     # MFI (資金流量指標)
@@ -686,26 +711,37 @@ class TechnicalIndicators:
     def _mfi_pandas_impl(self, period: int = 14):
         """
         MFI Pandas 實作（供 TA-Lib fallback 使用）
+
+        修正：避免 NaN 傳播。當 period_negative 為 0 時，
+        應視為無資金流出（momentum_index = 100），而非 NaN。
         """
         high = self.df['high'].values
         low = self.df['low'].values
         close = self.df['close'].values
         volume = self.df['volume'].values
-        
+
         typical_price = (high + low + close) / 3
         raw_money_flow = typical_price * volume
-        
+
         delta_tp = pd.Series(typical_price).diff()
         positive_flow = pd.Series(raw_money_flow).where(delta_tp > 0, 0)
         negative_flow = pd.Series(raw_money_flow).where(delta_tp < 0, 0)
-        
+
         period_positive = positive_flow.rolling(window=period).sum()
         period_negative = negative_flow.rolling(window=period).sum()
-        
-        period_negative = period_negative.replace(0, np.nan)
-        money_flow_ratio = period_positive / period_negative
-        
-        self.df['mfi'] = 100 - (100 / (1 + money_flow_ratio))
+
+        # 修正：避免除以零導致 NaN 傳播
+        # 當無負向資金流時，MFI = 100（超買臨界值）
+        with np.errstate(divide='ignore', invalid='ignore'):
+            money_flow_ratio = np.where(
+                period_negative > 0,
+                period_positive / period_negative,
+                np.inf  # 無負向流 → 無窮大比率 → MFI = 100
+            )
+        mfi_values = 100 - (100 / (1 + money_flow_ratio))
+        # inf → 100（當無負向流時，MFI = 100）
+        mfi_values = np.where(np.isinf(money_flow_ratio), 100.0, mfi_values)
+        self.df['mfi'] = mfi_values
     
     # =========================================================================
     # Williams %R
@@ -753,18 +789,25 @@ class TechnicalIndicators:
     def _williams_r_pandas_impl(self, period: int = 14):
         """
         Williams %R Pandas 實作（供 TA-Lib fallback 使用）
+
+        修正：當 highest_high == lowest_low 時（盤整無波動），
+        應設為 -50（中性值），而非 NaN 傳播。
         """
         high = self.df['high'].values
         low = self.df['low'].values
         close = self.df['close'].values
-        
+
         highest_high = pd.Series(high).rolling(window=period).max()
         lowest_low = pd.Series(low).rolling(window=period).min()
-        
+
         denominator = highest_high - lowest_low
-        denominator = denominator.replace(0, np.nan)
-        
-        self.df['williams_r'] = ((highest_high - close) / denominator) * -100
+        # 當 denominator 為 0（盤整無波動），用 np.errstate 避免 warning
+        # 結果會是 0/inf * -100 = -0 → 最終 np.where 設為 -50（中性）
+        with np.errstate(divide='ignore', invalid='ignore'):
+            williams_values = -100 * (highest_high - close) / denominator
+        # 盤整時 (-50) 與無波動時（-50）的結果一致
+        williams_values = np.where(np.isnan(williams_values), -50.0, williams_values)
+        self.df['williams_r'] = williams_values
     
     # =========================================================================
     # 動量指標
@@ -811,13 +854,15 @@ class TechnicalIndicators:
         這些特徵幫助模型理解當前價格在歷史範圍中的位置。
         
         Args:
-            period: 回看週期 (預設 252 = 約一年)
-            
+            period: 回看週期 (預設 252 = 約一年)，用於 high_252_position 計算
+        
         Returns:
             包含 high_252_position, rolling_mdd_63 的 DataFrame
+            - high_252_position: (close - 252日低點) / (252日高點 - 252日低點)
+            - rolling_mdd_63: 63日滾動最大回撤（從63日高點回撤的最大幅度）
         """
         
-        # 252日最高點的位置
+        # 252日最高點/最低點的位置
         highest_high = self.df['high'].rolling(window=period).max()
         lowest_low = self.df['low'].rolling(window=period).min()
         
@@ -826,10 +871,13 @@ class TechnicalIndicators:
         
         self.df['high_252_position'] = (self.df['close'] - lowest_low) / denominator
         
-        # 63日滾動最大回撤
-        rolling_max = self.df['close'].rolling(window=period).max()
-        drawdown = (self.df['close'] - rolling_max) / rolling_max
-        self.df['rolling_mdd_63'] = drawdown.rolling(window=63).min()  # 最負的回撤
+        # 滾動最大回撤（63日窗口，與 v1 和其他腳本保持一致）
+        # 計算方式：從 63 日高點回撤的最大幅度（最負值）
+        # 修正：移除 double-rolling，直接使用 drawdown_63
+        # 原始實作 d63.rolling(63).min() 會損失 63 行數據且概念上多餘
+        rolling_max_63 = self.df['close'].rolling(window=63).max()
+        drawdown_63 = (self.df['close'] - rolling_max_63) / rolling_max_63
+        self.df['rolling_mdd_63'] = drawdown_63  # 直接使用，valid from row 63
         
         return self.df
     
@@ -871,26 +919,29 @@ class TechnicalIndicators:
         # 波動性（日內波動幅度）
         self.df['volatility'] = (self.df['high'] - self.df['low']) / self.df['close']
         
-        # 連續上漲/下跌天數（向量化解法）
-        # 簡單 for 迴圈但作用於 numpy array（比 pandas Series 快約 10x）
+        # 連續上漲/下跌天數
+        # 注意：pure numpy O(n) 向量化需要 O(n log n) argsort 或 numba，
+        # 對於典型的股票歷史（<5000行），for-loop 足夠快（<1ms），
+        # 因此保持可讀的 for-loop 實作。
         close = self.df['close'].values
         n = len(close)
-        consecutive_up = np.zeros(n, dtype=np.int_)
-        consecutive_down = np.zeros(n, dtype=np.int_)
+        consecutive_up = np.zeros(n, dtype=int)
+        consecutive_down = np.zeros(n, dtype=int)
 
         for i in range(1, n):
-            if close[i] > close[i-1]:
-                consecutive_up[i] = consecutive_up[i-1] + 1
+            if close[i] > close[i - 1]:
+                consecutive_up[i] = consecutive_up[i - 1] + 1
                 consecutive_down[i] = 0
-            elif close[i] < close[i-1]:
-                consecutive_down[i] = consecutive_down[i-1] + 1
+            elif close[i] < close[i - 1]:
+                consecutive_down[i] = consecutive_down[i - 1] + 1
                 consecutive_up[i] = 0
             else:
-                consecutive_up[i] = consecutive_up[i-1]
-                consecutive_down[i] = consecutive_down[i-1]
-        
-        self.df['consecutive_up_days'] = consecutive_up.astype(int)
-        self.df['consecutive_down_days'] = consecutive_down.astype(int)
+                # 平盤：保持當前趨勢（與 for-loop 行為一致）
+                consecutive_up[i] = consecutive_up[i - 1]
+                consecutive_down[i] = consecutive_down[i - 1]
+
+        self.df['consecutive_up_days'] = consecutive_up
+        self.df['consecutive_down_days'] = consecutive_down
         
         # 跳空缺口
         self.df['gap_up_or_down'] = np.where(
@@ -913,8 +964,18 @@ class TechnicalIndicators:
         成交量是技術分析的重要組成部分，
         可以確認價格變化的有效性。
         
+        新增特徵:
+            - volume_normalized: 成交量標準化（Z-score，相對於20日均值和標準差）
+            - volume_ma5: 5日均量（與 v1 一致）
+            - volume_spike: 成交量爆發（>2倍20日均量）
+            - obv: On-Balance Volume 能量潮
+            - obv_ma10: OBV 的 10 日移動平均
+            - obv_slope: OBV 斜率（5日變化率）
+            - vwap: 成交量加權平均價（日內滾動版本）
+            - close_vwap_ratio: 收盤價與 VWAP 的比率
+        
         Returns:
-            包含 volume_normalized 的 DataFrame
+            包含多個成交量特徵的 DataFrame
         """
         
         # 成交量標準化（Z-score，相對於20日均值和標準差）
@@ -923,6 +984,29 @@ class TechnicalIndicators:
         
         denominator = volume_std20.replace(0, np.nan)
         self.df['volume_normalized'] = (self.df['volume'] - volume_ma20) / denominator
+        
+        # 5日均量（與 v1 一致）
+        self.df['volume_ma5'] = self.df['volume'].rolling(window=5).mean()
+        
+        # 成交量爆發（超過20日均量的2倍，與 v1 calculate_pattern_features 一致）
+        self.df['volume_spike'] = np.where(
+            self.df['volume'] > volume_ma20 * 2, 1, 0
+        )
+        
+        # OBV（On-Balance Volume / 能量潮）
+        obv = (np.sign(self.df['close'].diff()) * self.df['volume']).fillna(0).cumsum()
+        self.df['obv'] = obv
+        self.df['obv_ma10'] = obv.rolling(window=10).mean()
+        self.df['obv_slope'] = obv.diff() / (obv.diff().abs().rolling(window=5).sum() + 1e-10)
+        
+        # VWAP（成交量加權平均價 - 日內滾動版本，與 v1 一致）
+        typical_price = (self.df['high'] + self.df['low'] + self.df['close']) / 3.0
+        cumulative_vwap = (typical_price * self.df['volume']).cumsum()
+        cumulative_volume = self.df['volume'].cumsum()
+        self.df['vwap'] = cumulative_vwap / cumulative_volume.replace(0, np.nan)
+        
+        # 收盤價與 VWAP 的比率
+        self.df['close_vwap_ratio'] = (self.df['close'] / self.df['vwap'].replace(0, np.nan) - 1.0).replace([np.inf, -np.inf], 0.0)
         
         return self.df
     
@@ -1028,7 +1112,7 @@ class TechnicalIndicators:
         # MACD
         features.extend([
             'macd_line', 'signal_line', 'histogram',
-            'histogram_change', 'macd_turn_positive'
+            'histogram_change', 'macd_turn_positive', 'macd_turn_negative'
         ])
         
         # RSI
@@ -1056,18 +1140,24 @@ class TechnicalIndicators:
         features.extend(['momentum_21', 'momentum_63', 'momentum_126', 'momentum_252'])
         
         # 位置
+        # 注意：rolling_mdd_period 在 calculate_position_features 中計算
+        # 使用 rolling_mdd_63 作為標準名稱（明確標示窗口大小）
         features.extend(['high_252_position', 'rolling_mdd_63'])
         
         # 型態
         features.extend([
-            'highest_breakout', 'lowest_breakdown', 'volume_spike',
+            'highest_breakout', 'lowest_breakdown',
             'price_momentum', 'volatility',
             'consecutive_up_days', 'consecutive_down_days', 'gap_up_or_down'
         ])
-        
-        # 成交量
-        features.append('volume_normalized')
-        
+
+        # 成交量（與 v1 一致）
+        features.extend([
+            'volume_normalized', 'volume_ma5', 'volume_spike',
+            'obv', 'obv_ma10', 'obv_slope',
+            'vwap', 'close_vwap_ratio'
+        ])
+
         return features
 
 

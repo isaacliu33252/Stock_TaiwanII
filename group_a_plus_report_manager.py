@@ -65,6 +65,53 @@ class GroupAPlusReportManager:
         return "neutral"
 
     @staticmethod
+    def _render_pre_trade_guard_html(pre_trade_guard: dict[str, Any]) -> str:
+        if not pre_trade_guard:
+            return ""
+
+        status = str(pre_trade_guard.get("status", "unknown"))
+        status_class = "block" if status == "blocked" else "ok" if status in {"inactive", "active_allowed"} else "warn"
+        blocked_rows = []
+        for row in pre_trade_guard.get("blocked_trades", []) or []:
+            if not isinstance(row, dict):
+                continue
+            blocked_rows.append(
+                "<tr>"
+                f"<td>{escape(str(row.get('ticker', '')))}</td>"
+                f"<td>{escape(str(row.get('side', '')))}</td>"
+                f"<td class=\"num\">{escape(str(row.get('current_shares', '')))}</td>"
+                f"<td class=\"num\">{escape(str(row.get('requested_target_shares', '')))}</td>"
+                f"<td class=\"num\">{escape(str(row.get('guarded_target_shares', '')))}</td>"
+                f"<td class=\"num\">{escape(str(row.get('blocked_delta_shares', '')))}</td>"
+                f"<td>{escape(str(row.get('reason', '')))}</td>"
+                "</tr>"
+            )
+
+        blocked_table = ""
+        if blocked_rows:
+            blocked_table = (
+                "<table>"
+                "<thead><tr><th>Ticker</th><th>Side</th><th class=\"num\">Current</th>"
+                "<th class=\"num\">Requested</th><th class=\"num\">Guarded</th>"
+                "<th class=\"num\">Blocked</th><th>Reason</th></tr></thead>"
+                f"<tbody>{''.join(blocked_rows)}</tbody>"
+                "</table>"
+            )
+
+        return (
+            "<section>"
+            "<h2>Pre-Trade Guard</h2>"
+            "<div class=\"grid\">"
+            f"<div class=\"metric\"><div class=\"label\">Status</div><div class=\"value\"><span class=\"pill {status_class}\">{escape(status)}</span></div></div>"
+            f"<div class=\"metric\"><div class=\"label\">Ticker</div><div class=\"value\">{escape(str(pre_trade_guard.get('ticker', '')))}</div></div>"
+            f"<div class=\"metric\"><div class=\"label\">00631L Add</div><div class=\"value\">{escape('allowed' if pre_trade_guard.get('allow_00631l_add') else 'blocked')}</div></div>"
+            f"<div class=\"metric\"><div class=\"label\">Policy</div><div class=\"value\">{escape(str(pre_trade_guard.get('policy', '')))}</div></div>"
+            "</div>"
+            f"{blocked_table}"
+            "</section>"
+        )
+
+    @staticmethod
     def render_daily_status_html(report: dict[str, Any]) -> str:
         """Render a self-contained HTML daily status report."""
 
@@ -75,8 +122,15 @@ class GroupAPlusReportManager:
         check_date = escape(str(report.get("check_date", "")))
         signal = dict(report.get("signal", {}) or {})
         group_a_plus = dict(report.get("group_a_plus", {}) or {})
+        execution_plan = dict(report.get("execution_plan", {}) or {})
         source_paths = dict(report.get("source_paths", {}) or {})
         target_shares = dict(group_a_plus.get("target_shares", {}) or {})
+        pre_trade_guard = dict(
+            group_a_plus.get("pre_trade_guard")
+            or execution_plan.get("pre_trade_guard")
+            or report.get("pre_trade_guard")
+            or {}
+        )
 
         checks_rows = []
         for check in report.get("checks", []):
@@ -103,6 +157,7 @@ class GroupAPlusReportManager:
 
         overlay_weight = float(group_a_plus.get("overlay_00679b_weight", 0.0) or 0.0)
         cash_after_cost = float(group_a_plus.get("cash_after_cost", 0.0) or 0.0)
+        pre_trade_guard_section = GroupAPlusReportManager._render_pre_trade_guard_html(pre_trade_guard)
 
         return f"""<!doctype html>
 <html lang="zh-Hant">
@@ -277,6 +332,8 @@ class GroupAPlusReportManager:
         <tbody>{''.join(share_rows)}</tbody>
       </table>
     </section>
+
+    {pre_trade_guard_section}
 
     <section>
       <h2>Source Files</h2>

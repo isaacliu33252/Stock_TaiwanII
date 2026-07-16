@@ -22,7 +22,7 @@ from run_group_a_shareholding_shadow import (
 )
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONFIG = PROJECT_ROOT / "group_a_tdcc_improved_config_destination_primary.json"
 DEFAULT_CONDITIONAL_INVERSE_OVERLAY_CONFIG = PROJECT_ROOT / "group_a_00632r_conditional_cap_overlay_config.json"
 DEFAULT_INVERSE_HOLD_OVERLAY_CONFIG = PROJECT_ROOT / "group_a_00632r_hold10_overlay_config.json"

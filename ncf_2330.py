@@ -1,0 +1,3328 @@
+#!/usr/bin/env python3
+"""
+NCF_2330 — Next Close Forecast for 2330.TW（台積電）
+價格預測 + 方向預測（雙模型）
+
+台積電是 0050 最大權重成分股（估計 50%+），有真正的美股 ADR 對應標的（TSM）。
+2026-07-03 相對強弱分析發現：ADR 前一日報酬（經 TWD/USD 匯率調整）與隔日 2330.TW
+報酬的相關係數達 0.50（同日僅 0.21），是明確的跨市場隔夜資訊傳遞效果 —— 本模型的
+外部特徵集以此為核心差異化特徵，是 ncf_00631l / ncf_00632r 所沒有的資訊來源。
+
+資料限制（與 ncf_00631l / ncf_00632r 不同）:
+  - institutional_data / margin_data / foreign_shareholding_data / short_sale_balance_data /
+    day_trading_data 在本地 DB 只有 ETF ticker 的資料，2330.TW（個股）完全沒有資料
+    （已於 2026-07-03 確認：這幾張表對 ticker='2330.TW' 的 COUNT(*)=0）。
+    2026-07-03 改用 FinMind API 補上個股籌碼/融資融券/外資持股特徵（見
+    _add_chip_features：三大法人買賣超、融資融券餘額、外資持股比率變化，皆
+    point-in-time T-1 對齊，快取於 results/finmind_2330_*_cache.csv，不寫入
+    production DB）。另外仍保留市場面（TXO 選擇權法人未平倉、台指期夜盤）等
+    非個股專屬的總體籌碼代理。
+  - 2330.TW OHLCV 不在本地 `ohlcv` 表，而是在 `external_market_ohlcv`
+    （provider='yfinance'），本檔案的 load_data/resolve_end_date 已相應調整。
+
+用法:
+    python3 ncf_2330.py                      # 預測明日收盤+方向
+    python3 ncf_2330.py --output results/ncf_2330_20260703.json
+    python3 ncf_2330.py --walk-forward --output results/ncf_2330_wf.json
+"""
+
+import argparse
+import json
+import os
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import duckdb
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import (
+    ExtraTreesClassifier,
+    ExtraTreesRegressor,
+    GradientBoostingClassifier,
+    HistGradientBoostingClassifier,
+    RandomForestClassifier,
+    RandomForestRegressor,
+)
+from sklearn.base import clone
+from sklearn.feature_selection import SelectFromModel
+from sklearn.isotonic import IsotonicRegression
+from sklearn.linear_model import ElasticNet, LogisticRegression
+from sklearn.metrics import (
+    accuracy_score,
+    brier_score_loss,
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
+    roc_auc_score,
+)
+from sklearn.model_selection import StratifiedKFold, TimeSeriesSplit
+from sklearn.preprocessing import StandardScaler
+
+try:
+    import lightgbm as lgb
+    _HAS_LGB = True
+except ImportError:
+    _HAS_LGB = False
+
+try:
+    import xgboost as xgb
+    _HAS_XGB = True
+except ImportError:
+    _HAS_XGB = False
+
+try:
+    from catboost import CatBoostClassifier
+    _HAS_CAT = True
+except ImportError:
+    _HAS_CAT = False
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from FinRL.data.stock_db import DB_PATH
+from group_a_plus.utils.tsmc_0050_weight import TSMC_0050_WEIGHT_ASSUMPTION
+from group_a_plus.integrations.tbrain_features import add_tbrain_features, tbrain_feature_columns
+from group_a_plus.integrations.fourier_features import add_fourier_features, fourier_feature_columns
+from group_a_plus.integrations.global_features import (
+    add_global_features,
+    global_feature_columns,
+    global_interaction_feature_columns,
+)
+from ncf_data_quality import ncf_data_freshness
+from ncf_external_cache import fetch_yf_close_cached
+
+TICKER = "2330.TW"
+DEFAULT_OUTPUT = PROJECT_ROOT / "results" / f"ncf_2330_{datetime.now().strftime('%Y%m%d')}.json"
+
+# ── Dividend handling ───────────────────────────────────────────────────────
+# external_market_ohlcv (2330.TW's OHLCV source; see load_data()) has NO
+# dividends/stock_splits columns, unlike the `ohlcv` table used by
+# ncf_00631l/ncf_00632r. Verified 2026-07-03: ncf_external_cache._download_yf()
+# calls `yf.download(..., auto_adjust=True)`, so the cached `close` (and O/H/L,
+# scaled uniformly) is already Yahoo's dividend/split-adjusted close — TSMC's
+# quarterly ex-dividend dates do NOT create spurious price gaps in return/MA
+# features here. (Cross-session caveat: auto_adjust re-bases *all* historical
+# prices on every fresh download, so cached history can shift slightly after
+# a new ex-div event — already handled by the M8-4 full-window purge-on-refetch
+# fix in ncf_external_cache._write_cache(), not a concern introduced here.)
+
+# ── ADR ratio note ──────────────────────────────────────────────────────────
+# TSM (NYSE) represents 5 common 2330.TW shares per ADS (verified fact, TSMC's
+# ADR program since 1997). This ratio is NOT used anywhere below — every ADR
+# feature (us_tsm_adr_ret, us_tsm_adr_ret_fx_adj, adr_vs_*_excess) is a
+# percentage return, and pct-change is invariant to any fixed share-conversion
+# ratio, so an ADR-ratio error is structurally impossible here. Empirical check
+# 2026-07-03 (last 10 sessions): implied ratio = TSM_usd*USDTWD/2330_twd ranges
+# ~5.55–6.31, i.e. TSM trades at a ~11–26% *price-implied* premium over the
+# textbook 5:1 parity in this dataset — a real, large, and fluctuating ADR
+# premium/discount, not a ratio bug. Not added as its own feature in this pass;
+# noted as a candidate feature (adr_premium_zscore) for a future iteration.
+FINMIND_MONTHLY_REVENUE_CACHE = PROJECT_ROOT / "results" / "finmind_2330_monthly_revenue_cache.csv"
+
+
+def _fetch_finmind_monthly_revenue(stock_id: str = "2330", start_date: str = "2010-01-01") -> pd.DataFrame:
+    """Fetch (or reuse cached) FinMind TaiwanStockMonthRevenue for stock_id.
+
+    Self-contained, read-only helper local to this file — does NOT write to the
+    production DuckDB, only to a flat CSV cache under results/. Verified
+    2026-07-03: FinMind's public v4 API serves this dataset for 2330 without
+    auth (18 rows returned for a 2025-01~ probe). No local DB table carries
+    monthly revenue for any ticker (checked: no table name contains "rev").
+    """
+    if FINMIND_MONTHLY_REVENUE_CACHE.exists():
+        try:
+            cached = pd.read_csv(FINMIND_MONTHLY_REVENUE_CACHE, parse_dates=["date", "create_time"])
+            if not cached.empty:
+                age_days = (pd.Timestamp.now().normalize() - cached["create_time"].max()).days
+                if age_days < 35:
+                    return cached
+        except Exception:
+            pass
+    try:
+        import requests
+        resp = requests.get(
+            "https://api.finmindtrade.com/api/v4/data",
+            params={"dataset": "TaiwanStockMonthRevenue", "data_id": stock_id, "start_date": start_date},
+            timeout=20,
+        )
+        resp.raise_for_status()
+        payload = resp.json()
+        data = payload.get("data", [])
+        if not data:
+            raise RuntimeError(f"empty response: {payload.get('msg')}")
+        df = pd.DataFrame(data)
+        df["date"] = pd.to_datetime(df["date"])
+        df["create_time"] = pd.to_datetime(df["create_time"])
+        df = df.sort_values("date").reset_index(drop=True)
+        df.to_csv(FINMIND_MONTHLY_REVENUE_CACHE, index=False)
+        print(f"  [Revenue] Fetched {len(df)} monthly revenue rows from FinMind, cached to {FINMIND_MONTHLY_REVENUE_CACHE.name}")
+        return df
+    except Exception as e:
+        print(f"  [Revenue] FinMind fetch failed ({e})")
+        if FINMIND_MONTHLY_REVENUE_CACHE.exists():
+            try:
+                return pd.read_csv(FINMIND_MONTHLY_REVENUE_CACHE, parse_dates=["date", "create_time"])
+            except Exception:
+                pass
+        return pd.DataFrame()
+
+
+def _add_monthly_revenue_features(ext: pd.DataFrame, idx: pd.DatetimeIndex) -> None:
+    """Add point-in-time-safe monthly revenue features aligned to trading dates.
+
+    FinMind's `create_time` (true announcement date) is populated for only the
+    4 most-recent rows as of 2026-07-03 (194/198 historical rows are NaT), and
+    even where present it is unreliable for this purpose: two consecutive
+    period rows shared the identical create_time (2026-04-21), which is a
+    bulk-correction/backfill timestamp, not each period's original disclosure
+    date — using it directly caused a duplicate-index reindex crash.
+
+    Instead this uses a rule-based proxy: Taiwan-listed issuers must disclose
+    monthly revenue within 10 calendar days of month-end; FinMind's `date`
+    field is stamped to the first of the *disclosure* month (verified against
+    the few real create_time samples: date=2026-06-01 vs create_time
+    2026-06-10, date=2026-05-01 vs create_time 2026-05-08 — both within the
+    10-day window). `date + 21 days` is used as the conservative availability
+    date (covers the one 20-day-lag row observed in this sample, plus a
+    margin), then reindex(ffill)+shift(1), matching the T-1 convention used
+    for institutional/margin features elsewhere in this file.
+    """
+    cols = ["revenue_yoy", "revenue_mom", "revenue_yoy_accel", "revenue_ytd_yoy"]
+    rev = _fetch_finmind_monthly_revenue()
+    if rev.empty or "revenue" not in rev.columns:
+        for c in cols:
+            ext[c] = 0.0
+        print("  [Revenue] unavailable — revenue features filled with 0.0")
+        return
+
+    rev = rev.sort_values("date").reset_index(drop=True)
+    rev["revenue_yoy"] = rev["revenue"].pct_change(12)
+    rev["revenue_mom"] = rev["revenue"].pct_change(1)
+    rev["revenue_yoy_accel"] = rev["revenue_yoy"].diff(1)
+    rev["revenue_ytd"] = rev.groupby(rev["date"].dt.year)["revenue"].cumsum()
+    rev_ytd_prior = rev["revenue_ytd"].shift(12)
+    rev["revenue_ytd_yoy"] = rev["revenue_ytd"] / rev_ytd_prior - 1.0
+
+    rev["avail_date"] = rev["date"] + pd.Timedelta(days=21)
+    by_avail = (
+        rev.dropna(subset=["avail_date"])
+        .sort_values("avail_date")
+        .drop_duplicates(subset=["avail_date"], keep="last")
+        .set_index("avail_date")[cols]
+    )
+    aligned = by_avail.reindex(idx, method="ffill").shift(1)
+    for c in cols:
+        ext[c] = aligned[c].values
+    n_valid = int(aligned["revenue_yoy"].notna().sum())
+    print(f"  [Revenue] {len(rev)} monthly rows, {n_valid}/{len(idx)} trading days have revenue_yoy coverage "
+          f"(avail_date = date+21d proxy, see docstring)")
+
+
+# Real TSMC quarterly earnings/investor-conference dates, 2026-07-03 verified via
+# SEC EDGAR (CIK 0001046179) 6-K filing `reportDate` history: for each Jan/Apr/Jul/Oct,
+# took the earliest 6-K reportDate in the 13th-23rd window (this cleanly separates the
+# earnings-call cluster from the ~8th-10th monthly-revenue 6-K cluster). 40/46 quarters
+# in 2015-2026 were found this way; 4 more (2024-07/10, 2025-07/10) were cross-checked
+# directly against TSMC's investor-relations Financial Calendar page
+# (investor.tsmc.com/english/financial-calendar). The remaining 2 gaps (2017-01, 2023-04)
+# have no EDGAR same-window hit and are pattern-estimated from the surrounding years'
+# dates for that quarter — flagged below, not exact.
+_EARNINGS_DATES_VERIFIED = [
+    "2015-01-15", "2015-04-13", "2015-07-16", "2015-10-15",
+    "2016-01-14", "2016-04-14", "2016-07-14", "2016-10-13",
+    "2017-04-13", "2017-07-13", "2017-10-19",
+    "2018-01-18", "2018-04-19", "2018-07-19", "2018-10-18",
+    "2019-01-17", "2019-04-16", "2019-07-18", "2019-10-17",
+    "2020-01-16", "2020-04-15", "2020-07-16", "2020-10-15",
+    "2021-01-14", "2021-04-15", "2021-07-15", "2021-10-14",
+    "2022-01-13", "2022-04-14", "2022-07-14", "2022-10-13",
+    "2023-01-18", "2023-07-20", "2023-10-19",
+    "2024-01-18", "2024-04-18", "2024-07-18", "2024-10-17",  # 07/10 from IR calendar
+    "2025-01-20", "2025-04-18", "2025-07-17", "2025-10-16",  # 01/07/10 from IR calendar
+    "2026-01-23", "2026-04-17", "2026-07-16",                # 07 from IR calendar (scheduled)
+]
+_EARNINGS_DATES_ESTIMATED = ["2017-01-17", "2023-04-20"]  # no EDGAR/IR source hit; pattern-estimated
+EARNINGS_DATES = pd.to_datetime(sorted(_EARNINGS_DATES_VERIFIED + _EARNINGS_DATES_ESTIMATED))
+
+
+def _earnings_window_flag(idx: pd.DatetimeIndex, window_days: int = 3) -> np.ndarray:
+    """Real quarterly earnings-call window flag (±window_days around each verified
+    or pattern-estimated date in EARNINGS_DATES — see comment above; replaces the
+    2026-07-03 baseline's pure calendar-rule proxy, which ranked 129-131/141 in
+    feature importance across all horizons).
+    """
+    flags = np.zeros(len(idx), dtype=float)
+    for i, dt in enumerate(idx):
+        deltas = np.abs((EARNINGS_DATES - dt).days)
+        if deltas.min() <= window_days:
+            flags[i] = 1.0
+    return flags
+
+
+def _earnings_distance_features(idx: pd.DatetimeIndex) -> tuple[np.ndarray, np.ndarray]:
+    """Continuous calendar-day distance to the nearest earnings date, replacing the
+    binary earnings_window_flag (2026-07-03 third round — the real-date binary flag
+    still ranked at the bottom in importance, so the fixed-window design itself, not
+    date precision, looked like the problem).
+
+    `since`: days since the most recent *actual* EARNINGS_DATES entry <= dt. This is
+    always lookahead-safe (only ever looks backward).
+
+    `until`: days to the *extrapolated* next earnings date, computed by walking
+    forward from the last known actual date in steps of the historical median
+    quarterly gap. This deliberately never consults a real future EARNINGS_DATES
+    entry, even though one may exist in the array for dates before it — TSMC's
+    actual quarterly calendar is only precisely known a few weeks ahead in practice.
+    """
+    dates_sorted = np.sort(EARNINGS_DATES.values)
+    hist_gaps = np.diff(dates_sorted).astype("timedelta64[D]").astype(float)
+    avg_gap_days = int(round(float(np.median(hist_gaps)))) if len(hist_gaps) else 91
+    since = np.full(len(idx), np.nan)
+    until = np.full(len(idx), np.nan)
+    for i, dt in enumerate(idx):
+        dt64 = np.datetime64(dt)
+        past = dates_sorted[dates_sorted <= dt64]
+        if len(past) == 0:
+            continue
+        last_dt = past[-1]
+        since[i] = (dt64 - last_dt) / np.timedelta64(1, "D")
+        next_est = last_dt + np.timedelta64(avg_gap_days, "D")
+        while next_est <= dt64:
+            next_est = next_est + np.timedelta64(avg_gap_days, "D")
+        until[i] = (next_est - dt64) / np.timedelta64(1, "D")
+    return since, until
+
+
+FINMIND_INST_BUYSELL_CACHE = PROJECT_ROOT / "results" / "finmind_2330_institutional_buysell_cache.csv"
+FINMIND_MARGIN_SHORT_CACHE = PROJECT_ROOT / "results" / "finmind_2330_margin_short_cache.csv"
+FINMIND_SHAREHOLDING_CACHE = PROJECT_ROOT / "results" / "finmind_2330_shareholding_cache.csv"
+
+
+def _fetch_finmind_dataset(dataset: str, cache_path: Path, stock_id: str = "2330",
+                            start_date: str = "2010-01-01", max_age_days: int = 3) -> pd.DataFrame:
+    """Generic FinMind fetch-or-reuse-cache helper (same pattern as
+    _fetch_finmind_monthly_revenue). Read-only: never writes to the production DuckDB,
+    only to a flat CSV cache under results/.
+    """
+    if cache_path.exists():
+        try:
+            cached = pd.read_csv(cache_path, parse_dates=["date"])
+            if not cached.empty:
+                age_days = (pd.Timestamp.now().normalize() - pd.to_datetime(cached["date"]).max()).days
+                if age_days < max_age_days:
+                    return cached
+        except Exception:
+            pass
+    try:
+        import requests
+        resp = requests.get(
+            "https://api.finmindtrade.com/api/v4/data",
+            params={"dataset": dataset, "data_id": stock_id, "start_date": start_date},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        payload = resp.json()
+        data = payload.get("data", [])
+        if not data:
+            raise RuntimeError(f"empty response: {payload.get('msg')}")
+        df = pd.DataFrame(data)
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.sort_values("date").reset_index(drop=True)
+        df.to_csv(cache_path, index=False)
+        print(f"  [Chip] Fetched {len(df)} rows from FinMind {dataset}, cached to {cache_path.name}")
+        return df
+    except Exception as e:
+        print(f"  [Chip] FinMind {dataset} fetch failed ({e})")
+        if cache_path.exists():
+            try:
+                return pd.read_csv(cache_path, parse_dates=["date"])
+            except Exception:
+                pass
+        return pd.DataFrame()
+
+
+def _add_chip_features(ext: pd.DataFrame, idx: pd.DatetimeIndex, main_df: pd.DataFrame) -> None:
+    """Add per-stock institutional/margin/foreign-holding features for 2330.TW via
+    FinMind (local DB has zero per-stock chip data for individual tickers — verified
+    2026-07-03, see module docstring). All features use the same T-1
+    reindex(ffill).shift(1) convention as the local-DB-sourced institutional/margin
+    features in ncf_00631l.py / ncf_00632r.py (conservative: institutional buy/sell
+    and margin balances are published after market close, so only the prior trading
+    day's value is known at the start of day T).
+    """
+    close_scale = main_df["close"].reindex(idx, method="ffill") * 1e6
+    zero_cols = [
+        "inst_foreign_net", "inst_foreign_ma5", "inst_foreign_ma20", "inst_trust_net",
+        "inst_total_net", "margin_chg_pct", "margin_short_log", "margin_usage_ratio",
+        "foreign_holding_ratio_chg", "inst_foreign_accel", "inst_foreign_sell_streak",
+        "margin_balance_5d_chg",
+    ]
+
+    # ── Institutional (三大法人) buy/sell ───────────────────────────────
+    try:
+        inst = _fetch_finmind_dataset("TaiwanStockInstitutionalInvestorsBuySell", FINMIND_INST_BUYSELL_CACHE)
+        if not inst.empty:
+            inst["net"] = inst["buy"] - inst["sell"]
+            piv = inst.pivot_table(index="date", columns="name", values="net", aggfunc="sum")
+            # Schema changed over time: pre-2020ish rows use a combined "Dealer" row;
+            # later rows split it into Dealer_self + Dealer_Hedging. Foreign side
+            # similarly splits into Foreign_Investor + Foreign_Dealer_Self. Sum
+            # whichever sub-columns exist so the series is continuous across the split.
+            foreign_net = piv.get("Foreign_Investor", 0).fillna(0) + piv.get("Foreign_Dealer_Self", 0).fillna(0)
+            trust_net = piv.get("Investment_Trust", 0).fillna(0)
+            dealer_net = piv.get("Dealer", 0).fillna(0) + piv.get("Dealer_self", 0).fillna(0) + piv.get("Dealer_Hedging", 0).fillna(0)
+            total_net = foreign_net + trust_net + dealer_net
+
+            def _shift1(s: pd.Series) -> pd.Series:
+                return s.reindex(idx, method="ffill").shift(1)
+
+            foreign_s = _shift1(foreign_net)
+            ext["inst_foreign_net"] = (foreign_s / close_scale).values
+            ext["inst_foreign_ma5"] = (foreign_net.reindex(idx, method="ffill").rolling(5).mean().shift(1) / close_scale).values
+            ext["inst_foreign_ma20"] = (foreign_net.reindex(idx, method="ffill").rolling(20).mean().shift(1) / close_scale).values
+            ext["inst_trust_net"] = (_shift1(trust_net) / close_scale).values
+            ext["inst_total_net"] = (_shift1(total_net) / close_scale).values
+            # Tail-risk specific (2026-07-03 third round): outflow acceleration + sell streak.
+            foreign_ma5_raw = foreign_net.reindex(idx, method="ffill").rolling(5).mean()
+            foreign_ma20_raw = foreign_net.reindex(idx, method="ffill").rolling(20).mean()
+            ext["inst_foreign_accel"] = (_shift1(foreign_ma5_raw - foreign_ma20_raw) / close_scale).values
+            foreign_daily = _shift1(foreign_net)
+            sell_flag = (foreign_daily < 0).astype(int)
+            streak_groups = (sell_flag != sell_flag.shift()).cumsum()
+            streak = sell_flag.groupby(streak_groups).cumcount() + 1
+            ext["inst_foreign_sell_streak"] = streak.where(sell_flag == 1, 0).fillna(0).values
+        else:
+            for c in ["inst_foreign_net", "inst_foreign_ma5", "inst_foreign_ma20", "inst_trust_net", "inst_total_net",
+                       "inst_foreign_accel", "inst_foreign_sell_streak"]:
+                ext[c] = 0.0
+    except Exception as e:
+        print(f"  [Chip] institutional buy/sell failed: {e}")
+        for c in ["inst_foreign_net", "inst_foreign_ma5", "inst_foreign_ma20", "inst_trust_net", "inst_total_net",
+                   "inst_foreign_accel", "inst_foreign_sell_streak"]:
+            ext[c] = 0.0
+
+    # ── Margin purchase / short sale ────────────────────────────────────
+    try:
+        mg = _fetch_finmind_dataset("TaiwanStockMarginPurchaseShortSale", FINMIND_MARGIN_SHORT_CACHE)
+        if not mg.empty:
+            mg = mg.set_index("date").sort_index()
+            mgs = mg.reindex(idx, method="ffill").shift(1)
+            ext["margin_chg_pct"] = (
+                (mgs["MarginPurchaseTodayBalance"] - mgs["MarginPurchaseYesterdayBalance"])
+                / mgs["MarginPurchaseYesterdayBalance"].clip(lower=1)
+            ).values
+            ext["margin_short_log"] = np.log1p(
+                mgs["MarginPurchaseTodayBalance"] / mgs["ShortSaleTodayBalance"].clip(lower=1)
+            ).values
+            ext["margin_usage_ratio"] = (
+                mgs["MarginPurchaseTodayBalance"] / mgs["MarginPurchaseLimit"].clip(lower=1)
+            ).values
+            # Tail-risk specific (2026-07-03 third round): rapid margin deleveraging proxy.
+            # mgs is already T-1 shifted, so an additional 5-bar diff stays lookahead-safe.
+            ext["margin_balance_5d_chg"] = (
+                mgs["MarginPurchaseTodayBalance"] / mgs["MarginPurchaseTodayBalance"].shift(5).clip(lower=1) - 1.0
+            ).values
+        else:
+            for c in ["margin_chg_pct", "margin_short_log", "margin_usage_ratio", "margin_balance_5d_chg"]:
+                ext[c] = 0.0
+    except Exception as e:
+        print(f"  [Chip] margin/short failed: {e}")
+        for c in ["margin_chg_pct", "margin_short_log", "margin_usage_ratio", "margin_balance_5d_chg"]:
+            ext[c] = 0.0
+
+    # ── Foreign shareholding ratio (TDCC-sourced, daily) ────────────────
+    try:
+        sh = _fetch_finmind_dataset("TaiwanStockShareholding", FINMIND_SHAREHOLDING_CACHE)
+        if not sh.empty and "ForeignInvestmentSharesRatio" in sh.columns:
+            sh = sh.set_index("date").sort_index()
+            ratio = pd.to_numeric(sh["ForeignInvestmentSharesRatio"], errors="coerce")
+            ext["foreign_holding_ratio_chg"] = ratio.diff().reindex(idx, method="ffill").shift(1).values
+        else:
+            ext["foreign_holding_ratio_chg"] = 0.0
+    except Exception as e:
+        print(f"  [Chip] shareholding failed: {e}")
+        ext["foreign_holding_ratio_chg"] = 0.0
+
+    for c in zero_cols:
+        if c in ext.columns:
+            ext[c] = ext[c].fillna(0.0)
+
+    n_valid = int(ext.get("inst_foreign_net", pd.Series(dtype=float)).ne(0).sum())
+    print(f"  [Chip] institutional/margin/shareholding features added "
+          f"({n_valid}/{len(idx)} days with nonzero inst_foreign_net)")
+
+
+TBRAIN_FEATURES = tbrain_feature_columns()
+FOURIER_FEATURES = fourier_feature_columns()
+GLOBAL_FEATURES = global_feature_columns()
+GLOBAL_INTERACTION_FEATURES = global_interaction_feature_columns()
+
+TSMC_LEADERSHIP_FEATURES = [
+    "tsmc_leadership_ret_5d",
+    "tsmc_leadership_ret_20d",
+    "tsmc_leadership_adr_overnight",
+    "tsmc_leadership_soxx_ret",
+    "tsmc_leadership_peer_semis_ret",
+    "tsmc_leadership_vs_0050_ex_tsmc",
+    "tsmc_leadership_0050_contribution",
+    "tsmc_leadership_foreign_net",
+    "tsmc_leadership_usdtwd_change",
+    "TSMC_Leadership_Score",
+]
+
+# Scale-invariant features（與 ncf_00631l / ncf_00632r 相同：從自身 OHLCV 計算）
+FEATURES = [
+    "gap",
+    "close_open_ratio",
+    "upper_shadow_pct",
+    "lower_shadow_pct",
+    "body_pct",
+    "return_1d",
+    "return_2d",
+    "return_3d",
+    "return_5d",
+    "return_10d",
+    "return_21d",
+    "close_ma5_ratio",
+    "close_ma10_ratio",
+    "close_ma20_ratio",
+    "close_ma30_ratio",
+    "close_ma60_ratio",
+    "close_ma120_ratio",
+    "close_ma200_ratio",
+    "close_ma240_ratio",
+    "ma5_ma10_ratio",
+    "ma5_ma20_ratio",
+    "ma20_ma60_ratio",
+    "ma60_ma200_ratio",
+    "momentum_3",
+    "momentum_5",
+    "momentum_10",
+    "momentum_21",
+    "momentum_63",
+    "volatility_5",
+    "volatility_20",
+    "volatility_60",
+    "rolling_mdd_20",
+    "rolling_mdd_60",
+    "rsi_7",
+    "rsi_14",
+    "rsi_28",
+    "macd_signal",
+    "macd_diff",
+    "adx_14",
+    "atr_14_normalized",
+    "bb_position",
+    "bb_width",
+    "volume_ratio_20",
+    "volume_ratio_5",
+    "above_ma200",
+    "above_ma50",
+    "above_ma20",
+    "close_ma200_dist",
+    "close_ma50_dist",
+    # Momentum streaks
+    "consecutive_up_days",
+    "consecutive_down_days",
+]
+FEATURES += TBRAIN_FEATURES
+FEATURES += FOURIER_FEATURES
+
+# 外部特徵：
+#   ADR 群組是本模型相對 ncf_00631l/ncf_00632r 的核心差異化特徵 — 2330.TW 是唯一
+#   有真正美股 ADR 對應標的的 GroupA+ 標的。2026-07-03 分析確認 ADR t-1（FX調整後）
+#   對 2330.TW 當日報酬相關係數 0.50 >> 同日 0.21，是乾淨的隔夜資訊傳遞效果。
+#   個股籌碼/融資融券特徵：本地 DB 對 2330.TW 完全沒有資料（見檔頭說明），
+#   2026-07-03 改用 FinMind API 補上（inst_foreign_net 等，見 _add_chip_features）。
+EXT_FEATURES = [
+    "us_qqq_ret",
+    "us_qqq_5d_ret",     # QQQ 5-day momentum (shift=1)
+    "us_qqq_10d_ret",    # QQQ 10-day momentum (shift=1)
+    "us_soxx_ret",
+    "us_nasdaq_ret",
+    # ADR group (核心差異化特徵)
+    "us_tsm_adr_ret",          # TSM ADR 前一交易日 USD 報酬 (shift=1)
+    "us_tsm_adr_ret_fx_adj",   # ADR 報酬 + TWD/USD 變動 = 隱含台幣等值報酬 (shift=1)
+    "us_tsm_adr_5d_ret",       # ADR 5日動能 (shift=1)
+    "us_tsm_adr_10d_ret",      # ADR 10日動能 (shift=1)
+    "adr_vs_soxx_excess",      # ADR 相對 SOXX 超額報酬 (shift=1)
+    "adr_vs_nasdaq_excess",    # ADR 相對 Nasdaq 超額報酬 (shift=1)
+    "vix",
+    "vix_change",
+    "vix_ma20_ratio",    # VIX / VIX_MA20 — spike detection (shift=1)
+    "usdtwd_change",
+    "twii_ret",
+    "twii_5d_ret",       # TWII 5-day momentum (shift=0)
+    "twii_vs_ma20",
+    "eti0050_ret",
+    "eti0050_5d_ret",    # 0050 5-day momentum (shift=0)
+    "eti0050_10d_ret",   # 0050 10-day momentum (shift=0)
+    "tsmc_vs_0050_5d",   # 自身(2330) 5日動能 - 0050 5日動能 = 個股相對大盤強弱
+    # 月營收（個股專屬，2026-07-03 新增；FinMind TaiwanStockMonthRevenue，point-in-time 對齊）
+    "revenue_yoy",
+    "revenue_mom",
+    "revenue_yoy_accel",
+    "revenue_ytd_yoy",
+    # 財報法說會窗口（真實歷史日期，見 EARNINGS_DATES / _earnings_window_flag）
+    "earnings_window_flag",
+    # 法說會連續型距離特徵（第三輪新增，取代表現不佳的二元flag；見 _earnings_distance_features）
+    "trading_days_since_earnings",
+    "trading_days_until_earnings",
+    # 個股籌碼/融資融券（個股專屬，2026-07-03 新增；FinMind，point-in-time T-1 對齊）
+    "inst_foreign_net",
+    "inst_foreign_ma5",
+    "inst_foreign_ma20",
+    "inst_trust_net",
+    "inst_total_net",
+    "margin_chg_pct",
+    "margin_short_log",
+    "margin_usage_ratio",
+    "foreign_holding_ratio_chg",
+    # 尾部風險專屬特徵（第三輪新增：籌碼流出加速度/斷頭代理）
+    "inst_foreign_accel",
+    "inst_foreign_sell_streak",
+    "margin_balance_5d_chg",
+    # TXO 選擇權法人未平倉 (T-1, published after market close) — market-wide, not stock-specific
+    "txo_foreign_put_oi",
+    "txo_foreign_call_oi",
+    "txo_foreign_pc_spread",
+    "txo_total_pcr",
+    "txo_foreign_pc_spread_ma5",
+    # 台指期夜盤 (market-wide, not stock-specific)
+    "tx_night_ret",
+]
+# 2026-07-07 leadership redundancy audit (results/ncf_2330_leadership_redundancy_check_20260707.json):
+# these two are pure positive-linear rescalings of quantities already present via
+# return_1d and contribute zero incremental AUC (isolated both by removal and by
+# using them alone) on both purged CV and a strict 2025-2026 OOS split. Excluded
+# from training; still computed as intermediate inputs to TSMC_Leadership_Score.
+LEADERSHIP_REDUNDANT_FEATURES = ["tsmc_leadership_vs_0050_ex_tsmc", "tsmc_leadership_0050_contribution"]
+EXT_FEATURES += [f for f in TSMC_LEADERSHIP_FEATURES if f not in LEADERSHIP_REDUNDANT_FEATURES]
+# Global correlated assets — opt-out via --no-global-features (default: enabled)
+EXT_FEATURES += GLOBAL_FEATURES + GLOBAL_INTERACTION_FEATURES
+
+INTERACTION_FEATURES = [
+    # Internal regime interactions
+    "vol20_x_bb_width",
+    "vol20_x_close_ma200_dist",
+    "momentum21_x_above_ma200",
+    "return5_x_vol20",
+    "rsi14_x_close_ma50_dist",
+    # External market interactions
+    "vix_spike_x_vol20",
+    "vix_change_x_return1d",
+    "qqq5d_x_momentum21",
+    "twii5d_x_close_ma200_dist",
+    "twii_ret_x_return1d",
+    "tsmc0050spread_x_momentum5",
+    "usdtwd_x_vix_change",
+    "tx_night_x_gap",
+    # ADR-lead interactions (核心假說：ADR領先訊號在高波動/大缺口環境下更有效)
+    "adr_fx_adj_x_gap",
+    "adr_fx_adj_x_return1d",
+    "adr_vs_soxx_x_momentum5",
+    # TXO Put/Call OI interactions
+    "txo_pcr_x_ma_gap",
+    "txo_foreign_pc_x_vix",
+    # Chip interactions (2026-07-03 新增，比照 ncf_00631l.py 的 foreign_x_margin_chg)
+    "foreign_x_margin_chg",
+    "margin_short_x_rsi14",
+    # Tail-risk interactions (第三輪新增)
+    "vol5_vol20_spike",
+    "soxx_down_x_vix_spike",
+    "foreign_streak_x_vol20",
+]
+
+# Round 4 (2026-07-04): TXO option-market features are net negative for the
+# 2330 tail-risk model because coverage is sparse and zero-filled for most of
+# the history. Keep them available for the general direction model for backward
+# compatibility, but exclude them from forward drawdown risk by default.
+TXO_FEATURES = [
+    "txo_foreign_put_oi",
+    "txo_foreign_call_oi",
+    "txo_foreign_pc_spread",
+    "txo_total_pcr",
+    "txo_foreign_pc_spread_ma5",
+    "txo_pcr_x_ma_gap",
+    "txo_foreign_pc_x_vix",
+]
+
+
+def _fetch_yf(ticker: str, start: str, end: str) -> pd.Series:
+    """Read Close series from DB cache; optionally download when explicitly enabled."""
+    try:
+        allow_download = os.environ.get("NCF_EXTERNAL_ALLOW_DOWNLOAD", "").lower() in {"1", "true", "yes"}
+        return fetch_yf_close_cached(ticker, start, end, DB_PATH, allow_download=allow_download)
+    except Exception:
+        return pd.Series(dtype=float, name=ticker)
+
+
+def _rolling_zscore(series: pd.Series, window: int = 120) -> pd.Series:
+    mean = series.rolling(window, min_periods=20).mean()
+    std = series.rolling(window, min_periods=20).std()
+    return ((series - mean) / std.replace(0.0, np.nan)).clip(-3.0, 3.0)
+
+
+def _align_to_index(series: pd.Series | None, idx: pd.DatetimeIndex, *, shift_n: int = 0) -> pd.Series:
+    if series is None or series.empty:
+        return pd.Series(np.nan, index=idx)
+    s = series.copy()
+    s.index = pd.to_datetime(s.index)
+    out = s.sort_index().reindex(idx, method="ffill")
+    if shift_n:
+        out = out.shift(shift_n)
+    return out.astype(float)
+
+
+def _add_tsmc_leadership_features(
+    ext: pd.DataFrame,
+    idx: pd.DatetimeIndex,
+    *,
+    tsmc_close: pd.Series,
+    etf_0050_close: pd.Series | None,
+    adr_fx_ret: pd.Series | None,
+    soxx_ret: pd.Series | None,
+    peer_semis_ret: pd.Series | None,
+    usdtwd_change: pd.Series | None,
+    inst_foreign_net: pd.Series | None = None,
+    feature_mode: str = "after_close",
+    tsmc_weight_in_0050: float = TSMC_0050_WEIGHT_ASSUMPTION,
+) -> None:
+    """Add TSMC leadership features with explicit timing control.
+
+    `pre_open` uses only T-1 Taiwan close-derived data plus US overnight data.
+    `after_close` may use the current Taiwan close-derived data. US series are
+    already overnight inputs from the latest available US session and are not
+    additionally shifted here.
+    """
+    if feature_mode not in {"pre_open", "after_close"}:
+        raise ValueError(f"Unsupported feature_mode: {feature_mode}")
+    tw_shift = 1 if feature_mode == "pre_open" else 0
+    weight = float(np.clip(tsmc_weight_in_0050, 0.0, 0.95))
+    ex_weight = max(1.0 - weight, 1e-6)
+
+    tsmc = _align_to_index(tsmc_close, idx)
+    tsmc_ret_1d = tsmc.pct_change()
+    tsmc_ret_5d = tsmc.pct_change(5)
+    tsmc_ret_20d = tsmc.pct_change(20)
+
+    et50 = _align_to_index(etf_0050_close, idx) if etf_0050_close is not None else pd.Series(np.nan, index=idx)
+    et50_ret_1d = et50.pct_change()
+    ex_tsmc_ret = (et50_ret_1d - weight * tsmc_ret_1d) / ex_weight
+    vs_ex_tsmc = tsmc_ret_1d - ex_tsmc_ret
+    contribution = weight * tsmc_ret_1d
+
+    ext["tsmc_leadership_ret_5d"] = tsmc_ret_5d.shift(tw_shift).values
+    ext["tsmc_leadership_ret_20d"] = tsmc_ret_20d.shift(tw_shift).values
+    ext["tsmc_leadership_vs_0050_ex_tsmc"] = vs_ex_tsmc.shift(tw_shift).values
+    ext["tsmc_leadership_0050_contribution"] = contribution.shift(tw_shift).values
+    ext["tsmc_leadership_foreign_net"] = _align_to_index(inst_foreign_net, idx, shift_n=tw_shift).values
+
+    ext["tsmc_leadership_adr_overnight"] = _align_to_index(adr_fx_ret, idx).values
+    ext["tsmc_leadership_soxx_ret"] = _align_to_index(soxx_ret, idx).values
+    ext["tsmc_leadership_peer_semis_ret"] = _align_to_index(peer_semis_ret, idx).values
+    ext["tsmc_leadership_usdtwd_change"] = _align_to_index(usdtwd_change, idx).values
+
+    score_inputs = [
+        "tsmc_leadership_ret_5d",
+        "tsmc_leadership_ret_20d",
+        "tsmc_leadership_adr_overnight",
+        "tsmc_leadership_soxx_ret",
+        "tsmc_leadership_peer_semis_ret",
+        "tsmc_leadership_vs_0050_ex_tsmc",
+        "tsmc_leadership_0050_contribution",
+        "tsmc_leadership_foreign_net",
+        "tsmc_leadership_usdtwd_change",
+    ]
+    z = pd.DataFrame({col: _rolling_zscore(ext[col]) for col in score_inputs}, index=idx)
+    weights = pd.Series(
+        {
+            "tsmc_leadership_ret_5d": 1.0,
+            "tsmc_leadership_ret_20d": 1.0,
+            "tsmc_leadership_adr_overnight": 1.2,
+            "tsmc_leadership_soxx_ret": 0.8,
+            "tsmc_leadership_peer_semis_ret": 0.8,
+            "tsmc_leadership_vs_0050_ex_tsmc": 1.2,
+            "tsmc_leadership_0050_contribution": 0.7,
+            "tsmc_leadership_foreign_net": 0.9,
+            "tsmc_leadership_usdtwd_change": 0.5,
+        }
+    )
+    weighted = z.mul(weights, axis=1)
+    denom = weighted.notna().mul(weights, axis=1).sum(axis=1).replace(0.0, np.nan)
+    ext["TSMC_Leadership_Score"] = (weighted.sum(axis=1) / denom).fillna(0.0).clip(-3.0, 3.0).values
+
+
+def load_external_df(
+    main_df: pd.DataFrame,
+    db_path: Path,
+    feature_mode: str = "after_close",
+    tsmc_weight_in_0050: float = TSMC_0050_WEIGHT_ASSUMPTION,
+) -> pd.DataFrame:
+    """
+    Build all EXT_FEATURES aligned to Taiwan trading dates (main_df.index).
+
+    Timing rules:
+    - US overnight (QQQ/SOXX/NASDAQ/TSM/VIX/USD/TWD): shift=1 on Taiwan calendar.
+    - Taiwan market (TWII/0050): shift=0.
+    - Options/futures (TXO OI, TX night session): shift=1 (published after market close).
+    - TSMC_Leadership_Score: pre_open uses T-1 Taiwan data + US overnight;
+      after_close may use same-day Taiwan close.
+    """
+    idx = main_df.index
+    start_ext = (idx[0] - pd.Timedelta(days=300)).strftime("%Y-%m-%d")   # 300d for MA200 warmup
+    end_ext = (idx[-1] + pd.Timedelta(days=2)).strftime("%Y-%m-%d")
+    ext = pd.DataFrame(index=idx)
+    adr_fx_adj = pd.Series(dtype=float, name="adr_fx_adj")
+    et50_s = pd.Series(dtype=float, name="0050")
+    soxx_ret = pd.Series(dtype=float, name="soxx_ret")
+    peer_semis_ret = pd.Series(dtype=float, name="peer_semis_ret")
+
+    def _align(series: pd.Series, shift_n: int = 0) -> np.ndarray:
+        if series is None or series.empty:
+            return np.full(len(idx), np.nan)
+        s = series.reindex(idx, method="ffill")
+        if shift_n:
+            s = s.shift(shift_n)
+        return s.values
+
+    # ── US overnight (shift=1) ──────────────────────────────────────────
+    us_map = {
+        "QQQ":   "us_qqq_ret",
+        "SOXX":  "us_soxx_ret",
+        "^IXIC": "us_nasdaq_ret",
+        "TSM":   "us_tsm_adr_ret",
+    }
+    us_close = {}
+    for tick, feat in us_map.items():
+        cl = _fetch_yf(tick, start_ext, end_ext)
+        us_close[tick] = cl
+        ext[feat] = _align(cl.pct_change(), shift_n=1)
+        if tick == "QQQ":
+            ext["us_qqq_5d_ret"] = _align(cl.pct_change(5), shift_n=1)
+            ext["us_qqq_10d_ret"] = _align(cl.pct_change(10), shift_n=1)
+        if tick == "TSM":
+            ext["us_tsm_adr_5d_ret"] = _align(cl.pct_change(5), shift_n=1)
+            ext["us_tsm_adr_10d_ret"] = _align(cl.pct_change(10), shift_n=1)
+        if tick == "SOXX":
+            soxx_ret = cl.pct_change()
+
+    peer_returns: list[pd.Series] = []
+    for peer in ["NVDA", "ASML", "AMD"]:
+        cl = _fetch_yf(peer, start_ext, end_ext)
+        if not cl.empty:
+            peer_returns.append(cl.pct_change().rename(peer))
+    if peer_returns:
+        peer_semis_ret = pd.concat(peer_returns, axis=1).mean(axis=1).rename("peer_semis_ret")
+
+    vix_cl = _fetch_yf("^VIX", start_ext, end_ext)
+    ext["vix"] = _align(vix_cl, shift_n=1)
+    ext["vix_change"] = _align(vix_cl.pct_change(), shift_n=1)
+    ext["vix_ma20_ratio"] = _align(vix_cl / vix_cl.rolling(20).mean(), shift_n=1)
+
+    usdtwd_cl = _fetch_yf("TWD=X", start_ext, end_ext)
+    ext["usdtwd_change"] = _align(usdtwd_cl.pct_change(), shift_n=1)
+
+    # ADR group derived features (核心差異化特徵)
+    if not us_close.get("TSM", pd.Series(dtype=float)).empty and not usdtwd_cl.empty:
+        tsm_ret = us_close["TSM"].pct_change()
+        fx_ret = usdtwd_cl.pct_change()
+        # TSM(USD) 報酬 + TWD/USD 變動 ≈ TSM 部位以台幣計價的隱含報酬
+        adr_fx_adj = (tsm_ret + fx_ret.reindex(tsm_ret.index, method="ffill")).rename("adr_fx_adj")
+        ext["us_tsm_adr_ret_fx_adj"] = _align(adr_fx_adj, shift_n=1)
+    else:
+        ext["us_tsm_adr_ret_fx_adj"] = ext["us_tsm_adr_ret"]
+
+    if not us_close.get("TSM", pd.Series(dtype=float)).empty:
+        tsm_ret = us_close["TSM"].pct_change()
+        if not us_close.get("SOXX", pd.Series(dtype=float)).empty:
+            soxx_ret = us_close["SOXX"].pct_change()
+            ext["adr_vs_soxx_excess"] = _align((tsm_ret - soxx_ret.reindex(tsm_ret.index, method="ffill")), shift_n=1)
+        if not us_close.get("^IXIC", pd.Series(dtype=float)).empty:
+            ixic_ret = us_close["^IXIC"].pct_change()
+            ext["adr_vs_nasdaq_excess"] = _align((tsm_ret - ixic_ret.reindex(tsm_ret.index, method="ffill")), shift_n=1)
+
+    # ── Taiwan market same-day (shift=0) ────────────────────────────────
+    twii_cl = _fetch_yf("^TWII", start_ext, end_ext)
+    ext["twii_ret"] = _align(twii_cl.pct_change(), shift_n=0)
+    ext["twii_5d_ret"] = _align(twii_cl.pct_change(5), shift_n=0)
+    twii_ma20 = twii_cl.rolling(20).mean()
+    ext["twii_vs_ma20"] = _align((twii_cl / twii_ma20 - 1), shift_n=0)
+
+    # ── 0050（DB）— 日報酬 + 相對強弱 spread ────────────────────────────
+    try:
+        con = duckdb.connect(str(db_path), read_only=True)
+        et50 = con.execute(
+            "SELECT dt, close FROM ohlcv WHERE ticker='0050.TW' AND dt BETWEEN ? AND ? ORDER BY dt",
+            [start_ext, end_ext],
+        ).fetchdf()
+        con.close()
+        et50_s = et50.set_index("dt")["close"]
+        et50_s.index = pd.to_datetime(et50_s.index)
+        ext["eti0050_ret"] = _align(et50_s.pct_change(), shift_n=0)
+        ext["eti0050_5d_ret"] = _align(et50_s.pct_change(5), shift_n=0)
+        ext["eti0050_10d_ret"] = _align(et50_s.pct_change(10), shift_n=0)
+
+        self_cl = main_df["close"].reindex(idx, method="ffill")
+        self_5d = self_cl.pct_change(5)
+        et50_5d = et50_s.pct_change(5).reindex(idx, method="ffill")
+        ext["tsmc_vs_0050_5d"] = (self_5d - et50_5d).values
+    except Exception as e:
+        print(f"  [ExtFeat] 0050: {e}")
+
+    # ── 月營收（個股專屬，point-in-time 對齊）────────────────────────────
+    try:
+        _add_monthly_revenue_features(ext, idx)
+    except Exception as e:
+        print(f"  [Revenue] failed: {e}")
+        for c in ["revenue_yoy", "revenue_mom", "revenue_yoy_accel", "revenue_ytd_yoy"]:
+            ext[c] = 0.0
+
+    # ── 財報法說會窗口（真實歷史日期，見 EARNINGS_DATES）───────────────────
+    ext["earnings_window_flag"] = _earnings_window_flag(idx)
+    since_e, until_e = _earnings_distance_features(idx)
+    ext["trading_days_since_earnings"] = since_e
+    ext["trading_days_until_earnings"] = until_e
+
+    # ── 個股籌碼/融資融券/外資持股（FinMind，本地 DB 無個股資料）─────────────
+    try:
+        _add_chip_features(ext, idx, main_df)
+    except Exception as e:
+        print(f"  [Chip] failed: {e}")
+        for c in ["inst_foreign_net", "inst_foreign_ma5", "inst_foreign_ma20", "inst_trust_net",
+                   "inst_total_net", "margin_chg_pct", "margin_short_log", "margin_usage_ratio",
+                   "foreign_holding_ratio_chg"]:
+            ext[c] = 0.0
+
+    # ── TSMC leadership composite ──────────────────────────────────────
+    try:
+        _add_tsmc_leadership_features(
+            ext,
+            idx,
+            tsmc_close=main_df["close"],
+            etf_0050_close=et50_s,
+            adr_fx_ret=adr_fx_adj if not adr_fx_adj.empty else us_close.get("TSM", pd.Series(dtype=float)).pct_change(),
+            soxx_ret=soxx_ret,
+            peer_semis_ret=peer_semis_ret,
+            usdtwd_change=usdtwd_cl.pct_change(),
+            inst_foreign_net=ext.get("inst_foreign_net"),
+            feature_mode=feature_mode,
+            tsmc_weight_in_0050=tsmc_weight_in_0050,
+        )
+    except Exception as e:
+        print(f"  [Leadership] failed: {e}")
+        for c in TSMC_LEADERSHIP_FEATURES:
+            ext[c] = 0.0
+
+    # ── DB-based features（市場面/籌碼，非個股專屬）───────────────────────
+    try:
+        con = duckdb.connect(str(db_path), read_only=True)
+
+        fn = con.execute(
+            "SELECT dt, pct_change FROM taifex_futures_daily "
+            "WHERE contract='TX' AND trading_session='盤後' "
+            "AND contract_month NOT LIKE '%/%' "
+            "AND dt BETWEEN ? AND ? "
+            "QUALIFY ROW_NUMBER() OVER (PARTITION BY dt ORDER BY contract_month ASC) = 1 "
+            "ORDER BY dt",
+            [start_ext, end_ext],
+        ).fetchdf()
+        if not fn.empty:
+            fn = fn.set_index("dt")
+            fn.index = pd.to_datetime(fn.index)
+            ext["tx_night_ret"] = fn["pct_change"].reindex(idx, method="ffill").shift(1).values
+
+        # TXO 選擇權法人未平倉 (shift=1, published after market close)
+        txo = con.execute(
+            "SELECT dt, put_call, institutional_investors, net_open_interest_balance_volume "
+            "FROM derivative_institutional_data "
+            "WHERE product_id='TXO' AND dt BETWEEN ? AND ? "
+            "ORDER BY dt",
+            [start_ext, end_ext],
+        ).fetchdf()
+        if not txo.empty:
+            txo["dt"] = pd.to_datetime(txo["dt"])
+            txo_piv = txo.pivot_table(
+                index="dt",
+                columns=["institutional_investors", "put_call"],
+                values="net_open_interest_balance_volume",
+                aggfunc="sum",
+            )
+            foreign_put = txo_piv.get(("外資", "賣權"), pd.Series(dtype=float, name="fp"))
+            foreign_call = txo_piv.get(("外資", "買權"), pd.Series(dtype=float, name="fc"))
+            all_put = txo_piv.xs("賣權", axis=1, level=1).sum(axis=1) if "賣權" in txo_piv.columns.get_level_values(1) else pd.Series(dtype=float)
+            all_call = txo_piv.xs("買權", axis=1, level=1).sum(axis=1) if "買權" in txo_piv.columns.get_level_values(1) else pd.Series(dtype=float)
+
+            def _shift1(s):
+                return s.reindex(idx, method="ffill").shift(1)
+
+            foreign_put_s = _shift1(foreign_put)
+            foreign_call_s = _shift1(foreign_call)
+            ext["txo_foreign_put_oi"] = foreign_put_s.values
+            ext["txo_foreign_call_oi"] = foreign_call_s.values
+            ext["txo_foreign_pc_spread"] = (foreign_put_s - foreign_call_s).values
+            ext["txo_foreign_pc_spread_ma5"] = (
+                (foreign_put_s - foreign_call_s).rolling(5, min_periods=1).mean().values
+            )
+            all_put_s = _shift1(all_put)
+            all_call_s = _shift1(all_call)
+            total_pcr = all_put_s / (all_call_s.abs().clip(lower=1.0))
+            ext["txo_total_pcr"] = total_pcr.values
+
+        con.close()
+    except Exception as e:
+        print(f"  [ExtFeat] DB features: {e}")
+
+    n_valid = ext.notna().sum()
+    n_full = (n_valid == len(idx)).sum()
+    print(f"  [ExtFeat] Loaded {len(ext.columns)} features  "
+          f"({n_full} fully covered, {(n_valid < len(idx)).sum()} with NaN gaps)")
+    return ext
+
+
+def _rolling_mdd(x: pd.Series) -> float:
+    cummax = x.cummax()
+    return float(((x - cummax) / cummax).min())
+
+
+def _build_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Build all FEATURES from raw OHLCV data."""
+    df = df.copy()
+
+    for w in [5, 10, 20, 30, 50, 60, 120, 200, 240]:
+        df[f"ma{w}"] = df["close"].rolling(w).mean()
+
+    for w in [5, 10, 20, 30, 60, 120, 200, 240]:
+        df[f"close_ma{w}_ratio"] = df["close"] / df[f"ma{w}"]
+    df["ma5_ma10_ratio"] = df["ma5"] / df["ma10"]
+    df["ma5_ma20_ratio"] = df["ma5"] / df["ma20"]
+    df["ma20_ma60_ratio"] = df["ma20"] / df["ma60"]
+    df["ma60_ma200_ratio"] = df["ma60"] / df["ma200"]
+
+    for w in [1, 2, 3, 5, 10, 21]:
+        df[f"return_{w}d"] = df["close"].pct_change(w)
+
+    for w in [3, 5, 10, 21, 63]:
+        df[f"momentum_{w}"] = df["close"] / df["close"].shift(w) - 1
+
+    for w in [5, 20, 60]:
+        df[f"volatility_{w}"] = df["close"].pct_change().rolling(w).std()
+
+    df["rolling_mdd_20"] = df["close"].rolling(20).apply(_rolling_mdd, raw=False)
+    df["rolling_mdd_60"] = df["close"].rolling(60).apply(_rolling_mdd, raw=False)
+
+    delta = df["close"].diff()
+    gain = delta.clip(lower=0)
+    loss = (-delta).clip(lower=0)
+    avg_gain14 = gain.rolling(14).mean()
+    avg_loss14 = loss.rolling(14).mean()
+    rs14 = avg_gain14 / avg_loss14.clip(lower=1e-10)
+    df["rsi_14"] = 100 - (100 / (1 + rs14))
+    avg_gain7 = gain.rolling(7).mean()
+    avg_loss7 = loss.rolling(7).mean()
+    rs7 = avg_gain7 / avg_loss7.clip(lower=1e-10)
+    df["rsi_7"] = 100 - (100 / (1 + rs7))
+    avg_gain28 = gain.rolling(28).mean()
+    avg_loss28 = loss.rolling(28).mean()
+    rs28 = avg_gain28 / avg_loss28.clip(lower=1e-10)
+    df["rsi_28"] = 100 - (100 / (1 + rs28))
+
+    # Consecutive up/down day streaks (max 10)
+    _daily_ret = df["close"].pct_change()
+    _up = (_daily_ret > 0).astype(float).fillna(0)
+    _dn = (_daily_ret <= 0).astype(float).fillna(0)
+    _up_arr, _dn_arr = _up.to_numpy(), _dn.to_numpy()
+    _up_streak, _dn_streak = np.zeros(len(_up_arr)), np.zeros(len(_dn_arr))
+    _cu, _cd = 0, 0
+    for _i, (_u, _d) in enumerate(zip(_up_arr, _dn_arr)):
+        _cu = int((_cu + 1) * _u)
+        _cd = int((_cd + 1) * _d)
+        _up_streak[_i] = min(_cu, 10)
+        _dn_streak[_i] = min(_cd, 10)
+    df["consecutive_up_days"] = pd.Series(_up_streak, index=df.index)
+    df["consecutive_down_days"] = pd.Series(_dn_streak, index=df.index)
+
+    emac = df["close"].ewm(span=12).mean()
+    emas = df["close"].ewm(span=26).mean()
+    macd_val = emac - emas
+    df["macd_signal"] = macd_val.ewm(span=9).mean()
+    df["macd_diff"] = macd_val - df["macd_signal"]
+
+    high, low, close_s = df["high"], df["low"], df["close"]
+    tr = pd.concat(
+        [high - low, (high - close_s.shift(1)).abs(), (low - close_s.shift(1)).abs()],
+        axis=1
+    ).max(axis=1)
+    plus_dm = high.diff().clip(lower=0)
+    minus_dm = (-low.diff()).clip(lower=0)
+    plus_di = 100 * plus_dm.rolling(14).mean() / tr.rolling(14).mean()
+    minus_di = 100 * minus_dm.rolling(14).mean() / tr.rolling(14).mean()
+    dx = 100 * (plus_di - minus_di).abs() / (plus_di + minus_di)
+    df["adx_14"] = dx.rolling(14).mean()
+
+    df["atr_14_normalized"] = tr.rolling(14).mean() / df["close"]
+
+    ma20 = df["close"].rolling(20).mean()
+    std20 = df["close"].rolling(20).std()
+    df["bb_position"] = (df["close"] - ma20) / (2 * std20)
+    df["bb_width"] = (2 * std20) / ma20
+
+    df["volume_ratio_20"] = df["volume"] / df["volume"].rolling(20).mean()
+    df["volume_ratio_5"] = df["volume"] / df["volume"].rolling(5).mean()
+
+    df["above_ma200"] = (df["close"] > df["ma200"]).astype(float)
+    df["above_ma50"] = (df["close"] > df["ma50"]).astype(float)
+    df["above_ma20"] = (df["close"] > df["ma20"]).astype(float)
+    df["close_ma200_dist"] = (df["close"] - df["ma200"]) / df["ma200"]
+    df["close_ma50_dist"] = (df["close"] - df["ma50"]) / df["ma50"]
+
+    df["gap"] = (df["open"] - df["close"].shift(1)) / df["close"].shift(1)
+    df["close_open_ratio"] = df["close"] / df["open"]
+
+    body = (df["close"] - df["open"]).abs()
+    upper_shadow = df["high"] - df[["open", "close"]].max(axis=1)
+    lower_shadow = df[["open", "close"]].min(axis=1) - df["low"]
+    full_range = df["high"] - df["low"]
+    df["upper_shadow_pct"] = upper_shadow / full_range.clip(lower=1e-10)
+    df["lower_shadow_pct"] = lower_shadow / full_range.clip(lower=1e-10)
+    df["body_pct"] = body / full_range.clip(lower=1e-10)
+
+    df = add_fourier_features(df)
+    return add_tbrain_features(df)
+
+
+def _add_interaction_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Add current-date interaction features after optional external merge."""
+    if {"volatility_20", "bb_width"} <= set(df.columns):
+        df["vol20_x_bb_width"] = df["volatility_20"] * df["bb_width"]
+    if {"volatility_20", "close_ma200_dist"} <= set(df.columns):
+        df["vol20_x_close_ma200_dist"] = df["volatility_20"] * df["close_ma200_dist"]
+    if {"momentum_21", "above_ma200"} <= set(df.columns):
+        df["momentum21_x_above_ma200"] = df["momentum_21"] * df["above_ma200"]
+    if {"return_5d", "volatility_20"} <= set(df.columns):
+        df["return5_x_vol20"] = df["return_5d"] * df["volatility_20"]
+    if {"rsi_14", "close_ma50_dist"} <= set(df.columns):
+        df["rsi14_x_close_ma50_dist"] = (df["rsi_14"] / 100.0) * df["close_ma50_dist"]
+    if {"vix_ma20_ratio", "volatility_20"} <= set(df.columns):
+        df["vix_spike_x_vol20"] = (df["vix_ma20_ratio"] - 1.0) * df["volatility_20"]
+    if {"vix_change", "return_1d"} <= set(df.columns):
+        df["vix_change_x_return1d"] = df["vix_change"] * df["return_1d"]
+    if {"us_qqq_5d_ret", "momentum_21"} <= set(df.columns):
+        df["qqq5d_x_momentum21"] = df["us_qqq_5d_ret"] * df["momentum_21"]
+    if {"twii_5d_ret", "close_ma200_dist"} <= set(df.columns):
+        df["twii5d_x_close_ma200_dist"] = df["twii_5d_ret"] * df["close_ma200_dist"]
+    if {"twii_ret", "return_1d"} <= set(df.columns):
+        df["twii_ret_x_return1d"] = df["twii_ret"] * df["return_1d"]
+    if {"tsmc_vs_0050_5d", "momentum_5"} <= set(df.columns):
+        df["tsmc0050spread_x_momentum5"] = df["tsmc_vs_0050_5d"] * df["momentum_5"]
+    if {"usdtwd_change", "vix_change"} <= set(df.columns):
+        df["usdtwd_x_vix_change"] = df["usdtwd_change"] * df["vix_change"]
+    if {"tx_night_ret", "gap"} <= set(df.columns):
+        df["tx_night_x_gap"] = df["tx_night_ret"] * df["gap"]
+    # ADR-lead interactions
+    if {"us_tsm_adr_ret_fx_adj", "gap"} <= set(df.columns):
+        df["adr_fx_adj_x_gap"] = df["us_tsm_adr_ret_fx_adj"] * df["gap"]
+    if {"us_tsm_adr_ret_fx_adj", "return_1d"} <= set(df.columns):
+        df["adr_fx_adj_x_return1d"] = df["us_tsm_adr_ret_fx_adj"] * df["return_1d"]
+    if {"adr_vs_soxx_excess", "momentum_5"} <= set(df.columns):
+        df["adr_vs_soxx_x_momentum5"] = df["adr_vs_soxx_excess"] * df["momentum_5"]
+    # TXO Put/Call OI interactions
+    if {"txo_total_pcr", "close_ma200_dist"} <= set(df.columns):
+        df["txo_pcr_x_ma_gap"] = df["txo_total_pcr"].clip(lower=0) * df["close_ma200_dist"].clip(lower=0)
+    if {"txo_foreign_pc_spread", "vix"} <= set(df.columns):
+        df["txo_foreign_pc_x_vix"] = df["txo_foreign_pc_spread"] * df["vix"]
+    # Chip interactions (2026-07-03 新增)
+    if {"inst_foreign_net", "margin_chg_pct"} <= set(df.columns):
+        df["foreign_x_margin_chg"] = df["inst_foreign_net"] * df["margin_chg_pct"]
+    if {"margin_short_log", "rsi_14"} <= set(df.columns):
+        df["margin_short_x_rsi14"] = df["margin_short_log"] * (df["rsi_14"] / 100.0)
+    # Tail-risk interactions (第三輪新增：波動率飆升 + 半導體同業下殺時的risk-off訊號)
+    if {"volatility_5", "volatility_20"} <= set(df.columns):
+        df["vol5_vol20_spike"] = df["volatility_5"] / df["volatility_20"].replace(0, np.nan)
+    if {"us_soxx_ret", "vix_change"} <= set(df.columns):
+        df["soxx_down_x_vix_spike"] = df["us_soxx_ret"].clip(upper=0) * df["vix_change"].clip(lower=0)
+    if {"inst_foreign_sell_streak", "volatility_20"} <= set(df.columns):
+        df["foreign_streak_x_vol20"] = df["inst_foreign_sell_streak"] * df["volatility_20"]
+    return df
+
+
+def triple_barrier_label(
+    close: pd.Series,
+    high: pd.Series,
+    low: pd.Series,
+    t_max: int,
+    tp_mult: float = 1.0,
+    sl_mult: float = 1.0,
+    atr_window: int = 14,
+) -> pd.Series:
+    prev_close = close.shift(1)
+    tr = pd.concat([
+        high - low,
+        (high - prev_close).abs(),
+        (low  - prev_close).abs(),
+    ], axis=1).max(axis=1)
+    atr = tr.rolling(atr_window).mean()
+
+    close_arr = close.to_numpy()
+    high_arr  = high.to_numpy()
+    low_arr   = low.to_numpy()
+    atr_arr   = atr.to_numpy()
+    n = len(close_arr)
+    labels = np.full(n, -1, dtype=np.int8)
+
+    for i in range(n - 1):
+        if np.isnan(atr_arr[i]) or np.isnan(close_arr[i]):
+            continue
+        tp = close_arr[i] + tp_mult * atr_arr[i]
+        sl = close_arr[i] - sl_mult * atr_arr[i]
+
+        for j in range(i + 1, min(i + t_max + 1, n)):
+            hit_tp = high_arr[j] >= tp
+            hit_sl = low_arr[j] <= sl
+            if hit_tp and hit_sl:
+                labels[i] = 1 if close_arr[j] >= close_arr[i] else 0
+                break
+            elif hit_tp:
+                labels[i] = 1
+                break
+            elif hit_sl:
+                labels[i] = 0
+                break
+
+    return pd.Series(labels.astype(int), index=close.index)
+
+
+def load_data(db_path: Path, ticker: str, start: str, end: str) -> pd.DataFrame:
+    """2330.TW OHLCV lives in external_market_ohlcv (provider='yfinance'), not `ohlcv`."""
+    con = duckdb.connect(str(db_path), read_only=True)
+    rows = con.execute(
+        "SELECT dt, open, high, low, close, volume FROM external_market_ohlcv "
+        "WHERE provider='yfinance' AND ticker = ? AND dt BETWEEN ? AND ? ORDER BY dt",
+        [ticker, start, end],
+    ).fetchdf()
+    con.close()
+    rows["date"] = pd.to_datetime(rows["dt"])
+    rows = rows.set_index("date").sort_index()
+    rows = rows[["open", "high", "low", "close", "volume"]].astype(float)
+    rows = rows.dropna(subset=["close"])
+    return rows
+
+
+def resolve_end_date(db_path: Path, ticker: str, requested_end: str) -> str:
+    """Resolve 'latest' to the newest available OHLCV date for this ticker.
+
+    2026-07-12 fix: defensive `volume > 0` guard, matching the same fix in
+    ncf_00631l.py/ncf_00632r.py's resolve_end_date. `external_market_ohlcv`
+    (fetched via ncf_external_cache.fetch_yf_close_cached) was confirmed to
+    correctly skip non-trading days rather than insert a phantom
+    zero-volume row for 2330.TW as of this fix, unlike the `ohlcv` table
+    used by the other two scripts -- but a real, traded stock like 2330.TW
+    should never legitimately have a volume=0 row, so this guard is free
+    insurance against that ingestion path changing later. See
+    GROUP_A_PLUS_A2118_CHIP_DATA_CORE_CLOCK_AUDIT_HANDOFF_20260712.md.
+    """
+    if str(requested_end).lower() != "latest":
+        return requested_end
+    con = duckdb.connect(str(db_path), read_only=True)
+    max_dt = con.execute(
+        "SELECT MAX(dt) FROM external_market_ohlcv WHERE provider='yfinance' AND ticker = ? AND volume > 0",
+        [ticker],
+    ).fetchone()[0]
+    con.close()
+    if max_dt is None:
+        raise ValueError(f"No OHLCV rows found for {ticker}")
+    return pd.Timestamp(max_dt).strftime("%Y-%m-%d")
+
+
+def build_dataset(
+    df: pd.DataFrame,
+    horizon: int = 1,
+    ext_df: pd.DataFrame | None = None,
+    direction_threshold: float = 0.0,
+    labeling: str = "simple",
+    tbl_mult: float = 0.75,
+) -> tuple[pd.DataFrame, pd.Series, pd.Series, list[str]]:
+    feat_df = _build_features(df)
+
+    if ext_df is not None:
+        for col in ext_df.columns:
+            feat_df[col] = ext_df[col].reindex(feat_df.index)
+    feat_df = _add_interaction_features(feat_df)
+
+    feat_df["target_return"] = feat_df["close"].pct_change(horizon).shift(-horizon)
+
+    if labeling == "triple_barrier":
+        tbl = triple_barrier_label(
+            feat_df["close"], feat_df["high"], feat_df["low"],
+            t_max=horizon, tp_mult=tbl_mult, sl_mult=tbl_mult,
+        )
+        feat_df["target_direction"] = tbl.reindex(feat_df.index)
+    elif direction_threshold > 0:
+        feat_df["target_direction"] = np.where(
+            feat_df["target_return"] >  direction_threshold, 1,
+            np.where(feat_df["target_return"] < -direction_threshold, 0, -1)
+        )
+    else:
+        feat_df["target_direction"] = (feat_df["target_return"] > 0).astype(int)
+    feat_df = feat_df.dropna(subset=["target_return"])
+
+    all_features = FEATURES + INTERACTION_FEATURES + (EXT_FEATURES if ext_df is not None else [])
+    available = [f for f in all_features if f in feat_df.columns]
+    X = feat_df[available]
+    base_available = [f for f in FEATURES if f in X.columns]
+    X = X.dropna(subset=base_available)
+    if ext_df is not None:
+        ext_cols = [f for f in EXT_FEATURES if f in X.columns]
+        X[ext_cols] = X[ext_cols].fillna(0.0)
+    interaction_cols = [f for f in INTERACTION_FEATURES if f in X.columns]
+    X[interaction_cols] = X[interaction_cols].fillna(0.0)
+    y_return    = feat_df.loc[X.index, "target_return"]
+    y_direction = feat_df.loc[X.index, "target_direction"]
+    return X, y_return, y_direction, available
+
+
+def forward_max_drawdown_label(
+    close: pd.Series,
+    horizon: int = 20,
+    threshold: float = 0.05,
+) -> tuple[pd.Series, pd.Series]:
+    """Label whether the next `horizon` trading days suffer drawdown worse than threshold."""
+    future = pd.concat([close.shift(-i) for i in range(1, horizon + 1)], axis=1)
+    future_min = future.min(axis=1)
+    forward_mdd = (future_min / close - 1.0).rename(f"forward_mdd_{horizon}d")
+    label = (forward_mdd <= -abs(threshold)).astype(float).rename(f"target_fwd_mdd_gt{int(threshold * 100)}_h{horizon}")
+    label[future_min.isna()] = np.nan
+    return forward_mdd, label
+
+
+def forward_max_gain_label(
+    close: pd.Series,
+    horizon: int = 20,
+    threshold: float = 0.05,
+) -> tuple[pd.Series, pd.Series]:
+    """Label whether the next `horizon` trading days rally more than threshold."""
+    future = pd.concat([close.shift(-i) for i in range(1, horizon + 1)], axis=1)
+    future_max = future.max(axis=1)
+    forward_gain = (future_max / close - 1.0).rename(f"forward_gain_{horizon}d")
+    label = (forward_gain >= abs(threshold)).astype(float).rename(f"target_fwd_gain_gt{int(threshold * 100)}_h{horizon}")
+    label[future_max.isna()] = np.nan
+    return forward_gain, label
+
+
+def build_feature_matrix(df: pd.DataFrame, ext_df: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Build the current feature matrix without adding prediction targets."""
+    feat_df = _build_features(df)
+    if ext_df is not None:
+        for col in ext_df.columns:
+            feat_df[col] = ext_df[col].reindex(feat_df.index)
+    feat_df = _add_interaction_features(feat_df)
+    all_features = FEATURES + INTERACTION_FEATURES + (EXT_FEATURES if ext_df is not None else [])
+    available = [f for f in all_features if f in feat_df.columns]
+    X = feat_df[available]
+    base_available = [f for f in FEATURES if f in X.columns]
+    X = X.dropna(subset=base_available)
+    if ext_df is not None:
+        ext_cols = [f for f in EXT_FEATURES if f in X.columns]
+        X[ext_cols] = X[ext_cols].fillna(0.0)
+    interaction_cols = [f for f in INTERACTION_FEATURES if f in X.columns]
+    X[interaction_cols] = X[interaction_cols].fillna(0.0)
+    return X
+
+
+def _drop_tail_risk_excluded_features(X: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
+    """Drop features that diagnostics found harmful for forward drawdown risk."""
+    dropped = [col for col in TXO_FEATURES if col in X.columns]
+    if not dropped:
+        return X, []
+    return X.drop(columns=dropped), dropped
+
+
+def train_forward_drawdown_risk(
+    df: pd.DataFrame,
+    ext_df: pd.DataFrame | None,
+    val_start: str,
+    do_feature_selection: bool = False,
+    horizon: int = 20,
+    threshold: float = 0.05,
+    exclude_txo_features: bool = True,
+    expanding_model_weights: bool = False,
+) -> dict:
+    """Train an additive classifier for P(next-H max drawdown worse than threshold)."""
+    X = build_feature_matrix(df, ext_df)
+    dropped_features: list[str] = []
+    if exclude_txo_features:
+        X, dropped_features = _drop_tail_risk_excluded_features(X)
+    forward_mdd, y_risk = forward_max_drawdown_label(df["close"], horizon=horizon, threshold=threshold)
+    common_idx = X.index.intersection(y_risk.dropna().index)
+    X_model = X.loc[common_idx]
+    y_model = y_risk.loc[common_idx].astype(int)
+    train_mask = X_model.index < val_start
+    X_train, X_val = X_model[train_mask], X_model[~train_mask]
+    y_train, y_val = y_model[train_mask], y_model[~train_mask]
+    if len(X_train) < 100 or len(X_val) < 20 or y_train.nunique() < 2 or y_val.nunique() < 2:
+        return {
+            "available": False,
+            "reason": "insufficient_rows_or_single_class",
+            "train_rows": int(len(X_train)),
+            "val_rows": int(len(X_val)),
+            "train_positive_rate": float(y_train.mean()) if len(y_train) else None,
+            "val_positive_rate": float(y_val.mean()) if len(y_val) else None,
+        }
+
+    clf = train_classifier(
+        X_train,
+        y_train,
+        X_val,
+        y_val,
+        do_feature_selection=do_feature_selection,
+        horizon=horizon,
+        expanding_model_weights=expanding_model_weights,
+    )
+    last_row = X.iloc[-1:]
+    W_inf = clf["ensemble"]["weights"]
+    model_probas = {}
+    for nm, mdl in clf["_models"].items():
+        nm_feats = clf[nm]["features"]
+        model_probas[nm] = float(mdl.predict_proba(last_row[nm_feats])[0][1])
+    latest_proba = float(sum(W_inf[nm] * model_probas[nm] for nm in W_inf))
+    val_proba = pd.Series(clf["ensemble"]["proba"], index=X_val.index, name=f"prob_fwd_mdd_gt{int(threshold * 100)}_h{horizon}")
+    return {
+        "available": True,
+        "horizon_days": horizon,
+        "threshold": threshold,
+        "probability": latest_proba,
+        "direction": "RISK_ON" if latest_proba >= 0.5 else "RISK_OFF",
+        "confidence": abs(latest_proba - 0.5) * 2.0,
+        "auc": float(clf["ensemble"]["auc"]),
+        "brier": float(clf["ensemble"]["brier"]),
+        "train_rows": int(len(X_train)),
+        "val_rows": int(len(X_val)),
+        "train_positive_rate": float(y_train.mean()),
+        "val_positive_rate": float(y_val.mean()),
+        "excluded_features": dropped_features,
+        "feature_policy": (
+            "tail_risk_exclude_txo_features"
+            if exclude_txo_features
+            else "tail_risk_all_features"
+        ),
+        "model_probas": model_probas,
+        "model_weights": {k: float(v) for k, v in W_inf.items()},
+        "val_proba": val_proba,
+        "val_label": y_val.rename(f"actual_fwd_mdd_gt{int(threshold * 100)}_h{horizon}"),
+        "val_forward_mdd": forward_mdd.reindex(X_val.index),
+    }
+
+
+def train_forward_upside_reward(
+    df: pd.DataFrame,
+    ext_df: pd.DataFrame | None,
+    val_start: str,
+    do_feature_selection: bool = False,
+    horizon: int = 20,
+    threshold: float = 0.05,
+    expanding_model_weights: bool = False,
+) -> dict:
+    """Train an additive classifier for P(next-H max gain exceeds threshold)."""
+    X = build_feature_matrix(df, ext_df)
+    forward_gain, y_reward = forward_max_gain_label(df["close"], horizon=horizon, threshold=threshold)
+    common_idx = X.index.intersection(y_reward.dropna().index)
+    X_model = X.loc[common_idx]
+    y_model = y_reward.loc[common_idx].astype(int)
+    train_mask = X_model.index < val_start
+    X_train, X_val = X_model[train_mask], X_model[~train_mask]
+    y_train, y_val = y_model[train_mask], y_model[~train_mask]
+    if len(X_train) < 100 or len(X_val) < 20 or y_train.nunique() < 2 or y_val.nunique() < 2:
+        return {
+            "available": False,
+            "reason": "insufficient_rows_or_single_class",
+            "train_rows": int(len(X_train)),
+            "val_rows": int(len(X_val)),
+            "train_positive_rate": float(y_train.mean()) if len(y_train) else None,
+            "val_positive_rate": float(y_val.mean()) if len(y_val) else None,
+        }
+
+    clf = train_classifier(
+        X_train,
+        y_train,
+        X_val,
+        y_val,
+        do_feature_selection=do_feature_selection,
+        horizon=horizon,
+        expanding_model_weights=expanding_model_weights,
+    )
+    last_row = X.iloc[-1:]
+    W_inf = clf["ensemble"]["weights"]
+    model_probas = {}
+    for nm, mdl in clf["_models"].items():
+        nm_feats = clf[nm]["features"]
+        model_probas[nm] = float(mdl.predict_proba(last_row[nm_feats])[0][1])
+    latest_proba = float(sum(W_inf[nm] * model_probas[nm] for nm in W_inf))
+    val_proba = pd.Series(clf["ensemble"]["proba"], index=X_val.index, name=f"prob_fwd_gain_gt{int(threshold * 100)}_h{horizon}")
+    return {
+        "available": True,
+        "horizon_days": horizon,
+        "threshold": threshold,
+        "probability": latest_proba,
+        "direction": "REWARD_ON" if latest_proba >= 0.5 else "REWARD_OFF",
+        "confidence": abs(latest_proba - 0.5) * 2.0,
+        "auc": float(clf["ensemble"]["auc"]),
+        "brier": float(clf["ensemble"]["brier"]),
+        "train_rows": int(len(X_train)),
+        "val_rows": int(len(X_val)),
+        "train_positive_rate": float(y_train.mean()),
+        "val_positive_rate": float(y_val.mean()),
+        "model_probas": model_probas,
+        "model_weights": {k: float(v) for k, v in W_inf.items()},
+        "val_proba": val_proba,
+        "val_label": y_val.rename(f"actual_fwd_gain_gt{int(threshold * 100)}_h{horizon}"),
+        "val_forward_gain": forward_gain.reindex(X_val.index),
+    }
+
+
+def _risk_probability(result: dict, default: float | None = None) -> float | None:
+    if not result.get("available"):
+        return default
+    value = result.get("probability")
+    return float(value) if value is not None else default
+
+
+def _classify_tsmc_market_state(
+    all_results: dict,
+    combined_prob: float,
+    calibrated_prob: float,
+    confidence: float,
+    weighted_return: float,
+    drawdown_risk: dict,
+    severe_drawdown_risk: dict,
+    upside_reward: dict,
+) -> dict:
+    """Classify TSMC leadership phase for advisory diagnostics."""
+    h1 = all_results.get(1, {})
+    h5 = all_results.get(5, {})
+    h20 = all_results.get(20, {})
+
+    h1_prob = float(h1.get("ens_proba", 0.5))
+    h5_prob = float(h5.get("ens_proba", 0.5))
+    h20_prob = float(h20.get("ens_proba", 0.5))
+    h1_ret = float(h1.get("ens_ret", 0.0))
+    h5_ret = float(h5.get("ens_ret", 0.0))
+    h20_ret = float(h20.get("ens_ret", 0.0))
+    h1_dir = str(h1.get("direction", "NEUTRAL"))
+    h5_dir = str(h5.get("direction", "NEUTRAL"))
+    h20_dir = str(h20.get("direction", "NEUTRAL"))
+
+    tail5 = _risk_probability(drawdown_risk)
+    tail8 = _risk_probability(severe_drawdown_risk)
+    upside5 = _risk_probability(upside_reward)
+    tail_reward_score = (
+        upside5 - tail5
+        if upside5 is not None and tail5 is not None
+        else None
+    )
+
+    low_severe_risk = tail8 is None or tail8 <= 0.15
+    high_tail_risk = (tail5 is not None and tail5 >= 0.48) or (tail8 is not None and tail8 >= 0.22)
+    elevated_tail_risk = (tail5 is not None and tail5 >= 0.40) or (tail8 is not None and tail8 >= 0.16)
+    upside_healthy = upside5 is None or upside5 >= 0.45
+    upside_weak = upside5 is not None and upside5 <= 0.35
+
+    reasons: list[str] = []
+
+    if (
+        h5_dir == "UP"
+        and h20_dir == "UP"
+        and h5_prob >= 0.56
+        and h20_prob >= 0.65
+        and calibrated_prob >= 0.58
+        and weighted_return >= 0.005
+        and upside_healthy
+        and low_severe_risk
+        and confidence >= 0.45
+    ):
+        state = 1
+        label = "強勢領漲"
+        bias = "bullish_leadership"
+        reasons.extend([
+            "H5/H20 both UP with strong H20 probability",
+            "weighted return is positive and upside reward is healthy",
+            "severe drawdown risk is low",
+        ])
+    elif (
+        (h5_dir == "DOWN" and h20_dir == "DOWN")
+        or (
+            calibrated_prob <= 0.48
+            and h20_prob <= 0.50
+            and (high_tail_risk or weighted_return <= -0.005)
+        )
+    ):
+        state = 5
+        label = "趨勢轉弱"
+        bias = "bearish"
+        reasons.extend([
+            "medium/long horizon direction has weakened",
+            "calibrated probability is below neutral",
+        ])
+        if high_tail_risk:
+            reasons.append("tail risk is high")
+    elif (
+        h20_dir == "UP"
+        and h20_prob >= 0.58
+        and h1_dir == "DOWN"
+        and weighted_return <= 0.002
+        and (elevated_tail_risk or upside_weak or (tail_reward_score is not None and tail_reward_score <= 0.0))
+    ):
+        state = 3
+        label = "假突破"
+        bias = "failed_breakout_risk"
+        reasons.extend([
+            "H20 remains UP, but short horizon turned DOWN",
+            "weighted return is flat or weak",
+        ])
+        if elevated_tail_risk:
+            reasons.append("drawdown risk is elevated")
+        if upside_weak or (tail_reward_score is not None and tail_reward_score <= 0.0):
+            reasons.append("upside reward does not compensate tail risk")
+    elif (
+        h20_dir == "UP"
+        and (h5_dir == "DOWN" or h1_ret < -0.006 or h5_ret < -0.003)
+        and not high_tail_risk
+    ):
+        state = 4
+        label = "拉回整理"
+        bias = "pullback_in_uptrend"
+        reasons.extend([
+            "H20 is still UP",
+            "short/medium horizon is pulling back",
+            "tail risk is not high enough to confirm trend weakening",
+        ])
+    else:
+        state = 2
+        label = "高檔震盪"
+        bias = "neutral_bullish"
+        reasons.extend([
+            "direction remains constructive but not strong enough for leadership",
+            "expected return is flat or signals are mixed",
+        ])
+        if tail8 is not None and tail8 <= 0.15:
+            reasons.append("severe drawdown risk remains contained")
+
+    return {
+        "state": state,
+        "label_zh": label,
+        "bias": bias,
+        "policy": "diagnostic_only_no_weight_change",
+        "rule_version": "tsmc_market_state_v1",
+        "reasons": reasons,
+        "inputs": {
+            "h1_direction": h1_dir,
+            "h5_direction": h5_dir,
+            "h20_direction": h20_dir,
+            "h1_probability_up": round(h1_prob, 6),
+            "h5_probability_up": round(h5_prob, 6),
+            "h20_probability_up": round(h20_prob, 6),
+            "h1_return": round(h1_ret, 6),
+            "h5_return": round(h5_ret, 6),
+            "h20_return": round(h20_ret, 6),
+            "combined_probability_up": round(float(combined_prob), 6),
+            "calibrated_probability_up": round(float(calibrated_prob), 6),
+            "confidence": round(float(confidence), 6),
+            "weighted_return": round(float(weighted_return), 6),
+            "prob_fwd_mdd_gt5_h20": round(float(tail5), 6) if tail5 is not None else None,
+            "prob_fwd_mdd_gt8_h20": round(float(tail8), 6) if tail8 is not None else None,
+            "prob_fwd_gain_gt5_h20": round(float(upside5), 6) if upside5 is not None else None,
+            "tail_reward_risk_score": round(float(tail_reward_score), 6) if tail_reward_score is not None else None,
+        },
+        "state_map": {
+            "1": "強勢領漲",
+            "2": "高檔震盪",
+            "3": "假突破",
+            "4": "拉回整理",
+            "5": "趨勢轉弱",
+        },
+    }
+
+
+def apply_feature_selection(X_train, y_train, X_val):
+    selector = SelectFromModel(
+        RandomForestRegressor(n_estimators=200, max_depth=10, min_samples_leaf=5, n_jobs=2, random_state=42),
+        threshold="median", prefit=False,
+    )
+    selector.fit(X_train, y_train)
+    selected = selector.get_support()
+    print(f"    Feature selection: {selected.sum()}/{len(selected)} features kept")
+    sel_features = list(np.array(X_train.columns)[selected])
+    return X_train.iloc[:, selected], X_val.iloc[:, selected], sel_features
+
+
+def _feature_selection(X_train, y_train, X_val):
+    return apply_feature_selection(X_train, y_train, X_val)
+
+
+def walk_forward_evaluate(
+    X: pd.DataFrame,
+    y_return: pd.Series,
+    y_direction: np.ndarray,
+    horizon: int,
+    n_windows: int = 5,
+) -> dict:
+    """Walk-forward evaluation with combined fallback when regime subsets are too small."""
+    n_total = len(X)
+    min_train = 300
+    remaining = n_total - min_train
+    step = max(remaining // n_windows, 50)
+
+    results = {"windows": [], "direction_acc": {}}
+    all_model_names = ["rf", "et", "hgb", "gb"]
+
+    for i in range(n_windows):
+        train_end  = min_train + i * step
+        test_start = train_end
+        test_end   = min(test_start + step, n_total)
+
+        if train_end >= n_total - 50 or test_start >= n_total:
+            break
+
+        X_train, X_test = X.iloc[:train_end], X.iloc[test_start:test_end]
+        y_train_ret, y_test_ret = y_return.iloc[:train_end], y_return.iloc[test_start:test_end]
+        y_train_dir, y_test_dir = y_direction[:train_end], y_direction[test_start:test_end]
+
+        if len(X_test) < 20:
+            print(f"    WF-{i+1}: test too small ({len(X_test)}), skipping")
+            continue
+        n_up_test = (y_test_dir == 1).sum()
+        n_down_test = (y_test_dir == 0).sum()
+        if n_up_test == 0 or n_down_test == 0:
+            print(f"    WF-{i+1}: only one class in test, skipping")
+            continue
+
+        above_ma200_train = X_train["above_ma200"] >= 0.5
+        above_ma200_test  = X_test["above_ma200"] >= 0.5
+
+        bull_nonneutral = y_train_dir[above_ma200_train.values] != -1
+        bear_nonneutral = y_train_dir[(~above_ma200_train).values] != -1
+        X_bull_fit = X_train[above_ma200_train][bull_nonneutral]
+        y_bull_fit = y_train_dir[above_ma200_train.values][bull_nonneutral]
+        X_bear_fit = X_train[~above_ma200_train][bear_nonneutral]
+        y_bear_fit = y_train_dir[(~above_ma200_train).values][bear_nonneutral]
+
+        both_test_regimes = above_ma200_test.sum() >= 1 and (~above_ma200_test).sum() >= 1
+        bull_fit_ok = len(X_bull_fit) >= 5 and len(np.unique(y_bull_fit)) >= 2
+        bear_fit_ok = len(X_bear_fit) >= 5 and len(np.unique(y_bear_fit)) >= 2
+        use_regime_split = both_test_regimes and bull_fit_ok and bear_fit_ok
+
+        if use_regime_split:
+            y_bull_test_bin = (y_test_ret.values[above_ma200_test.values] > 0).astype(int)
+            y_bear_test_bin = (y_test_ret.values[(~above_ma200_test).values] > 0).astype(int)
+            clf_bull = train_classifier(X_bull_fit, y_bull_fit,
+                                        X_test[above_ma200_test], y_bull_test_bin,
+                                        do_feature_selection=False)
+            clf_bear = train_classifier(X_bear_fit, y_bear_fit,
+                                        X_test[~above_ma200_test], y_bear_test_bin,
+                                        do_feature_selection=False)
+            mode_tag = "regime-split"
+            for is_bull, clf in [(True, clf_bull), (False, clf_bear)]:
+                mask = above_ma200_test.values == is_bull
+                if mask.sum() == 0:
+                    continue
+                for name in all_model_names:
+                    if name in clf:
+                        results["direction_acc"].setdefault(name, []).append(clf[name]["accuracy"])
+        else:
+            nonneutral_all = y_train_dir != -1
+            X_combined = X_train[nonneutral_all]
+            y_combined  = y_train_dir[nonneutral_all]
+            y_test_bin_all = (y_test_ret.values > 0).astype(int)
+            if len(X_combined) < 10 or len(np.unique(y_combined)) < 2 or len(np.unique(y_test_bin_all)) < 2:
+                reason = (f"bull_fit={'ok' if bull_fit_ok else str(len(X_bull_fit))+' rows'} "
+                          f"bear_fit={'ok' if bear_fit_ok else str(len(X_bear_fit))+' rows'}")
+                print(f"    WF-{i+1}: combined fallback insufficient ({reason}), skipping")
+                continue
+            if not both_test_regimes:
+                mode_tag = f"combined(test-{'bull' if above_ma200_test.sum() > 0 else 'bear'}-only)"
+            else:
+                mode_tag = f"combined(bear-train={len(X_bear_fit)}rows)"
+            clf_combined = train_classifier(X_combined, y_combined, X_test, y_test_bin_all,
+                                            do_feature_selection=False)
+            for name in all_model_names:
+                if name in clf_combined:
+                    results["direction_acc"].setdefault(name, []).append(clf_combined[name]["accuracy"])
+
+        print(f"    WF-{i+1}: train={len(X_train)} test={len(X_test)} | "
+              f"Bull n={above_ma200_test.sum()} Bear n={(~above_ma200_test).sum()} | {mode_tag}")
+
+    print(f"\n  Walk-forward avg direction accuracy (H={horizon}):")
+    avg_acc = {}
+    for name in all_model_names:
+        vals = results["direction_acc"].get(name, [])
+        if vals:
+            avg = np.mean(vals)
+            avg_acc[name] = avg
+            print(f"    {name:10s}: {avg:.4f}  (n_windows={len(vals)})")
+
+    return {"avg_accuracy": avg_acc, "windows": results["windows"]}
+
+
+def purged_kfold_splits(
+    n_samples: int,
+    n_splits: int,
+    horizon: int,
+    embargo_bars: int | None = None,
+) -> list[tuple[np.ndarray, np.ndarray]]:
+    """Purged K-Fold splits with an embargo buffer for overlapping labels."""
+    if embargo_bars is None:
+        embargo_bars = horizon
+    fold_size = n_samples // n_splits
+    splits = []
+    for k in range(n_splits):
+        test_start = k * fold_size
+        test_end = test_start + fold_size if k < n_splits - 1 else n_samples
+        test_idx = np.arange(test_start, test_end)
+        purge_start = max(0, test_start - horizon)
+        embargo_end = min(n_samples, test_end + embargo_bars)
+        all_idx = np.arange(n_samples)
+        train_idx = all_idx[(all_idx < purge_start) | (all_idx >= embargo_end)]
+        if len(train_idx) >= 100 and len(test_idx) >= 20:
+            splits.append((train_idx, test_idx))
+    return splits
+
+
+def evaluate_purged_kfold(
+    X: pd.DataFrame,
+    y_return: pd.Series,
+    y_direction: np.ndarray,
+    horizon: int,
+    n_splits: int = 5,
+    embargo_bars: int | None = None,
+) -> dict:
+    """Evaluate direction models with purged K-Fold + embargo."""
+    if embargo_bars is None:
+        embargo_bars = horizon
+    y_dir = np.asarray(y_direction)
+    y_bin = (np.asarray(y_return) > 0).astype(int)
+    n = len(X)
+    splits = purged_kfold_splits(n, n_splits, horizon, embargo_bars)
+    names = ["rf", "et", "hgb", "gb", "ensemble"]
+    fold_aucs = {nm: [] for nm in names}
+    fold_accs = {nm: [] for nm in names}
+
+    print(f"\n  Purged K-Fold (k={n_splits}, H={horizon}, embargo={embargo_bars}d)")
+    print(f"  {'Fold':>4} {'Trn':>5} {'Tst':>5} {'Excluded':>9} | "
+          f"{'RF':>6} {'ET':>6} {'HGB':>6} {'GB':>6} {'Ens':>6}")
+    print(f"  {'-'*70}")
+
+    for fi, (tr_idx, te_idx) in enumerate(splits):
+        binary_mask = y_dir[tr_idx] != -1
+        tr_clf = tr_idx[binary_mask]
+        y_tr = y_dir[tr_clf]
+        y_te = y_bin[te_idx]
+        n_excl = n - len(tr_idx)
+
+        if len(tr_clf) < 60 or len(np.unique(y_tr)) < 2 or len(np.unique(y_te)) < 2:
+            print(f"  {fi+1:>4}: skipped (train={len(tr_clf)}, classes={len(np.unique(y_tr))})")
+            continue
+
+        res = train_classifier(X.iloc[tr_clf], y_tr, X.iloc[te_idx], y_te)
+        row = {nm: res[nm]["auc"] for nm in names}
+        print(f"  {fi+1:>4}: {len(tr_clf):>5} {len(te_idx):>5} {n_excl:>9} | "
+              + "  ".join(f"{row[nm]:.4f}" for nm in names))
+
+        for nm in names:
+            fold_aucs[nm].append(res[nm]["auc"])
+            fold_accs[nm].append(res[nm]["accuracy"])
+
+    avg_auc = {nm: float(np.mean(v)) if v else float("nan") for nm, v in fold_aucs.items()}
+    avg_acc = {nm: float(np.mean(v)) if v else float("nan") for nm, v in fold_accs.items()}
+    print(f"  {'Avg':>4}: {'':>5} {'':>5} {'':>9} | "
+          + "  ".join(f"{avg_auc[nm]:.4f}" if not np.isnan(avg_auc[nm]) else f"{'N/A':>6}"
+                      for nm in names))
+    return {"avg_auc": avg_auc, "avg_acc": avg_acc}
+
+
+def evaluate_feature_stability(
+    X_train: pd.DataFrame,
+    y_dir: np.ndarray,
+    n_splits: int = 5,
+    top_n: int = 15,
+) -> dict:
+    tss = TimeSeriesSplit(n_splits=n_splits)
+    fold_importances = []
+    feature_names = list(X_train.columns)
+    n_feat = len(feature_names)
+
+    for tr_idx, te_idx in tss.split(X_train):
+        y_tr = y_dir[tr_idx]
+        if len(np.unique(y_tr[y_tr != -1])) < 2:
+            continue
+        mask = y_tr != -1
+        if mask.sum() < 30:
+            continue
+        rf = RandomForestClassifier(
+            n_estimators=200, max_depth=10, min_samples_leaf=5,
+            max_features="sqrt", n_jobs=2, random_state=42,
+        )
+        rf.fit(X_train.iloc[tr_idx][mask], y_tr[mask])
+        fold_importances.append(rf.feature_importances_)
+
+    if len(fold_importances) < 2:
+        return {"error": f"Only {len(fold_importances)} usable folds"}
+
+    fold_importances = np.array(fold_importances)
+    mean_imp  = fold_importances.mean(axis=0)
+    std_imp   = fold_importances.std(axis=0)
+    cv        = np.where(mean_imp > 1e-10, std_imp / mean_imp, 0.0)
+    rank_std  = np.array([np.std([np.argsort(-fi)[j] for fi in fold_importances]) for j in range(n_feat)])
+
+    def _spearman(a, b):
+        ra = np.argsort(np.argsort(a)).astype(float)
+        rb = np.argsort(np.argsort(b)).astype(float)
+        return float(np.corrcoef(ra, rb)[0, 1])
+
+    rank_corrs = [_spearman(fold_importances[i], fold_importances[j])
+                  for i in range(len(fold_importances)) for j in range(i + 1, len(fold_importances))]
+    mean_rank_corr = float(np.mean(rank_corrs))
+
+    TOP_K = min(10, n_feat)
+    top_k_sets = [set(np.argsort(-imp)[:TOP_K]) for imp in fold_importances]
+    common_top = set.intersection(*top_k_sets)
+    top10_consistency = len(common_top) / TOP_K
+
+    thr_cv_high, thr_rank_high = 0.50, n_feat * 0.15
+    thr_cv_med,  thr_rank_med  = 1.00, n_feat * 0.30
+    sorted_idx = np.argsort(-mean_imp)
+    stats = []
+    for fi in sorted_idx[:top_n]:
+        cv_v, rs = float(cv[fi]), float(rank_std[fi])
+        if cv_v < thr_cv_high and rs < thr_rank_high:
+            label = "HIGH"
+        elif cv_v < thr_cv_med and rs < thr_rank_med:
+            label = "MED"
+        else:
+            label = "LOW"
+        top10_count = sum(1 for s in top_k_sets if fi in s)
+        stats.append({"feature": feature_names[fi], "mean_imp": float(mean_imp[fi]),
+                      "cv": cv_v, "rank_std": rs,
+                      "top10_freq": f"{top10_count}/{len(fold_importances)}", "stability": label})
+
+    grade = ("A" if mean_rank_corr >= 0.85 else "B" if mean_rank_corr >= 0.70
+             else "C" if mean_rank_corr >= 0.55 else "D")
+    return {"feature_stats": stats, "mean_rank_corr": mean_rank_corr,
+            "stability_grade": grade, "top10_consistency": top10_consistency,
+            "n_folds_used": len(fold_importances)}
+
+
+def identify_stable_features(X, y_dir, n_folds=3, top_k=20, min_folds=None):
+    if min_folds is None:
+        min_folds = n_folds
+    tss = TimeSeriesSplit(n_splits=n_folds)
+    top_sets = []
+    for tr_idx, _ in tss.split(X):
+        y_tr = y_dir[tr_idx]
+        mask = y_tr != -1
+        if mask.sum() < 30 or len(np.unique(y_tr[mask])) < 2:
+            continue
+        rf = RandomForestClassifier(n_estimators=200, max_depth=10, min_samples_leaf=5,
+                                    max_features="sqrt", n_jobs=2, random_state=42)
+        rf.fit(X.iloc[tr_idx][mask], y_tr[mask])
+        top_sets.append(set(np.array(X.columns)[np.argsort(-rf.feature_importances_)[:top_k]]))
+
+    if len(top_sets) < min_folds:
+        return []
+    from functools import reduce
+    common = reduce(lambda a, b: a & b, top_sets)
+    return list(common)
+
+
+def train_regressor(X_train, y_train, X_val, y_val, do_feature_selection=False):
+    results = {}
+    if do_feature_selection:
+        X_train, X_val, sel_features = _feature_selection(X_train, pd.Series(y_train), X_val)
+    else:
+        sel_features = list(X_train.columns)
+
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_val_scaled   = scaler.transform(X_val)
+
+    rf = RandomForestRegressor(n_estimators=500, max_depth=12, min_samples_leaf=3,
+                               min_samples_split=5, max_features="sqrt", n_jobs=2, random_state=42)
+    rf.fit(X_train, y_train)
+    rf_pred = rf.predict(X_val)
+    results["rf"] = {"model": rf, "mae": mean_absolute_error(y_val, rf_pred),
+                     "rmse": np.sqrt(mean_squared_error(y_val, rf_pred)),
+                     "r2": r2_score(y_val, rf_pred), "predictions": rf_pred,
+                     "features": sel_features, "scaler": None}
+
+    et = ExtraTreesRegressor(n_estimators=500, max_depth=12, min_samples_leaf=3,
+                             min_samples_split=5, max_features="sqrt", n_jobs=2, random_state=42)
+    et.fit(X_train, y_train)
+    et_pred = et.predict(X_val)
+    results["et"] = {"model": et, "mae": mean_absolute_error(y_val, et_pred),
+                     "rmse": np.sqrt(mean_squared_error(y_val, et_pred)),
+                     "r2": r2_score(y_val, et_pred), "predictions": et_pred,
+                     "features": sel_features, "scaler": None}
+
+    en = ElasticNet(alpha=0.05, l1_ratio=0.3, max_iter=2000, random_state=42)
+    en.fit(X_train_scaled, y_train)
+    en_pred = en.predict(X_val_scaled)
+    results["elasticnet"] = {"model": en, "mae": mean_absolute_error(y_val, en_pred),
+                             "rmse": np.sqrt(mean_squared_error(y_val, en_pred)),
+                             "r2": r2_score(y_val, en_pred), "predictions": en_pred,
+                             "features": sel_features, "scaler": scaler}
+
+    ens_pred = (rf_pred + et_pred + en_pred) / 3
+    results["ensemble"] = {"mae": mean_absolute_error(y_val, ens_pred),
+                           "rmse": np.sqrt(mean_squared_error(y_val, ens_pred)),
+                           "r2": r2_score(y_val, ens_pred), "predictions": ens_pred}
+
+    def ens_predict(X):
+        X_sel = X[sel_features]
+        X_scaled = scaler.transform(X_sel)
+        return (rf.predict(X_sel) + et.predict(X_sel) + en.predict(X_scaled)) / 3
+    results["ensemble"]["model"] = type("EnsReg", (), {"predict": ens_predict})()
+    results["ensemble"]["features"] = sel_features
+    results["ensemble"]["scaler"] = scaler
+    return results
+
+
+def train_classifier(
+    X_train, y_train, X_val, y_val,
+    do_feature_selection=False, n_folds=5, calib_frac=0.20, stable_features=None,
+    late_bull_threshold=0.15, horizon: int | None = None,
+    expanding_model_weights: bool = False,
+):
+    """expanding_model_weights: see `_expanding_model_ensemble_weights` docstring.
+    Mirrors the 2026-07-07 ncf_00631l.py panel-drift fix -- default False
+    preserves the original single global-weight behavior exactly.
+    """
+    results = {}
+    if do_feature_selection:
+        X_train, X_val, sel_features = _feature_selection(
+            X_train, pd.Series(y_train, index=X_train.index), X_val)
+    else:
+        sel_features = list(X_train.columns)
+
+    X_train_sel, X_val_sel = X_train, X_val
+    X_train_sel = X_train_sel.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    X_val_sel = X_val_sel.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    y_train_arr, y_val_arr = np.asarray(y_train), np.asarray(y_val)
+
+    base_defs = {
+        "rf": RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_leaf=3,
+                                     max_features="sqrt", n_jobs=2, random_state=42),
+        "et": ExtraTreesClassifier(n_estimators=500, max_depth=12, min_samples_leaf=3,
+                                   max_features="sqrt", n_jobs=2, random_state=42),
+        "hgb": HistGradientBoostingClassifier(max_iter=500, max_depth=6, learning_rate=0.03,
+                                              min_samples_leaf=5, l2_regularization=0.1, random_state=42),
+        "gb": GradientBoostingClassifier(n_estimators=300, max_depth=5, learning_rate=0.05,
+                                         min_samples_leaf=5, subsample=0.8, max_features="sqrt",
+                                         random_state=42),
+    }
+    if _HAS_LGB:
+        base_defs["lgb"] = lgb.LGBMClassifier(n_estimators=500, max_depth=6, learning_rate=0.03,
+                                               num_leaves=31, min_child_samples=5,
+                                               subsample=0.8, colsample_bytree=0.8,
+                                               reg_alpha=0.1, reg_lambda=0.1,
+                                               n_jobs=2, random_state=42, verbose=-1)
+    if _HAS_XGB:
+        base_defs["xgb"] = xgb.XGBClassifier(n_estimators=500, max_depth=5, learning_rate=0.03,
+                                              subsample=0.8, colsample_bytree=0.8,
+                                              reg_alpha=0.1, reg_lambda=1.0,
+                                              eval_metric="logloss", n_jobs=2,
+                                              random_state=42, verbosity=0)
+    if _HAS_CAT:
+        base_defs["cat"] = CatBoostClassifier(iterations=300, depth=6, learning_rate=0.05,
+                                              l2_leaf_reg=3.0, thread_count=2,
+                                              random_seed=42, verbose=False)
+
+    BASE_NAMES = list(base_defs.keys())
+
+    class _ConstantClassifier:
+        def __init__(self, prob_up: float):
+            self._prob_up = float(np.clip(prob_up, 0.0, 1.0))
+
+        def predict_proba(self, X):
+            p = np.full(len(X), self._prob_up, dtype=float)
+            return np.column_stack([1.0 - p, p])
+
+        def predict(self, X):
+            return (self.predict_proba(X)[:, 1] >= 0.5).astype(int)
+
+    if len(np.unique(y_train_arr)) < 2 or len(np.unique(y_val_arr)) < 2:
+        prob_up = float(np.mean(y_train_arr)) if len(y_train_arr) else 0.5
+        model = _ConstantClassifier(prob_up)
+        v_proba = model.predict_proba(X_val_sel)[:, 1]
+        v_pred = (v_proba >= 0.5).astype(int)
+        auc = 0.5
+        brier = brier_score_loss(y_val_arr, v_proba) if len(y_val_arr) else float("nan")
+        acc = accuracy_score(y_val_arr, v_pred) if len(y_val_arr) else float("nan")
+        results["constant"] = {
+            "model": model,
+            "accuracy": acc,
+            "proba": v_proba,
+            "proba_raw": v_proba,
+            "predictions": v_pred,
+            "auc": auc,
+            "auc_raw": auc,
+            "brier": brier,
+            "brier_raw": brier,
+            "calib_applied": False,
+            "features": sel_features,
+            "auc_defined": False,
+        }
+        results["ensemble"] = {
+            "accuracy": acc,
+            "proba": v_proba,
+            "predictions": v_pred,
+            "auc": auc,
+            "brier": brier,
+            "features": sel_features,
+            "weights": {"constant": 1.0},
+            "auc_defined": False,
+        }
+        results["_models"] = {"constant": model}
+        return results
+
+    n_tr = len(X_train_sel)
+    n_calib = max(30, int(n_tr * calib_frac))
+    n_fit = n_tr - n_calib
+    MIN_CALIB = 60
+    CALIB_MAX_AUC_DROP = 0.03  # max acceptable AUC loss from isotonic calibration
+    use_calibration = n_fit >= 50 and n_calib >= MIN_CALIB
+
+    if use_calibration:
+        X_fit, y_fit = X_train_sel.iloc[:n_fit], y_train_arr[:n_fit]
+        X_calib, y_calib = X_train_sel.iloc[n_fit:], y_train_arr[n_fit:]
+
+    _late_bull_col = "close_ma200_dist"
+    _use_late_bull = (
+        late_bull_threshold is not None
+        and _late_bull_col in X_train_sel.columns
+        and _late_bull_col in X_val_sel.columns
+    )
+    if _use_late_bull:
+        late_bull_calib_mask = (
+            X_train_sel.iloc[n_fit:][_late_bull_col].values > late_bull_threshold
+            if use_calibration else np.zeros(0, dtype=bool)
+        )
+        late_bull_val_mask = X_val_sel[_late_bull_col].values > late_bull_threshold
+
+    class _IsotonicModel:
+        """Raw model + Isotonic Regression calibration with optional late-bull sub-calibration."""
+        def __init__(self, base, iso_reg, iso_late_bull=None, late_bull_col=None, threshold=None):
+            self._base, self._iso = base, iso_reg
+            self._iso_lb = iso_late_bull
+            self._lb_col = late_bull_col
+            self._thr    = threshold
+        def predict_proba(self, X):
+            raw = self._base.predict_proba(X)[:, 1]
+            cal = np.clip(self._iso.predict(raw), 0.0, 1.0)
+            if self._iso_lb is not None and self._lb_col in X.columns:
+                lb_mask = X[self._lb_col].values > self._thr
+                if lb_mask.any():
+                    cal[lb_mask] = np.clip(self._iso_lb.predict(raw[lb_mask]), 0.0, 1.0)
+            return np.column_stack([1 - cal, cal])
+        def predict(self, X):
+            return (self.predict_proba(X)[:, 1] >= 0.5).astype(int)
+
+    for name in BASE_NAMES:
+        m_full = clone(base_defs[name])
+        m_full.fit(X_train_sel, y_train_arr)
+        v_proba_raw = m_full.predict_proba(X_val_sel)[:, 1]
+        auc_raw = roc_auc_score(y_val_arr, v_proba_raw)
+
+        calib_applied = False
+        cal_m, v_proba = m_full, v_proba_raw
+
+        if use_calibration:
+            m_fit = clone(base_defs[name])
+            m_fit.fit(X_fit, y_fit)
+            raw_cal = m_fit.predict_proba(X_calib)[:, 1]
+            iso = IsotonicRegression(out_of_bounds="clip")
+            iso.fit(raw_cal, y_calib)
+            iso_val_proba = np.clip(iso.predict(m_fit.predict_proba(X_val_sel)[:, 1]), 0.0, 1.0)
+            brier_iso = brier_score_loss(y_val_arr, iso_val_proba)
+            brier_raw = brier_score_loss(y_val_arr, v_proba_raw)
+            auc_iso   = roc_auc_score(y_val_arr, iso_val_proba)
+
+            iso_late_bull = None
+            if _use_late_bull and late_bull_calib_mask.sum() >= 30:
+                lb_raw = raw_cal[late_bull_calib_mask]
+                lb_y   = y_calib[late_bull_calib_mask]
+                if len(np.unique(lb_y)) == 2:
+                    iso_lb = IsotonicRegression(out_of_bounds="clip")
+                    iso_lb.fit(lb_raw, lb_y)
+                    iso_late_bull = iso_lb
+
+            if brier_iso < brier_raw and auc_iso >= auc_raw - CALIB_MAX_AUC_DROP:
+                cal_m = _IsotonicModel(
+                    m_fit, iso,
+                    iso_late_bull=iso_late_bull,
+                    late_bull_col=_late_bull_col if _use_late_bull else None,
+                    threshold=late_bull_threshold,
+                )
+                v_proba = iso_val_proba
+                calib_applied = True
+
+        v_pred = (v_proba >= 0.5).astype(int)
+        results[name] = {
+            "model": cal_m, "accuracy": accuracy_score(y_val_arr, v_pred),
+            "proba": v_proba, "proba_raw": v_proba_raw, "predictions": v_pred,
+            "auc": roc_auc_score(y_val_arr, v_proba),
+            "auc_raw": roc_auc_score(y_val_arr, v_proba_raw),
+            "brier": brier_score_loss(y_val_arr, v_proba),
+            "brier_raw": brier_score_loss(y_val_arr, v_proba_raw),
+            "calib_applied": calib_applied, "features": sel_features,
+        }
+
+    p_base      = float(np.mean(y_val_arr))
+    naive_brier = p_base * (1.0 - p_base)
+    if expanding_model_weights:
+        ens_proba, weight_rows = _expanding_model_ensemble_weights(
+            {name: results[name]["proba"] for name in BASE_NAMES}, y_val_arr, horizon=horizon,
+        )
+        W = weight_rows[-1] if weight_rows else {name: 1.0 / len(BASE_NAMES) for name in BASE_NAMES}
+        ens_proba = np.clip(ens_proba, 0.0, 1.0)
+    else:
+        auc_w   = {name: max(0.0, results[name]["auc"] - 0.5) for name in BASE_NAMES}
+        brier_w = {name: max(0.0, naive_brier - results[name]["brier"]) for name in BASE_NAMES}
+        raw_w   = {name: auc_w[name] * brier_w[name] for name in BASE_NAMES}
+        total_w = sum(raw_w.values())
+        if total_w > 0:
+            W = {name: raw_w[name] / total_w for name in BASE_NAMES}
+        else:
+            total_auc_w = sum(auc_w.values())
+            W = ({name: auc_w[name] / total_auc_w for name in BASE_NAMES}
+                 if total_auc_w > 0 else {name: 1.0 / len(BASE_NAMES) for name in BASE_NAMES})
+        ens_proba = np.clip(sum(W[name] * results[name]["proba"] for name in BASE_NAMES), 0.0, 1.0)
+    ens_pred  = (ens_proba >= 0.5).astype(int)
+    ens_brier = brier_score_loss(y_val_arr, ens_proba)
+    results["ensemble"] = {
+        "accuracy": accuracy_score(y_val_arr, ens_pred), "proba": ens_proba,
+        "predictions": ens_pred, "auc": roc_auc_score(y_val_arr, ens_proba),
+        "brier": ens_brier, "features": sel_features, "weights": W,
+        "ensemble_weight_method": "expanding_prior" if expanding_model_weights else "global",
+    }
+
+    if use_calibration:
+        n_applied = sum(results[nm]["calib_applied"] for nm in BASE_NAMES)
+        print(f"\n  Isotonic Calibration (fit={n_fit} / calib={n_calib}, accepted={n_applied}/{len(BASE_NAMES)}):")
+        print(f"  {'Model':<8} {'AUC_raw':>9} {'AUC_cal':>9}  {'Brier_raw':>10} {'Brier_cal':>10}  Status")
+        for name in BASE_NAMES:
+            r = results[name]
+            da, db = r["auc"] - r["auc_raw"], r["brier"] - r["brier_raw"]
+            tag = "iso-OK" if r["calib_applied"] else "skip(no-gain)"
+            print(f"  {name:<8} {r['auc_raw']:>9.4f} {r['auc']:>9.4f}({da:+.4f})"
+                  f"  {r['brier_raw']:>10.4f} {r['brier']:>10.4f}({db:+.4f})  {tag}")
+        print(f"  {'ensemble':<8} {'':>9} {results['ensemble']['auc']:>9.4f}"
+              f"          {'':>10} {ens_brier:>10.4f}")
+    else:
+        print(f"\n  Calibration skipped (n_calib={n_calib} < {MIN_CALIB})")
+
+    if _use_late_bull and late_bull_val_mask.sum() >= 10:
+        near_bull_mask = ~late_bull_val_mask
+        ens_p = results["ensemble"]["proba"]
+        y_lb, y_nb = y_val_arr[late_bull_val_mask], y_val_arr[near_bull_mask]
+        p_lb, p_nb = ens_p[late_bull_val_mask], ens_p[near_bull_mask]
+        try:
+            auc_lb = roc_auc_score(y_lb, p_lb) if len(np.unique(y_lb)) == 2 else float("nan")
+        except Exception:
+            auc_lb = float("nan")
+        try:
+            auc_nb = roc_auc_score(y_nb, p_nb) if len(np.unique(y_nb)) == 2 else float("nan")
+        except Exception:
+            auc_nb = float("nan")
+        flag_lb = " ← near-random, suppress" if not (auc_lb != auc_lb) and auc_lb < 0.52 else ""
+        print(f"\n  Late-bull sub-regime AUC (ma_gap > {late_bull_threshold:.0%}):")
+        print(f"    Near-MA bull  (ma_gap ≤ {late_bull_threshold:.0%}): AUC={auc_nb:.4f}  n={int(near_bull_mask.sum())}")
+        print(f"    Late/far bull (ma_gap > {late_bull_threshold:.0%}): AUC={auc_lb:.4f}  n={int(late_bull_val_mask.sum())}{flag_lb}")
+
+    ALL_NAMES = list(BASE_NAMES)
+    if stable_features and len(stable_features) >= 5:
+        stb_cols = [f for f in stable_features if f in X_train_sel.columns and f in X_val_sel.columns]
+        if len(stb_cols) >= 5:
+            X_train_stb, X_val_stb = X_train_sel[stb_cols], X_val_sel[stb_cols]
+            stb_m = RandomForestClassifier(n_estimators=500, max_depth=8, min_samples_leaf=5,
+                                           max_features="sqrt", n_jobs=2, random_state=43)
+            stb_m.fit(X_train_stb, y_train_arr)
+            stb_proba_raw = stb_m.predict_proba(X_val_stb)[:, 1]
+            stb_proba, stb_cal_m, stb_calib_applied = stb_proba_raw, stb_m, False
+
+            if use_calibration:
+                stb_fit = RandomForestClassifier(n_estimators=500, max_depth=8, min_samples_leaf=5,
+                                                 max_features="sqrt", n_jobs=2, random_state=43)
+                stb_fit.fit(X_train_stb.iloc[:n_fit], y_fit)
+                raw_cal_stb = stb_fit.predict_proba(X_train_stb.iloc[n_fit:])[:, 1]
+                iso_stb = IsotonicRegression(out_of_bounds="clip")
+                iso_stb.fit(raw_cal_stb, y_calib)
+                iso_stb_proba = np.clip(iso_stb.predict(stb_fit.predict_proba(X_val_stb)[:, 1]), 0.0, 1.0)
+                stb_auc_raw  = roc_auc_score(y_val_arr, stb_proba_raw)
+                stb_auc_iso  = roc_auc_score(y_val_arr, iso_stb_proba)
+                if (brier_score_loss(y_val_arr, iso_stb_proba) < brier_score_loss(y_val_arr, stb_proba_raw)
+                        and stb_auc_iso >= stb_auc_raw - CALIB_MAX_AUC_DROP):
+                    stb_cal_m = _IsotonicModel(stb_fit, iso_stb)
+                    stb_proba = iso_stb_proba
+                    stb_calib_applied = True
+
+            stb_auc  = roc_auc_score(y_val_arr, stb_proba)
+            stb_pred = (stb_proba >= 0.5).astype(int)
+            results["stable_rf"] = {
+                "model": stb_cal_m, "accuracy": accuracy_score(y_val_arr, stb_pred),
+                "proba": stb_proba, "proba_raw": stb_proba_raw, "predictions": stb_pred,
+                "auc": stb_auc, "auc_raw": roc_auc_score(y_val_arr, stb_proba_raw),
+                "brier": brier_score_loss(y_val_arr, stb_proba),
+                "brier_raw": brier_score_loss(y_val_arr, stb_proba_raw),
+                "calib_applied": stb_calib_applied, "features": stb_cols,
+            }
+            ALL_NAMES = BASE_NAMES + ["stable_rf"]
+
+            if expanding_model_weights:
+                ens_proba2, weight_rows2 = _expanding_model_ensemble_weights(
+                    {name: results[name]["proba"] for name in ALL_NAMES}, y_val_arr, horizon=horizon,
+                )
+                W2 = weight_rows2[-1] if weight_rows2 else {name: 1.0 / len(ALL_NAMES) for name in ALL_NAMES}
+                ens_proba2 = np.clip(ens_proba2, 0.0, 1.0)
+            else:
+                auc_w2   = {name: max(0.0, results[name]["auc"] - 0.5) for name in ALL_NAMES}
+                brier_w2 = {name: max(0.0, naive_brier - results[name]["brier"]) for name in ALL_NAMES}
+                raw_w2   = {name: auc_w2[name] * brier_w2[name] for name in ALL_NAMES}
+                total_w2 = sum(raw_w2.values())
+                if total_w2 > 0:
+                    W2 = {name: raw_w2[name] / total_w2 for name in ALL_NAMES}
+                else:
+                    total_auc_w2 = sum(auc_w2.values())
+                    W2 = ({name: auc_w2[name] / total_auc_w2 for name in ALL_NAMES}
+                          if total_auc_w2 > 0 else {name: 1.0 / len(ALL_NAMES) for name in ALL_NAMES})
+                ens_proba2 = np.clip(sum(W2[name] * results[name]["proba"] for name in ALL_NAMES), 0.0, 1.0)
+            ens_pred2  = (ens_proba2 >= 0.5).astype(int)
+            results["ensemble"] = {
+                "accuracy": accuracy_score(y_val_arr, ens_pred2), "proba": ens_proba2,
+                "predictions": ens_pred2, "auc": roc_auc_score(y_val_arr, ens_proba2),
+                "brier": brier_score_loss(y_val_arr, ens_proba2),
+                "features": sel_features, "weights": W2,
+                "ensemble_weight_method": "expanding_prior" if expanding_model_weights else "global",
+            }
+
+    results["_sel_features"] = sel_features
+    results["_models"] = {name: results[name]["model"] for name in ALL_NAMES}
+    n_applied_total = sum(results[nm]["calib_applied"] for nm in ALL_NAMES) if use_calibration else 0
+    results["_calib_info"] = {
+        "method": "isotonic_regression", "n_fit": n_fit if use_calibration else n_tr,
+        "n_calib": n_calib if use_calibration else 0, "applied": use_calibration,
+        "n_models_calibrated": n_applied_total,
+    }
+    return results
+
+
+def _build_expanding_horizon_ensemble_panel(
+    probs_by_horizon: dict[int, pd.Series],
+    labels_by_horizon: dict[int, pd.Series] | None = None,
+    *,
+    min_history: int = 60,
+) -> pd.DataFrame:
+    """Build horizon ensemble rows using only labels before each row."""
+    horizons = sorted(probs_by_horizon)
+    if not horizons:
+        return pd.DataFrame()
+
+    common_idx = probs_by_horizon[horizons[0]].index
+    for horizon in horizons[1:]:
+        common_idx = common_idx.intersection(probs_by_horizon[horizon].index)
+    common_idx = common_idx.sort_values()
+
+    prob_df = pd.DataFrame(
+        {f"prob_up_h{horizon}": probs_by_horizon[horizon].reindex(common_idx) for horizon in horizons},
+        index=common_idx,
+    )
+    if labels_by_horizon:
+        label_df = pd.DataFrame(
+            {
+                horizon: labels_by_horizon[horizon].reindex(common_idx)
+                for horizon in horizons
+                if horizon in labels_by_horizon and labels_by_horizon[horizon] is not None
+            },
+            index=common_idx,
+        )
+    else:
+        label_df = pd.DataFrame(index=common_idx)
+
+    equal_weights = {horizon: 1.0 / len(horizons) for horizon in horizons}
+    weight_rows: list[dict[int, float]] = []
+    ensemble_values: list[float] = []
+
+    for pos, idx in enumerate(common_idx):
+        raw_weights: dict[int, float] = {}
+        for horizon in horizons:
+            if horizon not in label_df:
+                continue
+            # M1 embargo fix (ported from ncf_00631l.py 2026-07-07): label_df[horizon]
+            # .iloc[i] is the forward-looking label for row i (needs `horizon` days of
+            # future price data to resolve), so as of `pos` only rows up to
+            # `pos - horizon` are actually known -- plain `iloc[:pos]` leaked up to
+            # `horizon-1` days of unresolved forward labels near the frontier.
+            resolved_end = max(0, pos - horizon)
+            hist_labels = label_df[horizon].iloc[:resolved_end]
+            hist_probs = prob_df[f"prob_up_h{horizon}"].iloc[:resolved_end]
+            valid = hist_labels.notna() & hist_probs.notna()
+            if int(valid.sum()) < min_history or hist_labels[valid].nunique() < 2:
+                continue
+            auc = roc_auc_score(hist_labels[valid].astype(int), hist_probs[valid])
+            raw_weights[horizon] = max(0.0, float(auc) - 0.5)
+
+        total_weight = sum(raw_weights.values())
+        if total_weight > 0:
+            weights = {horizon: raw_weights.get(horizon, 0.0) / total_weight for horizon in horizons}
+        else:
+            weights = equal_weights
+
+        row_probs = prob_df.loc[idx]
+        ensemble_values.append(
+            float(sum(weights[horizon] * row_probs[f"prob_up_h{horizon}"] for horizon in horizons))
+        )
+        weight_rows.append(weights)
+
+    panel_df = prob_df.copy()
+    panel_df["ensemble_prob_up"] = ensemble_values
+    panel_df["direction"] = panel_df["ensemble_prob_up"].apply(lambda p: "UP" if p > 0.5 else "DOWN")
+    panel_df["prob_magnitude"] = (panel_df["ensemble_prob_up"] - 0.5).abs() * 2
+    for horizon in horizons:
+        panel_df[f"ensemble_weight_h{horizon}"] = [weights[horizon] for weights in weight_rows]
+    panel_df["horizon_ensemble_method"] = f"expanding_prior_auc_min{min_history}"
+    return panel_df
+
+
+def _expanding_model_ensemble_weights(
+    probas_by_model: dict[str, np.ndarray],
+    y_val_arr: np.ndarray,
+    *,
+    horizon: int | None = None,
+    min_history: int = 150,
+    full_confidence_history: int = 800,
+) -> tuple[np.ndarray, list[dict[str, float]]]:
+    """Per-row model-ensemble blend using only labels resolved before that row.
+
+    Ported from ncf_00631l.py's 2026-07-07 panel-drift fix (see
+    GROUP_A_PLUS_NCF_PANEL_DRIFT_AUDIT_20260706.md) -- ncf_2330.py shares the
+    identical global-weight pattern (AUC+Brier ensemble weight recomputed over
+    the *entire* validation set on every retrain, silently shifting every
+    historical row's blended probability). Row `pos`'s weight uses only rows
+    `[:pos - horizon]` -- rows whose forward-looking label had actually
+    resolved as of row `pos`.
+
+    min_history/full_confidence_history reuse ncf_00631l.py's values: ncf_2330.py
+    uses the same --val-start default (2025-01-02), the same HORIZONS=[1,5,20],
+    and the same 7-base-model registry (no TabNet here), so the validation
+    window and per-model resolved-sample dynamics that motivated the 150/800
+    shrinkage ramp apply unchanged. Default False preserves the original
+    single global-weight behavior exactly.
+    """
+    names = list(probas_by_model)
+    n = len(y_val_arr)
+    h = int(horizon) if horizon else 0
+    equal_weights = {name: 1.0 / len(names) for name in names}
+    ens = np.empty(n, dtype=float)
+    weight_rows: list[dict[str, float]] = []
+    ramp_span = max(1, full_confidence_history - min_history)
+
+    for pos in range(n):
+        resolved_end = max(0, pos - h)
+        hist_y = y_val_arr[:resolved_end]
+        weights = equal_weights
+        if len(hist_y) >= min_history and len(np.unique(hist_y)) >= 2:
+            p_base_hist = float(np.mean(hist_y))
+            naive_brier_hist = p_base_hist * (1.0 - p_base_hist)
+            auc_w: dict[str, float] = {}
+            brier_w: dict[str, float] = {}
+            for name in names:
+                hist_p = probas_by_model[name][:resolved_end]
+                auc_w[name] = max(0.0, roc_auc_score(hist_y, hist_p) - 0.5)
+                brier_w[name] = max(0.0, naive_brier_hist - brier_score_loss(hist_y, hist_p))
+            raw_w = {name: auc_w[name] * brier_w[name] for name in names}
+            total_w = sum(raw_w.values())
+            if total_w > 0:
+                raw_weights = {name: raw_w[name] / total_w for name in names}
+            else:
+                total_auc_w = sum(auc_w.values())
+                raw_weights = ({name: auc_w[name] / total_auc_w for name in names}
+                               if total_auc_w > 0 else equal_weights)
+            shrink = min(1.0, (len(hist_y) - min_history) / ramp_span)
+            weights = {
+                name: shrink * raw_weights[name] + (1.0 - shrink) * equal_weights[name]
+                for name in names
+            }
+        ens[pos] = sum(weights[name] * probas_by_model[name][pos] for name in names)
+        weight_rows.append(weights)
+
+    return np.clip(ens, 0.0, 1.0), weight_rows
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--db", default=str(DB_PATH))
+    parser.add_argument("--ticker", default=TICKER)
+    parser.add_argument("--train-start", default="2015-01-01")
+    parser.add_argument("--val-start", default="2025-01-02")
+    parser.add_argument("--val-end", default="latest",
+                        help="Validation/data end date, or 'latest' to use newest DB OHLCV date")
+    parser.add_argument("--feature-selection", action="store_true")
+    parser.add_argument("--walk-forward", action="store_true")
+    parser.add_argument("--purged-cv", action="store_true")
+    parser.add_argument("--purged-cv-k", type=int, default=5)
+    parser.add_argument("--direction-threshold", type=float, default=0.0)
+    parser.add_argument("--labeling", choices=["auto", "simple", "triple_barrier"], default="auto")
+    parser.add_argument("--tbl-mult", type=float, default=1.0)
+    parser.add_argument("--no-external-features", action="store_true")
+    parser.add_argument("--no-tbrain-features", action="store_true")
+    parser.add_argument("--no-fourier-features", action="store_true",
+                        help="Disable Fourier trend-decomposition features")
+    parser.add_argument("--no-global-features", action="store_true",
+                        help="Disable global correlated asset features (N225/HSI/USDJPY/KOSPI)")
+    parser.add_argument(
+        "--feature-mode",
+        choices=["pre_open", "after_close"],
+        default="after_close",
+        help=(
+            "Timing mode for TSMC_Leadership_Score. pre_open uses T-1 Taiwan "
+            "close-derived data plus US overnight inputs; after_close may use "
+            "same-day Taiwan close-derived data."
+        ),
+    )
+    parser.add_argument(
+        "--leadership-mode",
+        choices=["full", "score_only", "components_only", "none"],
+        default="full",
+        help=(
+            "Ablation control for TSMC_Leadership_Score features. full: composite "
+            "score + component columns (default). score_only: composite score "
+            "only. components_only: component columns without the composite. "
+            "none: exclude the whole leadership feature family from training."
+        ),
+    )
+    parser.add_argument(
+        "--tsmc-0050-weight", type=float, default=TSMC_0050_WEIGHT_ASSUMPTION,
+        help="Assumed TSMC weight within 0050 used by the leadership feature family",
+    )
+    parser.add_argument("--feature-stability", action="store_true")
+    parser.add_argument("--feature-stability-k", type=int, default=5)
+    parser.add_argument("--calib-frac", type=float, default=0.20,
+                        help="Fraction of training data held out for calibration (default 0.20)")
+    parser.add_argument(
+        "--no-expanding-model-weights", dest="expanding_model_weights", action="store_false",
+        help="Disable per-row expanding/walk-forward model-ensemble weighting "
+             "(reverts to global AUC+Brier weights recomputed on the full val set).",
+    )
+    parser.set_defaults(expanding_model_weights=True)
+    parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
+    parser.add_argument(
+        "--val-predictions-output", default=None,
+        help="If set, save per-day val prediction panel as CSV",
+    )
+    parser.add_argument(
+        "--full-panel", action="store_true",
+        help="Extend the panel to include the unlabeled tail without forward labels.",
+    )
+    args = parser.parse_args()
+    if args.no_tbrain_features:
+        FEATURES[:] = [feature for feature in FEATURES if feature not in set(TBRAIN_FEATURES)]
+    if args.no_fourier_features:
+        FEATURES[:] = [feature for feature in FEATURES if feature not in set(FOURIER_FEATURES)]
+    if args.no_global_features:
+        EXT_FEATURES[:] = [f for f in EXT_FEATURES if f not in set(GLOBAL_FEATURES + GLOBAL_INTERACTION_FEATURES)]
+    leadership_component_features = [f for f in TSMC_LEADERSHIP_FEATURES if f != "TSMC_Leadership_Score"]
+    if args.leadership_mode == "none":
+        EXT_FEATURES[:] = [f for f in EXT_FEATURES if f not in set(TSMC_LEADERSHIP_FEATURES)]
+    elif args.leadership_mode == "score_only":
+        EXT_FEATURES[:] = [f for f in EXT_FEATURES if f not in set(leadership_component_features)]
+    elif args.leadership_mode == "components_only":
+        EXT_FEATURES[:] = [f for f in EXT_FEATURES if f != "TSMC_Leadership_Score"]
+
+    db_path = Path(args.db)
+    val_end = resolve_end_date(db_path, args.ticker, args.val_end)
+    print(f"[NCF_2330] Loading data from {db_path}")
+    print(f"  Validation/data end: {val_end}")
+    raw = load_data(db_path, args.ticker, args.train_start, val_end)
+    print(f"  Ticker: {args.ticker}")
+    print(f"  Raw rows: {len(raw)}, range: {raw.index[0].date()} ~ {raw.index[-1].date()}")
+    print(f"  Current close: {raw['close'].iloc[-1]:.2f} ({raw.index[-1].date()})")
+
+    ext_df = None
+    if not args.no_external_features:
+        print(f"\n[ExtFeat] Downloading external market data...")
+        ext_df = load_external_df(
+            raw, db_path, feature_mode=args.feature_mode,
+            tsmc_weight_in_0050=args.tsmc_0050_weight,
+        )
+        last_date_raw = raw.index[-1]
+        _con = duckdb.connect(str(db_path), read_only=True)
+        _stale = {
+            "台指期夜盤": _con.execute(
+                "SELECT MAX(dt) FROM taifex_futures_daily WHERE contract='TX' AND trading_session='盤後'"
+            ).fetchone()[0],
+            "TXO法人未平倉": _con.execute(
+                "SELECT MAX(dt) FROM derivative_institutional_data WHERE product_id='TXO'"
+            ).fetchone()[0],
+        }
+        _con.close()
+        for name, max_dt in _stale.items():
+            if max_dt is not None:
+                lag = (last_date_raw.date() - max_dt).days
+                if lag > 3:
+                    print(f"  ⚠️  {name}: DB 最後日 {max_dt}，落後 {lag} 天（已填 0）")
+        if not args.no_global_features and ext_df is not None:
+            print(f"  [GlobalFeat] Fetching N225/HSI/USDJPY/KOSPI...")
+            _idx = raw.index
+            _start_ext = ((_idx[0] - pd.Timedelta(days=90)).strftime("%Y-%m-%d"))
+            _end_ext = ((_idx[-1] + pd.Timedelta(days=2)).strftime("%Y-%m-%d"))
+            add_global_features(ext_df, _idx, _fetch_yf, _start_ext, _end_ext)
+
+    HORIZONS = [1, 5, 20]
+    val_panels: dict = {}
+    all_clf_models: dict = {}
+    # 2330.TW 是高權值大型股，日內波動大於 00632R（1x反向）；close_open_ratio 在 H=1 不穩定
+    HORIZON_DROP_FEATURES: dict[int, list[str]] = {
+        1: ["close_open_ratio"],
+        5: ["rsi_14"],
+    }
+    # 台股漲跌停 10%，TSMC 屬高波動權值股：H=1 clip ±7%（涵蓋接近漲跌停但排除異常值）
+    # H=5 5日波動較大 clip ±15%，H=20 clip ±28%
+    CLIP_BOUNDS = {1: (-0.07, 0.07), 5: (-0.15, 0.15), 20: (-0.28, 0.28)}
+
+    all_results = {}
+
+    for h in HORIZONS:
+        print(f"\n{'='*60}")
+        h_labeling = ("triple_barrier" if h == 5 else "simple") if args.labeling == "auto" else args.labeling
+        tbl_tag = f"[TBL×{args.tbl_mult}]" if h_labeling == "triple_barrier" else "[SIMPLE]"
+        print(f"=== HORIZON {h} day{'s' if h > 1 else ''} "
+              f"{'[FS]' if args.feature_selection else ''}{tbl_tag}"
+              f"{'[EXT]' if ext_df is not None else ''} ===")
+        print(f"{'='*60}")
+
+        X, y_return, y_direction, available = build_dataset(
+            raw, horizon=h, ext_df=ext_df,
+            direction_threshold=args.direction_threshold,
+            labeling=h_labeling, tbl_mult=args.tbl_mult,
+        )
+
+        train_mask = X.index < args.val_start
+        val_mask   = (X.index >= args.val_start) & (X.index <= val_end)
+        X_train, y_train_ret = X[train_mask], y_return[train_mask]
+        X_val,   y_val_ret   = X[val_mask],   y_return[val_mask]
+        y_train_dir = y_direction[train_mask].values
+        y_val_dir   = (y_return[val_mask] > 0).astype(int).values
+
+        clf_train_mask  = y_train_dir != -1
+        n_neutral_tr    = (~clf_train_mask).sum()
+        y_train_dir_clf = y_train_dir[clf_train_mask]
+        X_train_clf     = X_train[clf_train_mask]
+
+        up_pct = (y_train_dir_clf == 1).mean()
+        print(f"  Train: {len(X_train)} rows | Val: {len(X_val)} rows")
+        if n_neutral_tr > 0:
+            print(f"  NEUTRAL filtered: {n_neutral_tr} ({n_neutral_tr/len(X_train):.1%}) → "
+                  f"clf train={len(X_train_clf)} rows")
+        print(f"  Train direction: {(y_train_dir_clf==1).sum()} up / {(y_train_dir_clf==0).sum()} down ({up_pct:.1%} up)")
+
+        regime_cols   = ["above_ma200", "above_ma50", "above_ma20"]
+        X_regime_train = X_train[regime_cols]
+        X_regime_val   = X_val[regime_cols]
+        X_train_feat   = X_train.drop(columns=regime_cols)
+        X_val_feat     = X_val.drop(columns=regime_cols)
+
+        if args.feature_selection:
+            X_train_sel, X_val_sel, sel_features = apply_feature_selection(X_train_feat, y_train_ret, X_val_feat)
+            do_fs = False
+        else:
+            X_train_sel, X_val_sel = X_train_feat.copy(), X_val_feat.copy()
+            sel_features = list(X_train_feat.columns)
+            do_fs = False
+
+        drop_cols = [c for c in HORIZON_DROP_FEATURES.get(h, []) if c in X_train_sel.columns]
+        if drop_cols:
+            X_train_sel = X_train_sel.drop(columns=drop_cols)
+            X_val_sel   = X_val_sel.drop(columns=drop_cols)
+            print(f"  Dropped unstable features for H={h}: {drop_cols}")
+
+        X_train_sel[regime_cols] = X_regime_train.values
+        X_val_sel[regime_cols]   = X_regime_val.values
+
+        reg_all = train_regressor(X_train_sel, y_train_ret, X_val_sel, y_val_ret, do_feature_selection=do_fs)
+        print(f"\n  --- Regression (all) ---")
+        for name in ["rf", "et", "elasticnet", "ensemble"]:
+            r = reg_all[name]
+            print(f"    {name:10s}  MAE={r['mae']:.6f}  R²={r['r2']:.4f}")
+
+        above_ma200_train = X_train_sel["above_ma200"] >= 0.5
+        above_ma200_val   = X_val_sel["above_ma200"] >= 0.5
+        n_bull = int(above_ma200_val.sum())
+        n_bear = int((~above_ma200_val).sum())
+        n_bull_train = int(above_ma200_train.sum())
+        n_bear_train = int((~above_ma200_train).sum())
+
+        reg_bull = None
+        reg_bear = None
+        if n_bull > 0 and n_bull_train >= 20:
+            reg_bull = train_regressor(X_train_sel[above_ma200_train], y_train_ret[above_ma200_train],
+                                       X_val_sel[above_ma200_val], y_val_ret[above_ma200_val],
+                                       do_feature_selection=do_fs)
+        if n_bear > 0 and n_bear_train >= 20:
+            reg_bear = train_regressor(X_train_sel[~above_ma200_train], y_train_ret[~above_ma200_train],
+                                       X_val_sel[~above_ma200_val], y_val_ret[~above_ma200_val],
+                                       do_feature_selection=do_fs)
+        if reg_bull is None and reg_bear is None:
+            reg_bull = reg_all
+            reg_bear = reg_all
+        elif reg_bull is None:
+            reg_bull = reg_bear
+        elif reg_bear is None:
+            reg_bear = reg_bull
+
+        print(f"\n  --- Regime Regression ---")
+        for regime, reg, n in [("Bull", reg_bull, n_bull), ("Bear", reg_bear, n_bear)]:
+            print(f"    {regime:5s}  RF MAE={reg['rf']['mae']:.6f}  R²={reg['rf']['r2']:.4f}  |"
+                  f"  ET MAE={reg['et']['mae']:.6f}  |  Ens MAE={reg['ensemble']['mae']:.6f}  (n={n})")
+
+        X_train_clf_sel       = X_train_sel[clf_train_mask]
+        above_ma200_train_clf = X_train_clf_sel["above_ma200"] >= 0.5
+        n_bull_train_clf = int(above_ma200_train_clf.sum())
+        n_bear_train_clf = int((~above_ma200_train_clf).sum())
+
+        stable_feats = None
+        if h == 20:
+            stable_feats = identify_stable_features(X_train_clf_sel, y_train_dir_clf, n_folds=3, top_k=20, min_folds=3)
+            print(f"  Stable features ({len(stable_feats)}): {stable_feats[:8]}...")
+
+        clf_bull = None
+        clf_bear = None
+        if n_bull > 0 and n_bull_train_clf >= 20:
+            clf_bull = train_classifier(X_train_clf_sel[above_ma200_train_clf],
+                                        y_train_dir_clf[above_ma200_train_clf],
+                                        X_val_sel[above_ma200_val], y_val_dir[above_ma200_val],
+                                        do_feature_selection=do_fs, stable_features=stable_feats,
+                                        calib_frac=args.calib_frac,
+                                        horizon=h, expanding_model_weights=args.expanding_model_weights)
+        if n_bear > 0 and n_bear_train_clf >= 20:
+            clf_bear = train_classifier(X_train_clf_sel[~above_ma200_train_clf],
+                                        y_train_dir_clf[~above_ma200_train_clf],
+                                        X_val_sel[~above_ma200_val], y_val_dir[~above_ma200_val],
+                                        do_feature_selection=do_fs, stable_features=stable_feats,
+                                        calib_frac=args.calib_frac,
+                                        horizon=h, expanding_model_weights=args.expanding_model_weights)
+        if clf_bull is None and clf_bear is None:
+            clf_bull = train_classifier(X_train_clf_sel, y_train_dir_clf, X_val_sel, y_val_dir,
+                                        do_feature_selection=do_fs, stable_features=stable_feats,
+                                        calib_frac=args.calib_frac,
+                                        horizon=h, expanding_model_weights=args.expanding_model_weights)
+            clf_bear = clf_bull
+        elif clf_bull is None:
+            clf_bull = clf_bear
+        elif clf_bear is None:
+            clf_bear = clf_bull
+
+        print(f"\n  --- Regime Classification ---")
+        for regime, clf, n in [("Bull", clf_bull, n_bull), ("Bear", clf_bear, n_bear)]:
+            active = list(clf["_models"].keys())
+            best_name = max(active + ["ensemble"], key=lambda nm: clf[nm]["auc"])
+            auc_parts = "  ".join(f"{nm.upper()}={clf[nm]['auc']:.4f}" for nm in active)
+            print(f"    {regime:5s}  {auc_parts}  Ens={clf['ensemble']['auc']:.4f}  Best={best_name}  (n={n})")
+
+        all_clf_models[h] = {
+            "bull": clf_bull,
+            "bear": clf_bear,
+            "sel_features": sel_features,
+            "drop_cols": HORIZON_DROP_FEATURES.get(h, []),
+        }
+
+        if args.val_predictions_output:
+            import pandas as _pd
+            bull_idx = X_val.index[above_ma200_val]
+            bear_idx = X_val.index[~above_ma200_val]
+            h_parts = []
+            if n_bull > 0:
+                h_parts.append(_pd.Series(clf_bull["ensemble"]["proba"], index=bull_idx))
+            if n_bear > 0:
+                h_parts.append(_pd.Series(clf_bear["ensemble"]["proba"], index=bear_idx))
+            h_series = _pd.concat(h_parts).sort_index()
+            h_label_parts = []
+            if n_bull > 0:
+                h_label_parts.append(_pd.Series(np.asarray(y_val_dir[above_ma200_val]), index=bull_idx))
+            if n_bear > 0:
+                h_label_parts.append(_pd.Series(np.asarray(y_val_dir[~above_ma200_val]), index=bear_idx))
+            h_label = _pd.concat(h_label_parts).sort_index()
+            n_total = n_bull + n_bear
+            h_auc = (clf_bull["ensemble"]["auc"] * n_bull + clf_bear["ensemble"]["auc"] * n_bear) / max(n_total, 1)
+            val_panels[h] = {"proba": h_series, "label": h_label, "auc": h_auc}
+
+        last_row   = X.iloc[-1:]
+        last_close = float(raw["close"].iloc[-1])
+        last_date  = raw.index[-1].date()
+        is_bull    = bool(last_row["above_ma200"].values[0] >= 0.5)
+        current_regime = "BULL" if is_bull else "BEAR"
+
+        reg_sel = reg_bull if is_bull else reg_bear
+        clf_sel = clf_bull if is_bull else clf_bear
+
+        sel_features_pred = reg_sel["ensemble"]["features"]
+        scaler_pred = reg_sel["ensemble"]["scaler"]
+        last_sel = last_row[sel_features_pred]
+        last_sel_scaled = scaler_pred.transform(last_sel) if scaler_pred is not None else last_sel
+
+        rf_ret  = float(reg_sel["rf"]["model"].predict(last_sel)[0])
+        et_ret  = float(reg_sel["et"]["model"].predict(last_sel)[0])
+        en_ret  = float(reg_sel["elasticnet"]["model"].predict(last_sel_scaled)[0])
+        raw_ens_ret = (rf_ret + et_ret + en_ret) / 3
+        lo, hi = CLIP_BOUNDS.get(h, (-0.10, 0.10))
+        ens_ret = float(np.clip(raw_ens_ret, lo, hi))
+
+        W_inf = clf_sel["ensemble"]["weights"]
+        model_probas = {}
+        for nm, mdl in clf_sel["_models"].items():
+            nm_feats = clf_sel[nm]["features"]
+            nm_input = last_row[nm_feats]
+            model_probas[nm] = float(mdl.predict_proba(nm_input)[0][1])
+        ens_proba = sum(W_inf[nm] * model_probas[nm] for nm in W_inf)
+        _neut = args.direction_threshold * 10
+        if ens_proba >= 0.5 + _neut:
+            direction = "UP"
+        elif ens_proba <= 0.5 - _neut:
+            direction = "DOWN"
+        else:
+            direction = "NEUTRAL"
+
+        sigma_mask = above_ma200_val if is_bull else ~above_ma200_val
+        if sigma_mask.sum() == 0:
+            sigma_ret = float(np.std(y_val_ret.values - reg_all["ensemble"]["predictions"]))
+        else:
+            sigma_ret = float(np.std(y_val_ret[sigma_mask].values - reg_sel["ensemble"]["predictions"]))
+
+        proba_str  = "  ".join(f"{nm.upper()}={p:.3f}" for nm, p in model_probas.items())
+        weight_str = "  ".join(f"{nm.upper()}={W_inf[nm]:.2f}" for nm in W_inf)
+        print(f"\n  [{current_regime}] Last close: {last_close:.2f}")
+        print(f"  Regression: {ens_ret:+.4%} → {last_close*(1+ens_ret):.2f}"
+              f"  (RF={rf_ret:+.4%}  ET={et_ret:+.4%}  EN={en_ret:+.4%})")
+        print(f"  Direction: {direction}  prob={ens_proba:.3f}  ({proba_str})")
+        print(f"  Weights: {weight_str}")
+        print(f"  68% CI: [{last_close*(1+ens_ret-sigma_ret):.2f}, {last_close*(1+ens_ret+sigma_ret):.2f}]")
+
+        best_clf_name = max(list(clf_sel["_models"].keys()) + ["ensemble"], key=lambda nm: clf_sel[nm]["auc"])
+        print(f"  Val MAE: {reg_sel['ensemble']['mae']*100:.2f}%  |  "
+              f"Best clf: {best_clf_name}  Acc={clf_sel[best_clf_name]['accuracy']:.4f}  "
+              f"AUC={clf_sel[best_clf_name]['auc']:.4f}")
+
+        all_results[h] = {
+            "reg": reg_sel, "clf": clf_sel,
+            "is_bull": is_bull,
+            "rf_ret": rf_ret, "et_ret": et_ret, "en_ret": en_ret,
+            "ens_ret": ens_ret,
+            "model_probas": model_probas, "ens_proba": ens_proba,
+            "direction": direction, "sigma_ret": sigma_ret,
+            "last_close": last_close, "last_date": last_date,
+            "sel_features": sel_features_pred, "best_clf_name": best_clf_name,
+        }
+
+    print(f"\n{'='*60}")
+    print("=== FORWARD DRAWDOWN RISK: next 20d MDD > 5% ===")
+    print(f"{'='*60}")
+    drawdown_risk = train_forward_drawdown_risk(
+        raw,
+        ext_df,
+        args.val_start,
+        do_feature_selection=args.feature_selection,
+        horizon=20,
+        threshold=0.05,
+        expanding_model_weights=args.expanding_model_weights,
+    )
+    if drawdown_risk.get("available"):
+        print(
+            "  P(fwd 20d MDD > 5%): "
+            f"{drawdown_risk['probability']:.3f}  "
+            f"AUC={drawdown_risk['auc']:.4f}  "
+            f"val_pos={drawdown_risk['val_positive_rate']:.2%}"
+        )
+    else:
+        print(f"  unavailable: {drawdown_risk.get('reason')}")
+
+    print(f"\n{'='*60}")
+    print("=== FORWARD SEVERE DRAWDOWN RISK: next 20d MDD > 8% ===")
+    print(f"{'='*60}")
+    severe_drawdown_risk = train_forward_drawdown_risk(
+        raw,
+        ext_df,
+        args.val_start,
+        do_feature_selection=args.feature_selection,
+        horizon=20,
+        threshold=0.08,
+        expanding_model_weights=args.expanding_model_weights,
+    )
+    if severe_drawdown_risk.get("available"):
+        print(
+            "  P(fwd 20d MDD > 8%): "
+            f"{severe_drawdown_risk['probability']:.3f}  "
+            f"AUC={severe_drawdown_risk['auc']:.4f}  "
+            f"val_pos={severe_drawdown_risk['val_positive_rate']:.2%}"
+        )
+    else:
+        print(f"  unavailable: {severe_drawdown_risk.get('reason')}")
+
+    print(f"\n{'='*60}")
+    print("=== FORWARD UPSIDE REWARD: next 20d max gain > 5% ===")
+    print(f"{'='*60}")
+    upside_reward = train_forward_upside_reward(
+        raw,
+        ext_df,
+        args.val_start,
+        do_feature_selection=args.feature_selection,
+        horizon=20,
+        threshold=0.05,
+        expanding_model_weights=args.expanding_model_weights,
+    )
+    if upside_reward.get("available"):
+        print(
+            "  P(fwd 20d gain > 5%): "
+            f"{upside_reward['probability']:.3f}  "
+            f"AUC={upside_reward['auc']:.4f}  "
+            f"val_pos={upside_reward['val_positive_rate']:.2%}"
+        )
+    else:
+        print(f"  unavailable: {upside_reward.get('reason')}")
+
+    if args.val_predictions_output and val_panels:
+        import pandas as _pd, numpy as _np
+        avail_h = sorted(val_panels.keys())
+        panel_df = _build_expanding_horizon_ensemble_panel(
+            {_h: val_panels[_h]["proba"] for _h in avail_h},
+            {_h: val_panels[_h]["label"] for _h in avail_h if "label" in val_panels[_h]},
+        )
+        common_idx = panel_df.index
+        if 20 in avail_h:
+            panel_df["h20_prob_up"] = val_panels[20]["proba"].reindex(common_idx)
+            panel_df["h20_direction"] = panel_df["h20_prob_up"].apply(lambda p: "UP" if p > 0.5 else "DOWN")
+        if drawdown_risk.get("available"):
+            panel_df["prob_fwd_mdd_gt5_h20"] = drawdown_risk["val_proba"].reindex(common_idx)
+            panel_df["actual_fwd_mdd_gt5_h20"] = drawdown_risk["val_label"].reindex(common_idx)
+            panel_df["forward_mdd_h20"] = drawdown_risk["val_forward_mdd"].reindex(common_idx)
+        if severe_drawdown_risk.get("available"):
+            panel_df["prob_fwd_mdd_gt8_h20"] = severe_drawdown_risk["val_proba"].reindex(common_idx)
+            panel_df["actual_fwd_mdd_gt8_h20"] = severe_drawdown_risk["val_label"].reindex(common_idx)
+            panel_df["forward_mdd_gt8_h20"] = severe_drawdown_risk["val_forward_mdd"].reindex(common_idx)
+        if upside_reward.get("available"):
+            panel_df["prob_fwd_gain_gt5_h20"] = upside_reward["val_proba"].reindex(common_idx)
+            panel_df["actual_fwd_gain_gt5_h20"] = upside_reward["val_label"].reindex(common_idx)
+            panel_df["forward_gain_h20"] = upside_reward["val_forward_gain"].reindex(common_idx)
+        if drawdown_risk.get("available") and upside_reward.get("available"):
+            panel_df["tail_reward_risk_score_h20"] = (
+                panel_df["prob_fwd_gain_gt5_h20"] - panel_df["prob_fwd_mdd_gt5_h20"]
+            )
+        panel_df["confidence"] = (panel_df["prob_magnitude"] * 0.6 + 0.4 * panel_df["prob_magnitude"].clip(0, 1))
+        panel_df.index.name = "date"
+        if args.full_panel and all_clf_models:
+            try:
+                _full_feat = _build_features(raw.copy())
+                if ext_df is not None:
+                    for _col in ext_df.columns:
+                        _full_feat[_col] = ext_df[_col].reindex(_full_feat.index)
+                _full_feat = _add_interaction_features(_full_feat)
+
+                _last_labeled = panel_df.index[-1]
+                _tail = _full_feat[_full_feat.index > _last_labeled].copy()
+                if not _tail.empty:
+                    _REGIME_COLS = ["above_ma200", "above_ma50", "above_ma20"]
+                    _tail_probs: dict[int, _pd.Series] = {}
+                    for _h, _hm in all_clf_models.items():
+                        _drop_cols = set(_hm["drop_cols"])
+                        _sf = [f for f in _hm["sel_features"] if f not in _drop_cols and f in _tail.columns]
+                        _sf_full = _sf + [c for c in _REGIME_COLS if c in _tail.columns and c not in _sf]
+                        _above = _tail.get("above_ma200", _pd.Series(1.0, index=_tail.index)) >= 0.5
+                        _p = _pd.Series(_np.nan, index=_tail.index)
+                        for _mask, _key in [(_above, "bull"), (~_above, "bear")]:
+                            if int(_mask.sum()) == 0:
+                                continue
+                            _sub = _tail.loc[_mask, _sf_full].fillna(0.0)
+                            _clf = _hm[_key]
+                            _weights = _clf["ensemble"]["weights"]
+                            _ep = _np.zeros(len(_sub))
+                            for _name, _model in _clf["_models"].items():
+                                _weight = _weights.get(_name, 0.0)
+                                if _weight == 0.0:
+                                    continue
+                                _features = _clf.get(_name, {}).get("features")
+                                _sub_model = _sub[_features] if _features else _sub
+                                try:
+                                    _ep += _weight * _model.predict_proba(_sub_model)[:, 1]
+                                except Exception:
+                                    pass
+                            _p[_tail[_mask].index] = _ep
+                        _tail_probs[_h] = _p
+
+                    _combined_probs = {
+                        _h: _pd.concat([panel_df[f"prob_up_h{_h}"], _tail_probs[_h]])
+                        for _h in sorted(_tail_probs)
+                        if f"prob_up_h{_h}" in panel_df.columns
+                    }
+                    _combined_labels = {
+                        _h: val_panels[_h]["label"].reindex(_combined_probs[_h].index)
+                        for _h in _combined_probs
+                        if _h in val_panels and "label" in val_panels[_h]
+                    }
+                    _combined_panel = _build_expanding_horizon_ensemble_panel(_combined_probs, _combined_labels)
+                    _tail_df = _combined_panel.reindex(_tail.index)
+                    _tail_df["confidence"] = (
+                        _tail_df["prob_magnitude"] * 0.6
+                        + 0.4 * _tail_df["prob_magnitude"].clip(0, 1)
+                    )
+                    if 20 in _tail_probs:
+                        _tail_df["h20_prob_up"] = _tail_probs[20]
+                        _tail_df["h20_direction"] = _tail_df["h20_prob_up"].apply(lambda p: "UP" if p > 0.5 else "DOWN")
+                    _tail_df["is_live"] = True
+                    panel_df["is_live"] = False
+                    panel_df = _pd.concat([panel_df, _tail_df], sort=False)
+                    print(f"  [FULL PANEL] Extended by {len(_tail_df)} unlabeled tail rows → total {len(panel_df)}")
+            except Exception as exc:  # noqa: BLE001
+                print(f"  ⚠️  Full panel extension failed: {exc}")
+        out_panel = Path(args.val_predictions_output)
+        out_panel.parent.mkdir(parents=True, exist_ok=True)
+        panel_df.to_csv(out_panel, encoding="utf-8-sig")
+        print(f"\n[VAL PANEL] {len(panel_df)} rows → {out_panel.resolve()}")
+
+    if args.walk_forward:
+        print(f"\n{'='*60}")
+        print("=== WALK-FORWARD EVALUATION ===")
+        print(f"{'='*60}")
+        wf_all: dict = {}
+        for h in HORIZONS:
+            wf_labeling = ("triple_barrier" if h == 5 else "simple") if args.labeling == "auto" else args.labeling
+            X_h, y_ret_h, y_dir_h, _ = build_dataset(raw, horizon=h, ext_df=ext_df,
+                                                       direction_threshold=args.direction_threshold,
+                                                       labeling=wf_labeling, tbl_mult=args.tbl_mult)
+            print(f"\n  Horizon {h}:")
+            wf_all[h] = walk_forward_evaluate(X_h, y_ret_h, y_dir_h.values, horizon=h, n_windows=5)
+        all_results["walk_forward"] = wf_all
+
+    if args.purged_cv:
+        print(f"\n{'='*60}")
+        print(f"=== PURGED K-FOLD + EMBARGO (k={args.purged_cv_k}) ===")
+        print(f"{'='*60}")
+        pkf_results = {}
+        for h in HORIZONS:
+            h_labeling = ("triple_barrier" if h == 5 else "simple") if args.labeling == "auto" else args.labeling
+            X_h, y_ret_h, y_dir_h, _ = build_dataset(
+                raw, horizon=h, ext_df=ext_df,
+                direction_threshold=args.direction_threshold,
+                labeling=h_labeling, tbl_mult=args.tbl_mult,
+            )
+            print(f"\n  H={h} ({h_labeling}, embargo={h}d):")
+            val_auc = all_results[h]["clf"]["ensemble"]["auc"]
+            pkf = evaluate_purged_kfold(
+                X_h, y_ret_h, y_dir_h.values,
+                horizon=h, n_splits=args.purged_cv_k, embargo_bars=h,
+            )
+            print(f"  → Purged-CV Ens AUC: {pkf['avg_auc']['ensemble']:.4f}  "
+                  f"(single-split val: {val_auc:.4f}  "
+                  f"Δ={pkf['avg_auc']['ensemble'] - val_auc:+.4f})")
+            pkf_results[h] = pkf
+        all_results["purged_cv"] = pkf_results
+
+    if args.feature_stability:
+        print(f"\n{'='*60}")
+        print(f"=== FEATURE STABILITY (k={args.feature_stability_k}, RF importance) ===")
+        print(f"{'='*60}")
+        stability_results = {}
+        for h in HORIZONS:
+            h_labeling = ("triple_barrier" if h == 5 else "simple") if args.labeling == "auto" else args.labeling
+            X_h, _, y_dir_h, _ = build_dataset(
+                raw, horizon=h, ext_df=ext_df,
+                direction_threshold=args.direction_threshold,
+                labeling=h_labeling, tbl_mult=args.tbl_mult,
+            )
+            X_train_h = X_h[X_h.index < args.val_start]
+            y_dir_train_h = y_dir_h[X_h.index < args.val_start].values
+
+            print(f"\n  H={h} (n={len(X_train_h)}, folds={args.feature_stability_k}):")
+            stab = evaluate_feature_stability(
+                X_train_h, y_dir_train_h,
+                n_splits=args.feature_stability_k, top_n=15,
+            )
+            if "error" in stab:
+                print(f"  Insufficient data: {stab['error']}")
+                stability_results[h] = stab
+                continue
+
+            print(f"  Overall rank-corr: {stab['mean_rank_corr']:.3f}  "
+                  f"Grade: {stab['stability_grade']}  "
+                  f"Top-10 consistency: {stab['top10_consistency']:.0%}  "
+                  f"(folds used: {stab['n_folds_used']})")
+            print()
+            print(f"  {'Feature':<28} {'Imp':>6}  {'CV':>5}  {'Rank±':>6}  {'Top10':>5}  Stability")
+            print(f"  {'-'*28} {'-'*6}  {'-'*5}  {'-'*6}  {'-'*5}  ---------")
+            for s in stab["feature_stats"]:
+                flag = "  !" if s["stability"] == "LOW" else ""
+                print(f"  {s['feature']:<28} {s['mean_imp']:>6.4f}  {s['cv']:>5.2f}  "
+                      f"{s['rank_std']:>6.1f}  {s['top10_freq']:>5}  "
+                      f"{s['stability']:>4}{flag}")
+            stability_results[h] = stab
+        all_results["feature_stability"] = stability_results
+
+    print(f"\n{'='*60}")
+    print(f"=== HORIZON ENSEMBLE (confidence-aware) ===")
+    print(f"{'='*60}")
+
+    horizon_probs   = np.array([all_results[h]["ens_proba"] for h in HORIZONS])
+    horizon_returns = np.array([all_results[h]["ens_ret"] for h in HORIZONS])
+    horizon_maes    = np.array([all_results[h]["reg"]["ensemble"]["mae"] for h in HORIZONS])
+    horizon_aucs    = np.array([all_results[h]["clf"]["ensemble"]["auc"] for h in HORIZONS])
+    horizon_dirs    = np.array([1 if all_results[h]["direction"] == "UP" else 0 for h in HORIZONS])
+
+    inv_mae2_w = 1.0 / (horizon_maes ** 2)
+    return_w   = inv_mae2_w / inv_mae2_w.sum()
+
+    raw_auc_w = np.maximum(0.0, horizon_aucs - 0.5)
+    dir_w = (raw_auc_w / raw_auc_w.sum()
+             if raw_auc_w.sum() > 0 else np.ones(len(HORIZONS)) / len(HORIZONS))
+
+    combined_prob = float(np.dot(dir_w, horizon_probs))
+
+    dir_votes = horizon_dirs.sum()
+    max_votes = max(dir_votes, len(HORIZONS) - dir_votes)
+    consensus = max_votes / len(HORIZONS)
+    prob_magnitude = abs(combined_prob - 0.5) * 2
+    prob_std = float(np.std(horizon_probs))
+    spread_conf = max(0, 1 - prob_std * 4)
+
+    wf_acc_h1 = all_results.get("walk_forward", {}).get(1, {}).get("avg_accuracy", {})
+    wf_h1_rf_acc: float | None = wf_acc_h1.get("rf")
+    if wf_h1_rf_acc is not None:
+        wf_conf = max(0.0, (wf_h1_rf_acc - 0.5) * 2)
+        confidence = consensus * 0.35 + prob_magnitude * 0.35 + spread_conf * 0.15 + wf_conf * 0.15
+        print(f"  WF H=1 RF acc: {wf_h1_rf_acc:.4f} → WF conf component: {wf_conf:.3f}")
+    else:
+        wf_conf = None
+        confidence = consensus * 0.4 + prob_magnitude * 0.4 + spread_conf * 0.2
+    confidence = max(0.1, min(1.0, confidence))
+
+    shrinkage = 0.3 + 0.7 * confidence
+    calibrated_prob = 0.5 + (combined_prob - 0.5) * shrinkage
+    calibrated_prob = max(0.01, min(0.99, calibrated_prob))
+    direction_dir   = "UP" if calibrated_prob >= 0.5 else "DOWN"
+
+    print(f"  Confidence components: consensus={consensus:.2f} magnitude={prob_magnitude:.2f} spread={spread_conf:.2f}")
+    print(f"  Confidence score: {confidence:.3f} (shrinkage={shrinkage:.2f})")
+    print(f"  Raw combined prob: {combined_prob:.3f} → Calibrated: {calibrated_prob:.3f} → {direction_dir}")
+    auc_str = "  ".join(f"H{h}={dir_w[i]:.2f}(AUC={horizon_aucs[i]:.3f})" for i, h in enumerate(HORIZONS))
+    mae_str = "  ".join(f"H{h}={return_w[i]:.2f}" for i, h in enumerate(HORIZONS))
+    print(f"  Dir  weights (AUC):  {auc_str}")
+    print(f"  Ret  weights (MAE²): {mae_str}")
+
+    ens_horizon_ret = float(np.dot(return_w, horizon_returns))
+    last_close = all_results[1]["last_close"]
+    tsmc_market_state = _classify_tsmc_market_state(
+        all_results=all_results,
+        combined_prob=combined_prob,
+        calibrated_prob=calibrated_prob,
+        confidence=confidence,
+        weighted_return=ens_horizon_ret,
+        drawdown_risk=drawdown_risk,
+        severe_drawdown_risk=severe_drawdown_risk,
+        upside_reward=upside_reward,
+    )
+    print(f"  Combined return: {ens_horizon_ret:+.4%} → {last_close*(1+ens_horizon_ret):.2f}")
+
+    dir_vote_count = int(dir_votes)
+    print(f"  Vote count: UP={dir_vote_count}  DOWN={len(HORIZONS)-dir_vote_count}  →  {direction_dir}")
+
+    if confidence < 0.4:
+        print(f"  ⚠️  Low confidence ({confidence:.2f}) — signal may be unreliable")
+    if confidence < 0.3 and direction_dir == "DOWN":
+        direction_dir = "NEUTRAL"
+        print(f"  ⚠️  Very low confidence DOWN → NEUTRAL (use regression signal only)")
+
+    _base = pd.Timestamp(str(all_results[1]["last_date"]))
+    print(f"\n{'='*60}")
+    print(f"=== SUMMARY: {TICKER} ({all_results[1]['last_date']}) ===")
+    print(f"{'='*60}")
+    print(f"\n  {'Horizon':<10} {'Reg Return':>12} {'→ Price':>8} {'Direction':>8} {'Prob':>6} {'68% CI':>22}")
+    print(f"  {'-'*10} {'-'*12} {'-'*8} {'-'*8} {'-'*6} {'-'*22}")
+    for h in HORIZONS:
+        r = all_results[h]
+        lc = r["last_close"]
+        sigma = r["sigma_ret"]
+        ret = r["ens_ret"]
+        _pdate = (_base + pd.offsets.BDay(h)).strftime("%-m/%-d")
+        print(f"  H={h:<6} {ret:>+11.2%} {lc*(1+ret):>7.2f}  {r['direction']:>7}   {r['ens_proba']:.3f}"
+              f"   [{lc*(1+ret-sigma):.2f}, {lc*(1+ret+sigma):.2f}]  ({_pdate})")
+
+    print(f"\n  Horizon Ensemble: {direction_dir}  (combined prob={combined_prob:.3f}, confidence={confidence:.2f})")
+    print(f"  Weighted return: {ens_horizon_ret:+.4%} → {last_close*(1+ens_horizon_ret):.2f}")
+    print(
+        f"  TSMC market state: {tsmc_market_state['state']} "
+        f"{tsmc_market_state['label_zh']} ({tsmc_market_state['bias']})"
+    )
+
+    output_path = Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    last_date = all_results[1]["last_date"]
+
+    payload = {
+        "ticker": TICKER,
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "last_close_date": str(last_date),
+        "last_close": round(last_close, 4),
+        "current_regime": "BULL" if all_results[1]["is_bull"] else "BEAR",
+        "data_freshness": ncf_data_freshness(db_path, TICKER, str(last_date)),
+        "data_limitations": [
+            "no per-stock institutional_data/margin_data/foreign_shareholding_data for 2330.TW in local DB "
+            "(only ETF tickers are populated) — per-stock chip features are loaded from FinMind CSV caches",
+            "OHLCV sourced from external_market_ohlcv (yfinance), not the `ohlcv` table",
+        ],
+        "feature_selection": args.feature_selection,
+        "external_features": not args.no_external_features,
+        "feature_mode": args.feature_mode,
+        "tsmc_leadership_features": list(TSMC_LEADERSHIP_FEATURES),
+        "tsmc_leadership_redundant_features_excluded": list(LEADERSHIP_REDUNDANT_FEATURES),
+        "leadership_mode": args.leadership_mode,
+        "tsmc_0050_weight": args.tsmc_0050_weight,
+        "tbrain_features": not args.no_tbrain_features,
+        "fourier_features": not args.no_fourier_features,
+        "global_features": not args.no_global_features,
+        "labeling_mode": args.labeling,
+        "labeling_per_horizon": {
+            str(h): (("triple_barrier" if h == 5 else "simple") if args.labeling == "auto" else args.labeling)
+            for h in HORIZONS
+        },
+        "tbl_mult": args.tbl_mult,
+        "direction_threshold": args.direction_threshold,
+        "probability_calibration": all_results[1]["clf"]["_calib_info"],
+        "models": {"regression": ["rf", "et", "elasticnet"],
+                   "classification": list(all_results[1]["clf"]["_models"].keys())},
+        "horizons": {},
+        "horizon_ensemble": {
+            "direction": direction_dir,
+            "combined_probability_up": round(float(combined_prob), 4),
+            "calibrated_probability_up": round(float(calibrated_prob), 4),
+            "confidence": round(float(confidence), 4),
+            "shrinkage": round(float(shrinkage), 4),
+            "weighted_return": round(ens_horizon_ret, 6),
+            "predicted_close": round(last_close * (1 + ens_horizon_ret), 4),
+            "votes_up": dir_vote_count,
+            "direction_weights": {str(h): round(float(dir_w[i]), 4) for i, h in enumerate(HORIZONS)},
+            "return_weights":    {str(h): round(float(return_w[i]), 4) for i, h in enumerate(HORIZONS)},
+            "horizon_aucs":      {str(h): round(float(horizon_aucs[i]), 4) for i, h in enumerate(HORIZONS)},
+            "wf_h1_rf_accuracy": round(wf_h1_rf_acc, 4) if wf_h1_rf_acc is not None else None,
+            "wf_confidence_component": round(wf_conf, 4) if wf_conf is not None else None,
+            "wf_confidence_used": wf_h1_rf_acc is not None,
+        },
+        "tsmc_market_state": tsmc_market_state,
+        "forward_drawdown_risk": {
+            k: (
+                round(float(v), 6)
+                if isinstance(v, (float, np.floating))
+                else v
+            )
+            for k, v in drawdown_risk.items()
+            if k not in {"val_proba", "val_label", "val_forward_mdd"}
+        },
+        "forward_severe_drawdown_risk": {
+            k: (
+                round(float(v), 6)
+                if isinstance(v, (float, np.floating))
+                else v
+            )
+            for k, v in severe_drawdown_risk.items()
+            if k not in {"val_proba", "val_label", "val_forward_mdd"}
+        },
+        "forward_upside_reward": {
+            k: (
+                round(float(v), 6)
+                if isinstance(v, (float, np.floating))
+                else v
+            )
+            for k, v in upside_reward.items()
+            if k not in {"val_proba", "val_label", "val_forward_gain"}
+        },
+        "tail_reward_risk_score": (
+            round(float(upside_reward["probability"] - drawdown_risk["probability"]), 6)
+            if upside_reward.get("available") and drawdown_risk.get("available")
+            else None
+        ),
+    }
+
+    for h in HORIZONS:
+        r = all_results[h]
+        _base_ts = pd.Timestamp(str(last_date))
+        pred_date = str((_base_ts + pd.offsets.BDay(h)).date())
+        sigma = r["sigma_ret"]
+        lc = r["last_close"]
+        payload["horizons"][str(h)] = {
+            "prediction_date": pred_date,
+            "regression": {
+                "predicted_return": round(r["ens_ret"], 6),
+                "predicted_close":  round(lc * (1 + r["ens_ret"]), 4),
+                "model_returns": {"rf": round(r["rf_ret"], 6), "et": round(r["et_ret"], 6),
+                                  "en": round(r["en_ret"], 6)},
+                "val_mae_return": round(r["reg"]["ensemble"]["mae"], 8),
+                "val_r2": round(r["reg"]["ensemble"]["r2"], 6),
+                "confidence_68_return": {"low": round(r["ens_ret"] - sigma, 6),
+                                         "high": round(r["ens_ret"] + sigma, 6)},
+                "confidence_68_price":  {"low":  round(lc * (1 + r["ens_ret"] - sigma), 4),
+                                         "high": round(lc * (1 + r["ens_ret"] + sigma), 4)},
+            },
+            "classification": {
+                "direction": r["direction"],
+                "probability_up": round(r["ens_proba"], 4),
+                "model_probabilities": {nm: round(p, 4) for nm, p in r["model_probas"].items()},
+                "ensemble_weights": {nm: round(w, 4) for nm, w in r["clf"]["ensemble"]["weights"].items()},
+                "best_model": r["best_clf_name"],
+                "val_accuracy": round(r["clf"][r["best_clf_name"]]["accuracy"], 4),
+                "val_auc": round(r["clf"][r["best_clf_name"]]["auc"], 4),
+                "val_auc_raw": round(r["clf"][r["best_clf_name"]].get("auc_raw",
+                                     r["clf"][r["best_clf_name"]]["auc"]), 4),
+                "ensemble_val_brier": round(r["clf"]["ensemble"]["brier"], 4),
+                "model_brier": {nm: round(r["clf"][nm]["brier"], 4) for nm in r["clf"]["_models"]},
+                "model_brier_raw": {nm: round(r["clf"][nm]["brier_raw"], 4) for nm in r["clf"]["_models"]},
+            },
+        }
+
+    if "walk_forward" in all_results:
+        payload["walk_forward"] = {
+            str(h): {"avg_accuracy": {nm: round(v, 4) for nm, v in res.get("avg_accuracy", {}).items()}}
+            for h, res in all_results["walk_forward"].items()
+        }
+        wf_model_avgs: dict[str, list[float]] = {}
+        for h_res in all_results["walk_forward"].values():
+            for nm, v in h_res.get("avg_accuracy", {}).items():
+                wf_model_avgs.setdefault(nm, []).append(v)
+        wf_final_avgs = {nm: float(np.mean(vs)) for nm, vs in wf_model_avgs.items() if vs}
+        if wf_final_avgs:
+            payload["wf_recommended_model"] = max(wf_final_avgs, key=wf_final_avgs.get)
+            payload["wf_avg_accuracy_all_horizons"] = {nm: round(v, 4) for nm, v in wf_final_avgs.items()}
+
+    rf_model = all_results[1]["reg"]["rf"]["model"]
+    rf_importance = pd.Series(rf_model.feature_importances_,
+                              index=rf_model.feature_names_in_).sort_values(ascending=False)
+    payload["top_features"] = rf_importance.head(15).round(6).to_dict()
+
+    if args.feature_stability and "feature_stability" in all_results:
+        fs_payload = {}
+        for h, stab in all_results["feature_stability"].items():
+            if "error" in stab:
+                fs_payload[str(h)] = stab
+            else:
+                fs_payload[str(h)] = {
+                    "stability_grade": stab["stability_grade"],
+                    "mean_rank_corr": round(stab["mean_rank_corr"], 4),
+                    "top10_consistency": round(stab["top10_consistency"], 4),
+                    "n_folds_used": stab["n_folds_used"],
+                    "top_features": [
+                        {k: (round(v, 5) if isinstance(v, float) else v)
+                         for k, v in s.items()}
+                        for s in stab["feature_stats"]
+                    ],
+                }
+        payload["feature_stability"] = fs_payload
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+    print(f"\nSaved: {output_path}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "decision_id": "a2129_recovery_boost_shadow_decision_20260711",
+  "generated_at": "2026-07-11",
+  "decision": {
+    "production": "do_not_promote",
+    "preferred_shadow": "a2129_recovery_00631l_boost_age_guard_aggressive_shadow",
+    "conservative_shadow": "a2128_recovery_00631l_boost_age_guard_shadow",
+    "deprecated_shadow_candidate": "a2127_recovery_00631l_boost_shadow"
+  },
+  "production_context": {
+    "current_strategy": "a2118_a2111_ncf_late_bull_deleverage",
+    "current_runner": "group_a_plus.runners.a2118",
+    "manifest": "report/group_a_plus/latest/strategy.json",
+    "changed": false
+  },
+  "candidate_rules": {
+    "a2127_recovery_00631l_boost_shadow": {
+      "runner": "group_a_plus.runners.a2127",
+      "recovery_00631l_boost_fraction": 0.1,
+      "recovery_00631l_boost_max_age_days": null,
+      "decision": "not_preferred",
+      "reason": "Unbounded recovery boost failed the five-crisis rebased gate."
+    },
+    "a2128_recovery_00631l_boost_age_guard_shadow": {
+      "runner": "group_a_plus.runners.a2128",
+      "recovery_00631l_boost_fraction": 0.1,
+      "recovery_00631l_boost_max_age_days": 20,
+      "decision": "conservative_shadow",
+      "reason": "Positive clean replay and five-crisis evidence with lower boost size."
+    },
+    "a2129_recovery_00631l_boost_age_guard_aggressive_shadow": {
+      "runner": "group_a_plus.runners.a2129",
+      "recovery_00631l_boost_fraction": 0.15,
+      "recovery_00631l_boost_max_age_days": 20,
+      "decision": "preferred_shadow",
+      "reason": "Strongest combined clean replay and five-crisis score, with age20 guard retained."
+    }
+  },
+  "evidence_summary": {
+    "a2127_recovery_00631l_boost_shadow": {
+      "clean_total_delta_final_value": 5771.497,
+      "five_crisis_rebased_delta_final_value": -2071.194,
+      "five_crisis_positive_folds": "2/5",
+      "production_blockers": [
+        "research_only_shadow_candidate",
+        "no_recovery_age_guard",
+        "five_crisis_rebased_gate_failed"
+      ]
+    },
+    "a2128_recovery_00631l_boost_age_guard_shadow": {
+      "clean_total_delta_final_value": 4388.238,
+      "five_crisis_rebased_delta_final_value": 9072.22,
+      "five_crisis_positive_folds": "3/5",
+      "production_blockers": [
+        "research_only_shadow_candidate",
+        "limited_event_count",
+        "needs_forward_shadow_observation"
+      ]
+    },
+    "a2129_recovery_00631l_boost_age_guard_aggressive_shadow": {
+      "clean_total_delta_final_value": 6496.714,
+      "five_crisis_rebased_delta_final_value": 13843.174,
+      "five_crisis_positive_folds": "3/5",
+      "production_blockers": [
+        "research_only_shadow_candidate",
+        "limited_event_count",
+        "needs_forward_shadow_observation",
+        "aggressive_boost_fraction"
+      ]
+    }
+  },
+  "key_findings": [
+    "The recovery boost should not be unbounded.",
+    "The 20-trading-day recovery age guard is the key robustness improvement.",
+    "Relaxing the age guard to 30 days reintroduces five-crisis weakness.",
+    "A21.29 is the preferred shadow, but not a production promotion.",
+    "A21.28 should remain as the conservative parallel shadow."
+  ],
+  "evidence_files": [
+    "results/group_a_plus_reentry_accelerator_clean_20260710.json",
+    "results/group_a_plus_recovery_boost_five_crises_20260710.json",
+    "report/group_a_plus/shadow/recovery_boost_age_guard_scorecard_20260711.json",
+    "report/group_a_plus/shadow/a2129_recovery_boost_age_guard_strategy.json",
+    "report/group_a_plus/review/md/a2128_a2129_recovery_boost_shadow_handoff_20260711.md"
+  ],
+  "verification": {
+    "pytest": {
+      "command": ".venv/bin/python -m pytest tests/test_group_a_plus_recovery_boost_shadow_scorecard.py tests/test_group_a_plus_a2128.py tests/test_group_a_plus_a2129.py tests/test_group_a_plus_latest_strategy.py::LatestStrategyTests::test_unknown_strategy_is_rejected",
+      "result": "7 passed"
+    },
+    "smoke": {
+      "strategy": "a2129_recovery_00631l_boost_age_guard_aggressive_shadow",
+      "boost_fraction": 0.15,
+      "max_age_days": 20,
+      "result": "passed"
+    }
+  },
+  "promotion_gate_for_future_review": [
+    "Production manifest must remain unchanged until a separate promotion review.",
+    "Age20 guard must remain enabled.",
+    "A21.29 must continue to beat A21.28 on combined clean/crisis score.",
+    "New stress folds must not show max drawdown degradation.",
+    "Forward shadow/paper observations must not show abnormal turnover or execution drift."
+  ]
+}

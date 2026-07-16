@@ -1,11 +1,11 @@
 {
   "report_type": "daily_status",
-  "profile": "focused_tdcc_0124_stab5_turn12_fast_cd3",
-  "check_date": "2026-06-23",
-  "generated_at": "2026-06-23T03:22:06",
+  "profile": "a2118_a2111_ncf_late_bull_deleverage",
+  "check_date": "2026-07-14",
+  "generated_at": "2026-07-15T00:00:36",
   "overall_status": "block",
-  "html": "report/group_a_plus/daily/html/daily_status_focused_tdcc_0124_stab5_turn12_fast_cd3_20260623_20260623_032206.html",
-  "json": "report/group_a_plus/daily/json/daily_status_focused_tdcc_0124_stab5_turn12_fast_cd3_20260623_20260623_032206.json",
-  "markdown": "report/group_a_plus/daily/md/daily_status_focused_tdcc_0124_stab5_turn12_fast_cd3_20260623_20260623_032206.md",
-  "metadata": "report/group_a_plus/daily/meta/daily_status_focused_tdcc_0124_stab5_turn12_fast_cd3_20260623_20260623_032206.meta.json"
+  "html": "report/group_a_plus/daily/html/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260714_20260715_000036.html",
+  "json": "report/group_a_plus/daily/json/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260714_20260715_000036.json",
+  "markdown": "report/group_a_plus/daily/md/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260714_20260715_000036.md",
+  "metadata": "report/group_a_plus/daily/meta/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260714_20260715_000036.meta.json"
 }

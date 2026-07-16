@@ -1,0 +1,16 @@
+{
+  "report_type": "daily_status",
+  "profile": "a2118_a2111_ncf_late_bull_deleverage",
+  "check_date": "2026-07-06",
+  "generated_at": "2026-07-06T10:54:34",
+  "overall_status": "warn",
+  "html_path": "report/group_a_plus/daily/html/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260706_20260706_105434.html",
+  "json_path": "report/group_a_plus/daily/json/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260706_20260706_105434.json",
+  "markdown_path": "report/group_a_plus/daily/md/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260706_20260706_105434.md",
+  "html_size_bytes": 6931,
+  "json_size_bytes": 1630,
+  "markdown_size_bytes": 980,
+  "legacy_json_path": "results/group_a_plus_daily_status_20260706_from_latest_live.json",
+  "legacy_markdown_path": "results/group_a_plus_daily_status_20260706_from_latest_live.md",
+  "baseline_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/GROUP_A_PLUS_CURRENT_BASELINE.json"
+}

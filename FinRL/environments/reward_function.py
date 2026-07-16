@@ -135,15 +135,13 @@ class RewardFunction:
         # 3. 交易懲罰 (避免過度交易)
         # =====================================================================
         rewards['trade'] = 0.0
-        if action in [1, 2]:  # BUY or SELL
+        # TaiwanStockTradingEnv 動作空間：
+        #   1,2,3 = BUY_1000, BUY_5000, BUY_10000
+        #   4,5,6 = SELL_1000, SELL_5000, SELL_10000
+        #   7,8   = TARGET_50_PERCENT, TARGET_100_PERCENT
+        # 所有非 HOLD 動作都應有交易成本懲罰
+        if action != 0:  # 除了 HOLD 之外的任何動作
             rewards['trade'] = -self.trade_penalty
-        
-        # =====================================================================
-        # 4. 停損懲罰 (控制風險)
-        # =====================================================================
-        rewards['stop_loss'] = 0.0
-        if action == 4:  # STOP_LOSS
-            rewards['stop_loss'] = -self.stop_loss_penalty
         
         # =====================================================================
         # 5. 勝率獎勵 (鼓勵正向期望策略)

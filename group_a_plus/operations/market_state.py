@@ -1,7 +1,31 @@
-"""Fine-grained market state classification for GroupA+ live signals."""
+"""Fine-grained market state classification for GroupA+ live signals.
+
+Arbitration policy (2026-07-04, following the Fable audit's decision item A):
+this module is diagnostic-only. `classify_market_state`'s output (`state`,
+`bucket`, `allocation_bias`, `risk_level`) must never be read by any function
+that computes `target_weights`, `target_shares`, `execution_regime`, or
+`base_regime`. When this module's suggested action disagrees with what
+a2118 (or any other active runner) is actually doing -- e.g. `crash_risk`
+recommending "00632R hedge or full defense" while `execution_regime` is
+still `golden1` -- a2118's live decision wins by default, simply because
+nothing wires this module's output back into weight calculation. This is
+intentional, not an oversight: a2118's "don't fully exit late-bull" design
+is backtested (see NCF_2330 handoffs and the 2026-06/07 GroupA+ handoffs),
+while this classifier's thresholds are not yet validated out of a
+bull-dominated sample (see the 2026-07-04 Fable audit's replay: 361 days,
+`recovery_confirmed` never observed). Do not add code that feeds
+`allocation_bias` or `state` into `target_weights` without first (a) an
+explicit, documented arbitration rule for the a2118-vs-market_state
+disagreement case, and (b) an out-of-sample backtest of that rule -- see
+`test_crash_risk_can_fire_while_execution_regime_stays_golden1_by_design` in
+`tests/test_group_a_plus_market_state.py` for a pinned example of the known
+disagreement case this guards against.
+"""
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any
 
 
@@ -126,7 +150,14 @@ def classify_market_state(
         state = "bear_breakdown" if total_risk_score >= 7 or ma_gap < -0.02 else "choppy_range_high_risk"
     elif regime == "group_a_plus_recovery":
         state = "recovery_confirmed" if ma_gap >= 0.01 and exit_momentum > 0 else "recovery_early"
-    elif ma_gap >= 0.12 or (regime.startswith("ncf_late_bull") and total_risk_score >= 6):
+    elif ma_gap >= 0.12 or regime.startswith("ncf_late_bull"):
+        # An active ncf_late_bull hedge regime always classifies as
+        # late_bull_overheat (2026-07-04 audit): previously a hedge day with
+        # ma_gap in (0.10, 0.12) and total_risk_score < 6 fell through to the
+        # bull_acceleration / bull_trend branches, whose allocation_bias
+        # ("00631L high weight") directly contradicts the de-leverage the
+        # strategy is executing that day. Diagnosis must never recommend the
+        # opposite of the live action.
         state = "late_bull_overheat"
     elif ma_gap >= 0.04 and drawdown > -0.03 and total_risk_score <= 4 and dominant != "bearish":
         state = "bull_acceleration"
@@ -160,3 +191,55 @@ def classify_market_state(
         },
         "reason": "; ".join(reasons),
     }
+
+
+def append_market_state_shadow_log(
+    log_path: Path,
+    market_state: dict[str, Any],
+    *,
+    date: str,
+    execution_regime: str | None = None,
+) -> None:
+    """Append one day's market_state classification to a JSON-lines log for
+    later forward-return evaluation of the a2118-vs-market_state arbitration
+    question documented in this module's docstring.
+
+    2026-07-09: the 2026-07-04 audit kept a2118 as the sole decision-maker
+    based on only 9-10 real `crash_risk` trigger days (2025-2026 real data)
+    plus a 2008 TWII proxy replay that disagreed with it in direction --
+    too small a sample either way to settle the question, and
+    classify_market_state's output was never logged historically so no
+    larger sample could accumulate. This log closes that gap. Idempotent
+    per date and measurement-only, mirroring
+    garch_regime_shadow.append_garch_regime_shadow_log and
+    signal_alignment.append_signal_alignment_shadow_log: it does not change
+    target_weights or execution_regime.
+    """
+    row = {
+        "date": date,
+        "state": market_state.get("state"),
+        "bucket": market_state.get("bucket"),
+        "allocation_bias": market_state.get("allocation_bias"),
+        "risk_level": market_state.get("risk_level"),
+        "logged_execution_regime": execution_regime,
+        "inputs": market_state.get("inputs"),
+    }
+    rows: list[dict[str, Any]] = []
+    if log_path.exists():
+        for line in log_path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                existing = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if existing.get("date") != row["date"]:
+                rows.append(existing)
+    rows.append(row)
+    rows.sort(key=lambda r: r.get("date", ""))
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    log_path.write_text(
+        "\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n",
+        encoding="utf-8",
+    )

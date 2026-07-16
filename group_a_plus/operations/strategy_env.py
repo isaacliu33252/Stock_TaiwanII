@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from group_a_plus.governance.latest import resolve_ncf_00631l_panel_path
 from group_a_plus.paths import PROJECT_ROOT
 
 
@@ -16,10 +17,12 @@ DEFAULT_OUTPUT_PATH = PROJECT_ROOT / "report/group_a_plus/latest/strategy_env_he
 REQUIRED_FILES = {
     "strategy_manifest": "report/group_a_plus/latest/strategy.json",
     "live_signal": "report/group_a_plus/latest/live_signal.json",
-    "ncf_00631l": "results/ncf_00631l_20260630.json",
-    "ncf_panel_00631l": "results/ncf_00631l_panel_latest_20260630.csv",
     "watchlist_config": "config/group_a_plus_watchlist.json",
 }
+
+# Fallback only, matching resolve_ncf_00631l_panel_path's default -- see
+# build_strategy_env_health for how the live panel/json paths are resolved.
+FALLBACK_NCF_00631L_PANEL = "results/ncf_00631l_panel_latest_20260630.csv"
 
 REQUIRED_DIRS = {
     "results": "results",
@@ -72,7 +75,16 @@ def build_strategy_env_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
     """Build a compact preflight report for scheduled strategy runs."""
 
     root = root.resolve()
+    # Fable audit (2026-07-08, #4): these two used to be hardcoded to a fixed
+    # snapshot filename (independently of ops_health.py's already-fixed
+    # resolver), so this preflight check kept watching a stale file after
+    # strategy.json moved on. The json output shares the panel csv's date
+    # stamp (run_ncf_daily_pipeline.py writes both from the same `stamp`).
+    panel_path = resolve_ncf_00631l_panel_path(root, fallback=FALLBACK_NCF_00631L_PANEL)
+    ncf_json_path = panel_path.replace("_panel_latest_", "_latest_").replace(".csv", ".json")
     file_checks = [_file_check(root, label, rel_path) for label, rel_path in REQUIRED_FILES.items()]
+    file_checks.append(_file_check(root, "ncf_panel_00631l", panel_path))
+    file_checks.append(_file_check(root, "ncf_00631l", ncf_json_path))
     dir_checks = [_dir_check(root, label, rel_path) for label, rel_path in REQUIRED_DIRS.items()]
     venv_python = root / ".venv/bin/python"
     python_status = {

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "available",
+  "research_only": true,
+  "production_effect": "none",
+  "date": "2026-07-15",
+  "eligible": false,
+  "trigger_source": null,
+  "trough_state": "NO_TROUGH",
+  "compounding_regime": "TREND_PERSISTENT",
+  "override_fraction": 0.5,
+  "confirmation_mode": "none",
+  "eligibility_mode": "trough_or_compounding_trend_persistent",
+  "attempted_00631l_buy_weight": null,
+  "override_00631l_buy_weight": null
+}

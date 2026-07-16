@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-07-08T21:07:14",
+  "check_date": "2026-07-08",
+  "overall_status": "block",
+  "profile": "a2118_a2111_ncf_late_bull_deleverage",
+  "mode": "live_signal",
+  "source_paths": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260708.json"
+  },
+  "checks": [
+    {
+      "name": "live_signal_success",
+      "status": "ok",
+      "detail": "live signal loaded"
+    },
+    {
+      "name": "execution_allowed",
+      "status": "block",
+      "detail": "required strategy sources are stale or missing: ['day_trading_0050', 'foreign_shareholding_0050', 'short_balance_0050']"
+    },
+    {
+      "name": "data_freshness",
+      "status": "ok",
+      "detail": "0 business days stale, 0 calendar days stale"
+    },
+    {
+      "name": "strategy_status",
+      "status": "ok",
+      "detail": "strategy_status=active, strategy_id=a2118_a2111_ncf_late_bull_deleverage"
+    },
+    {
+      "name": "source_freshness",
+      "status": "block",
+      "detail": "required strategy sources are stale or missing: ['day_trading_0050', 'foreign_shareholding_0050', 'short_balance_0050']; soft strategy sources are stale or missing: ['securities_lending_0050']; foreign_shareholding_0050; short_balance_0050; day_trading_0050; securities_lending_0050"
+    },
+    {
+      "name": "cash_constraint",
+      "status": "ok",
+      "detail": "estimated_cash_after_rounding_before_cost=201,479"
+    }
+  ],
+  "signal": {
+    "signal_status": "hold_or_align_to_target",
+    "signal_reason": "A20.7 formal defensive state is inactive",
+    "actual_data_date": "2026-07-08",
+    "requested_as_of_date": "2026-07-08",
+    "business_stale_days": 0,
+    "calendar_stale_days": 0
+  },
+  "group_a_plus": {
+    "overlay_regime": "golden1",
+    "overlay_00679b_weight": 0.0,
+    "cash_after_cost": 201478.91189575195,
+    "target_shares": {
+      "0050.TW": 6513,
+      "00631L.TW": 2903,
+      "00632R.TW": 0,
+      "00679B.TWO": 0
+    }
+  }
+}
