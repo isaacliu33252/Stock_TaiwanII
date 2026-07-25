@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_synthetic_augmentation_validation_readiness_review",
+  "generated_at": "2026-07-21T22:38:49",
+  "policy": "research_only_synthetic_augmentation_validation_no_synthetic_alpha_no_weight_change",
+  "status": "blocked",
+  "as_of": "2026-07-20",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2604.14498.pdf",
+    "title": "Improving Machine Learning Performance with Synthetic Augmentation",
+    "imported_concepts": [
+      "size_matched_null_augmentation_gate",
+      "finite_sample_block_permutation_test",
+      "task_type_restriction_for_synthetic_data",
+      "rare_regime_metric_alignment"
+    ],
+    "not_imported": [
+      "synthetic_directional_alpha",
+      "bootstrap_copula_vae_diffusion_timegan_live_signals",
+      "automatic_target_weight_change",
+      "unvalidated_generator_promotion"
+    ]
+  },
+  "component_readiness": {
+    "finstressts": {
+      "status": "blocked",
+      "allow_00631l_add": false
+    },
+    "hmm_wj": {
+      "status": "blocked",
+      "all_required_tickers_ready": true,
+      "can_generate_scenarios_for_decision": false
+    },
+    "dynamic_cvar_tail_cost": {
+      "status": "blocked",
+      "tail_cost_readiness_ready": false,
+      "dynamic_optimizer_ready": false
+    },
+    "density_head_tail_risk": {
+      "status": "available",
+      "recommended_research_baseline": "gaussian_residual_head",
+      "gmm_status": "unstable_across_windows_research_only"
+    },
+    "promotion_gate": {
+      "status": null,
+      "raw_status": null,
+      "decision": null,
+      "promotion_decision": null
+    },
+    "validation_audit": {
+      "status": "passed",
+      "validation_passed": true,
+      "passed_task_count": 3,
+      "task_count": 3,
+      "directional_synthetic_alpha_tested": true,
+      "directional_validation_passed": true,
+      "rare_validation_passed": true
+    }
+  },
+  "validation_readiness": {
+    "size_matched_null_augmentation_implemented": true,
+    "block_permutation_test_implemented": true,
+    "walk_forward_oos_synthetic_validation_passed": true,
+    "directional_audit_tested": true,
+    "directional_audit_passed": true,
+    "rare_regime_audit_passed": true,
+    "rare_regime_metric_alignment_documented": true,
+    "directional_synthetic_alpha_allowed": false
+  },
+  "blocking_reasons": [
+    "finstressts_snapshot_blocked",
+    "hmm_wj_scenario_readiness_blocked",
+    "scenario_generator_not_decision_ready",
+    "dynamic_cvar_tail_cost_readiness_blocked",
+    "tail_cost_readiness_not_ready",
+    "density_tail_model_unstable_research_only"
+  ],
+  "warning_reasons": [
+    "promotion_gate_unavailable_optional"
+  ],
+  "decision": {
+    "summary": "Synthetic augmentation is validation-governance only. Directional synthetic alpha and generator promotion remain blocked until size-matched null augmentation, walk-forward OOS, and block permutation tests are implemented and passed.",
+    "synthetic_validation_ready": false,
+    "directional_synthetic_alpha_allowed": false,
+    "synthetic_generator_promotion_allowed": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "finstressts": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_decision_snapshot.json",
+    "hmm_wj": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/hmm_wj_synthetic_scenario_readiness_review.json",
+    "dynamic_cvar_tail_cost": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json",
+    "density_head_tail_risk": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/density_head_tail_risk_advisory.json",
+    "validation_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/synthetic_augmentation_validation_audit.json",
+    "promotion_gate": null
+  }
+}

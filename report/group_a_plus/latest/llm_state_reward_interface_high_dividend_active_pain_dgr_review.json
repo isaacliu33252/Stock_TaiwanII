@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_high_dividend_active_pain_dgr_review",
+  "generated_at": "2026-07-21T16:01:47",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "high_dividend_active_pain_dgr_only_no_model_training_no_live_action",
+  "proposal_id": "gift_research_high_dividend_active_pain_v1",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "panel_sha256": "66aa5e59dbe67b896a8b1b9846091596ad64aa766a5607eecf9e169b998ee0b8",
+    "baseline_shadow_backtest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_baseline_shadow_backtest.json",
+    "redesign_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_high_dividend_active_pain_redesign_review.json",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "active_penalty_scale": 1.0,
+    "drawdown_scale": 1.0,
+    "return_pain_scale": 2.0,
+    "concentration_scale": 0.05,
+    "forward_horizon": 5
+  },
+  "summary": {
+    "row_count": 756,
+    "fold_count": 6,
+    "finite_reward_ratio": 1.0,
+    "reward_snr_abs_mean_over_std": 3.403334196966835,
+    "base_reward_alignment_to_future_high_dividend_active_pain": 0.19551047843783906,
+    "redesigned_reward_alignment_to_future_high_dividend_active_pain": 0.15364325600197024,
+    "high_dividend_active_pain_feature_alignment": 0.1147591081755963,
+    "alignment_grade": "red",
+    "risk_sensitive_useful": false,
+    "event_probe_2024_08_05": {
+      "event_date": "2024-08-05",
+      "available": true,
+      "fold": 3,
+      "high_dividend_active_weight": 0.16666666666666666,
+      "high_dividend_active_pain": 0.022459066729914413,
+      "active_bucket_drawdown_penalty": 0.022459066729914413,
+      "base_portfolio_reward": -0.05702420712691253,
+      "redesigned_reward_proxy": -0.07948327385682694,
+      "reward_delta_vs_base": -0.022459066729914406,
+      "future_high_dividend_active_pain": 0.0
+    },
+    "pass_high_dividend_active_pain_dgr": false
+  },
+  "fold_diagnostics": [
+    {
+      "fold": 1,
+      "rows": 126,
+      "alignment_to_future_high_dividend_active_pain": 0.11422630777682678,
+      "mean_high_dividend_active_weight": 0.1870481370481371,
+      "mean_high_dividend_active_pain": 0.013821537348238058,
+      "mean_reward_delta_vs_base": -0.013821537348238057
+    },
+    {
+      "fold": 2,
+      "rows": 126,
+      "alignment_to_future_high_dividend_active_pain": 0.1292611805051818,
+      "mean_high_dividend_active_weight": 0.16446569303712166,
+      "mean_high_dividend_active_pain": 0.0068877305156440005,
+      "mean_reward_delta_vs_base": -0.0068877305156440005
+    },
+    {
+      "fold": 3,
+      "rows": 126,
+      "alignment_to_future_high_dividend_active_pain": 0.17392238703244628,
+      "mean_high_dividend_active_weight": 0.13775219489505217,
+      "mean_high_dividend_active_pain": 0.012214118929846241,
+      "mean_reward_delta_vs_base": -0.012214118929846245
+    },
+    {
+      "fold": 4,
+      "rows": 126,
+      "alignment_to_future_high_dividend_active_pain": 0.1441853022032335,
+      "mean_high_dividend_active_weight": 0.058116883116883136,
+      "mean_high_dividend_active_pain": 0.008318855907813703,
+      "mean_reward_delta_vs_base": -0.008318855907813703
+    },
+    {
+      "fold": 5,
+      "rows": 126,
+      "alignment_to_future_high_dividend_active_pain": 0.045473073843091155,
+      "mean_high_dividend_active_weight": 0.0634599967933302,
+      "mean_high_dividend_active_pain": 0.010628446934281279,
+      "mean_reward_delta_vs_base": -0.010628446934281282
+    },
+    {
+      "fold": 6,
+      "rows": 126,
+      "alignment_to_future_high_dividend_active_pain": 0.1971572168554789,
+      "mean_high_dividend_active_weight": 0.1008577841911176,
+      "mean_high_dividend_active_pain": 0.008490605692322769,
+      "mean_reward_delta_vs_base": -0.008490605692322769
+    }
+  ],
+  "diagnostic_gate": {
+    "grade": "red",
+    "risk_sensitive_useful": false,
+    "ppo_training_queue_allowed": false,
+    "reason": "reward_does_not_penalize_future_high_dividend_active_pain_enough"
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "high_dividend_active_pain_alignment_red"
+  ],
+  "interpretation": [
+    "Negative redesigned reward alignment is useful: reward is lower before future high-dividend active pain.",
+    "State features use prior-day reward signals, active exposure, drawdown, volatility, and concentration only.",
+    "This diagnostic does not authorize PPO, live allocation, target weights, 00631L additions, or 00632R openings."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "high_dividend_active_pain_dgr_passed": false,
+    "offline_smoke_allowed_after_dgr_green": false,
+    "next_shadow_model_design_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

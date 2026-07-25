@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_frozen_panel_baseline_shadow_backtest",
+  "generated_at": "2026-07-21T16:00:16",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "baseline_shadow_backtest_only_no_model_training_no_live_action",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "panel_sha256": "66aa5e59dbe67b896a8b1b9846091596ad64aa766a5607eecf9e169b998ee0b8",
+    "walk_forward_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_walk_forward_audit.json",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "low_quantile": 0.3,
+    "high_quantile": 0.7,
+    "low_score": 0.5,
+    "mid_score": 1.0,
+    "high_score": 1.5,
+    "cost_bps": 5.0
+  },
+  "summary": {
+    "fold_count": 6,
+    "available_fold_count": 6,
+    "positive_final_value_folds": 4,
+    "positive_sharpe_folds": 4,
+    "non_worse_drawdown_folds": 1,
+    "mean_delta_final_value": 0.013863402815589213,
+    "mean_delta_sharpe_ratio": 0.06847904966936809,
+    "mean_delta_max_drawdown": -0.00919663436563182,
+    "candidate_rule": "train_quantile_reward_tilt_prior_day_signal",
+    "baseline_rule": "equal_weight_eligible_tickers",
+    "pass_min_positive_final_folds": true,
+    "pass_min_positive_sharpe_folds": true
+  },
+  "fold_results": [
+    {
+      "fold": 1,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2023-05-30",
+      "test_start": "2023-06-07",
+      "test_end": "2023-12-07",
+      "test_days": 126,
+      "thresholds": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_reward_threshold": -0.06232020510401975,
+        "high_reward_threshold": -0.025428230171918687
+      },
+      "candidate": {
+        "final_value": 1.0743968373169537,
+        "total_return": 0.07439683731695368,
+        "annual_return": 0.15432856403667272,
+        "annual_volatility": 0.11910781165802127,
+        "sharpe_ratio": 1.2957048063293801,
+        "max_drawdown": -0.08741212652484764,
+        "worst_daily_return": -0.021899404413161527,
+        "mean_daily_turnover": 0.04886841553508219,
+        "total_turnover": 6.1574203574203565
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.059621605790715,
+        "total_return": 0.05962160579071507,
+        "annual_return": 0.12279794745849348,
+        "annual_volatility": 0.1130394711049414,
+        "sharpe_ratio": 1.0863280432769602,
+        "max_drawdown": -0.09111523228221718,
+        "worst_daily_return": -0.01936394622395119,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.014775231526238608,
+        "sharpe_ratio": 0.20937676305241992,
+        "max_drawdown": 0.0037031057573695403
+      }
+    },
+    {
+      "fold": 2,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2023-11-30",
+      "test_start": "2023-12-08",
+      "test_end": "2024-06-19",
+      "test_days": 126,
+      "thresholds": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_reward_threshold": -0.06526638188361454,
+        "high_reward_threshold": -0.026102387645646215
+      },
+      "candidate": {
+        "final_value": 1.1777332441795307,
+        "total_return": 0.17773324417953074,
+        "annual_return": 0.3870555944456422,
+        "annual_volatility": 0.10032753806710318,
+        "sharpe_ratio": 3.8579197885506122,
+        "max_drawdown": -0.04838211480201149,
+        "worst_daily_return": -0.021822894335653816,
+        "mean_daily_turnover": 0.025177468034610892,
+        "total_turnover": 3.1723609723609725
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.1547100123539007,
+        "total_return": 0.1547100123539007,
+        "annual_return": 0.3333552126303454,
+        "annual_volatility": 0.09015620427867266,
+        "sharpe_ratio": 3.697529363591496,
+        "max_drawdown": -0.04524303956781861,
+        "worst_daily_return": -0.0186171129367527,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.02302323182563004,
+        "sharpe_ratio": 0.16039042495911637,
+        "max_drawdown": -0.0031390752341928785
+      }
+    },
+    {
+      "fold": 3,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2024-06-12",
+      "test_start": "2024-06-20",
+      "test_end": "2024-12-23",
+      "test_days": 126,
+      "thresholds": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_reward_threshold": -0.06576817707511189,
+        "high_reward_threshold": -0.025386480275254128
+      },
+      "candidate": {
+        "final_value": 0.9358031841878228,
+        "total_return": -0.06419681581217718,
+        "annual_return": -0.12427240046393173,
+        "annual_volatility": 0.12852600933804859,
+        "sharpe_ratio": -0.9669046841489567,
+        "max_drawdown": -0.10979372452158243,
+        "worst_daily_return": -0.05033557012954779,
+        "mean_daily_turnover": 0.032515324181990844,
+        "total_turnover": 4.096930846930847
+      },
+      "equal_weight_baseline": {
+        "final_value": 0.951236540702902,
+        "total_return": -0.04876345929709802,
+        "annual_return": -0.09514904363157628,
+        "annual_volatility": 0.11494504735082163,
+        "sharpe_ratio": -0.8277785413509262,
+        "max_drawdown": -0.08685616453187539,
+        "worst_daily_return": -0.04217256404257972,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": -0.015433356515079155,
+        "sharpe_ratio": -0.13912614279803048,
+        "max_drawdown": -0.022937559989707035
+      }
+    },
+    {
+      "fold": 4,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2024-12-16",
+      "test_start": "2024-12-24",
+      "test_end": "2025-07-04",
+      "test_days": 126,
+      "thresholds": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_reward_threshold": -0.06783627226484501,
+        "high_reward_threshold": -0.026156413240034537
+      },
+      "candidate": {
+        "final_value": 0.915706330791542,
+        "total_return": -0.08429366920845804,
+        "annual_return": -0.16148191574829118,
+        "annual_volatility": 0.20080244828852947,
+        "sharpe_ratio": -0.8041830023718669,
+        "max_drawdown": -0.18057438622776079,
+        "worst_daily_return": -0.07523253883840668,
+        "mean_daily_turnover": 0.02609026775693442,
+        "total_turnover": 3.2873737373737373
+      },
+      "equal_weight_baseline": {
+        "final_value": 0.9339563893396428,
+        "total_return": -0.06604361066035724,
+        "annual_return": -0.12772546281165764,
+        "annual_volatility": 0.19170488584070974,
+        "sharpe_ratio": -0.6662608636786989,
+        "max_drawdown": -0.16386034082572787,
+        "worst_daily_return": -0.06704733383502962,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": -0.0182500585481008,
+        "sharpe_ratio": -0.13792213869316805,
+        "max_drawdown": -0.016714045402032918
+      }
+    },
+    {
+      "fold": 5,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2025-06-27",
+      "test_start": "2025-07-07",
+      "test_end": "2026-01-06",
+      "test_days": 126,
+      "thresholds": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_reward_threshold": -0.07131120681458374,
+        "high_reward_threshold": -0.027556775854808924
+      },
+      "candidate": {
+        "final_value": 1.1367062888497885,
+        "total_return": 0.13670628884978853,
+        "annual_return": 0.2921011871106589,
+        "annual_volatility": 0.0826745126630291,
+        "sharpe_ratio": 3.533146766782002,
+        "max_drawdown": -0.05203002717745853,
+        "worst_daily_return": -0.017679753978210463,
+        "mean_daily_turnover": 0.0305355138688472,
+        "total_turnover": 3.847474747474747
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.114174535307627,
+        "total_return": 0.11417453530762689,
+        "annual_return": 0.24138489512796624,
+        "annual_volatility": 0.06873598775342114,
+        "sharpe_ratio": 3.511768769423874,
+        "max_drawdown": -0.04592055201778811,
+        "worst_daily_return": -0.013673891166935088,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.022531753542161637,
+        "sharpe_ratio": 0.021377997358127843,
+        "max_drawdown": -0.006109475159670419
+      }
+    },
+    {
+      "fold": 6,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2025-12-29",
+      "test_start": "2026-01-07",
+      "test_end": "2026-07-17",
+      "test_days": 126,
+      "thresholds": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_reward_threshold": -0.07190656211668717,
+        "high_reward_threshold": -0.028575190726655538
+      },
+      "candidate": {
+        "final_value": 1.2803360080179793,
+        "total_return": 0.2803360080179793,
+        "annual_return": 0.6392602934274152,
+        "annual_volatility": 0.17907171176313078,
+        "sharpe_ratio": 3.5698563839776343,
+        "max_drawdown": -0.07030436654432748,
+        "worst_daily_return": -0.030442011350320857,
+        "mean_daily_turnover": 0.03171396504729838,
+        "total_turnover": 3.9959595959595955
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.2238023929552944,
+        "total_return": 0.22380239295529436,
+        "annual_return": 0.4976922970031048,
+        "annual_volatility": 0.15205630494956382,
+        "sharpe_ratio": 3.2730789898398913,
+        "max_drawdown": -0.06032161037877026,
+        "worst_daily_return": -0.025712412046519636,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.05653361506268495,
+        "sharpe_ratio": 0.29677739413774296,
+        "max_drawdown": -0.009982756165557216
+      }
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "interpretation": [
+    "This rule is a no-model sanity baseline for the frozen state/reward interface.",
+    "Signals are lagged one trading date before being applied to test returns.",
+    "The result can justify further shadow research only; it is not a live allocation rule."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "baseline_shadow_backtest_ready_for_review": true,
+    "next_shadow_model_design_allowed": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

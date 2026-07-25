@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_rl_governance_readiness_review",
+  "generated_at": "2026-07-20T00:19:38",
+  "as_of": "2026-07-20",
+  "status": "blocked",
+  "policy": "research_only_rl_ml_governance_no_live_policy_no_weight_change",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2512.10913.pdf",
+    "title": "Reinforcement Learning in Financial Decision Making: A Systematic Review of Performance, Challenges, and Implementation Strategies",
+    "arxiv": "2512.10913v1",
+    "imported_concepts": [
+      "implementation_quality_over_algorithm_complexity",
+      "domain_knowledge_and_data_quality_priority",
+      "explainability_and_auditability_requirement",
+      "robustness_to_nonstationary_market_regimes",
+      "standardized_benchmarking_before_promotion",
+      "deployment_feasibility_and_risk_management_first"
+    ],
+    "not_imported": [
+      "live_rl_allocator",
+      "market_making_rl_policy",
+      "cryptocurrency_rl_results",
+      "high_frequency_order_book_assumptions",
+      "automatic_target_weight_change",
+      "automatic_rebalance"
+    ]
+  },
+  "governance_checklist": {
+    "explainability_required": true,
+    "audit_trail_required": true,
+    "crash_window_validation_required": true,
+    "false_positive_audit_required": true,
+    "transaction_cost_and_turnover_required": true,
+    "market_impact_required": true,
+    "risk_budget_pacing_required": true,
+    "deployment_consistency_required": true,
+    "data_freshness_and_model_drift_required": true,
+    "live_exploration_forbidden": true
+  },
+  "component_readiness": {
+    "deployment_consistency": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/deployment_consistency_review.json",
+      "exists": true,
+      "status": "manual_review_required",
+      "policy": "diagnostic_only_no_weight_change",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "cash_balance_zero_with_nonzero_trades",
+        "execution_plan_not_allowed",
+        "manual_confirmation_required"
+      ],
+      "decision": {
+        "promote_to_live": null,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": null,
+        "broker_actionable": false
+      },
+      "key_metrics": {
+        "broker_actionable": false,
+        "manual_review_required": true
+      }
+    },
+    "market_impact_readiness": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_pretrade_readiness_only_no_weight_change",
+      "blocking_reasons": [
+        "live_signal_execution_not_allowed",
+        "rebalance_review_disallows_auto_rebalance",
+        "turnover_exceeds_limit"
+      ],
+      "warning_reasons": [],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": null,
+        "broker_actionable": null
+      },
+      "key_metrics": {
+        "market_impact_ready": null,
+        "turnover_guard_ready": null
+      }
+    },
+    "synthetic_augmentation_validation": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/synthetic_augmentation_validation_readiness_review.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_only_synthetic_augmentation_validation_no_synthetic_alpha_no_weight_change",
+      "blocking_reasons": [
+        "finstressts_snapshot_blocked",
+        "hmm_wj_scenario_readiness_blocked",
+        "scenario_generator_not_decision_ready",
+        "dynamic_cvar_tail_cost_readiness_blocked",
+        "tail_cost_readiness_not_ready",
+        "density_tail_model_unstable_research_only"
+      ],
+      "warning_reasons": [
+        "promotion_gate_unavailable_optional"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": null,
+        "broker_actionable": null
+      },
+      "key_metrics": {
+        "synthetic_validation_ready": false,
+        "directional_synthetic_alpha_allowed": false
+      }
+    },
+    "dynamic_cvar_tail_cost": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_only_dynamic_cvar_tail_cost_readiness_no_optimizer_no_weight_change",
+      "blocking_reasons": [
+        "cvar_tail_risk_diagnostic_research_only",
+        "00631l_hill_tail_index_positive_heavy_tail",
+        "density_tail_model_unstable_research_only",
+        "market_impact_readiness_blocked",
+        "market_impact_disallows_auto_rebalance",
+        "rebalance_review_disallows_auto_rebalance",
+        "rebalance_review_disallows_target_weight_change",
+        "systemic_bubble_time_at_risk_blocks_leverage_add",
+        "systemic_bubble_disallows_00631l_add",
+        "hmm_wj_scenario_readiness_blocked",
+        "scenario_generator_not_decision_ready",
+        "dynamic_cvar_optimizer_not_implemented",
+        "taiwan_etf_walkforward_validation_missing"
+      ],
+      "warning_reasons": [],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": null,
+        "broker_actionable": null
+      },
+      "key_metrics": {
+        "tail_cost_readiness_ready": false,
+        "dynamic_optimizer_ready": false
+      }
+    },
+    "intervention_fatigue_risk_budget": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/intervention_fatigue_risk_budget_readiness_review.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_only_intervention_fatigue_risk_budget_pacing_no_weight_change",
+      "blocking_reasons": [
+        "risk_budget_policy_not_promoted",
+        "rl_environment_not_validated",
+        "broker_holdings_time_series_sample_only",
+        "broker_holdings_time_series_has_negative_positions",
+        "broker_holdings_reconciliation_blocked",
+        "broker_holdings_not_order_authoritative",
+        "market_impact_readiness_blocked",
+        "dynamic_cvar_tail_cost_readiness_blocked",
+        "research_shadow_decision_snapshot_blocked",
+        "rebalance_review_disallows_auto_rebalance",
+        "rebalance_review_disallows_target_weight_change",
+        "market_impact_disallows_00631l_add",
+        "tail_cost_readiness_not_ready",
+        "research_shadow_disallows_00631l_add",
+        "turnover_at_or_above_pacing_limit"
+      ],
+      "warning_reasons": [
+        "pending_intervention_count:1",
+        "cash_buffer_gap_reference:0.30000000000000004"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false,
+        "broker_actionable": null
+      },
+      "key_metrics": {
+        "intervention_fatigue_ready": false,
+        "risk_budget_pacing_ready": false
+      }
+    },
+    "research_shadow_decision_snapshot": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/research_shadow_decision_snapshot.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_shadow_summary_no_weight_change",
+      "blocking_reasons": [
+        "finstressts_snapshot_blocked",
+        "trigate_vol_memory_blocks_leverage_add",
+        "systemic_bubble_time_at_risk_blocks_leverage_add",
+        "illiquidity_network_readiness_blocked",
+        "speculative_influence_network_readiness_blocked",
+        "sin_lite_proxy_blocked",
+        "hmm_wj_synthetic_scenario_readiness_blocked",
+        "dynamic_cvar_tail_cost_readiness_blocked",
+        "synthetic_augmentation_validation_readiness_blocked",
+        "intervention_fatigue_risk_budget_readiness_blocked",
+        "letf_tracking_error_effective_fee_readiness_blocked",
+        "asian_etf_tail_analytics_readiness_blocked",
+        "reduced_rank_correlation_readiness_blocked"
+      ],
+      "warning_reasons": [
+        "trigate_stress_gate_count:3",
+        "systemic_bubble_score:2",
+        "illiquidity_network_status:blocked",
+        "illiquidity_daily_proxy_score:0.21666666666666667",
+        "illiquidity_daily_proxy_state:elevated",
+        "speculative_influence_network_status:blocked",
+        "sin_lite_score:0.380094",
+        "sin_lite_state:normal",
+        "hmm_wj_status:blocked",
+        "dynamic_cvar_status:blocked",
+        "synthetic_augmentation_status:blocked",
+        "intervention_fatigue_status:blocked",
+        "letf_tracking_status:blocked",
+        "asian_etf_tail_analytics_status:blocked",
+        "reduced_rank_correlation_status:blocked",
+        "reduced_rank_proxy_status:available_for_manual_review",
+        "reduced_rank_proxy_sweep_status:blocked",
+        "reduced_rank_crash_backtest_status:blocked",
+        "reduced_rank_confirmation_overlap_status:blocked"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": null,
+        "broker_actionable": null
+      },
+      "key_metrics": {
+        "status": "blocked",
+        "allow_00631l_add": false
+      }
+    },
+    "adversarial_market_integrity": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/adversarial_market_integrity_review.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_governance_only_no_weight_change",
+      "blocking_reasons": [
+        "live_signal_execution_not_allowed",
+        "option_state_gate_not_passed",
+        "rebalance_review_disallows_target_weight_change",
+        "adversarial_robustness_state_incomplete"
+      ],
+      "warning_reasons": [
+        "signal_alignment_wide_divergence",
+        "market_risk_level_medium_high"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": null,
+        "allow_00631l_add": false,
+        "allow_00632r_open": null,
+        "broker_actionable": null
+      },
+      "key_metrics": {
+        "market_integrity_ready": null,
+        "single_model_auto_execution_allowed": null
+      }
+    },
+    "finstressts_decision_snapshot": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_decision_snapshot.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_only_summary_no_weight_change",
+      "blocking_reasons": [
+        "readiness_review_blocked",
+        "reference_loses_to_no_00631l_under_counterfactuals",
+        "reference_tail_failures_under_counterfactuals",
+        "no_baseline_beats_no_00631l"
+      ],
+      "warning_reasons": [
+        "best_shadow_candidate:combined_vol_trend_gate"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": null,
+        "broker_actionable": null
+      },
+      "key_metrics": {
+        "status": "blocked",
+        "allow_00631l_add": false
+      }
+    }
+  },
+  "blocking_reasons": [
+    "adversarial_market_integrity_blocked",
+    "deployment_not_broker_actionable",
+    "dynamic_cvar_tail_cost_blocked",
+    "finstressts_decision_snapshot_blocked",
+    "intervention_fatigue_risk_budget_blocked",
+    "market_impact_not_ready_for_rl_promotion",
+    "market_impact_readiness_blocked",
+    "research_shadow_decision_snapshot_blocked",
+    "research_shadow_snapshot_blocked",
+    "risk_budget_pacing_not_ready_for_rl_promotion",
+    "synthetic_augmentation_validation_blocked",
+    "synthetic_validation_not_ready_for_rl_promotion",
+    "tail_cost_readiness_not_ready_for_rl_promotion"
+  ],
+  "warning_reasons": [
+    "deployment_consistency_manual_review_or_warning"
+  ],
+  "decision": {
+    "rl_governance_ready": false,
+    "rl_component_promotable": false,
+    "live_rl_allocator_allowed": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true,
+    "summary": "2512.10913 supports RL/ML governance discipline only. Current GroupA+ artifacts do not clear the promotion gates for any live RL allocator or automatic policy."
+  }
+}

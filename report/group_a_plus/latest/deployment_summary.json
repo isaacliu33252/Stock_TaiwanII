@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_deployment_summary",
+  "generated_at": "2026-07-22T23:04:49",
+  "policy": "summary_only_no_order_no_strategy_change_no_weight_change",
+  "as_of": "2026-07-23",
+  "actual_data_date": "2026-07-22",
+  "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+  "status": "manual_review_required",
+  "broker_actionable": true,
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "source_freshness_soft_warning",
+    "gift_signed_approval_record_missing_or_invalid",
+    "gift_human_exception_not_approved",
+    "gift_signed_approval_manual_completion_pending"
+  ],
+  "target_weights": {
+    "0050.TW": 0.5,
+    "00631L.TW": 0.19867,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.0,
+    "cash": 0.30133000000000004
+  },
+  "final_target_shares": {
+    "0050.TW": 3257,
+    "00631L.TW": 0,
+    "00632R.TW": 0,
+    "00679B.TWO": 0
+  },
+  "execution_plan_cash": {
+    "current_cash_input": 1000000.0,
+    "cash_assumption": "workbook has no cash field; using explicit --cash-balance input",
+    "nonzero_trade_count": 2,
+    "cash_source_explicit": true,
+    "execution_plan_allowed": true,
+    "manual_confirmation_required": false
+  },
+  "planned_trades": [
+    {
+      "ticker": "00679B.TWO",
+      "side": "sell",
+      "current_shares": 5000,
+      "target_shares": 0,
+      "delta_shares": -5000,
+      "price": 26.81999969482422,
+      "notional": 134099.9984741211,
+      "commission": 191.09249782562256,
+      "slippage": 67.04999923706055,
+      "sell_tax_rate": 0.0,
+      "sell_tax": 0.0,
+      "estimated_cost": 258.1424970626831
+    },
+    {
+      "ticker": "0050.TW",
+      "side": "buy",
+      "current_shares": 1342,
+      "target_shares": 3257,
+      "delta_shares": 1915,
+      "price": 103.8499984741211,
+      "notional": 198872.7470779419,
+      "commission": 283.3936645860672,
+      "slippage": 99.43637353897095,
+      "sell_tax_rate": 0.001,
+      "sell_tax": 0.0,
+      "estimated_cost": 382.83003812503813
+    }
+  ],
+  "pre_trade_guards": [
+    {
+      "name": "volatility_gate_no_00631l_add",
+      "status": "blocked",
+      "ticker": "00631L.TW",
+      "current_shares": 0,
+      "requested_target_shares": 2908,
+      "guarded_target_shares": 0,
+      "blocked_trades": [
+        {
+          "ticker": "00631L.TW",
+          "side": "buy",
+          "current_shares": 0,
+          "requested_target_shares": 2908,
+          "guarded_target_shares": 0,
+          "blocked_delta_shares": 2908,
+          "reason": "volatility_gate_no_00631l_add"
+        }
+      ],
+      "policy": "advisory_no_auto_weight_change",
+      "allow_00631l_add": false,
+      "reason": "high_volatility_gate_blocks_new_00631l_exposure",
+      "source_alert_type": "volatility_gate_high_vol",
+      "volatility_gate": "high_vol_defensive",
+      "reference_00631l_scale": 0.5,
+      "tail_conformal": null
+    },
+    {
+      "name": "a2118_extreme_risk_no_new_adds",
+      "status": "inactive",
+      "tickers": [
+        "0050.TW",
+        "00631L.TW"
+      ],
+      "blocked_trades": [],
+      "policy": "warning_only_no_weight_change",
+      "recommended_action": "none",
+      "source_alert_type": null
+    },
+    {
+      "name": "compounding_regime_no_00631l_add",
+      "status": "blocked",
+      "ticker": "00631L.TW",
+      "current_shares": 0,
+      "requested_target_shares": 2908,
+      "guarded_target_shares": 0,
+      "blocked_trades": [
+        {
+          "ticker": "00631L.TW",
+          "side": "buy",
+          "current_shares": 0,
+          "requested_target_shares": 2908,
+          "guarded_target_shares": 0,
+          "blocked_delta_shares": 2908,
+          "reason": "compounding_regime_no_00631l_add"
+        }
+      ],
+      "policy": "diagnostic_no_auto_weight_change",
+      "allow_00631l_add": false,
+      "compounding_regime": "MEAN_REVERTING",
+      "recommended_policy": "prohibit_new_leverage_or_reduce_rebalance_frequency",
+      "date": "2026-07-22",
+      "reason": "compounding_regime_blocks_new_00631l_exposure"
+    }
+  ],
+  "blocked_buys": [
+    {
+      "ticker": "00631L.TW",
+      "current_shares": 0,
+      "staged_target_shares": 2908,
+      "final_target_shares": 0,
+      "blocked_delta_shares": 2908,
+      "blocked_notional": 101198.39778137207,
+      "price": 34.79999923706055
+    }
+  ],
+  "source_freshness": {
+    "status": "warn",
+    "detail": "soft strategy sources are stale or missing: ['securities_lending_0050']; securities_lending_0050",
+    "has_required_stale": false,
+    "has_soft_stale": true,
+    "blocks_deployment": false
+  },
+  "securities_lending_0050_source_status": {
+    "schema_version": 1,
+    "report_type": "group_a_plus_securities_lending_0050_source_status",
+    "generated_at": "2026-07-22T20:32:22",
+    "as_of": "2026-07-23",
+    "ticker": "0050.TW",
+    "status": "provider_no_rows",
+    "policy": "source_status_only_no_strategy_change_no_weight_change",
+    "query_window": {
+      "start": "2026-07-18",
+      "end": "2026-07-22"
+    },
+    "provider_observation": {
+      "rows_written": 0,
+      "message": "FinMind securities_lending 0050: no rows",
+      "provider_no_rows": true
+    },
+    "database_observation": {
+      "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+      "latest_dt": "2026-07-17",
+      "db_lagged_after_query": true,
+      "recent_rows": [
+        {
+          "dt": "2026-07-17",
+          "volume": 5000.0
+        },
+        {
+          "dt": "2026-07-15",
+          "volume": 2714.0
+        },
+        {
+          "dt": "2026-07-14",
+          "volume": 2277.0
+        },
+        {
+          "dt": "2026-07-09",
+          "volume": 207.0
+        },
+        {
+          "dt": "2026-07-08",
+          "volume": 3596.0
+        },
+        {
+          "dt": "2026-07-06",
+          "volume": 3589.0
+        },
+        {
+          "dt": "2026-07-03",
+          "volume": 3588.0
+        },
+        {
+          "dt": "2026-06-30",
+          "volume": 402.0
+        }
+      ]
+    },
+    "summary": {
+      "soft_source": true,
+      "provider_no_rows_confirmed": true,
+      "latest_available_dt": "2026-07-17",
+      "query_end": "2026-07-22",
+      "db_lagged_after_query": true,
+      "strategy_change_allowed": false,
+      "target_weight_change_allowed": false,
+      "keep_golden1_0531_unchanged": true
+    },
+    "decision": {
+      "blocks_deployment": false,
+      "strategy_change_allowed": false,
+      "target_weight_change_allowed": false,
+      "auto_rebalance_allowed": false,
+      "allow_00631l_add": false,
+      "allow_00632r_open": false,
+      "keep_golden1_0531_unchanged": true
+    }
+  },
+  "decision": {
+    "summary_only": true,
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260723_from_20260722.json",
+    "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+    "deployment_consistency_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/deployment_consistency_review.json"
+  },
+  "consistency_review": {
+    "status": "ok",
+    "errors": [],
+    "warnings": [],
+    "checked": {
+      "summary_decision_flags": [
+        "allow_00631l_add",
+        "allow_00632r_open",
+        "auto_rebalance_allowed",
+        "creates_orders",
+        "keep_golden1_0531_unchanged",
+        "summary_only",
+        "target_weight_change_allowed"
+      ],
+      "deployment_decision_flags": [
+        "allow_00631l_add",
+        "auto_rebalance_allowed",
+        "keep_golden1_0531_unchanged",
+        "target_weight_change_allowed"
+      ],
+      "status": true,
+      "broker_actionable": true,
+      "blocking_reason_presence": true,
+      "warning_reasons": true
+    }
+  }
+}

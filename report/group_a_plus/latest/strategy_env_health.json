@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-14T16:00:48Z",
+  "generated_at": "2026-07-23T11:25:33Z",
   "root": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main",
   "status": "ok",
   "missing_files": [],
@@ -17,14 +17,14 @@
       "label": "strategy_manifest",
       "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/strategy.json",
       "exists": true,
-      "size_bytes": 18041,
+      "size_bytes": 21347,
       "status": "ok"
     },
     {
       "label": "live_signal",
       "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal.json",
       "exists": true,
-      "size_bytes": 49773,
+      "size_bytes": 87851,
       "status": "ok"
     },
     {
@@ -36,16 +36,16 @@
     },
     {
       "label": "ncf_panel_00631l",
-      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_panel_latest_20260707.csv",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_panel_latest_20260716.csv",
       "exists": true,
-      "size_bytes": 122615,
+      "size_bytes": 125230,
       "status": "ok"
     },
     {
       "label": "ncf_00631l",
-      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260707.json",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260716.json",
       "exists": true,
-      "size_bytes": 11887,
+      "size_bytes": 12039,
       "status": "ok"
     }
   ],

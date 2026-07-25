@@ -1,0 +1,1219 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_gift_pdf_advantage_coverage_review",
+  "generated_at": "2026-07-22T18:18:11",
+  "as_of": "2026-07-22",
+  "status": "live_blocked_research_coverage_available",
+  "source_paper": {
+    "path": "/mnt/c/Users/isaac/Downloads/2606.08450.pdf",
+    "exists": true,
+    "sha256": "9a2b84ae74c705ea8dfc1d47259ca423e84ee79d9041ef125be3b79584d3ee22",
+    "pages": 25,
+    "title": "GIFT: LLM-Guided State-Reward Interface for Financial Reinforcement Learning",
+    "arxiv_id": "https://arxiv.org/abs/2606.08450v1",
+    "doi": "https://doi.org/10.48550/arXiv.2606.08450",
+    "first_pages_text_available": true,
+    "first_pages_text_sample_chars": 25199,
+    "keyword_hits": {
+      "FSE": true,
+      "RRS": true,
+      "DGR": true,
+      "no_llm_trade_decisions": true,
+      "freeze_before_test": true
+    }
+  },
+  "summary": {
+    "advantages_reviewed": 8,
+    "implemented_as_research_shadow_or_governance": 8,
+    "partially_implemented": 0,
+    "missing": 0,
+    "all_advantages_have_artifacts": true,
+    "live_strategy_updated_from_gift": false,
+    "golden1_0531_changed": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false
+  },
+  "coverage": [
+    {
+      "id": "constrained_llm_not_trade_decision",
+      "paper_keywords": [
+        "Rather than using the LLM to make trading decisions",
+        "no further LLM queries"
+      ],
+      "expected_artifacts": [
+        "llm_state_reward_interface_catalog.json",
+        "llm_state_reward_interface_proposal_validation_review.json"
+      ],
+      "policy": "LLM may propose state/reward interfaces only; no direct actions or target weights.",
+      "artifact_coverage": "implemented_as_research_shadow_or_governance",
+      "artifacts": [
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_catalog.json",
+          "exists": true,
+          "sha256": "7fe4a31eb9b5c1139cf2453182bcc6c45578be4465590ec7f28ec86d652921fd",
+          "status": "research_catalog_available_live_blocked",
+          "decision": {
+            "catalog_available_for_research_review": true,
+            "readiness_required_before_any_promotion": true,
+            "llm_state_reward_interface_ready": false,
+            "live_llm_trading_allowed": false,
+            "live_ppo_allocator_allowed": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": null
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_proposal_validation_review.json",
+          "exists": true,
+          "sha256": "84bb5c1fc7f4d8594b8f7513b168b36183ca98f12067cb835c96859142324a43",
+          "status": "available_for_manual_offline_review",
+          "decision": {
+            "proposal_validation_available": true,
+            "offline_review_allowed_for_accepted_proposals": true,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "accepted_for_offline_review_count": 3,
+            "rejected_count": 1,
+            "accepted_proposal_ids": [
+              "gift_research_momentum_vol_drawdown_turnover_v1",
+              "gift_research_downside_vol_letf_tail_decay_v1",
+              "gift_research_high_dividend_active_pain_v1"
+            ],
+            "rejected_proposal_ids": [
+              "gift_reject_live_00631l_target_weight_v1"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "factor_guided_state_enhancement",
+      "paper_keywords": [
+        "Factor-guided State Enhancement",
+        "momentum",
+        "volatility",
+        "downside risk",
+        "liquidity"
+      ],
+      "expected_artifacts": [
+        "llm_state_reward_interface_catalog.json",
+        "llm_state_reward_interface_offline_smoke_review.json",
+        "llm_state_reward_interface_feature_stability_review.json",
+        "llm_state_reward_interface_multi_ticker_smoke_review.json"
+      ],
+      "policy": "Allowed feature primitives are append-only, bounded, and point-in-time guarded.",
+      "artifact_coverage": "implemented_as_research_shadow_or_governance",
+      "artifacts": [
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_catalog.json",
+          "exists": true,
+          "sha256": "7fe4a31eb9b5c1139cf2453182bcc6c45578be4465590ec7f28ec86d652921fd",
+          "status": "research_catalog_available_live_blocked",
+          "decision": {
+            "catalog_available_for_research_review": true,
+            "readiness_required_before_any_promotion": true,
+            "llm_state_reward_interface_ready": false,
+            "live_llm_trading_allowed": false,
+            "live_ppo_allocator_allowed": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": null
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_offline_smoke_review.json",
+          "exists": true,
+          "sha256": "e506033089e16f22279c5a59b3fc515723e5dab80d2d40a865a812342a279a25",
+          "status": "available_for_manual_offline_review",
+          "decision": {
+            "available_for_manual_offline_review": true,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": null
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_feature_stability_review.json",
+          "exists": true,
+          "sha256": "b9ca69e14572e683376ae8a37f0da6918e91bf255f7a83166030093c63866ce3",
+          "status": "available_for_manual_offline_review",
+          "decision": {
+            "available_for_manual_offline_review": true,
+            "feature_stability_ready_for_research_review": true,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "ticker_count": 8,
+            "available_ticker_count": 8,
+            "missing_tickers": [],
+            "tickers_with_stability_warnings": [],
+            "benchmark_relationship_warning_count": 1
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_multi_ticker_smoke_review.json",
+          "exists": true,
+          "sha256": "840cd02671eafdee1ff430356db17b7f2cb469ec4afd16e8f0ff6873219867ba",
+          "status": "available_for_manual_offline_review",
+          "decision": {
+            "available_for_manual_offline_review": true,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "ticker_count": 8,
+            "available_for_manual_offline_review_count": 8,
+            "blocked_tickers": [],
+            "earliest_end": "2026-07-21",
+            "latest_end": "2026-07-21"
+          }
+        }
+      ]
+    },
+    {
+      "id": "risk_rule_reward_shaping",
+      "paper_keywords": [
+        "Risk-rule-guided Reward Shaping",
+        "transaction costs",
+        "drawdown",
+        "turnover"
+      ],
+      "expected_artifacts": [
+        "llm_state_reward_interface_frozen_manifest.json",
+        "llm_state_reward_interface_frozen_panel_review.json",
+        "llm_state_reward_interface_frozen_panel_baseline_shadow_backtest.json",
+        "llm_state_reward_interface_downside_tail_decay_param_sweep.json"
+      ],
+      "policy": "Reward terms are evaluated offline and cannot emit executable targets.",
+      "artifact_coverage": "implemented_as_research_shadow_or_governance",
+      "artifacts": [
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_frozen_manifest.json",
+          "exists": true,
+          "sha256": "b5f0dde86acfe5c646986ba099df058c975343a5d4d0d937c3b63caa96dde352",
+          "status": "frozen_for_manual_offline_review",
+          "decision": {
+            "frozen_for_manual_offline_review": true,
+            "offline_feature_reward_export_allowed": true,
+            "offline_walk_forward_design_allowed": true,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": null
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_review.json",
+          "exists": true,
+          "sha256": "4f53915384bb1b69a6f5d0716d7016f487030580befa38ee96d5d7bfa248c2df",
+          "status": "available_for_manual_offline_review",
+          "decision": {
+            "available_for_manual_offline_review": true,
+            "offline_walk_forward_input_ready": true,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "row_count": 16222,
+            "ticker_count": 8,
+            "available_ticker_count": 8,
+            "missing_tickers": [],
+            "date_start": "2016-01-04",
+            "date_end": "2026-07-17",
+            "state_columns": [
+              "downside_deviation",
+              "realized_volatility",
+              "drawdown_depth",
+              "ema_cross_strength"
+            ],
+            "reward_columns": [
+              "drawdown_penalty",
+              "volatility_scaling_penalty",
+              "letf_tail_decay_cost",
+              "reward_proxy"
+            ],
+            "finite_reward_ratio": 1.0,
+            "reward_proxy_min": -0.20802163127745973,
+            "reward_proxy_max": -0.0
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_baseline_shadow_backtest.json",
+          "exists": true,
+          "sha256": "ca920c6308da09670d1a064315fa5e817ad4c3e0ac00cd3af03d34978d42ec2d",
+          "status": "available_for_manual_offline_review",
+          "decision": {
+            "available_for_manual_offline_review": true,
+            "baseline_shadow_backtest_ready_for_review": true,
+            "next_shadow_model_design_allowed": true,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "fold_count": 6,
+            "available_fold_count": 6,
+            "positive_final_value_folds": 4,
+            "positive_sharpe_folds": 4,
+            "non_worse_drawdown_folds": 1,
+            "mean_delta_final_value": 0.013863402815589213,
+            "mean_delta_sharpe_ratio": 0.06847904966936809,
+            "mean_delta_max_drawdown": -0.00919663436563182,
+            "candidate_rule": "train_quantile_reward_tilt_prior_day_signal",
+            "baseline_rule": "equal_weight_eligible_tickers",
+            "pass_min_positive_final_folds": true,
+            "pass_min_positive_sharpe_folds": true
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_downside_tail_decay_param_sweep.json",
+          "exists": true,
+          "sha256": "755f8d01055e23e049166712a56bdef8c2626c71fa2d03ed0145bbb6e3db26fd",
+          "status": "available_for_manual_offline_review",
+          "decision": {
+            "available_for_manual_offline_review": true,
+            "best_candidate_for_next_offline_experiment": true,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false
+          },
+          "summary": {
+            "evaluated_count": 243,
+            "green_candidate_count": 188,
+            "best_params": {
+              "drawdown_weight": 0.3,
+              "volatility_weight": 0.5,
+              "tail_decay_weight": 0.1,
+              "volatility_scale": 4.0,
+              "tail_decay_scale": 4.0
+            },
+            "best_downside_alignment": -0.09035559282749778,
+            "best_downside_grade": "green",
+            "best_reward_snr": 2.7132436907039312,
+            "best_rank_score": 0.11748802973453709
+          }
+        }
+      ]
+    },
+    {
+      "id": "diagnostic_guided_refinement",
+      "paper_keywords": [
+        "Diagnostic-guided Refinement",
+        "PPO rollout diagnostics",
+        "revise candidate interfaces"
+      ],
+      "expected_artifacts": [
+        "llm_state_reward_interface_diagnostic_refinement_review.json",
+        "llm_state_reward_alignment_remediation_review.json",
+        "llm_state_reward_research_shadow_blocker_triage.json"
+      ],
+      "policy": "DGR is approximated with offline diagnostics; PPO training remains blocked without signed approval.",
+      "artifact_coverage": "implemented_as_research_shadow_or_governance",
+      "artifacts": [
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_diagnostic_refinement_review.json",
+          "exists": true,
+          "sha256": "f1d23ff787b8d73cb5fb3d6aeaa500661525a6042f2509b0d3aa66105e780669",
+          "status": "available_for_manual_offline_review",
+          "decision": {
+            "available_for_manual_offline_review": true,
+            "diagnostic_refinement_ready_for_research_review": true,
+            "diagnostic_refinement_grade": "red",
+            "ppo_training_queue_allowed_by_dgr": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "ticker_count": 3,
+            "available_ticker_count": 3,
+            "missing_tickers": [],
+            "finite_reward_min_ratio": 1.0,
+            "mean_reward_snr": 2.151707054898388,
+            "mean_reward_autocorrelation_lag1": 0.9884387380101568,
+            "mean_reward_future_return_alignment": -0.014168007561183181,
+            "mean_reward_future_downside_alignment": -0.03972849249282377,
+            "reward_alignment_grade": "red",
+            "reward_alignment_objective": "future_return_alignment",
+            "reward_alignment_abs": 0.014168007561183181,
+            "return_alignment_grade": "red",
+            "return_alignment_abs": 0.014168007561183181,
+            "downside_alignment_grade": "yellow",
+            "downside_alignment_abs": 0.03972849249282377,
+            "downside_alignment_direction": "negative_reward_vs_positive_downside",
+            "downside_alignment_risk_sensitive_useful": true,
+            "ppo_training_queue_allowed_by_alignment": false,
+            "inherited_warning_count": 9
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_alignment_remediation_review.json",
+          "exists": true,
+          "sha256": "5c16fae47bab764a9a7c8e5d6111819f8e12560230d1b9ab4f2f37d5ccbbbdb3",
+          "status": "available_for_manual_offline_review",
+          "decision": {
+            "available_for_manual_offline_review": true,
+            "candidate_resolves_return_alignment_red_for_manual_review": true,
+            "candidate_allows_ppo_queue_by_alignment": false,
+            "shadow_training_request_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "current_return_alignment": -0.014168007561183181,
+            "current_return_alignment_grade": "red",
+            "current_ppo_training_queue_allowed_by_alignment": false,
+            "evaluated_candidate_count": 50,
+            "acceptable_candidate_count": 50,
+            "best_return_alignment": -0.043489774125321075,
+            "best_return_alignment_grade": "yellow",
+            "best_acceptable_params": {
+              "drawdown_weight": 0.3,
+              "volatility_weight": 0.5,
+              "tail_decay_weight": 0.4,
+              "volatility_scale": 4.0,
+              "tail_decay_scale": 8.0
+            },
+            "best_acceptable_return_alignment": -0.043489774125321075,
+            "best_acceptable_return_alignment_grade": "yellow",
+            "best_acceptable_downside_alignment": -0.09096951620030973,
+            "best_acceptable_downside_grade": "green",
+            "candidate_resolves_return_alignment_red_for_manual_review": true,
+            "candidate_allows_ppo_queue_by_alignment": false
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_research_shadow_blocker_triage.json",
+          "exists": true,
+          "sha256": "f93085c56ed992e7016349407466391a62f0025a0573ac9ce49d2fd769466301",
+          "status": "available_for_manual_exception_review",
+          "decision": {
+            "manual_exception_review_ready": true,
+            "human_exception_record_required": true,
+            "manual_exception_to_queue_training_allowed": false,
+            "shadow_training_request_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "research_shadow_status": "blocked",
+            "research_shadow_blocker_count": 14,
+            "live_allocation_blocker_count": 12,
+            "training_governance_blocker_count": 2,
+            "uncategorized_blocker_count": 0,
+            "manual_approval_review_ready": true,
+            "manual_approval_queue_blockers": [
+              "human_exception_record_draft_not_approved"
+            ],
+            "alignment_remediation_resolves_return_red": true,
+            "manual_exception_review_ready": true,
+            "human_exception_record_required": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "freeze_before_oos_eval",
+      "paper_keywords": [
+        "fixes the selected state-reward interface before evaluation",
+        "test time"
+      ],
+      "expected_artifacts": [
+        "llm_state_reward_interface_frozen_manifest.json",
+        "llm_state_reward_interface_frozen_panel.parquet",
+        "llm_state_reward_interface_frozen_panel_walk_forward_audit.json"
+      ],
+      "policy": "Interfaces are frozen before OOS review; test-time LLM updates are rejected.",
+      "artifact_coverage": "implemented_as_research_shadow_or_governance",
+      "artifacts": [
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_frozen_manifest.json",
+          "exists": true,
+          "sha256": "b5f0dde86acfe5c646986ba099df058c975343a5d4d0d937c3b63caa96dde352",
+          "status": "frozen_for_manual_offline_review",
+          "decision": {
+            "frozen_for_manual_offline_review": true,
+            "offline_feature_reward_export_allowed": true,
+            "offline_walk_forward_design_allowed": true,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": null
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+          "exists": true,
+          "sha256": "66aa5e59dbe67b896a8b1b9846091596ad64aa766a5607eecf9e169b998ee0b8",
+          "status": null,
+          "decision": null,
+          "summary": null
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_walk_forward_audit.json",
+          "exists": true,
+          "sha256": "fbf3e933f51d3d9f6921c293a2a8fed51b1039cc1ba09a53a9b80f31ecd44766",
+          "status": "available_for_manual_offline_review",
+          "decision": {
+            "available_for_manual_offline_review": true,
+            "frozen_panel_leakage_audit_passed": true,
+            "purged_walk_forward_plan_ready": true,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "row_count": 16222,
+            "ticker_count": 8,
+            "date_count": 2565,
+            "date_start": "2016-01-04",
+            "date_end": "2026-07-17",
+            "duplicate_date_ticker_rows": 0,
+            "frozen_manifest_hash_count": 1,
+            "finite_ratios": {
+              "downside_deviation": 0.9901368511897424,
+              "drawdown_depth": 1.0,
+              "drawdown_penalty": 1.0,
+              "ema_cross_strength": 0.9876710639871779,
+              "letf_tail_decay_cost": 1.0,
+              "realized_volatility": 0.9901368511897424,
+              "reward_proxy": 1.0,
+              "volatility_scaling_penalty": 0.9901368511897424
+            },
+            "low_finite_columns": {},
+            "fold_count": 6,
+            "purge_covers_forward_horizon": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "rolling_window_and_regime_coverage",
+      "paper_keywords": [
+        "rolling-window experiments",
+        "diverse market regimes",
+        "portfolio scenarios"
+      ],
+      "expected_artifacts": [
+        "llm_state_reward_interface_windowed_stability_review.json",
+        "llm_state_reward_interface_high_dividend_active_pain_walk_forward_panel_review.json",
+        "llm_state_reward_interface_high_dividend_active_pain_walk_forward_panel_audit.json"
+      ],
+      "policy": "Coverage is research-only and feeds manual review, not live allocation.",
+      "artifact_coverage": "implemented_as_research_shadow_or_governance",
+      "artifacts": [
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_windowed_stability_review.json",
+          "exists": true,
+          "sha256": "dc38f2349c2c8b94297558ba6ed257df43f9be5470b1e31820c2a99770634049",
+          "status": "available_for_manual_offline_review",
+          "decision": {
+            "available_for_manual_offline_review": true,
+            "windowed_stability_ready_for_research_review": true,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "ticker_count": 3,
+            "available_ticker_count": 3,
+            "missing_tickers": [],
+            "latest_rolling_by_target": {
+              "00631L.TW": {
+                "63": {
+                  "latest_correlation": 0.9798458737409756,
+                  "latest_beta": 1.9013367858239294
+                },
+                "126": {
+                  "latest_correlation": 0.971310383924658,
+                  "latest_beta": 1.939982450373243
+                },
+                "252": {
+                  "latest_correlation": 0.9707749990201024,
+                  "latest_beta": 1.9077441696389188
+                }
+              },
+              "00632R.TW": {
+                "63": {
+                  "latest_correlation": -0.9781216592089623,
+                  "latest_beta": -0.9993850756518241
+                },
+                "126": {
+                  "latest_correlation": -0.9793199517810545,
+                  "latest_beta": -1.0178755777498334
+                },
+                "252": {
+                  "latest_correlation": -0.9759179702299463,
+                  "latest_beta": -0.9858002652199704
+                }
+              }
+            },
+            "recent_0050_drawdown_extreme_days": 2,
+            "recent_0050_reward_extreme_days": 2
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_high_dividend_active_pain_walk_forward_panel_review.json",
+          "exists": true,
+          "sha256": "da9c6ffb59ed502c81b1d729050438f42fa8e77fbd61a6f626ce3456ef439386",
+          "status": "blocked",
+          "decision": {
+            "available_for_manual_offline_review": false,
+            "offline_walk_forward_input_ready": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "row_count": 0,
+            "fold_count": 0,
+            "ticker_count": 0,
+            "date_start": null,
+            "date_end": null,
+            "finite_redesigned_reward_ratio": null,
+            "state_columns": [
+              "active_bucket_weight",
+              "active_bucket_return_contribution",
+              "active_bucket_drawdown_depth",
+              "reward_signal_concentration_hhi",
+              "high_dividend_active_pain",
+              "drawdown_depth",
+              "realized_volatility"
+            ],
+            "reward_columns": [
+              "active_bucket_drawdown_penalty",
+              "original_reward_proxy",
+              "redesigned_reward_proxy"
+            ]
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_interface_high_dividend_active_pain_walk_forward_panel_audit.json",
+          "exists": true,
+          "sha256": "b6e9480f92a821d2256cfaf8326ae73e9c9c8a2011178b2c4826da161d8b767a",
+          "status": "blocked",
+          "decision": {
+            "available_for_manual_offline_review": false,
+            "v3_walk_forward_panel_audit_passed": false,
+            "v3_shadow_gate_update_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "row_count": 4536,
+            "fold_count": 6,
+            "ticker_count": 6,
+            "date_count": 756,
+            "duplicate_fold_date_ticker_rows": 0,
+            "freeze_id_count": 1,
+            "frozen_manifest_hash_count": 1,
+            "proposal_ids": [
+              "gift_research_high_dividend_active_pain_v1"
+            ],
+            "finite_ratios": {
+              "original_reward_proxy": 1.0,
+              "redesigned_reward_proxy": 1.0,
+              "active_bucket_weight": 1.0,
+              "active_bucket_return_contribution": 1.0,
+              "active_bucket_drawdown_depth": 1.0,
+              "reward_signal_concentration_hhi": 1.0,
+              "high_dividend_active_pain": 1.0,
+              "active_bucket_drawdown_penalty": 1.0
+            },
+            "folds_complete": true,
+            "folds_test_dates_match": true,
+            "purge_covers_forward_horizon": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "human_and_signed_governance",
+      "paper_keywords": [
+        "constraining open-ended generation",
+        "financial knowledge"
+      ],
+      "expected_artifacts": [
+        "llm_state_reward_human_exception_record_draft.json",
+        "llm_state_reward_human_exception_approval_record_schema.json",
+        "llm_state_reward_human_exception_signed_approval_record_TEMPLATE.json",
+        "llm_state_reward_human_exception_signed_approval_validation.json",
+        "llm_state_reward_manual_approval_readiness_review.json"
+      ],
+      "policy": "Signed human approval is mandatory before any training queue or promotion path.",
+      "artifact_coverage": "implemented_as_research_shadow_or_governance",
+      "artifacts": [
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_human_exception_record_draft.json",
+          "exists": true,
+          "sha256": "46a21e8b1346db42ed5305e21f9ab57bc3048be24645ef18d7f1f37c9f81f234",
+          "status": "draft_ready_for_human_review",
+          "decision": {
+            "human_exception_record_draft_ready": true,
+            "human_exception_approved": false,
+            "training_queue_allowed": false,
+            "shadow_training_request_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "human_exception_record_draft_ready": true,
+            "human_exception_approved": false,
+            "training_queue_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "manual_exception_review_ready": true,
+            "manual_approval_review_ready": true,
+            "package_ready_for_manual_review": true,
+            "research_shadow_blocker_count": 14,
+            "live_allocation_blocker_count": 12,
+            "training_governance_blocker_count": 2,
+            "eligible_ticker_count": 6,
+            "excluded_tickers": [
+              "00631L.TW",
+              "00632R.TW"
+            ],
+            "recommended_regime_rule": "trend_above_train_median"
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_human_exception_approval_record_schema.json",
+          "exists": true,
+          "sha256": "23cfef84b2f639b7bb0bae96bbf9bf1e29242a8886321264ce0eb2c06b846d0e",
+          "status": "template_ready_for_human_signature",
+          "decision": {
+            "approval_record_schema_ready": true,
+            "approval_record_template_ready": true,
+            "human_exception_approved": false,
+            "training_queue_allowed": false,
+            "shadow_training_request_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "approval_record_schema_ready": true,
+            "approval_record_template_ready": true,
+            "human_exception_record_draft_ready": true,
+            "human_exception_approved": false,
+            "training_queue_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "draft_status": "draft_ready_for_human_review",
+            "draft_human_exception_approved": false,
+            "eligible_ticker_count": 6,
+            "excluded_tickers": [
+              "00631L.TW",
+              "00632R.TW"
+            ]
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_record_TEMPLATE.json",
+          "exists": true,
+          "sha256": "60fe5323911847a0b0206bee7aa3452aa698e5891b55e403f89dcffa58e8abf2",
+          "status": "unsigned_template_ready_for_manual_completion",
+          "decision": {
+            "signed_approval_record_template_ready": true,
+            "signed_approval_record_valid": false,
+            "human_exception_approved": false,
+            "non_ppo_shadow_queue_review_allowed": false,
+            "training_queue_allowed": false,
+            "shadow_training_request_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "signed_approval_record_template_ready": true,
+            "signed_approval_record_valid": false,
+            "human_exception_approved": false,
+            "non_ppo_shadow_queue_review_allowed": false,
+            "training_queue_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "schema_ready": true,
+            "record_id": "gift_non_ppo_shadow_exception_20260722",
+            "source_draft_sha256": "46a21e8b1346db42ed5305e21f9ab57bc3048be24645ef18d7f1f37c9f81f234",
+            "excluded_tickers": [
+              "00631L.TW",
+              "00632R.TW"
+            ]
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_validation.json",
+          "exists": true,
+          "sha256": "04df208e525c4831946a8800066716ee31367d1dfdeeda6a912b1bd892ada3f4",
+          "status": "blocked",
+          "decision": {
+            "signed_approval_record_valid": false,
+            "human_exception_approved": false,
+            "non_ppo_shadow_queue_review_allowed": false,
+            "training_queue_allowed": false,
+            "shadow_training_request_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "signed_approval_record_valid": false,
+            "human_exception_approved": false,
+            "non_ppo_shadow_queue_review_allowed": false,
+            "training_queue_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "signed_record_exists": false,
+            "schema_ready": true,
+            "reviewer": null,
+            "expires_at": null,
+            "excluded_tickers": []
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/llm_state_reward_manual_approval_readiness_review.json",
+          "exists": true,
+          "sha256": "1c673e00fcd300000d4cb540c867ad9e93d92e21399618ebca10a46bc4db6815",
+          "status": "available_for_manual_approval_review",
+          "decision": {
+            "manual_approval_review_ready": true,
+            "manual_approval_to_queue_training_allowed": false,
+            "shadow_training_request_allowed": false,
+            "model_training_allowed": false,
+            "ppo_training_allowed": false,
+            "outputs_actions": false,
+            "outputs_target_weights": false,
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "package_ready_for_manual_review": true,
+            "shadow_training_ready": true,
+            "research_shadow_status": "blocked",
+            "research_shadow_blocking_reasons_count": 14,
+            "diagnostic_return_alignment_grade": "red",
+            "diagnostic_mean_reward_future_return_alignment": -0.014168007561183181,
+            "diagnostic_ppo_training_queue_allowed_by_alignment": false,
+            "alignment_remediation_status": "available_for_manual_offline_review",
+            "alignment_remediation_resolves_return_red": true,
+            "alignment_remediation_best_return_alignment_grade": "yellow",
+            "alignment_remediation_allows_ppo_queue_by_alignment": false,
+            "research_shadow_triage_status": "available_for_manual_exception_review",
+            "research_shadow_triage_manual_exception_review_ready": true,
+            "research_shadow_triage_live_allocation_blocker_count": 12,
+            "research_shadow_triage_training_governance_blocker_count": 2,
+            "human_exception_record_draft_status": "draft_ready_for_human_review",
+            "human_exception_record_draft_ready": true,
+            "human_exception_approved": false,
+            "human_exception_training_queue_allowed": false,
+            "signed_approval_validation_status": "blocked",
+            "signed_approval_record_valid": false,
+            "signed_approval_human_exception_approved": false,
+            "signed_approval_non_ppo_shadow_queue_review_allowed": false,
+            "signed_approval_training_queue_allowed": false,
+            "regime_filter_resolves_5bps_warning": true,
+            "recommended_regime_rule": "trend_above_train_median",
+            "recommended_high_score": 1.03,
+            "recommended_cost_bps": 5.0,
+            "manual_approval_review_ready": true,
+            "manual_approval_to_queue_training_allowed": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "deployment_consistency_blocks_live_promotion",
+      "paper_keywords": [
+        "evaluation",
+        "risk-adjusted portfolio performance"
+      ],
+      "expected_artifacts": [
+        "research_shadow_decision_snapshot.json",
+        "deployment_consistency_review.json",
+        "daily_status.json"
+      ],
+      "policy": "Research availability never overrides deployment consistency or live-trading guards.",
+      "artifact_coverage": "implemented_as_research_shadow_or_governance",
+      "artifacts": [
+        {
+          "path": "report/group_a_plus/latest/research_shadow_decision_snapshot.json",
+          "exists": true,
+          "sha256": "735e9ec9ab57e3a004f8b412d28d34668a38a804e7f0a97146045f04d808d8d8",
+          "status": "blocked",
+          "decision": {
+            "summary": "Research shadow diagnostics do not permit 00631L add: at least one research-only readiness, volatility-memory, systemic bubble time-at-risk, HMM-WJ scenario-readiness, illiquidity-network readiness, speculative-influence-network readiness, SIN-lite proxy, dynamic CVaR tail/cost diagnostic, synthetic augmentation validation gate, or intervention fatigue/risk-budget gate, LETF tracking-error/effective-fee gate, Asian ETF tail-analytics gate, reduced-rank correlation readiness, RL governance, or LLM state-reward interface readiness is blocked.",
+            "promote_to_live": false,
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "keep_golden1_0531_unchanged": true
+          },
+          "summary": {
+            "finstressts_status": "blocked",
+            "finstressts_allow_00631l_add": false,
+            "trigate_state": "blocked_for_leverage_add",
+            "trigate_stress_gate_count": 3,
+            "trigate_allow_00631l_add": false,
+            "systemic_bubble_state": "research_watch",
+            "systemic_bubble_score": 1,
+            "systemic_bubble_allow_00631l_add": false,
+            "illiquidity_network_status": "blocked",
+            "illiquidity_network_ready": false,
+            "illiquidity_network_crash_guard_allowed": false,
+            "illiquidity_network_allow_00631l_add": false,
+            "illiquidity_daily_proxy_status": "available_research_proxy",
+            "illiquidity_daily_proxy_paper_equivalent": false,
+            "illiquidity_daily_proxy_stress_score": 0.027777777777777776,
+            "illiquidity_daily_proxy_stress_state": "normal",
+            "illiquidity_daily_proxy_manual_review_required": false,
+            "illiquidity_daily_proxy_coverage_tickers": 9,
+            "speculative_influence_network_status": "blocked",
+            "speculative_influence_network_ready": false,
+            "speculative_influence_hmm_bubble_state_ready": false,
+            "speculative_influence_transfer_entropy_ready": false,
+            "speculative_influence_maxloss_validation_ready": false,
+            "speculative_influence_allow_00631l_add": false,
+            "sin_lite_proxy_status": "blocked",
+            "sin_lite_proxy_state": "normal",
+            "sin_lite_proxy_score": 0.383788,
+            "sin_lite_proxy_usable_ticker_count": 14,
+            "sin_lite_proxy_manual_review_required": false,
+            "sin_lite_proxy_allow_00631l_add": false,
+            "hmm_wj_status": "blocked",
+            "hmm_wj_data_ready": true,
+            "hmm_wj_can_generate_scenarios_for_decision": false,
+            "hmm_wj_allow_00631l_add": false,
+            "dynamic_cvar_status": "blocked",
+            "dynamic_cvar_tail_cost_ready": false,
+            "dynamic_cvar_optimizer_ready": false,
+            "dynamic_cvar_allow_00631l_add": false,
+            "synthetic_augmentation_status": "blocked",
+            "synthetic_validation_ready": false,
+            "directional_synthetic_alpha_allowed": false,
+            "synthetic_generator_promotion_allowed": false,
+            "synthetic_augmentation_allow_00631l_add": false,
+            "intervention_fatigue_status": "blocked",
+            "intervention_fatigue_ready": false,
+            "risk_budget_pacing_ready": false,
+            "intervention_fatigue_allow_00631l_add": false,
+            "letf_tracking_status": "blocked",
+            "letf_tracking_error_readiness_ready": false,
+            "letf_effective_fee_proxy_ready": false,
+            "letf_hedge_neutrality_ready": false,
+            "letf_allow_00631l_add": false,
+            "letf_allow_00632r_open": false,
+            "asian_etf_tail_analytics_status": "blocked",
+            "asian_etf_tail_analytics_ready": false,
+            "asian_etf_optimizer_ready": false,
+            "asian_etf_available_paper_etf_count": 1,
+            "asian_etf_allow_00631l_add": false,
+            "reduced_rank_correlation_status": "blocked",
+            "reduced_rank_correlation_ready": false,
+            "reduced_rank_weak_proxy_ready": true,
+            "reduced_rank_paper_equivalent_ready": false,
+            "reduced_rank_allow_00631l_add": false,
+            "reduced_rank_proxy_status": "available_for_manual_review",
+            "reduced_rank_proxy_state": "normal",
+            "reduced_rank_proxy_manual_review_required": false,
+            "reduced_rank_proxy_usable_ticker_count": 35,
+            "reduced_rank_proxy_allow_00631l_add": false,
+            "reduced_rank_proxy_sweep_status": "blocked",
+            "reduced_rank_proxy_sweep_available_candidate_count": 24,
+            "reduced_rank_proxy_sweep_state_counts": {
+              "normal": 16,
+              "watch": 8
+            },
+            "reduced_rank_proxy_sweep_manual_review_candidate_count": 8,
+            "reduced_rank_proxy_sweep_allow_00631l_add": false,
+            "reduced_rank_crash_backtest_status": "blocked",
+            "reduced_rank_crash_backtest_stress_watch_rate": 0.246711,
+            "reduced_rank_crash_backtest_non_window_watch_rate": 0.424373,
+            "reduced_rank_crash_backtest_stress_elevated_rate": 0.016447,
+            "reduced_rank_crash_backtest_non_window_elevated_rate": 0.197358,
+            "reduced_rank_crash_backtest_allow_00631l_add": false,
+            "reduced_rank_confirmation_overlap_status": "blocked",
+            "reduced_rank_confirmed_stress_watch_rate": 0.19298245614035087,
+            "reduced_rank_confirmed_non_window_watch_rate": 0.08492855217039633,
+            "reduced_rank_confirmed_stress_to_non_ratio": 2.2722918407128936,
+            "reduced_rank_confirmation_overlap_allow_00631l_add": false,
+            "rl_governance_status": "blocked",
+            "rl_governance_ready": false,
+            "rl_component_promotable": false,
+            "live_rl_allocator_allowed": false,
+            "rl_governance_allow_00631l_add": false,
+            "llm_state_reward_interface_status": "blocked",
+            "llm_state_reward_interface_ready": false,
+            "feature_proposal_governance_imported": true,
+            "reward_shaping_governance_imported": true,
+            "live_llm_trading_allowed": false,
+            "live_ppo_allocator_allowed": false,
+            "llm_state_reward_interface_allow_00631l_add": false,
+            "llm_state_reward_diagnostic_refinement_status": "available_for_manual_offline_review",
+            "llm_state_reward_diagnostic_refinement_ready": true,
+            "llm_state_reward_diagnostic_mean_reward_snr": 2.151707054898388,
+            "llm_state_reward_diagnostic_mean_reward_future_return_alignment": -0.014168007561183181,
+            "llm_state_reward_diagnostic_mean_reward_future_downside_alignment": -0.03972849249282377,
+            "llm_state_reward_diagnostic_grade": "red",
+            "llm_state_reward_diagnostic_ppo_training_queue_allowed": false,
+            "llm_state_reward_diagnostic_warning_count": 10,
+            "llm_state_reward_diagnostic_allow_00631l_add": false,
+            "llm_state_reward_diagnostic_allow_00632r_open": false,
+            "llm_state_reward_shadow_training_readiness_status": "available_for_manual_offline_review",
+            "llm_state_reward_shadow_training_ready": true,
+            "llm_state_reward_shadow_training_request_allowed": false,
+            "llm_state_reward_shadow_training_model_training_allowed": false,
+            "llm_state_reward_shadow_training_ppo_training_allowed": false,
+            "llm_state_reward_shadow_training_promote_to_live": false,
+            "llm_state_reward_shadow_training_allow_00631l_add": false,
+            "llm_state_reward_shadow_training_allow_00632r_open": false,
+            "llm_state_reward_regime_filtered_micro_tilt_status": "available_for_manual_offline_review",
+            "llm_state_reward_regime_filter_resolves_5bps_warning": true,
+            "llm_state_reward_regime_filtered_recommended_candidate": {
+              "regime_rule": "trend_above_train_median",
+              "high_score": 1.03,
+              "cost_bps": 5.0,
+              "aggregate": {
+                "fold_count": 6,
+                "available_fold_count": 6,
+                "positive_final_value_folds": 5,
+                "positive_sharpe_folds": 4,
+                "non_worse_drawdown_folds": 4,
+                "mean_delta_final_value": 0.00030346868071762234,
+                "mean_delta_sharpe_ratio": 0.004525255442848708,
+                "mean_delta_max_drawdown": -1.4211215278521946e-05
+              },
+              "rank_score": 106.03751548694456,
+              "mean_active_day_ratio": 0.5132275132275133
+            },
+            "llm_state_reward_regime_filtered_model_training_allowed": false,
+            "llm_state_reward_regime_filtered_promote_to_live": false,
+            "llm_state_reward_manual_approval_readiness_status": "available_for_manual_approval_review",
+            "llm_state_reward_manual_approval_review_ready": true,
+            "llm_state_reward_manual_approval_to_queue_training_allowed": false,
+            "llm_state_reward_manual_approval_queue_blocking_reasons": [
+              "signed_human_exception_approval_record_missing_or_invalid"
+            ],
+            "llm_state_reward_manual_approval_model_training_allowed": false,
+            "llm_state_reward_manual_approval_ppo_training_allowed": false,
+            "llm_state_reward_manual_approval_promote_to_live": false,
+            "llm_state_reward_signed_approval_validation_status": "blocked",
+            "llm_state_reward_signed_approval_record_valid": false,
+            "llm_state_reward_signed_approval_human_exception_approved": false,
+            "llm_state_reward_signed_approval_non_ppo_shadow_queue_review_allowed": false,
+            "llm_state_reward_signed_approval_training_queue_allowed": false,
+            "llm_state_reward_signed_approval_model_training_allowed": false,
+            "llm_state_reward_signed_approval_ppo_training_allowed": false,
+            "llm_state_reward_signed_approval_promote_to_live": false
+          }
+        },
+        {
+          "path": "report/group_a_plus/latest/deployment_consistency_review.json",
+          "exists": true,
+          "sha256": "a914a8b6a845de580953706e0b96c83535f1f29add60a7e4089567cfc62c2027",
+          "status": "blocked",
+          "decision": {
+            "target_weight_change_allowed": false,
+            "auto_rebalance_allowed": false,
+            "broker_actionable": false,
+            "manual_review_required": true,
+            "allow_00631l_add": false,
+            "keep_golden1_0531_unchanged": true,
+            "summary": "Deployment-consistency review is diagnostic only. It may block or force manual review, but it never changes GroupA+ target weights."
+          },
+          "summary": null
+        },
+        {
+          "path": "report/group_a_plus/latest/daily_status.json",
+          "exists": true,
+          "sha256": "ee8b00754723f5469c529ab15d792ca88b5faebb60046cbcb58368a3ad52ac17",
+          "status": null,
+          "decision": null,
+          "summary": null
+        }
+      ]
+    }
+  ],
+  "live_blockers": [
+    "missing_or_invalid_signed_human_exception_approval_record",
+    "human_exception_not_approved",
+    "research_shadow_decision_snapshot_blocked",
+    "deployment_consistency_review_blocked",
+    "manual_approval_does_not_allow_training_queue"
+  ],
+  "decision": {
+    "pdf_advantages_covered_for_research_review": true,
+    "manual_review_required": true,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

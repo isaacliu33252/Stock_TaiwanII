@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_stress_regime_gate_shadow_backtest",
+  "generated_at": "2026-07-21T16:19:46",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "stress_regime_gate_shadow_only_no_model_training_no_live_action",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "panel_sha256": "66aa5e59dbe67b896a8b1b9846091596ad64aa766a5607eecf9e169b998ee0b8",
+    "baseline_shadow_backtest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_baseline_shadow_backtest.json",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "stress_return_quantile": 0.15,
+    "stress_vol_quantile": 0.85,
+    "stress_drawdown_quantile": 0.85,
+    "stress_benchmark": "0050.TW"
+  },
+  "summary": {
+    "baseline_positive_final_value_folds": 4,
+    "baseline_positive_sharpe_folds": 4,
+    "baseline_non_worse_drawdown_folds": 1,
+    "stress_gate": {
+      "fold_count": 6,
+      "available_fold_count": 6,
+      "positive_final_value_folds": 4,
+      "positive_sharpe_folds": 3,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": 0.005385718883544832,
+      "mean_delta_sharpe_ratio": 0.011436188393969962,
+      "mean_delta_max_drawdown": -0.0040651979854072024
+    },
+    "delta_stress_gate_minus_baseline": {
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": -1,
+      "non_worse_drawdown_folds": -1
+    },
+    "mean_stress_gate_rate": 0.45634920634920634,
+    "pass_stress_regime_gate": false
+  },
+  "fold_results": [
+    {
+      "fold": 1,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2023-05-30",
+      "test_start": "2023-06-07",
+      "test_end": "2023-12-07",
+      "test_days": 126,
+      "stress_gate_days": 37,
+      "stress_gate_rate": 0.29365079365079366,
+      "thresholds": {
+        "reward_low": -0.06232020510401975,
+        "reward_high": -0.025428230171918687,
+        "benchmark_return_5d_max": -0.018625157212557,
+        "benchmark_realized_volatility_min": 0.013421294120065742,
+        "benchmark_drawdown_depth_min": 0.1786511121931886
+      },
+      "stress_gate": {
+        "final_value": 1.0584903409762791,
+        "total_return": 0.05849034097627914,
+        "annual_return": 0.12040180194007966,
+        "annual_volatility": 0.1182795924514081,
+        "sharpe_ratio": 1.017942313163984,
+        "max_drawdown": -0.09549758584647294,
+        "worst_daily_return": -0.021899404413161527,
+        "mean_daily_turnover": 0.07957227957227958,
+        "total_turnover": 10.026107226107227
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.059621605790715,
+        "total_return": 0.05962160579071507,
+        "annual_return": 0.12279794745849348,
+        "annual_volatility": 0.1130394711049414,
+        "sharpe_ratio": 1.0863280432769602,
+        "max_drawdown": -0.09111523228221718,
+        "worst_daily_return": -0.01936394622395119,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": -0.0011312648144359283,
+        "sharpe_ratio": -0.06838573011297622,
+        "max_drawdown": -0.004382353564255759
+      }
+    },
+    {
+      "fold": 2,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2023-11-30",
+      "test_start": "2023-12-08",
+      "test_end": "2024-06-19",
+      "test_days": 126,
+      "stress_gate_days": 49,
+      "stress_gate_rate": 0.3888888888888889,
+      "thresholds": {
+        "reward_low": -0.06526638188361454,
+        "reward_high": -0.026102387645646215,
+        "benchmark_return_5d_max": -0.018722101575252177,
+        "benchmark_realized_volatility_min": 0.013162215962050425,
+        "benchmark_drawdown_depth_min": 0.18105263960988896
+      },
+      "stress_gate": {
+        "final_value": 1.1694611142485676,
+        "total_return": 0.16946111424856758,
+        "annual_return": 0.3676392977395013,
+        "annual_volatility": 0.09648356182427441,
+        "sharpe_ratio": 3.81038273036689,
+        "max_drawdown": -0.048020200398888324,
+        "worst_daily_return": -0.021822894335653816,
+        "mean_daily_turnover": 0.05296687439544582,
+        "total_turnover": 6.673826173826173
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.1547100123539007,
+        "total_return": 0.1547100123539007,
+        "annual_return": 0.3333552126303454,
+        "annual_volatility": 0.09015620427867266,
+        "sharpe_ratio": 3.697529363591496,
+        "max_drawdown": -0.04524303956781861,
+        "worst_daily_return": -0.0186171129367527,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.014751101894666885,
+        "sharpe_ratio": 0.11285336677539393,
+        "max_drawdown": -0.002777160831069714
+      }
+    },
+    {
+      "fold": 3,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2024-06-12",
+      "test_start": "2024-06-20",
+      "test_end": "2024-12-23",
+      "test_days": 126,
+      "stress_gate_days": 75,
+      "stress_gate_rate": 0.5952380952380952,
+      "thresholds": {
+        "reward_low": -0.06576817707511189,
+        "reward_high": -0.025386480275254128,
+        "benchmark_return_5d_max": -0.01844182870117836,
+        "benchmark_realized_volatility_min": 0.013276216584392202,
+        "benchmark_drawdown_depth_min": 0.17697366915251078
+      },
+      "stress_gate": {
+        "final_value": 0.9540802274635004,
+        "total_return": -0.04591977253649959,
+        "annual_return": -0.08973091956319534,
+        "annual_volatility": 0.1162145153661537,
+        "sharpe_ratio": -0.7721145614253326,
+        "max_drawdown": -0.08882182542241879,
+        "worst_daily_return": -0.04217256404257972,
+        "mean_daily_turnover": 0.04685473256901828,
+        "total_turnover": 5.903696303696304
+      },
+      "equal_weight_baseline": {
+        "final_value": 0.951236540702902,
+        "total_return": -0.04876345929709802,
+        "annual_return": -0.09514904363157628,
+        "annual_volatility": 0.11494504735082163,
+        "sharpe_ratio": -0.8277785413509262,
+        "max_drawdown": -0.08685616453187539,
+        "worst_daily_return": -0.04217256404257972,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.0028436867605984295,
+        "sharpe_ratio": 0.055663979925593576,
+        "max_drawdown": -0.001965660890543397
+      }
+    },
+    {
+      "fold": 4,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2024-12-16",
+      "test_start": "2024-12-24",
+      "test_end": "2025-07-04",
+      "test_days": 126,
+      "stress_gate_days": 65,
+      "stress_gate_rate": 0.5158730158730159,
+      "thresholds": {
+        "reward_low": -0.06783627226484501,
+        "reward_high": -0.026156413240034537,
+        "benchmark_return_5d_max": -0.01928956927870006,
+        "benchmark_realized_volatility_min": 0.013923662046000446,
+        "benchmark_drawdown_depth_min": 0.16940789473684215
+      },
+      "stress_gate": {
+        "final_value": 0.9232371195831868,
+        "total_return": -0.07676288041681323,
+        "annual_return": -0.14763322102374044,
+        "annual_volatility": 0.193691854718942,
+        "sharpe_ratio": -0.7622066567433344,
+        "max_drawdown": -0.17092538568211635,
+        "worst_daily_return": -0.06704733383502962,
+        "mean_daily_turnover": 0.05325076158409491,
+        "total_turnover": 6.709595959595959
+      },
+      "equal_weight_baseline": {
+        "final_value": 0.9339563893396428,
+        "total_return": -0.06604361066035724,
+        "annual_return": -0.12772546281165764,
+        "annual_volatility": 0.19170488584070974,
+        "sharpe_ratio": -0.6662608636786989,
+        "max_drawdown": -0.16386034082572787,
+        "worst_daily_return": -0.06704733383502962,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": -0.010719269756455985,
+        "sharpe_ratio": -0.09594579306463558,
+        "max_drawdown": -0.0070650448563884805
+      }
+    },
+    {
+      "fold": 5,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2025-06-27",
+      "test_start": "2025-07-07",
+      "test_end": "2026-01-06",
+      "test_days": 126,
+      "stress_gate_days": 24,
+      "stress_gate_rate": 0.19047619047619047,
+      "thresholds": {
+        "reward_low": -0.07131120681458374,
+        "reward_high": -0.027556775854808924,
+        "benchmark_return_5d_max": -0.01985103004021745,
+        "benchmark_realized_volatility_min": 0.014330449116940805,
+        "benchmark_drawdown_depth_min": 0.16937829209476796
+      },
+      "stress_gate": {
+        "final_value": 1.1317272024940435,
+        "total_return": 0.13172720249404346,
+        "annual_return": 0.2808064608649936,
+        "annual_volatility": 0.08002316958363022,
+        "sharpe_ratio": 3.509064466279729,
+        "max_drawdown": -0.04953206976249669,
+        "worst_daily_return": -0.01380722450026842,
+        "mean_daily_turnover": 0.05129068462401796,
+        "total_turnover": 6.462626262626263
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.114174535307627,
+        "total_return": 0.11417453530762689,
+        "annual_return": 0.24138489512796624,
+        "annual_volatility": 0.06873598775342114,
+        "sharpe_ratio": 3.511768769423874,
+        "max_drawdown": -0.04592055201778811,
+        "worst_daily_return": -0.013673891166935088,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.01755266718641657,
+        "sharpe_ratio": -0.0027043031441449372,
+        "max_drawdown": -0.003611517744708581
+      }
+    },
+    {
+      "fold": 6,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2025-12-29",
+      "test_start": "2026-01-07",
+      "test_end": "2026-07-17",
+      "test_days": 126,
+      "stress_gate_days": 95,
+      "stress_gate_rate": 0.753968253968254,
+      "thresholds": {
+        "reward_low": -0.07190656211668717,
+        "reward_high": -0.028575190726655538,
+        "benchmark_return_5d_max": -0.019580057217509623,
+        "benchmark_realized_volatility_min": 0.014259902334388133,
+        "benchmark_drawdown_depth_min": 0.16611842105263153
+      },
+      "stress_gate": {
+        "final_value": 1.2328197849857734,
+        "total_return": 0.23281978498577338,
+        "annual_return": 0.5198446222523685,
+        "annual_volatility": 0.15563210288335516,
+        "sharpe_ratio": 3.3402145998244803,
+        "max_drawdown": -0.06491106040424754,
+        "worst_daily_return": -0.025712412046519636,
+        "mean_daily_turnover": 0.01734006734006734,
+        "total_turnover": 2.1848484848484846
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.2238023929552944,
+        "total_return": 0.22380239295529436,
+        "annual_return": 0.4976922970031048,
+        "annual_volatility": 0.15205630494956382,
+        "sharpe_ratio": 3.2730789898398913,
+        "max_drawdown": -0.06032161037877026,
+        "worst_daily_return": -0.025712412046519636,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.009017392030479021,
+        "sharpe_ratio": 0.067135609984589,
+        "max_drawdown": -0.004589450025477282
+      }
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "non_worse_drawdown_folds_below_threshold:0<3",
+    "positive_sharpe_folds_below_threshold:3<4"
+  ],
+  "interpretation": [
+    "The stress gate falls back to equal weight only when lagged 0050 stress conditions are active.",
+    "Thresholds are computed per fold from the training window to avoid OOS leakage.",
+    "This report is a shadow diagnostic only and does not authorize live weights."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "stress_regime_gate_ready_for_review": true,
+    "stress_regime_gate_passed_shadow_gate": false,
+    "next_shadow_model_design_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

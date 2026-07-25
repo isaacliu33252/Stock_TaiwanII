@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_readiness_review",
+  "generated_at": "2026-07-21T22:48:00",
+  "as_of": "2026-07-21",
+  "status": "blocked",
+  "policy": "research_only_constrained_llm_feature_reward_proposals_no_live_policy",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2606.08450.pdf",
+    "title": "GIFT: LLM-Guided State-Reward Interface for Financial Reinforcement Learning",
+    "arxiv": "2606.08450v1",
+    "date_in_pdf": "2026-06-07",
+    "imported_concepts": [
+      "constrained_llm_state_feature_proposal_from_approved_financial_primitives",
+      "risk_rule_guided_reward_shaping_as_training_objective_audit",
+      "diagnostic_guided_refinement_using_rollout_metrics",
+      "freeze_interface_before_out_of_sample_evaluation",
+      "no_llm_query_or_prompt_update_at_test_time"
+    ],
+    "not_imported": [
+      "llm_trading_agent",
+      "ppo_live_allocator",
+      "generated_code_without_review",
+      "test_time_llm_updates",
+      "automatic_rebalance",
+      "automatic_target_weight_change"
+    ]
+  },
+  "allowed_shadow_scope": {
+    "llm_may_propose_features": true,
+    "feature_primitives_must_be_allowlisted": true,
+    "reward_terms_must_map_to_existing_risk_objectives": true,
+    "human_code_review_required": true,
+    "walk_forward_validation_required": true,
+    "interface_must_be_frozen_before_oos": true,
+    "llm_queries_allowed_at_test_time": false,
+    "llm_actions_allowed": false
+  },
+  "component_readiness": {
+    "rl_governance": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rl_governance_readiness_review.json",
+      "exists": true,
+      "status": "blocked",
+      "blocking_reasons": [
+        "adversarial_market_integrity_blocked",
+        "deployment_not_broker_actionable",
+        "dynamic_cvar_tail_cost_blocked",
+        "finstressts_decision_snapshot_blocked",
+        "intervention_fatigue_risk_budget_blocked",
+        "market_impact_not_ready_for_rl_promotion",
+        "market_impact_readiness_blocked",
+        "research_shadow_decision_snapshot_blocked",
+        "research_shadow_snapshot_blocked",
+        "risk_budget_pacing_not_ready_for_rl_promotion",
+        "synthetic_augmentation_validation_blocked",
+        "synthetic_validation_not_ready_for_rl_promotion",
+        "tail_cost_readiness_not_ready_for_rl_promotion"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      },
+      "key_metrics": {
+        "rl_governance_ready": false,
+        "rl_component_promotable": false,
+        "live_rl_allocator_allowed": false
+      }
+    },
+    "market_impact": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+      "exists": true,
+      "status": "blocked",
+      "blocking_reasons": [
+        "rebalance_review_disallows_auto_rebalance",
+        "turnover_exceeds_limit"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": null
+      },
+      "key_metrics": {
+        "market_impact_ready": null,
+        "turnover_guard_ready": null
+      }
+    },
+    "synthetic_augmentation_validation": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/synthetic_augmentation_validation_readiness_review.json",
+      "exists": true,
+      "status": "blocked",
+      "blocking_reasons": [
+        "finstressts_snapshot_blocked",
+        "hmm_wj_scenario_readiness_blocked",
+        "scenario_generator_not_decision_ready",
+        "dynamic_cvar_tail_cost_readiness_blocked",
+        "tail_cost_readiness_not_ready",
+        "density_tail_model_unstable_research_only"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": null
+      },
+      "key_metrics": {
+        "synthetic_validation_ready": false,
+        "directional_synthetic_alpha_allowed": false
+      }
+    },
+    "dynamic_cvar_tail_cost": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json",
+      "exists": true,
+      "status": "blocked",
+      "blocking_reasons": [
+        "cvar_tail_risk_diagnostic_research_only",
+        "00631l_hill_tail_index_positive_heavy_tail",
+        "density_tail_model_unstable_research_only",
+        "market_impact_readiness_blocked",
+        "market_impact_disallows_auto_rebalance",
+        "rebalance_review_disallows_auto_rebalance",
+        "rebalance_review_disallows_target_weight_change",
+        "systemic_bubble_disallows_00631l_add",
+        "hmm_wj_scenario_readiness_blocked",
+        "scenario_generator_not_decision_ready",
+        "dynamic_cvar_optimizer_not_implemented",
+        "taiwan_etf_walkforward_validation_missing"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": null
+      },
+      "key_metrics": {
+        "tail_cost_readiness_ready": false,
+        "dynamic_optimizer_ready": false
+      }
+    },
+    "deployment_consistency": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/deployment_consistency_review.json",
+      "exists": true,
+      "status": "blocked",
+      "blocking_reasons": [
+        "execution_plan_date_mismatch",
+        "source_freshness_not_ok"
+      ],
+      "decision": {
+        "promote_to_live": null,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": null
+      },
+      "key_metrics": {
+        "broker_actionable": false,
+        "manual_review_required": true
+      }
+    },
+    "research_shadow_decision_snapshot": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/research_shadow_decision_snapshot.json",
+      "exists": true,
+      "status": "blocked",
+      "blocking_reasons": [
+        "finstressts_snapshot_blocked",
+        "trigate_vol_memory_blocks_leverage_add",
+        "illiquidity_network_readiness_blocked",
+        "speculative_influence_network_readiness_blocked",
+        "sin_lite_proxy_blocked",
+        "hmm_wj_synthetic_scenario_readiness_blocked",
+        "dynamic_cvar_tail_cost_readiness_blocked",
+        "synthetic_augmentation_validation_readiness_blocked",
+        "intervention_fatigue_risk_budget_readiness_blocked",
+        "letf_tracking_error_effective_fee_readiness_blocked",
+        "asian_etf_tail_analytics_readiness_blocked",
+        "reduced_rank_correlation_readiness_blocked",
+        "rl_governance_readiness_blocked",
+        "llm_state_reward_interface_readiness_blocked"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "promotion_allowed": null,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      },
+      "key_metrics": {
+        "status": "blocked",
+        "allow_00631l_add": false
+      }
+    }
+  },
+  "blocking_reasons": [
+    "deployment_consistency_blocked",
+    "deployment_not_broker_actionable",
+    "dynamic_cvar_tail_cost_blocked",
+    "market_impact_blocked",
+    "market_impact_not_ready_for_reward_shaping",
+    "research_shadow_decision_snapshot_blocked",
+    "research_shadow_snapshot_blocked",
+    "rl_component_not_promotable_for_llm_interface",
+    "rl_governance_blocked",
+    "synthetic_augmentation_validation_blocked",
+    "synthetic_validation_not_ready_for_interface_search",
+    "tail_cost_not_ready_for_reward_shaping"
+  ],
+  "warning_reasons": [],
+  "decision": {
+    "llm_state_reward_interface_ready": false,
+    "feature_proposal_governance_imported": true,
+    "reward_shaping_governance_imported": true,
+    "diagnostic_refinement_governance_imported": true,
+    "live_llm_trading_allowed": false,
+    "live_ppo_allocator_allowed": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true,
+    "summary": "2606.08450 is useful for constrained research-interface governance only. Current GroupA+ gates block any live PPO/LLM allocator or weight change."
+  }
+}

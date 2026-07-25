@@ -1,0 +1,886 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_reduced_rank_correlation_proxy_param_sweep",
+  "generated_at": "2026-07-19T23:26:14",
+  "as_of": "2026-07-20",
+  "status": "blocked",
+  "policy": "research_only_parameter_sweep_no_live_weight_change",
+  "grid": {
+    "windows": [
+      21,
+      42,
+      63
+    ],
+    "min_histories": [
+      63,
+      84
+    ],
+    "analysis_lookbacks": [
+      252,
+      504
+    ],
+    "min_tickers_values": [
+      12,
+      20
+    ],
+    "max_stale_days": 10,
+    "candidate_count": 24,
+    "available_candidate_count": 24
+  },
+  "aggregate": {
+    "available_state_counts": {
+      "normal": 16,
+      "watch": 8
+    },
+    "manual_review_candidate_count": 8,
+    "normal_candidate_count": 16,
+    "watch_or_elevated_candidate_count": 8
+  },
+  "best_candidate": {
+    "params": {
+      "window": 42,
+      "min_history": 63,
+      "analysis_lookback": 504,
+      "min_tickers": 12,
+      "max_stale_days": 10
+    },
+    "status": "available_for_manual_review",
+    "blocking_reasons": [],
+    "warning_reasons": [
+      "daily_close_proxy_uses_holiday_ffill_limit_3",
+      "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+      "research_only_no_live_weight_change",
+      "stale_tickers_excluded_from_proxy",
+      "weak_cross_market_proxy_not_paper_equivalent"
+    ],
+    "score": {
+      "objective": 0.793736,
+      "state": "normal",
+      "usable_ticker_count": 35,
+      "snapshot_count": 463,
+      "distance_percentile": 0.692641,
+      "reduced_rank_mean_corr": -0.005076,
+      "manual_review_required": false
+    },
+    "decision": {
+      "promote_to_live": false,
+      "target_weight_change_allowed": false,
+      "allow_00631l_add": false,
+      "allow_00632r_open": false
+    }
+  },
+  "candidates": [
+    {
+      "params": {
+        "window": 42,
+        "min_history": 63,
+        "analysis_lookback": 504,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.793736,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 463,
+        "distance_percentile": 0.692641,
+        "reduced_rank_mean_corr": -0.005076,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 42,
+        "min_history": 63,
+        "analysis_lookback": 504,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.793736,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 463,
+        "distance_percentile": 0.692641,
+        "reduced_rank_mean_corr": -0.005076,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 42,
+        "min_history": 84,
+        "analysis_lookback": 504,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.793736,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 463,
+        "distance_percentile": 0.692641,
+        "reduced_rank_mean_corr": -0.005076,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 42,
+        "min_history": 84,
+        "analysis_lookback": 504,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.793736,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 463,
+        "distance_percentile": 0.692641,
+        "reduced_rank_mean_corr": -0.005076,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 63,
+        "min_history": 63,
+        "analysis_lookback": 504,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.77556,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 442,
+        "distance_percentile": 0.664399,
+        "reduced_rank_mean_corr": -0.005314,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 63,
+        "min_history": 63,
+        "analysis_lookback": 504,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.77556,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 442,
+        "distance_percentile": 0.664399,
+        "reduced_rank_mean_corr": -0.005314,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 63,
+        "min_history": 84,
+        "analysis_lookback": 504,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.77556,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 442,
+        "distance_percentile": 0.664399,
+        "reduced_rank_mean_corr": -0.005314,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 63,
+        "min_history": 84,
+        "analysis_lookback": 504,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.77556,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 442,
+        "distance_percentile": 0.664399,
+        "reduced_rank_mean_corr": -0.005314,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 21,
+        "min_history": 63,
+        "analysis_lookback": 504,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "reduced_rank_proxy_state:watch",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.555946,
+        "state": "watch",
+        "usable_ticker_count": 35,
+        "snapshot_count": 484,
+        "distance_percentile": 0.780538,
+        "reduced_rank_mean_corr": -0.003287,
+        "manual_review_required": true
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 21,
+        "min_history": 63,
+        "analysis_lookback": 504,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "reduced_rank_proxy_state:watch",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.555946,
+        "state": "watch",
+        "usable_ticker_count": 35,
+        "snapshot_count": 484,
+        "distance_percentile": 0.780538,
+        "reduced_rank_mean_corr": -0.003287,
+        "manual_review_required": true
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 21,
+        "min_history": 84,
+        "analysis_lookback": 504,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "reduced_rank_proxy_state:watch",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.555946,
+        "state": "watch",
+        "usable_ticker_count": 35,
+        "snapshot_count": 484,
+        "distance_percentile": 0.780538,
+        "reduced_rank_mean_corr": -0.003287,
+        "manual_review_required": true
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 21,
+        "min_history": 84,
+        "analysis_lookback": 504,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "reduced_rank_proxy_state:watch",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.555946,
+        "state": "watch",
+        "usable_ticker_count": 35,
+        "snapshot_count": 484,
+        "distance_percentile": 0.780538,
+        "reduced_rank_mean_corr": -0.003287,
+        "manual_review_required": true
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 42,
+        "min_history": 63,
+        "analysis_lookback": 252,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.542429,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 211,
+        "distance_percentile": 0.685714,
+        "reduced_rank_mean_corr": -0.005076,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 42,
+        "min_history": 63,
+        "analysis_lookback": 252,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.542429,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 211,
+        "distance_percentile": 0.685714,
+        "reduced_rank_mean_corr": -0.005076,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 42,
+        "min_history": 84,
+        "analysis_lookback": 252,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.542429,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 211,
+        "distance_percentile": 0.685714,
+        "reduced_rank_mean_corr": -0.005076,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 42,
+        "min_history": 84,
+        "analysis_lookback": 252,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.542429,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 211,
+        "distance_percentile": 0.685714,
+        "reduced_rank_mean_corr": -0.005076,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 63,
+        "min_history": 63,
+        "analysis_lookback": 252,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.525979,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 190,
+        "distance_percentile": 0.640212,
+        "reduced_rank_mean_corr": -0.005314,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 63,
+        "min_history": 63,
+        "analysis_lookback": 252,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.525979,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 190,
+        "distance_percentile": 0.640212,
+        "reduced_rank_mean_corr": -0.005314,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 63,
+        "min_history": 84,
+        "analysis_lookback": 252,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.525979,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 190,
+        "distance_percentile": 0.640212,
+        "reduced_rank_mean_corr": -0.005314,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 63,
+        "min_history": 84,
+        "analysis_lookback": 252,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.525979,
+        "state": "normal",
+        "usable_ticker_count": 35,
+        "snapshot_count": 190,
+        "distance_percentile": 0.640212,
+        "reduced_rank_mean_corr": -0.005314,
+        "manual_review_required": false
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 21,
+        "min_history": 63,
+        "analysis_lookback": 252,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "reduced_rank_proxy_state:watch",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.304944,
+        "state": "watch",
+        "usable_ticker_count": 35,
+        "snapshot_count": 232,
+        "distance_percentile": 0.770563,
+        "reduced_rank_mean_corr": -0.003287,
+        "manual_review_required": true
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 21,
+        "min_history": 63,
+        "analysis_lookback": 252,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "reduced_rank_proxy_state:watch",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.304944,
+        "state": "watch",
+        "usable_ticker_count": 35,
+        "snapshot_count": 232,
+        "distance_percentile": 0.770563,
+        "reduced_rank_mean_corr": -0.003287,
+        "manual_review_required": true
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 21,
+        "min_history": 84,
+        "analysis_lookback": 252,
+        "min_tickers": 12,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "reduced_rank_proxy_state:watch",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.304944,
+        "state": "watch",
+        "usable_ticker_count": 35,
+        "snapshot_count": 232,
+        "distance_percentile": 0.770563,
+        "reduced_rank_mean_corr": -0.003287,
+        "manual_review_required": true
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "params": {
+        "window": 21,
+        "min_history": 84,
+        "analysis_lookback": 252,
+        "min_tickers": 20,
+        "max_stale_days": 10
+      },
+      "status": "available_for_manual_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "daily_close_proxy_uses_holiday_ffill_limit_3",
+        "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+        "reduced_rank_proxy_state:watch",
+        "research_only_no_live_weight_change",
+        "stale_tickers_excluded_from_proxy",
+        "weak_cross_market_proxy_not_paper_equivalent"
+      ],
+      "score": {
+        "objective": 0.304944,
+        "state": "watch",
+        "usable_ticker_count": 35,
+        "snapshot_count": 232,
+        "distance_percentile": 0.770563,
+        "reduced_rank_mean_corr": -0.003287,
+        "manual_review_required": true
+      },
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    }
+  ],
+  "blocking_reasons": [
+    "reduced_rank_proxy_sweep_research_only",
+    "no_live_weight_change_allowed"
+  ],
+  "decision": {
+    "promotion_allowed": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

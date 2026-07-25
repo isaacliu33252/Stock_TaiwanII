@@ -1,0 +1,1353 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_feature_stability_review",
+  "generated_at": "2026-07-20T03:40:17",
+  "as_of": "2026-07-20",
+  "status": "available_for_manual_offline_review",
+  "policy": "feature_stability_review_only_no_model_training_no_live_action",
+  "inputs": {
+    "validation_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_proposal_validation_review.json",
+    "multi_ticker_smoke_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_multi_ticker_smoke_review.json",
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "0056.TW",
+      "00713.TW",
+      "00878.TW",
+      "00679B.TWO",
+      "00751B.TWO"
+    ],
+    "start": "2016-01-01",
+    "benchmark": "0050.TW",
+    "min_overlap": 240,
+    "min_finite_ratio": 0.95,
+    "zscore_window": 252,
+    "zscore_warning": 3.0,
+    "accepted_proposal_id": "gift_research_momentum_vol_drawdown_turnover_v1",
+    "accepted_proposal_found": true
+  },
+  "summary": {
+    "ticker_count": 8,
+    "available_ticker_count": 8,
+    "missing_tickers": [],
+    "tickers_with_stability_warnings": [
+      "0050.TW"
+    ],
+    "benchmark_relationship_warning_count": 1
+  },
+  "ticker_stability": [
+    {
+      "ticker": "0050.TW",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-17",
+        "rows": 2560
+      },
+      "column_stats": {
+        "relative_momentum": {
+          "finite_count": 2540,
+          "finite_ratio": 0.9921875,
+          "latest": -0.06663561344383184,
+          "latest_zscore": -2.07559345031156,
+          "mean": 0.017555107505818617,
+          "std": 0.05744548974418292,
+          "min": -0.25570028026635117,
+          "max": 0.27924276373306545,
+          "p05": -0.07264290194428949,
+          "p50": 0.016007909884602767,
+          "p95": 0.11360516009795556
+        },
+        "realized_volatility": {
+          "finite_count": 2540,
+          "finite_ratio": 0.9921875,
+          "latest": 0.021426372194600325,
+          "latest_zscore": 1.4003906384136626,
+          "mean": 0.010938318447952048,
+          "std": 0.005219215467833737,
+          "min": 0.0034230646195316508,
+          "max": 0.038124043565854665,
+          "p05": 0.005601769808114017,
+          "p50": 0.009579996658105779,
+          "p95": 0.020069614840408558
+        },
+        "drawdown_penalty": {
+          "finite_count": 2560,
+          "finite_ratio": 1.0,
+          "latest": 0.09896536076465001,
+          "latest_zscore": 3.1250437792177546,
+          "mean": 0.07337690880867194,
+          "std": 0.07330142845680962,
+          "min": -0.0,
+          "max": 0.25,
+          "p05": -0.0,
+          "p50": 0.047153516262097794,
+          "p95": 0.23073976748931105
+        },
+        "reward_proxy": {
+          "finite_count": 2560,
+          "finite_ratio": 1.0,
+          "latest": -0.09896536076465001,
+          "latest_zscore": -3.1250437792177546,
+          "mean": -0.07337690880867194,
+          "std": 0.07330142845680962,
+          "min": -0.25,
+          "max": -0.0,
+          "p05": -0.23073976748931108,
+          "p50": -0.047153516262097794,
+          "p95": 0.0
+        }
+      },
+      "warning_reasons": [
+        "latest_zscore_extreme:drawdown_penalty:3.1250",
+        "latest_zscore_extreme:reward_proxy:-3.1250"
+      ]
+    },
+    {
+      "ticker": "00631L.TW",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-17",
+        "rows": 2564
+      },
+      "column_stats": {
+        "relative_momentum": {
+          "finite_count": 2544,
+          "finite_ratio": 0.9921996879875195,
+          "latest": -0.1607097147884451,
+          "latest_zscore": -2.293251450930473,
+          "mean": 0.03725188773966353,
+          "std": 0.10781974604533551,
+          "min": -0.48588098550309544,
+          "max": 0.5636333201871984,
+          "p05": -0.1275052985884338,
+          "p50": 0.03743369793904827,
+          "p95": 0.2076659981343667
+        },
+        "realized_volatility": {
+          "finite_count": 2544,
+          "finite_ratio": 0.9921996879875195,
+          "latest": 0.0454054811585322,
+          "latest_zscore": 1.6640383413109756,
+          "mean": 0.020708780878812134,
+          "std": 0.010694845768152298,
+          "min": 0.006079467903438019,
+          "max": 0.08021631277459718,
+          "p05": 0.010121049706279268,
+          "p50": 0.01803421945741146,
+          "p95": 0.041706546189944675
+        },
+        "drawdown_penalty": {
+          "finite_count": 2564,
+          "finite_ratio": 1.0,
+          "latest": 0.22144243933828112,
+          "latest_zscore": 2.539585570259502,
+          "mean": 0.09260866263422707,
+          "std": 0.08778349525543899,
+          "min": -0.0,
+          "max": 0.25,
+          "p05": 0.0,
+          "p50": 0.06355601201589611,
+          "p95": 0.25
+        },
+        "reward_proxy": {
+          "finite_count": 2564,
+          "finite_ratio": 1.0,
+          "latest": -0.22144243933828112,
+          "latest_zscore": -2.539585570259502,
+          "mean": -0.09260866263422707,
+          "std": 0.08778349525543899,
+          "min": -0.25,
+          "max": -0.0,
+          "p05": -0.25,
+          "p50": -0.06355601201589611,
+          "p95": -0.0
+        }
+      },
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00632R.TW",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-17",
+        "rows": 2564
+      },
+      "column_stats": {
+        "relative_momentum": {
+          "finite_count": 2544,
+          "finite_ratio": 0.9921996879875195,
+          "latest": 0.07976073898636882,
+          "latest_zscore": 2.7984214911213305,
+          "mean": 0.027235689216480508,
+          "std": 0.5291021700783013,
+          "min": -0.22173915777705155,
+          "max": 6.152647604866294,
+          "p05": -0.09452858794882578,
+          "p50": -0.021095287169265953,
+          "p95": 0.0655678432932266
+        },
+        "realized_volatility": {
+          "finite_count": 2544,
+          "finite_ratio": 0.9921996879875195,
+          "latest": 0.023487489183115835,
+          "latest_zscore": 1.6360273467158066,
+          "mean": 0.020176359406496914,
+          "std": 0.11191532964576825,
+          "min": 0.003048133531839522,
+          "max": 1.2763766085899875,
+          "p05": 0.004724231018988418,
+          "p50": 0.008945881175463341,
+          "p95": 0.022191895589456806
+        },
+        "drawdown_penalty": {
+          "finite_count": 2564,
+          "finite_ratio": 1.0,
+          "latest": 0.25,
+          "latest_zscore": null,
+          "mean": 0.23298519927453637,
+          "std": 0.05299856571576429,
+          "min": -0.0,
+          "max": 0.25,
+          "p05": 0.09411081234051043,
+          "p50": 0.25,
+          "p95": 0.25
+        },
+        "reward_proxy": {
+          "finite_count": 2564,
+          "finite_ratio": 1.0,
+          "latest": -0.25,
+          "latest_zscore": null,
+          "mean": -0.23298519927453637,
+          "std": 0.05299856571576429,
+          "min": -0.25,
+          "max": -0.0,
+          "p05": -0.25,
+          "p50": -0.25,
+          "p95": -0.09411081234051046
+        }
+      },
+      "warning_reasons": []
+    },
+    {
+      "ticker": "0056.TW",
+      "data_range": {
+        "start": "2020-01-02",
+        "end": "2026-07-17",
+        "rows": 1587
+      },
+      "column_stats": {
+        "relative_momentum": {
+          "finite_count": 1567,
+          "finite_ratio": 0.9873976055450535,
+          "latest": -0.03882574368716363,
+          "latest_zscore": -1.3037284765425299,
+          "mean": 0.009279412419284669,
+          "std": 0.05422923030846641,
+          "min": -0.2455110126994121,
+          "max": 0.23885501080010463,
+          "p05": -0.08513317553108679,
+          "p50": 0.01061739891952418,
+          "p95": 0.08814728002480518
+        },
+        "realized_volatility": {
+          "finite_count": 1567,
+          "finite_ratio": 0.9873976055450535,
+          "latest": 0.016280600405848816,
+          "latest_zscore": 1.082937689520273,
+          "mean": 0.009408613428041147,
+          "std": 0.005344143810086186,
+          "min": 0.0027977172553417173,
+          "max": 0.036946885181502936,
+          "p05": 0.0046440876823041,
+          "p50": 0.0077483679413608685,
+          "p95": 0.020487117413464824
+        },
+        "drawdown_penalty": {
+          "finite_count": 1587,
+          "finite_ratio": 1.0,
+          "latest": 0.0610545658398054,
+          "latest_zscore": -0.820948729216158,
+          "mean": 0.10080041264679158,
+          "std": 0.07750382111118999,
+          "min": -0.0,
+          "max": 0.25,
+          "p05": 0.0002420484884255171,
+          "p50": 0.08776296408323014,
+          "p95": 0.25
+        },
+        "reward_proxy": {
+          "finite_count": 1587,
+          "finite_ratio": 1.0,
+          "latest": -0.0610545658398054,
+          "latest_zscore": 0.820948729216158,
+          "mean": -0.10080041264679158,
+          "std": 0.07750382111118999,
+          "min": -0.25,
+          "max": -0.0,
+          "p05": -0.25,
+          "p50": -0.08776296408323014,
+          "p95": -0.00024204848842551916
+        }
+      },
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00713.TW",
+      "data_range": {
+        "start": "2020-01-02",
+        "end": "2026-07-17",
+        "rows": 1587
+      },
+      "column_stats": {
+        "relative_momentum": {
+          "finite_count": 1567,
+          "finite_ratio": 0.9873976055450535,
+          "latest": -0.02350082244748375,
+          "latest_zscore": -1.2583594611709148,
+          "mean": 0.009165620279760105,
+          "std": 0.04386819698196876,
+          "min": -0.24898853536881993,
+          "max": 0.22254459287195405,
+          "p05": -0.06343613340668938,
+          "p50": 0.010880301589744068,
+          "p95": 0.07789869375320793
+        },
+        "realized_volatility": {
+          "finite_count": 1567,
+          "finite_ratio": 0.9873976055450535,
+          "latest": 0.007795327112708346,
+          "latest_zscore": 0.49885121013145073,
+          "mean": 0.007539137688964636,
+          "std": 0.004762250250743341,
+          "min": 0.002843952064845609,
+          "max": 0.03386595360230837,
+          "p05": 0.0034733317003371005,
+          "p50": 0.006355558367289219,
+          "p95": 0.016605402994863017
+        },
+        "drawdown_penalty": {
+          "finite_count": 1587,
+          "finite_ratio": 1.0,
+          "latest": 0.02350082244748375,
+          "latest_zscore": -2.0358387293266604,
+          "mean": 0.06919946082012791,
+          "std": 0.06053677547199725,
+          "min": -0.0,
+          "max": 0.25,
+          "p05": 0.0,
+          "p50": 0.0488929929337778,
+          "p95": 0.17318915289801518
+        },
+        "reward_proxy": {
+          "finite_count": 1587,
+          "finite_ratio": 1.0,
+          "latest": -0.02350082244748375,
+          "latest_zscore": 2.0358387293266604,
+          "mean": -0.06919946082012791,
+          "std": 0.06053677547199725,
+          "min": -0.25,
+          "max": -0.0,
+          "p05": -0.17318915289801518,
+          "p50": -0.0488929929337778,
+          "p95": -0.0
+        }
+      },
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00878.TW",
+      "data_range": {
+        "start": "2020-07-10",
+        "end": "2026-07-17",
+        "rows": 1464
+      },
+      "column_stats": {
+        "relative_momentum": {
+          "finite_count": 1444,
+          "finite_ratio": 0.9863387978142076,
+          "latest": -0.05524201972539622,
+          "latest_zscore": -1.332917839875537,
+          "mean": 0.012148009028758329,
+          "std": 0.048734221661837475,
+          "min": -0.19566200126128064,
+          "max": 0.23542517938142704,
+          "p05": -0.05538610934139518,
+          "p50": 0.009300350703762561,
+          "p95": 0.08149640552729791
+        },
+        "realized_volatility": {
+          "finite_count": 1444,
+          "finite_ratio": 0.9863387978142076,
+          "latest": 0.013146584247009296,
+          "latest_zscore": 0.6784410427746963,
+          "mean": 0.008218275248791419,
+          "std": 0.0048051211107744095,
+          "min": 0.0022193860002830486,
+          "max": 0.035594397875194944,
+          "p05": 0.00374749559557819,
+          "p50": 0.007134232296095755,
+          "p95": 0.017240294418979993
+        },
+        "drawdown_penalty": {
+          "finite_count": 1464,
+          "finite_ratio": 1.0,
+          "latest": 0.0677022138996527,
+          "latest_zscore": -0.46126214620142747,
+          "mean": 0.0774575731976158,
+          "std": 0.05632994856771356,
+          "min": -0.0,
+          "max": 0.25,
+          "p05": 0.0,
+          "p50": 0.0689585294450632,
+          "p95": 0.17564361086280186
+        },
+        "reward_proxy": {
+          "finite_count": 1464,
+          "finite_ratio": 1.0,
+          "latest": -0.0677022138996527,
+          "latest_zscore": 0.46126214620142747,
+          "mean": -0.0774575731976158,
+          "std": 0.05632994856771356,
+          "min": -0.25,
+          "max": -0.0,
+          "p05": -0.1756436108628019,
+          "p50": -0.0689585294450632,
+          "p95": -0.0
+        }
+      },
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00679B.TWO",
+      "data_range": {
+        "start": "2017-01-11",
+        "end": "2026-07-17",
+        "rows": 2309
+      },
+      "column_stats": {
+        "relative_momentum": {
+          "finite_count": 2289,
+          "finite_ratio": 0.9913382416630576,
+          "latest": -0.003328407897213115,
+          "latest_zscore": -0.43235403819561885,
+          "mean": -0.0025142747689994964,
+          "std": 0.03607366549024734,
+          "min": -0.15154505584449673,
+          "max": 0.22011723698570096,
+          "p05": -0.05702227069622327,
+          "p50": -0.0035541861339868364,
+          "p95": 0.05380465281273197
+        },
+        "realized_volatility": {
+          "finite_count": 2289,
+          "finite_ratio": 0.9913382416630576,
+          "latest": 0.005701624163188863,
+          "latest_zscore": -0.10639153813226125,
+          "mean": 0.007711801801162713,
+          "std": 0.003604224121332702,
+          "min": 0.003173240357514443,
+          "max": 0.034450920762172835,
+          "p05": 0.004193238364716055,
+          "p50": 0.007096937837378479,
+          "p95": 0.01210626805060763
+        },
+        "drawdown_penalty": {
+          "finite_count": 2309,
+          "finite_ratio": 1.0,
+          "latest": 0.25,
+          "latest_zscore": null,
+          "mean": 0.17027837953851763,
+          "std": 0.09403699479777647,
+          "min": -0.0,
+          "max": 0.25,
+          "p05": 0.01874343488192012,
+          "p50": 0.25,
+          "p95": 0.25
+        },
+        "reward_proxy": {
+          "finite_count": 2309,
+          "finite_ratio": 1.0,
+          "latest": -0.25,
+          "latest_zscore": null,
+          "mean": -0.17027837953851763,
+          "std": 0.09403699479777647,
+          "min": -0.25,
+          "max": -0.0,
+          "p05": -0.25,
+          "p50": -0.25,
+          "p95": -0.018743434881920124
+        }
+      },
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00751B.TWO",
+      "data_range": {
+        "start": "2020-01-02",
+        "end": "2026-07-17",
+        "rows": 1587
+      },
+      "column_stats": {
+        "relative_momentum": {
+          "finite_count": 1567,
+          "finite_ratio": 0.9873976055450535,
+          "latest": -0.025418407629867912,
+          "latest_zscore": -1.4534591024775234,
+          "mean": -0.004278825302339143,
+          "std": 0.039497659848271346,
+          "min": -0.21815224570314795,
+          "max": 0.28995324662326794,
+          "p05": -0.06714759361386884,
+          "p50": -0.002881238715966128,
+          "p95": 0.0560024845570479
+        },
+        "realized_volatility": {
+          "finite_count": 1567,
+          "finite_ratio": 0.9873976055450535,
+          "latest": 0.006138189471241248,
+          "latest_zscore": 0.48525022101805554,
+          "mean": 0.007594869690347199,
+          "std": 0.004629532104162609,
+          "min": 0.0032839601225892676,
+          "max": 0.04221166989645735,
+          "p05": 0.00435175191549957,
+          "p50": 0.006589067133290168,
+          "p95": 0.011768748944924195
+        },
+        "drawdown_penalty": {
+          "finite_count": 1587,
+          "finite_ratio": 1.0,
+          "latest": 0.25,
+          "latest_zscore": null,
+          "mean": 0.2050519161790645,
+          "std": 0.07287961344756312,
+          "min": -0.0,
+          "max": 0.25,
+          "p05": 0.052118372673489725,
+          "p50": 0.25,
+          "p95": 0.25
+        },
+        "reward_proxy": {
+          "finite_count": 1587,
+          "finite_ratio": 1.0,
+          "latest": -0.25,
+          "latest_zscore": null,
+          "mean": -0.2050519161790645,
+          "std": 0.07287961344756312,
+          "min": -0.25,
+          "max": -0.0,
+          "p05": -0.25,
+          "p50": -0.25,
+          "p95": -0.052118372673489954
+        }
+      },
+      "warning_reasons": []
+    }
+  ],
+  "cross_ticker_correlations": [
+    {
+      "column": "return",
+      "pairs": [
+        {
+          "left": "0050.TW",
+          "right": "00631L.TW",
+          "overlap_rows": 2558,
+          "correlation": 0.9641117355384909
+        },
+        {
+          "left": "0050.TW",
+          "right": "00632R.TW",
+          "overlap_rows": 2558,
+          "correlation": -0.06175848479875322
+        },
+        {
+          "left": "0050.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1586,
+          "correlation": 0.7596378716580192
+        },
+        {
+          "left": "0050.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1586,
+          "correlation": 0.6514813373897471
+        },
+        {
+          "left": "0050.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1463,
+          "correlation": 0.7504117855787776
+        },
+        {
+          "left": "0050.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2308,
+          "correlation": -0.10760143320513077
+        },
+        {
+          "left": "0050.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1586,
+          "correlation": 0.15741354594257428
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00632R.TW",
+          "overlap_rows": 2563,
+          "correlation": -0.07280110764674255
+        },
+        {
+          "left": "00631L.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1586,
+          "correlation": 0.814377896079549
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1586,
+          "correlation": 0.7148329489576343
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1463,
+          "correlation": 0.8089122798080841
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2308,
+          "correlation": -0.09422279800870813
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1586,
+          "correlation": 0.18178062171626447
+        },
+        {
+          "left": "00632R.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1586,
+          "correlation": -0.051619645278244114
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1586,
+          "correlation": -0.03364041821827133
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1463,
+          "correlation": -0.03664031243802036
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2308,
+          "correlation": 0.026502238177224025
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1586,
+          "correlation": 0.007965363675711315
+        },
+        {
+          "left": "0056.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1586,
+          "correlation": 0.7439523677297543
+        },
+        {
+          "left": "0056.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1463,
+          "correlation": 0.8470125292462987
+        },
+        {
+          "left": "0056.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1586,
+          "correlation": -0.027589565737509612
+        },
+        {
+          "left": "0056.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1586,
+          "correlation": 0.18552544913697835
+        },
+        {
+          "left": "00713.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1463,
+          "correlation": 0.7471232679450877
+        },
+        {
+          "left": "00713.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1586,
+          "correlation": -0.009045252679783252
+        },
+        {
+          "left": "00713.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1586,
+          "correlation": 0.25509153081847596
+        },
+        {
+          "left": "00878.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1463,
+          "correlation": 0.016774911903370222
+        },
+        {
+          "left": "00878.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1463,
+          "correlation": 0.16163243329046223
+        },
+        {
+          "left": "00679B.TWO",
+          "right": "00751B.TWO",
+          "overlap_rows": 1586,
+          "correlation": 0.7833853135596299
+        }
+      ],
+      "summary": {
+        "pair_count": 28,
+        "finite_pair_count": 28,
+        "max_abs_correlation": 0.9641117355384909,
+        "min_correlation": -0.10760143320513077,
+        "max_correlation": 0.9641117355384909
+      }
+    },
+    {
+      "column": "relative_momentum",
+      "pairs": [
+        {
+          "left": "0050.TW",
+          "right": "00631L.TW",
+          "overlap_rows": 2539,
+          "correlation": 0.973872116171167
+        },
+        {
+          "left": "0050.TW",
+          "right": "00632R.TW",
+          "overlap_rows": 2539,
+          "correlation": -0.09100782212109361
+        },
+        {
+          "left": "0050.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1567,
+          "correlation": 0.7521819027844244
+        },
+        {
+          "left": "0050.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1567,
+          "correlation": 0.615102222244004
+        },
+        {
+          "left": "0050.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1444,
+          "correlation": 0.7194388349424087
+        },
+        {
+          "left": "0050.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2289,
+          "correlation": -0.052772984043684634
+        },
+        {
+          "left": "0050.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.32773631100781336
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00632R.TW",
+          "overlap_rows": 2544,
+          "correlation": -0.11486017847425659
+        },
+        {
+          "left": "00631L.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1567,
+          "correlation": 0.8041900537254925
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1567,
+          "correlation": 0.6931989342265864
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1444,
+          "correlation": 0.7689530879020444
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2289,
+          "correlation": -0.03963267280060207
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.3740102395762645
+        },
+        {
+          "left": "00632R.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1567,
+          "correlation": -0.11344281073007174
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1567,
+          "correlation": -0.126434210525502
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1444,
+          "correlation": -0.1197635477935811
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2289,
+          "correlation": 0.0185682008575655
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": -0.012507569028492557
+        },
+        {
+          "left": "0056.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1567,
+          "correlation": 0.7574367501002515
+        },
+        {
+          "left": "0056.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1444,
+          "correlation": 0.8481105985245355
+        },
+        {
+          "left": "0056.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.037132409824722
+        },
+        {
+          "left": "0056.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.35659363812102096
+        },
+        {
+          "left": "00713.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1444,
+          "correlation": 0.6601973144518251
+        },
+        {
+          "left": "00713.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1567,
+          "correlation": -0.012700057926799638
+        },
+        {
+          "left": "00713.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.38605900800724235
+        },
+        {
+          "left": "00878.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1444,
+          "correlation": 0.05387295406816684
+        },
+        {
+          "left": "00878.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1444,
+          "correlation": 0.1829395764862959
+        },
+        {
+          "left": "00679B.TWO",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.7308173796066973
+        }
+      ],
+      "summary": {
+        "pair_count": 28,
+        "finite_pair_count": 28,
+        "max_abs_correlation": 0.973872116171167,
+        "min_correlation": -0.126434210525502,
+        "max_correlation": 0.973872116171167
+      }
+    },
+    {
+      "column": "realized_volatility",
+      "pairs": [
+        {
+          "left": "0050.TW",
+          "right": "00631L.TW",
+          "overlap_rows": 2539,
+          "correlation": 0.9717136226136651
+        },
+        {
+          "left": "0050.TW",
+          "right": "00632R.TW",
+          "overlap_rows": 2539,
+          "correlation": 0.04569029704458061
+        },
+        {
+          "left": "0050.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1567,
+          "correlation": 0.8271016036608455
+        },
+        {
+          "left": "0050.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1567,
+          "correlation": 0.7104702620952901
+        },
+        {
+          "left": "0050.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1444,
+          "correlation": 0.8064583178687701
+        },
+        {
+          "left": "0050.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2289,
+          "correlation": 0.4676123091275944
+        },
+        {
+          "left": "0050.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.45802473134452526
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00632R.TW",
+          "overlap_rows": 2544,
+          "correlation": 0.04153130470082011
+        },
+        {
+          "left": "00631L.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1567,
+          "correlation": 0.8585344336070847
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1567,
+          "correlation": 0.7786588132247931
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1444,
+          "correlation": 0.8437855044348332
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2289,
+          "correlation": 0.4936831036712019
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.4943704730873668
+        },
+        {
+          "left": "00632R.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1567,
+          "correlation": -0.030858154926283243
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1567,
+          "correlation": -0.0054560228269155756
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1444,
+          "correlation": 0.0029161858038401467
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2289,
+          "correlation": 0.00851760807831504
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": -0.00860876532657503
+        },
+        {
+          "left": "0056.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1567,
+          "correlation": 0.7706707786998138
+        },
+        {
+          "left": "0056.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1444,
+          "correlation": 0.8725249985668209
+        },
+        {
+          "left": "0056.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.42275522940106086
+        },
+        {
+          "left": "0056.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.4806723281386098
+        },
+        {
+          "left": "00713.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1444,
+          "correlation": 0.7597467625671545
+        },
+        {
+          "left": "00713.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.5164186389680749
+        },
+        {
+          "left": "00713.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.5759282755612642
+        },
+        {
+          "left": "00878.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1444,
+          "correlation": 0.232220165669025
+        },
+        {
+          "left": "00878.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1444,
+          "correlation": 0.3026051963727216
+        },
+        {
+          "left": "00679B.TWO",
+          "right": "00751B.TWO",
+          "overlap_rows": 1567,
+          "correlation": 0.8960317891316951
+        }
+      ],
+      "summary": {
+        "pair_count": 28,
+        "finite_pair_count": 28,
+        "max_abs_correlation": 0.9717136226136651,
+        "min_correlation": -0.030858154926283243,
+        "max_correlation": 0.9717136226136651
+      }
+    },
+    {
+      "column": "reward_proxy",
+      "pairs": [
+        {
+          "left": "0050.TW",
+          "right": "00631L.TW",
+          "overlap_rows": 2559,
+          "correlation": 0.8538347496698822
+        },
+        {
+          "left": "0050.TW",
+          "right": "00632R.TW",
+          "overlap_rows": 2559,
+          "correlation": 0.08923528734741526
+        },
+        {
+          "left": "0050.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1587,
+          "correlation": 0.6069679313237696
+        },
+        {
+          "left": "0050.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1587,
+          "correlation": 0.47113178422665947
+        },
+        {
+          "left": "0050.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1464,
+          "correlation": 0.584526941697466
+        },
+        {
+          "left": "0050.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2309,
+          "correlation": 0.25728912429370704
+        },
+        {
+          "left": "0050.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1587,
+          "correlation": 0.300592423537638
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00632R.TW",
+          "overlap_rows": 2564,
+          "correlation": -0.08816715237869106
+        },
+        {
+          "left": "00631L.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1587,
+          "correlation": 0.7657762324816061
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1587,
+          "correlation": 0.602797253102537
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1464,
+          "correlation": 0.7288519143205575
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2309,
+          "correlation": 0.3033698701260785
+        },
+        {
+          "left": "00631L.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1587,
+          "correlation": 0.32197081672335515
+        },
+        {
+          "left": "00632R.TW",
+          "right": "0056.TW",
+          "overlap_rows": 1587,
+          "correlation": -0.20351555057991697
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1587,
+          "correlation": -0.1338441617014955
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1464,
+          "correlation": -0.17920444333424007
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 2309,
+          "correlation": -0.18320839199669683
+        },
+        {
+          "left": "00632R.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1587,
+          "correlation": -0.16250249878232365
+        },
+        {
+          "left": "0056.TW",
+          "right": "00713.TW",
+          "overlap_rows": 1587,
+          "correlation": 0.8693429344219608
+        },
+        {
+          "left": "0056.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1464,
+          "correlation": 0.8859481212398382
+        },
+        {
+          "left": "0056.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1587,
+          "correlation": 0.3013803163288286
+        },
+        {
+          "left": "0056.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1587,
+          "correlation": 0.4294674227159475
+        },
+        {
+          "left": "00713.TW",
+          "right": "00878.TW",
+          "overlap_rows": 1464,
+          "correlation": 0.8315538687822004
+        },
+        {
+          "left": "00713.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1587,
+          "correlation": 0.2173057593051328
+        },
+        {
+          "left": "00713.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1587,
+          "correlation": 0.3920121971839484
+        },
+        {
+          "left": "00878.TW",
+          "right": "00679B.TWO",
+          "overlap_rows": 1464,
+          "correlation": 0.2229333744276638
+        },
+        {
+          "left": "00878.TW",
+          "right": "00751B.TWO",
+          "overlap_rows": 1464,
+          "correlation": 0.3791848095794306
+        },
+        {
+          "left": "00679B.TWO",
+          "right": "00751B.TWO",
+          "overlap_rows": 1587,
+          "correlation": 0.8883253236285474
+        }
+      ],
+      "summary": {
+        "pair_count": 28,
+        "finite_pair_count": 28,
+        "max_abs_correlation": 0.8883253236285474,
+        "min_correlation": -0.20351555057991697,
+        "max_correlation": 0.8883253236285474
+      }
+    }
+  ],
+  "benchmark_relationships": {
+    "benchmark": "0050.TW",
+    "relationships": [
+      {
+        "ticker": "00631L.TW",
+        "overlap_rows": 2558,
+        "return_correlation_to_benchmark": 0.9641117355384909,
+        "return_beta_to_benchmark": 1.8549426919994487,
+        "relationship": "high_positive_benchmark_correlation"
+      },
+      {
+        "ticker": "00632R.TW",
+        "overlap_rows": 2558,
+        "return_correlation_to_benchmark": -0.06175848479875322,
+        "return_beta_to_benchmark": -0.5751915925033152,
+        "relationship": "neutral_or_low_overlap"
+      },
+      {
+        "ticker": "0056.TW",
+        "overlap_rows": 1586,
+        "return_correlation_to_benchmark": 0.7596378716580192,
+        "return_beta_to_benchmark": 0.5947785613660183,
+        "relationship": "neutral_or_low_overlap"
+      },
+      {
+        "ticker": "00713.TW",
+        "overlap_rows": 1586,
+        "return_correlation_to_benchmark": 0.6514813373897471,
+        "return_beta_to_benchmark": 0.4175294910190784,
+        "relationship": "neutral_or_low_overlap"
+      },
+      {
+        "ticker": "00878.TW",
+        "overlap_rows": 1463,
+        "return_correlation_to_benchmark": 0.7504117855787776,
+        "return_beta_to_benchmark": 0.5301127111435529,
+        "relationship": "neutral_or_low_overlap"
+      },
+      {
+        "ticker": "00679B.TWO",
+        "overlap_rows": 2308,
+        "return_correlation_to_benchmark": -0.10760143320513077,
+        "return_beta_to_benchmark": -0.07311533256744844,
+        "relationship": "neutral_or_low_overlap"
+      },
+      {
+        "ticker": "00751B.TWO",
+        "overlap_rows": 1586,
+        "return_correlation_to_benchmark": 0.15741354594257428,
+        "return_beta_to_benchmark": 0.10001607939751118,
+        "relationship": "neutral_or_low_overlap"
+      }
+    ],
+    "warning_reasons": [
+      "00631L.TW:high_positive_benchmark_correlation"
+    ]
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "0050.TW:latest_zscore_extreme:drawdown_penalty:3.1250",
+    "0050.TW:latest_zscore_extreme:reward_proxy:-3.1250",
+    "00631L.TW:high_positive_benchmark_correlation"
+  ],
+  "interpretation": [
+    "High positive benchmark correlation is expected for 00631L-like exposure, but it means LLM reward proposals must not treat it as a diversifier.",
+    "High negative benchmark correlation is expected for 00632R-like exposure, but it means reward shaping must not auto-open hedge exposure.",
+    "Feature stability availability is a research-control improvement only; it is not live strategy approval."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "feature_stability_ready_for_research_review": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

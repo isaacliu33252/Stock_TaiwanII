@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_sample_proposals",
+  "generated_at": "2026-07-21T12:21:58",
+  "proposals": [
+    {
+      "proposal_id": "gift_research_momentum_vol_drawdown_turnover_v1",
+      "description": "Research-only feature/reward interface using momentum and volatility features.",
+      "feature_families": [
+        "momentum",
+        "volatility"
+      ],
+      "feature_primitives": [
+        "relative_momentum",
+        "realized_volatility"
+      ],
+      "reward_terms": [
+        "drawdown_penalty",
+        "turnover_penalty"
+      ],
+      "validation_flags": {
+        "preserves_raw_market_input": true,
+        "appends_features_only": true,
+        "outputs_actions": false,
+        "outputs_target_weights": false,
+        "references_future_data": false,
+        "returns_finite_numeric_values": true,
+        "parameters_clipped_to_allowed_ranges": true,
+        "includes_human_review_note": true,
+        "includes_walk_forward_plan": true,
+        "freezes_interface_before_oos": true,
+        "uses_test_time_llm_queries": false,
+        "executes_generated_code_live": false,
+        "uses_high_frequency_order_book": false,
+        "uses_synthetic_alpha_without_validation": false,
+        "ignores_market_impact_for_turnover": false
+      },
+      "requested_live_effects": {
+        "promote_to_live": false,
+        "target_weight_change": false,
+        "auto_rebalance": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+      "description": "Research-only downside/tail interface using downside risk, volatility, and LETF tail-decay reward terms for offline diagnostics.",
+      "feature_families": [
+        "downside_risk",
+        "volatility",
+        "trend_strength"
+      ],
+      "feature_primitives": [
+        "downside_deviation",
+        "realized_volatility",
+        "drawdown_depth",
+        "ema_cross_strength"
+      ],
+      "reward_terms": [
+        "drawdown_penalty",
+        "volatility_scaling",
+        "letf_tail_decay_cost"
+      ],
+      "validation_flags": {
+        "preserves_raw_market_input": true,
+        "appends_features_only": true,
+        "outputs_actions": false,
+        "outputs_target_weights": false,
+        "references_future_data": false,
+        "returns_finite_numeric_values": true,
+        "parameters_clipped_to_allowed_ranges": true,
+        "includes_human_review_note": true,
+        "includes_walk_forward_plan": true,
+        "freezes_interface_before_oos": true,
+        "uses_test_time_llm_queries": false,
+        "executes_generated_code_live": false,
+        "uses_high_frequency_order_book": false,
+        "uses_synthetic_alpha_without_validation": false,
+        "ignores_market_impact_for_turnover": false
+      },
+      "requested_live_effects": {
+        "promote_to_live": false,
+        "target_weight_change": false,
+        "auto_rebalance": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "proposal_id": "gift_research_high_dividend_active_pain_v1",
+      "description": "Research-only redesign proposal from drawdown event audit. It adds lagged high-dividend bucket active-pain features versus equal weight so reward shaping can penalize concentrated high-dividend overweights during drawdown failure regimes.",
+      "feature_families": [
+        "bucket_active_pain",
+        "downside_risk",
+        "volatility"
+      ],
+      "feature_primitives": [
+        "active_bucket_weight",
+        "active_bucket_return_contribution",
+        "active_bucket_drawdown_depth",
+        "reward_signal_concentration_hhi",
+        "high_dividend_active_pain",
+        "drawdown_depth",
+        "realized_volatility"
+      ],
+      "reward_terms": [
+        "active_bucket_drawdown_penalty",
+        "drawdown_penalty",
+        "concentration_penalty"
+      ],
+      "validation_flags": {
+        "preserves_raw_market_input": true,
+        "appends_features_only": true,
+        "outputs_actions": false,
+        "outputs_target_weights": false,
+        "references_future_data": false,
+        "returns_finite_numeric_values": true,
+        "parameters_clipped_to_allowed_ranges": true,
+        "includes_human_review_note": true,
+        "includes_walk_forward_plan": true,
+        "freezes_interface_before_oos": true,
+        "uses_test_time_llm_queries": false,
+        "executes_generated_code_live": false,
+        "uses_high_frequency_order_book": false,
+        "uses_synthetic_alpha_without_validation": false,
+        "ignores_market_impact_for_turnover": false
+      },
+      "requested_live_effects": {
+        "promote_to_live": false,
+        "target_weight_change": false,
+        "auto_rebalance": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "proposal_id": "gift_reject_live_00631l_target_weight_v1",
+      "description": "Invalid proposal that tries to output live 00631L target weight.",
+      "feature_families": [
+        "momentum",
+        "volatility"
+      ],
+      "feature_primitives": [
+        "relative_momentum",
+        "realized_volatility"
+      ],
+      "reward_terms": [
+        "drawdown_penalty",
+        "turnover_penalty"
+      ],
+      "validation_flags": {
+        "preserves_raw_market_input": true,
+        "appends_features_only": false,
+        "outputs_actions": true,
+        "outputs_target_weights": true,
+        "references_future_data": false,
+        "returns_finite_numeric_values": true,
+        "parameters_clipped_to_allowed_ranges": true,
+        "includes_human_review_note": false,
+        "includes_walk_forward_plan": false,
+        "freezes_interface_before_oos": false,
+        "uses_test_time_llm_queries": true,
+        "executes_generated_code_live": true,
+        "uses_high_frequency_order_book": false,
+        "uses_synthetic_alpha_without_validation": false,
+        "ignores_market_impact_for_turnover": true
+      },
+      "requested_live_effects": {
+        "promote_to_live": true,
+        "target_weight_change": true,
+        "auto_rebalance": true,
+        "allow_00631l_add": true,
+        "allow_00632r_open": false
+      }
+    }
+  ]
+}

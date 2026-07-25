@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_final_governance_snapshot",
+  "generated_at": "2026-07-22T23:56:42",
+  "as_of": "2026-07-23",
+  "actual_data_date": "2026-07-22",
+  "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+  "daily_status": {
+    "overall_status": "warn",
+    "status_stage": "final",
+    "check_date": "2026-07-22",
+    "source_pointer": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/daily_status.json",
+    "source_payload": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/daily/json/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260722_20260722_230430.json"
+  },
+  "ops_health": {
+    "status": "warning",
+    "pipeline_status": "ok",
+    "pipeline_date_stamp": "20260722",
+    "pipeline_errors": [],
+    "pipeline_missing_outputs": [],
+    "final_daily_status": {
+      "status": "ok",
+      "required": true,
+      "errors": [],
+      "warnings": [],
+      "final_output": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_daily_status_final_20260722.json",
+      "final_output_status_stage": "final",
+      "latest_pointer": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/daily_status.json",
+      "latest_payload": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/daily/json/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260722_20260722_230430.json",
+      "latest_payload_status_stage": "final"
+    }
+  },
+  "promotion_gate": {
+    "decision": "blocked_model_gates_manual_approval_pending",
+    "blocking_gates": [
+      "panel_drift",
+      "multi_window"
+    ],
+    "deployment_summary_gate_status": "pass",
+    "deployment_summary_gate_blocking_reasons": [],
+    "deployment_consistency_gate_status": "pass",
+    "deployment_consistency_blocking_reasons": []
+  },
+  "promotion_blocked_diagnostic": {
+    "status": "blocked",
+    "summary": {
+      "panel_drift_failed": true,
+      "multi_window_failed": true,
+      "deployment_consistency_failed": false,
+      "deployment_summary_failed": false,
+      "manual_approval_pending": true,
+      "metrics_status": "fail",
+      "deployment_summary_gate_status": "pass"
+    },
+    "metrics_top_failures": [
+      {
+        "variant": "best_by_final_value",
+        "promotion_objective_status": "fail:final_value_floor",
+        "final_value": 2086215.922626549,
+        "final_value_floor": 2095951.368040168,
+        "delta_final": -52509.9631287246,
+        "sharpe_non_worse_pass": true,
+        "max_drawdown_non_worse_pass": true
+      },
+      {
+        "variant": "top_by_final_value",
+        "promotion_objective_status": "fail:final_value_floor",
+        "final_value": 2086215.922626549,
+        "final_value_floor": 2095951.368040168,
+        "delta_final": -52509.9631287246,
+        "sharpe_non_worse_pass": true,
+        "max_drawdown_non_worse_pass": true
+      },
+      {
+        "variant": "top_by_sharpe",
+        "promotion_objective_status": "fail:final_value_floor",
+        "final_value": 2086215.922626549,
+        "final_value_floor": 2095951.368040168,
+        "delta_final": -52509.9631287246,
+        "sharpe_non_worse_pass": true,
+        "max_drawdown_non_worse_pass": true
+      }
+    ],
+    "panel_drift_failed_checks": [
+      {
+        "name": "ensemble_prob_up",
+        "tier": "diagnostic",
+        "max_abs_delta": 0.24570435280144232,
+        "limit": 0.15,
+        "max_abs_delta_date": "2025-05-09"
+      },
+      {
+        "name": "h20_prob_up",
+        "tier": "trigger_critical",
+        "max_abs_delta": 0.26368676066031893,
+        "limit": 0.15,
+        "max_abs_delta_date": "2025-09-18"
+      },
+      {
+        "name": "confidence",
+        "tier": "trigger_critical",
+        "max_abs_delta": 0.49140870560288463,
+        "limit": 0.28,
+        "max_abs_delta_date": "2025-05-09"
+      }
+    ],
+    "multi_window_reason": "no candidate passed the multi-window gate",
+    "deployment_consistency_blocking_reasons": []
+  },
+  "multi_window_failure_attribution": {
+    "status": "blocked",
+    "source_decision": "research_only_no_multi_window_pass",
+    "nearest_candidates": [
+      "garch_guard_frozen",
+      "garch_selector_frozen",
+      "shadow_2008_candidate"
+    ],
+    "top_failure_reasons": [
+      {
+        "reason": "final_value_drag",
+        "count": 4
+      },
+      {
+        "reason": "max_drawdown_worse",
+        "count": 3
+      },
+      {
+        "reason": "sharpe_delta",
+        "count": 2
+      }
+    ]
+  },
+  "panel_drift_triage": {
+    "status": "blocked",
+    "exceeded_columns": [
+      "ensemble_prob_up",
+      "h20_prob_up",
+      "confidence"
+    ],
+    "trigger_critical_exceeded": [
+      "h20_prob_up",
+      "confidence"
+    ],
+    "source_hypotheses": [
+      "model_set_changed",
+      "panel_method_schema_changed",
+      "external_feature_sensitivity_visible",
+      "horizon_ensemble_or_confidence_blend_check_needed"
+    ],
+    "top_exceed_months": [
+      {
+        "month": "2026-01",
+        "exceed_count": 8
+      },
+      {
+        "month": "2025-03",
+        "exceed_count": 7
+      },
+      {
+        "month": "2025-05",
+        "exceed_count": 5
+      },
+      {
+        "month": "2025-09",
+        "exceed_count": 4
+      },
+      {
+        "month": "2025-06",
+        "exceed_count": 2
+      }
+    ]
+  },
+  "panel_drift_resolution_progress": {
+    "status": "blocked",
+    "unresolved_action_ids": [
+      "quantify_external_feature_sensitivity"
+    ],
+    "remaining_observation_sessions": 2,
+    "remaining_stable_observation_sessions": 3,
+    "external_sensitivity_status": "blocked_observation_required"
+  },
+  "external_sensitivity_observation_log": {
+    "observation_count": 1,
+    "valid_observation_count": 1,
+    "stable_observation_count": 0,
+    "latest_observation_date": "2026-07-22",
+    "latest_trigger_critical_exceeded": [
+      "h20_prob_up",
+      "confidence"
+    ]
+  },
+  "deployment_summary": {
+    "status": "manual_review_required",
+    "broker_actionable": true,
+    "consistency_review_status": "ok",
+    "blocking_reasons": [],
+    "warning_reasons": [
+      "source_freshness_soft_warning",
+      "gift_signed_approval_record_missing_or_invalid",
+      "gift_human_exception_not_approved",
+      "gift_signed_approval_manual_completion_pending"
+    ],
+    "target_weights": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.19867,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.30133000000000004
+    },
+    "final_target_shares": {
+      "0050.TW": 3257,
+      "00631L.TW": 0,
+      "00632R.TW": 0,
+      "00679B.TWO": 0
+    },
+    "execution_plan_cash": {
+      "current_cash_input": 1000000.0,
+      "cash_assumption": "workbook has no cash field; using explicit --cash-balance input",
+      "nonzero_trade_count": 2,
+      "cash_source_explicit": true,
+      "execution_plan_allowed": true,
+      "manual_confirmation_required": false
+    }
+  },
+  "decision": {
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "daily_status": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/daily_status.json",
+    "ops_health": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/ops_health.json",
+    "promotion_gate": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_promotion_gate_20260722.json",
+    "promotion_blocked_diagnostic": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/promotion_blocked_diagnostic.json",
+    "multi_window_failure_attribution": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/multi_window_failure_attribution.json",
+    "panel_drift_triage": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/panel_drift_triage.json",
+    "panel_drift_resolution_progress": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/panel_drift_resolution_progress.json",
+    "external_sensitivity_observation_log": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/external_sensitivity_observation_log.json",
+    "deployment_summary": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/deployment_summary.json"
+  }
+}

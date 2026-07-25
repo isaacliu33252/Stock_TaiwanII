@@ -42,7 +42,7 @@ class LatestStrategyTests(unittest.TestCase):
 
         self.assertEqual(A2118_ID, active["id"])
         self.assertEqual("group_a_plus.runners.a2118", active["runner"])
-        self.assertEqual("results/ncf_00631l_panel_latest_20260707.csv", runner_params["ncf_panel_631l_path"])
+        self.assertEqual("results/ncf_00631l_panel_latest_20260716.csv", runner_params["ncf_panel_631l_path"])
         self.assertAlmostEqual(0.33, runner_params["h20_max"], places=4)
         self.assertAlmostEqual(0.55, runner_params["conf_min"], places=4)
         self.assertAlmostEqual(0.55, runner_params["h5_reentry_min"], places=4)

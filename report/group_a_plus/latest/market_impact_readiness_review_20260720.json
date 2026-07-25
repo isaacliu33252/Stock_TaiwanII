@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_market_impact_readiness_review",
+  "status": "blocked",
+  "generated_at": "2026-07-17T21:06:24",
+  "policy": "research_pretrade_readiness_only_no_weight_change",
+  "as_of": "2026-07-20",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2603.29086.pdf",
+    "title": "Realistic Market Impact Modeling for Reinforcement Learning Trading Environments",
+    "imported_concepts": [
+      "flat_bps_costs_can_misrank_strategies",
+      "almgren_chriss_and_square_root_impact_readiness",
+      "participation_of_volume_monitoring",
+      "turnover_pathology_detection",
+      "hpo_or_parameter_tuning_must_control_execution_behavior",
+      "trade_level_logging_required"
+    ],
+    "not_imported": [
+      "Gymnasium_DRL_environment",
+      "A2C_PPO_DDPG_SAC_TD3_agents",
+      "NASDAQ_100_results",
+      "automatic_rebalance_or_live_execution"
+    ]
+  },
+  "limits": {
+    "max_trade_participation_of_volume": 0.03,
+    "max_total_turnover": 0.5,
+    "cost_model_required_before_live": "quadratic_or_square_root_impact_calibrated_to_taiwan_etf_liquidity"
+  },
+  "computed": {
+    "execution_plan_actual_data_date": "2026-07-15",
+    "live_actual_data_date": "2026-07-17",
+    "execution_plan_stale_vs_live": true,
+    "current_total_assets": 276404.604095459,
+    "total_trade_notional": 163515.7407989502,
+    "turnover": 0.5915811038461518,
+    "max_participation_of_volume": 0.00022187708009762592,
+    "trade_count_nonzero": 3,
+    "trade_rows": [
+      {
+        "ticker": "0050.TW",
+        "current_shares": 1342,
+        "target_shares": 1491,
+        "delta_shares": 149,
+        "price": 106.30000305175781,
+        "trade_notional": 15838.700454711914,
+        "latest_volume": 106147811.0,
+        "participation_of_volume": 1.4037029929896528e-06
+      },
+      {
+        "ticker": "00631L.TW",
+        "current_shares": 0,
+        "target_shares": 376,
+        "delta_shares": 376,
+        "price": 37.040000915527344,
+        "trade_notional": 13927.040344238281,
+        "latest_volume": 169435807.0,
+        "participation_of_volume": 2.2191295137514824e-06
+      },
+      {
+        "ticker": "00632R.TW",
+        "current_shares": 0,
+        "target_shares": 0,
+        "delta_shares": 0,
+        "price": 10.149999618530273,
+        "trade_notional": 0.0,
+        "latest_volume": 126322197.0,
+        "participation_of_volume": 0.0
+      },
+      {
+        "ticker": "00679B.TWO",
+        "current_shares": 5000,
+        "target_shares": 0,
+        "delta_shares": -5000,
+        "price": 26.75,
+        "trade_notional": 133750.0,
+        "latest_volume": 22535000.0,
+        "participation_of_volume": 0.00022187708009762592
+      }
+    ]
+  },
+  "blocking_reasons": [
+    "live_signal_execution_not_allowed",
+    "execution_plan_stale_vs_live_signal",
+    "rebalance_review_disallows_auto_rebalance",
+    "turnover_exceeds_limit"
+  ],
+  "warning_reasons": [],
+  "decision": {
+    "summary": "Import market-impact readiness only. Current execution/rebalance gates are blocked, and the execution plan is stale, so no rebalance or optimizer-driven trade should be unlocked.",
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal_20260720_estimate.json",
+    "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+    "rebalance_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rebalance_review_20260720.json",
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db"
+  }
+}

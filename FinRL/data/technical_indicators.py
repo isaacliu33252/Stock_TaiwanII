@@ -300,7 +300,13 @@ class TechnicalIndicators:
         self.df['macd_turn_positive'] = (
             (prev_histogram < 0) & (self.df['histogram'] >= 0)
         ).astype(int)
-        
+
+        # === 判斷是否由正轉負 ===
+        # 這是經典的賣出信號：Histogram 前一根為正，當前為負
+        self.df['macd_turn_negative'] = (
+            (prev_histogram > 0) & (self.df['histogram'] <= 0)
+        ).astype(int)
+
         return self.df
     
     # =========================================================================
@@ -498,8 +504,8 @@ class TechnicalIndicators:
 
         with np.errstate(divide='ignore', invalid='ignore'):
             williams_values = -100 * (highest_high - close) / (highest_high - lowest_low)
-        # 盤整時結果為 NaN，替換為 -50（中性值：價格在高低點正中間）
-        williams_values = williams_values.replace([np.inf, -np.inf], np.nan).fillna(-50.0)
+        # 盤整時結果為 NaN/inf，替換為 -50（中性值：價格在高低點正中間）
+        williams_values = np.where(np.isfinite(williams_values), williams_values, -50.0)
         self.df['williams_r'] = williams_values
     
     # =========================================================================
@@ -631,7 +637,8 @@ class TechnicalIndicators:
         tr2 = np.where(np.isnan(tr2), tr1, tr2)
         tr3 = np.where(np.isnan(tr3), tr1, tr3)
         tr = np.maximum(tr1, np.maximum(tr2, tr3))
-        self.df['atr_14'] = pd.Series(tr).rolling(window=period).mean()
+        # 使用 EWM（Wilder's smoothing / EMA），與 TA-Lib 計算方式一致
+        self.df['atr_14'] = pd.Series(tr).ewm(span=period, adjust=False).mean()
         
         return self.df
 
@@ -672,18 +679,26 @@ class TechnicalIndicators:
 
             # +DM: 僅在順向移動時取正向值
             plus_dm = high_diff.where((high_diff > low_diff) & (high_diff > 0), 0.0)
-            # -DM: 僅在負向移動時取正向值
+            # -DM: 僅在負向移動時取正值
             minus_dm = low_diff.where((low_diff > high_diff) & (low_diff > 0), 0.0)
 
-            # 標準化（使用 ATR）- atr_14 在 calculate_all() 中已由 calculate_atr() 先計算
+            # ATR（使用 EMA 方式，與 TA-Lib 一致）
             atr = self.df['atr_14']
-            self.df['dmi_plus'] = 100 * plus_dm.rolling(window=period).sum() / (atr + 1e-10)
-            self.df['dmi_minus'] = 100 * minus_dm.rolling(window=period).sum() / (atr + 1e-10)
 
-            # ADX: (|+/−DI| 之間的差) / (總和) * 100
-            di_sum = self.df['dmi_plus'] + self.df['dmi_minus']
-            dx = 100 * abs(self.df['dmi_plus'] - self.df['dmi_minus']) / (di_sum + 1e-10)
-            self.df['adx'] = dx.rolling(window=period).mean()
+            # +DI, -DI：使用 EMA（與 TA-Lib PLUS_DI/MINUS_DI 一致）
+            # 注意：這裡用 EWM 而不是 rolling().sum()，否則與 TA-Lib 輸出差異過大
+            plus_di = 100 * plus_dm.ewm(span=period, adjust=False).mean() / atr
+            minus_di = 100 * minus_dm.ewm(span=period, adjust=False).mean() / atr
+            plus_di = plus_di.replace([np.inf, -np.inf], np.nan).fillna(0)
+            minus_di = minus_di.replace([np.inf, -np.inf], np.nan).fillna(0)
+
+            self.df['dmi_plus'] = plus_di.values
+            self.df['dmi_minus'] = minus_di.values
+
+            # ADX: EMA(DX)，與 TA-Lib 一致
+            dx = 100 * np.abs(plus_di - minus_di) / (plus_di + minus_di + 1e-10)
+            adx = dx.ewm(span=period, adjust=False).mean()
+            self.df['adx'] = adx.values
 
         return self.df
 
@@ -975,7 +990,7 @@ class TechnicalIndicators:
         # MACD
         features.extend([
             'macd_line', 'signal_line', 'histogram',
-            'histogram_change', 'macd_turn_positive'
+            'histogram_change', 'macd_turn_positive', 'macd_turn_negative'
         ])
         
         # RSI

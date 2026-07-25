@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_finstressts_readiness_review",
+  "status": "blocked",
+  "generated_at": "2026-07-21T22:38:12",
+  "policy": "research_model_validation_only_no_weight_change",
+  "as_of": "2026-07-20",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2606.03184.pdf",
+    "title": "FinStressTS: A Parametric Synthetic Benchmark for Time-Series Forecasting in Finance",
+    "imported_concepts": [
+      "mechanism_specific_stress_testing",
+      "controlled_counterfactual_financial_time_series",
+      "proper_probabilistic_calibration_review",
+      "data_efficiency_learning_curve_requirement",
+      "simple_baseline_before_transformer_promotion",
+      "failure_attribution_by_financial_mechanism"
+    ],
+    "not_imported": [
+      "synthetic_returns_as_live_alpha",
+      "KDD_benchmark_scores_as_Taiwan_ETF_evidence",
+      "automatic_model_architecture_replacement",
+      "automatic_weight_change_or_rebalance"
+    ]
+  },
+  "mechanism_coverage": [
+    {
+      "mechanism": "volatility_clustering",
+      "paper_case": "GARCH factor/idiosyncratic volatility clustering",
+      "group_a_plus_coverage": [
+        "heterogeneous_vol_regime_advisory",
+        "cvar_tail_risk_diagnostic",
+        "density_head_tail_risk_advisory"
+      ],
+      "coverage_state": "partial",
+      "notes": "Volatility advisory exists, but it remains advisory and is not an execution guard."
+    },
+    {
+      "mechanism": "multi_scale_persistence",
+      "paper_case": "HAR-style multi-scale volatility persistence",
+      "group_a_plus_coverage": [
+        "NCF rolling panels",
+        "multi-window promotion review",
+        "sciphyrl explicit-cost readiness"
+      ],
+      "coverage_state": "partial",
+      "notes": "Rolling windows exist, but no controlled HAR-style stress benchmark is promoted."
+    },
+    {
+      "mechanism": "heavy_tailed_shocks",
+      "paper_case": "Student-t shocks and rare outliers",
+      "group_a_plus_coverage": [
+        "cvar_tail_risk_diagnostic",
+        "density_head_tail_risk_advisory",
+        "option_state_coverage_review"
+      ],
+      "coverage_state": "blocked",
+      "notes": "Tail diagnostics are present, but option-state gate is blocked."
+    },
+    {
+      "mechanism": "regime_switching",
+      "paper_case": "market-wide latent regime with structural breaks",
+      "group_a_plus_coverage": [
+        "bull_pullback_deep market state",
+        "leveraged compounding regime",
+        "heterogeneous volatility regime advisory"
+      ],
+      "coverage_state": "partial",
+      "notes": "Regime labels are operational, but no synthetic counterfactual regime suite is promoted."
+    },
+    {
+      "mechanism": "self_exciting_jumps",
+      "paper_case": "Hawkes-type clustered market jumps",
+      "group_a_plus_coverage": [
+        "crash_risk_alert",
+        "adversarial_market_integrity_review",
+        "market_impact_readiness_review"
+      ],
+      "coverage_state": "blocked",
+      "notes": "Jump-cluster stress is only indirectly covered by crash/adversarial checks; no Hawkes-style validation set is live."
+    },
+    {
+      "mechanism": "zero_inflated_sparse_jumps",
+      "paper_case": "zero-inflated sparse jump arrivals",
+      "group_a_plus_coverage": [
+        "adversarial sparse perturbation governance",
+        "option_state_coverage_review",
+        "manual rebalance review"
+      ],
+      "coverage_state": "blocked",
+      "notes": "Sparse event sensitivity is a governance concern; feature coverage is still incomplete."
+    },
+    {
+      "mechanism": "forecast_architecture_bias",
+      "paper_case": "linear/econometric models can beat larger Transformers under specific mechanisms",
+      "group_a_plus_coverage": [
+        "density-head promotion review",
+        "multi-window promotion gate",
+        "no single-model auto-execution"
+      ],
+      "coverage_state": "partial",
+      "notes": "Supports keeping simple baselines and multi-window evidence before model promotion."
+    },
+    {
+      "mechanism": "execution_under_stress",
+      "paper_case": "counterfactual dirty data and data-efficiency learning curves",
+      "group_a_plus_coverage": [
+        "market_impact_readiness_review",
+        "sciphyrl_readiness_review",
+        "rebalance_review"
+      ],
+      "coverage_state": "blocked",
+      "notes": "Optimizer/execution readiness remains blocked under current 7/20 gates."
+    }
+  ],
+  "summary": {
+    "covered_mechanisms": 8,
+    "blocked_mechanisms": [
+      "heavy_tailed_shocks",
+      "self_exciting_jumps",
+      "zero_inflated_sparse_jumps",
+      "execution_under_stress"
+    ],
+    "missing_or_unpromoted_synthetic_counterfactual_suite": true,
+    "simple_baseline_preferred_until_multi_window_evidence": true
+  },
+  "blocking_reasons": [
+    "rebalance_review_disallows_target_weight_change",
+    "option_state_gate_not_passed",
+    "adversarial_market_integrity_not_passed",
+    "market_impact_readiness_not_passed",
+    "optimizer_readiness_not_passed",
+    "mechanism_stress_coverage_blocked"
+  ],
+  "warning_reasons": [],
+  "decision": {
+    "summary": "Import FinStressTS as model-validation governance only. Current GroupA+ gates are blocked, and the paper is a diagnostic benchmark rather than a Taiwan ETF trading signal.",
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true,
+    "next_research_step": "Build a small Taiwan ETF counterfactual stress harness before any model promotion claim."
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal_20260720_estimate.json",
+    "rebalance_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rebalance_review_20260720.json",
+    "option_state": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/option_state_coverage_review.json",
+    "adversarial": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/adversarial_market_integrity_review.json",
+    "sciphyrl": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/sciphyrl_readiness_review.json",
+    "market_impact": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+    "heterogeneous_vol": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/heterogeneous_vol_regime_advisory.json",
+    "density_head": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/density_head_tail_risk_advisory.json",
+    "cvar": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/cvar_tail_risk_diagnostic.json"
+  }
+}

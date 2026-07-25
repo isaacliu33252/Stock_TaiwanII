@@ -1,0 +1,376 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_00632r_effective_fee_proxy_validation_review",
+  "generated_at": "2026-07-21T12:22:52",
+  "as_of": "2026-07-21",
+  "status": "blocked",
+  "policy": "effective_fee_proxy_validation_only_no_hedge_open_no_weight_change",
+  "inputs": {
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "tail_tracking_error_gate_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/00632r_tail_tracking_error_gate_review.json",
+    "reference_ticker": "0050.TW",
+    "inverse_ticker": "00632R.TW",
+    "start": "2020-01-01",
+    "horizons": [
+      5,
+      10,
+      20,
+      30
+    ],
+    "recent_observations": 60
+  },
+  "thresholds": {
+    "correlation_floor": 0.95,
+    "sign_agreement_floor": 0.85,
+    "tail_overlap_floor": 0.8,
+    "tail_quantile": 0.05
+  },
+  "horizon_results": [
+    {
+      "horizon_days": 5,
+      "status": "available",
+      "full_sample": {
+        "start": "2020-01-09",
+        "end": "2026-07-17",
+        "tracking_error": {
+          "count": 1582,
+          "mean": 0.004725520969772518,
+          "std": 0.11019651287845186,
+          "p05": -0.013850205012714402,
+          "p50": -0.0014795755534266208,
+          "p95": 0.011283732884078475,
+          "latest": 0.004070947134375086
+        },
+        "effective_drag_proxy": {
+          "count": 1582,
+          "mean": 0.00574605545415003,
+          "std": 0.11018409952655436,
+          "p05": -0.012531487448408585,
+          "p50": -0.0007223689690724247,
+          "p95": 0.012601361040029674,
+          "latest": 0.00829667708052196
+        },
+        "variance_decay_proxy": {
+          "count": 1582,
+          "mean": -0.0010205344843775114,
+          "std": 0.001775092105888398,
+          "p05": -0.0030491458500623344,
+          "p50": -0.0005604409605039772,
+          "p95": -0.00011884080296327197,
+          "latest": -0.004225729946146874
+        },
+        "residual_tracking_minus_drag": {
+          "count": 1582,
+          "mean": -0.0010205344843775114,
+          "std": 0.001775092105888398,
+          "p05": -0.0030491458500623344,
+          "p50": -0.0005604409605039773,
+          "p95": -0.00011884080296327205,
+          "latest": -0.004225729946146874
+        }
+      },
+      "recent_sample": {
+        "observations": 60,
+        "tracking_error": {
+          "count": 60,
+          "mean": 0.0009991800858942625,
+          "std": 0.007107435863850739,
+          "p05": -0.0100523843146259,
+          "p50": 0.0011175705490964888,
+          "p95": 0.011973079252288342,
+          "latest": 0.004070947134375086
+        },
+        "effective_drag_proxy": {
+          "count": 60,
+          "mean": 0.0030207721937465007,
+          "std": 0.007203696783221648,
+          "p05": -0.007940383460077484,
+          "p50": 0.003283548026141567,
+          "p95": 0.016455610957371847,
+          "latest": 0.00829667708052196
+        }
+      },
+      "validation_metrics": {
+        "tracking_vs_drag_correlation": 0.99987025107381,
+        "tracking_vs_drag_sign_agreement": 0.9595448798988622,
+        "recent_tracking_vs_drag_correlation": 0.9866065657352999,
+        "recent_tracking_vs_drag_sign_agreement": 0.95,
+        "tail_overlap": {
+          "tracking_tail_threshold": -0.013850205012714402,
+          "drag_tail_threshold": -0.012531487448408585,
+          "tracking_tail_count": 80,
+          "drag_tail_count": 80,
+          "overlap_count": 69,
+          "overlap_rate": 0.8625
+        }
+      }
+    },
+    {
+      "horizon_days": 10,
+      "status": "available",
+      "full_sample": {
+        "start": "2020-01-16",
+        "end": "2026-07-17",
+        "tracking_error": {
+          "count": 1577,
+          "mean": 0.009467038459841827,
+          "std": 0.15585134480268728,
+          "p05": -0.021123306059200417,
+          "p50": -0.0031080770183459757,
+          "p95": 0.017059567527192582,
+          "latest": 0.013109894073612141
+        },
+        "effective_drag_proxy": {
+          "count": 1577,
+          "mean": 0.011509685552813155,
+          "std": 0.1557788396716846,
+          "p05": -0.018103246168155555,
+          "p50": -0.0013761297269662101,
+          "p95": 0.01987992993440842,
+          "latest": 0.01770959169557762
+        },
+        "variance_decay_proxy": {
+          "count": 1577,
+          "mean": -0.00204264709297133,
+          "std": 0.002843905678411624,
+          "p05": -0.005436257499915014,
+          "p50": -0.0012306025048638394,
+          "p95": -0.0003594394145541847,
+          "latest": -0.004599697621965479
+        },
+        "residual_tracking_minus_drag": {
+          "count": 1577,
+          "mean": -0.00204264709297133,
+          "std": 0.002843905678411624,
+          "p05": -0.005436257499915014,
+          "p50": -0.0012306025048638394,
+          "p95": -0.0003594394145541846,
+          "latest": -0.004599697621965479
+        }
+      },
+      "recent_sample": {
+        "observations": 60,
+        "tracking_error": {
+          "count": 60,
+          "mean": 0.0016795321512384856,
+          "std": 0.007764079739953384,
+          "p05": -0.009202863951649017,
+          "p50": 0.00118610916892177,
+          "p95": 0.015124807419394622,
+          "latest": 0.013109894073612141
+        },
+        "effective_drag_proxy": {
+          "count": 60,
+          "mean": 0.005713331508069092,
+          "std": 0.0078167028482231,
+          "p05": -0.004454407740868159,
+          "p50": 0.004347148407380607,
+          "p95": 0.020437078551045647,
+          "latest": 0.01770959169557762
+        }
+      },
+      "validation_metrics": {
+        "tracking_vs_drag_correlation": 0.9998335441804744,
+        "tracking_vs_drag_sign_agreement": 0.9302473050095117,
+        "recent_tracking_vs_drag_correlation": 0.9802000088027001,
+        "recent_tracking_vs_drag_sign_agreement": 0.8333333333333334,
+        "tail_overlap": {
+          "tracking_tail_threshold": -0.021123306059200417,
+          "drag_tail_threshold": -0.018103246168155555,
+          "tracking_tail_count": 79,
+          "drag_tail_count": 79,
+          "overlap_count": 66,
+          "overlap_rate": 0.8354430379746836
+        }
+      }
+    },
+    {
+      "horizon_days": 20,
+      "status": "available",
+      "full_sample": {
+        "start": "2020-02-10",
+        "end": "2026-07-17",
+        "tracking_error": {
+          "count": 1567,
+          "mean": 0.0191792772610958,
+          "std": 0.22072564818653925,
+          "p05": -0.032841276036904295,
+          "p50": -0.005492574926106303,
+          "p95": 0.022760516918088926,
+          "latest": 0.007779877887132636
+        },
+        "effective_drag_proxy": {
+          "count": 1567,
+          "mean": 0.02325345677087405,
+          "std": 0.22050420061868084,
+          "p05": -0.02786514113247538,
+          "p50": -0.0020858545329859677,
+          "p95": 0.027480052485129115,
+          "latest": 0.017383228436354817
+        },
+        "variance_decay_proxy": {
+          "count": 1567,
+          "mean": -0.004074179509778249,
+          "std": 0.0044078615212871245,
+          "p05": -0.010327367496383766,
+          "p50": -0.002771049406941875,
+          "p95": -0.0009920645635082858,
+          "latest": -0.009603350549222182
+        },
+        "residual_tracking_minus_drag": {
+          "count": 1567,
+          "mean": -0.00407417950977825,
+          "std": 0.0044078615212871245,
+          "p05": -0.010327367496383766,
+          "p50": -0.0027710494069418754,
+          "p95": -0.0009920645635082856,
+          "latest": -0.009603350549222182
+        }
+      },
+      "recent_sample": {
+        "observations": 60,
+        "tracking_error": {
+          "count": 60,
+          "mean": 0.0022884708961781334,
+          "std": 0.009411420815115023,
+          "p05": -0.010997205402799028,
+          "p50": 1.8977865270688316e-05,
+          "p95": 0.01774317220764853,
+          "latest": 0.007779877887132636
+        },
+        "effective_drag_proxy": {
+          "count": 60,
+          "mean": 0.010864770963952603,
+          "std": 0.009273478498498088,
+          "p05": -0.0030584188329026664,
+          "p50": 0.009298118298551162,
+          "p95": 0.025378497085385227,
+          "latest": 0.017383228436354817
+        }
+      },
+      "validation_metrics": {
+        "tracking_vs_drag_correlation": 0.999800905765244,
+        "tracking_vs_drag_sign_agreement": 0.9010848755583918,
+        "recent_tracking_vs_drag_correlation": 0.9848298931465529,
+        "recent_tracking_vs_drag_sign_agreement": 0.5833333333333334,
+        "tail_overlap": {
+          "tracking_tail_threshold": -0.032841276036904295,
+          "drag_tail_threshold": -0.02786514113247538,
+          "tracking_tail_count": 79,
+          "drag_tail_count": 79,
+          "overlap_count": 60,
+          "overlap_rate": 0.759493670886076
+        }
+      }
+    },
+    {
+      "horizon_days": 30,
+      "status": "available",
+      "full_sample": {
+        "start": "2020-02-24",
+        "end": "2026-07-17",
+        "tracking_error": {
+          "count": 1557,
+          "mean": 0.02914141424224918,
+          "std": 0.27099562306378755,
+          "p05": -0.04194782042073657,
+          "p50": -0.00796021378460221,
+          "p95": 0.028106654664674977,
+          "latest": 0.0081190680562589
+        },
+        "effective_drag_proxy": {
+          "count": 1557,
+          "mean": 0.03522816696817718,
+          "std": 0.2706143155921166,
+          "p05": -0.03489806631983506,
+          "p50": -0.002949755563466546,
+          "p95": 0.032882506698140475,
+          "latest": 0.022331972682866474
+        },
+        "variance_decay_proxy": {
+          "count": 1557,
+          "mean": -0.0060867527259280034,
+          "std": 0.005663813243210691,
+          "p05": -0.022229435237104994,
+          "p50": -0.004372168063383545,
+          "p95": -0.0016717903233298614,
+          "latest": -0.014212904626607573
+        },
+        "residual_tracking_minus_drag": {
+          "count": 1557,
+          "mean": -0.0060867527259280034,
+          "std": 0.005663813243210691,
+          "p05": -0.022229435237104994,
+          "p50": -0.004372168063383544,
+          "p95": -0.0016717903233298612,
+          "latest": -0.014212904626607573
+        }
+      },
+      "recent_sample": {
+        "observations": 60,
+        "tracking_error": {
+          "count": 60,
+          "mean": 0.002729050366663041,
+          "std": 0.008722958150150865,
+          "p05": -0.010876108225421257,
+          "p50": 0.004163079221238066,
+          "p95": 0.01604636818661482,
+          "latest": 0.0081190680562589
+        },
+        "effective_drag_proxy": {
+          "count": 60,
+          "mean": 0.015604426639579056,
+          "std": 0.008310540897522013,
+          "p05": 0.0015460357360058765,
+          "p50": 0.016017800870573355,
+          "p95": 0.027926724756723795,
+          "latest": 0.022331972682866474
+        }
+      },
+      "validation_metrics": {
+        "tracking_vs_drag_correlation": 0.999782278198798,
+        "tracking_vs_drag_sign_agreement": 0.8946692357096981,
+        "recent_tracking_vs_drag_correlation": 0.9851586308269473,
+        "recent_tracking_vs_drag_sign_agreement": 0.6333333333333333,
+        "tail_overlap": {
+          "tracking_tail_threshold": -0.04194782042073657,
+          "drag_tail_threshold": -0.03489806631983506,
+          "tracking_tail_count": 78,
+          "drag_tail_count": 78,
+          "overlap_count": 56,
+          "overlap_rate": 0.717948717948718
+        }
+      }
+    }
+  ],
+  "summary": {
+    "proxy_validated_for_manual_review": false,
+    "failed_horizons": [
+      "20:tail_overlap",
+      "30:tail_overlap"
+    ],
+    "available_horizon_count": 4,
+    "tail_gate_split_recommended": true,
+    "tail_gate_allows_00632r_open": false
+  },
+  "blocking_reasons": [
+    "effective_fee_proxy_validation_metrics_failed"
+  ],
+  "warning_reasons": [],
+  "interpretation": [
+    "Validation checks whether effective drag tracks realized tracking error closely enough for manual-review evidence.",
+    "Passing this review does not validate a live hedge policy, market-impact readiness, or target-weight changes.",
+    "00632R remains blocked for live action unless every other readiness gate changes."
+  ],
+  "decision": {
+    "effective_fee_proxy_validated_for_manual_review": false,
+    "effective_fee_proxy_validated_for_live": false,
+    "manual_hedge_discussion_allowed": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

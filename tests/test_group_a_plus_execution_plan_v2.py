@@ -17,10 +17,12 @@ from group_a_plus.operations.execution_plan import (
     _apply_buy_staging,
     _build_guard_impact_summary,
     _combine_guarded_targets,
+    _latest_prices,
     _trough_high_vol_override_watch,
     _trough_nowcast_buy_fraction,
     build_execution_plan,
     _build_trades,
+    load_group_a_plus_holdings_json,
     _parse_group_a_plus_holdings,
 )
 from group_a_plus.operations.execution_guard import (
@@ -30,6 +32,14 @@ from group_a_plus.operations.execution_guard import (
 
 
 class ExecutionPlanV2Tests(unittest.TestCase):
+    def test_latest_prices_returns_empty_dict_for_empty_ticker_list(self) -> None:
+        # 2026-07-24: an all-zero-holdings scenario (e.g. a fresh-cash cold
+        # start) produces an empty held_tickers list, which used to build an
+        # invalid `WHERE ticker IN ()` SQL clause and crash with a
+        # ParserException. Guard against regressing that fix -- must not
+        # touch the DB at all when there are no tickers to look up.
+        self.assertEqual(_latest_prices(Path("unused.db"), [], "2026-07-24"), {})
+
     def test_parser_stops_before_group_b(self) -> None:
         frame = pd.DataFrame(
             [
@@ -42,6 +52,77 @@ class ExecutionPlanV2Tests(unittest.TestCase):
         holdings = _parse_group_a_plus_holdings(frame)
 
         self.assertEqual(holdings, {"0050.TW": 100, "00679B.TWO": 200})
+
+    def test_load_holdings_json_filters_to_group_a_plus_tickers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "holdings.json"
+            path.write_text(
+                json.dumps(
+                    {
+                        "holdings": {
+                            "0050.TW": 2794,
+                            "00631L.TW": 500,
+                            "00632R.TW": 0,
+                            "00679B.TWO": 3000,
+                            "2330.TW": 99,
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            holdings = load_group_a_plus_holdings_json(path)
+
+        self.assertEqual(
+            holdings,
+            {
+                "0050.TW": 2794,
+                "00631L.TW": 500,
+                "00632R.TW": 0,
+                "00679B.TWO": 3000,
+            },
+        )
+
+    def test_execution_plan_can_use_holdings_json_instead_of_workbook(self) -> None:
+        signal = {
+            "strategy_id": "a2118",
+            "actual_data_date": "2026-07-17",
+            "execution_regime": "golden1",
+            "target_weights": {"0050.TW": 0.60, "00631L.TW": 0.20, "cash": 0.20},
+            "reference_target_shares_before_cost": {"0050.TW": 40, "00631L.TW": 150},
+            "latest_prices": {"0050.TW": 120.0, "00631L.TW": 40.0, "00679B.TWO": 30.0},
+            "execution_guard_reasons": [],
+            "execution_allowed": True,
+            "signal_alerts": [],
+            "portfolio_value_input": 31_000.0,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            holdings_json = Path(tmp) / "holdings.json"
+            holdings_json.write_text(
+                json.dumps({"holdings": {"0050.TW": 20, "00631L.TW": 100, "00679B.TWO": 5}}),
+                encoding="utf-8",
+            )
+            with (
+                patch.object(execution_plan, "load_group_a_plus_holdings") as workbook_loader,
+                patch.object(execution_plan, "_latest_prices", return_value={"0050.TW": 120.0, "00631L.TW": 40.0, "00679B.TWO": 30.0}),
+                patch.object(execution_plan, "build_daily_signal", return_value=signal),
+            ):
+                plan = build_execution_plan(
+                    Path("dummy.xlsx"),
+                    "2026-07-17",
+                    cash_balance=24_450.0,
+                    max_business_stale_days=3,
+                    db_path=Path("dummy.db"),
+                    manifest_path=Path("strategy.json"),
+                    min_trade_notional=0.0,
+                    min_weight_deviation=0.0,
+                    min_staged_buy_notional=999_999.0,
+                    holdings_json_path=holdings_json,
+                )
+
+        workbook_loader.assert_not_called()
+        self.assertEqual(plan["current_holdings"], {"0050.TW": 20, "00631L.TW": 100, "00679B.TWO": 5})
+        self.assertEqual(plan["holdings_source"], str(holdings_json))
 
     def test_bond_etf_sale_has_no_tax(self) -> None:
         trades, totals = _build_trades(
@@ -410,6 +491,78 @@ class ExecutionPlanV2Tests(unittest.TestCase):
         self.assertEqual(plan["target_shares"]["0050.TW"], 40)
         self.assertEqual(plan["compounding_regime_pre_trade_guard"]["status"], "blocked")
         self.assertEqual([trade["ticker"] for trade in plan["trades"]], ["0050.TW"])
+
+    def test_execution_plan_advisory_guards_do_not_block_when_not_enforced(self) -> None:
+        signal = {
+            "strategy_id": "a2118",
+            "actual_data_date": "2026-07-09",
+            "execution_regime": "golden1",
+            "target_weights": {"0050.TW": 0.60, "00631L.TW": 0.20, "cash": 0.20},
+            "reference_target_shares_before_cost": {"0050.TW": 40, "00631L.TW": 150},
+            "latest_prices": {"0050.TW": 120.0, "00631L.TW": 40.0},
+            "execution_guard_reasons": [],
+            "execution_allowed": True,
+            "signal_alerts": [
+                {
+                    "type": "volatility_gate_high_vol",
+                    "metadata": {
+                        "allow_00631l_add": False,
+                        "trade_policy": "advisory_no_auto_weight_change",
+                    },
+                }
+            ],
+            "portfolio_value_input": 16_400.0,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            compounding_path = Path(tmp) / "compounding.json"
+            compounding_path.write_text(
+                json.dumps(
+                    {
+                        "latest": {
+                            "date": "2026-07-09",
+                            "compounding_regime": "MEAN_REVERTING",
+                            "recommended_policy": "prohibit_new_leverage_or_reduce_rebalance_frequency",
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with (
+                patch.object(execution_plan, "load_group_a_plus_holdings", return_value={"0050.TW": 20, "00631L.TW": 100}),
+                patch.object(execution_plan, "_latest_prices", return_value={"0050.TW": 120.0, "00631L.TW": 40.0}),
+                patch.object(execution_plan, "build_daily_signal", return_value=signal),
+            ):
+                plan = build_execution_plan(
+                    Path("dummy.xlsx"),
+                    "2026-07-09",
+                    cash_balance=10_000.0,
+                    max_business_stale_days=3,
+                    db_path=Path("dummy.db"),
+                    manifest_path=Path("strategy.json"),
+                    min_trade_notional=0.0,
+                    min_weight_deviation=0.0,
+                    min_staged_buy_notional=999_999.0,
+                    compounding_regime_path=compounding_path,
+                    enforce_advisory_pre_trade_guards=False,
+                )
+
+        # Both guards would have blocked the 00631L add, but since all orders are
+        # placed manually there is no automated execution to guard -- the full
+        # recommended target is kept for human review instead of being zeroed.
+        self.assertFalse(plan["advisory_pre_trade_guards_enforced"])
+        self.assertEqual(plan["target_shares"]["00631L.TW"], 150)
+        self.assertEqual(plan["pre_trade_guard"]["status"], "flagged_advisory_only")
+        self.assertFalse(plan["pre_trade_guard"]["enforced"])
+        self.assertEqual(plan["pre_trade_guard"]["blocked_trades"], [])
+        self.assertEqual(plan["pre_trade_guard"]["advisory_trades"][0]["blocked_delta_shares"], 50)
+        self.assertEqual(plan["compounding_regime_pre_trade_guard"]["status"], "flagged_advisory_only")
+        self.assertFalse(plan["compounding_regime_pre_trade_guard"]["enforced"])
+        self.assertEqual(plan["compounding_regime_pre_trade_guard"]["blocked_trades"], [])
+        self.assertEqual(
+            {trade["ticker"] for trade in plan["trades"]},
+            {"0050.TW", "00631L.TW"},
+        )
+        self.assertEqual(plan["guard_impact_summary"]["blocked_guard_names"], [])
 
     def test_execution_plan_reports_cross_market_graph_advisory_without_guarding_trades(self) -> None:
         signal = {

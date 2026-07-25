@@ -1,0 +1,1026 @@
+{
+  "generated_at": "2026-07-18T07:39:12",
+  "check_date": "2026-07-18",
+  "overall_status": "warn",
+  "profile": "a2118_a2111_ncf_late_bull_deleverage",
+  "mode": "live_signal",
+  "source_paths": {
+    "live_signal": "results/group_a_plus_live_signal_v2_20260718.json",
+    "execution_plan": "report/group_a_plus/latest/execution_plan.json",
+    "compounding_regime": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_20260718.json",
+    "dfl_advisory": "report/group_a_plus/latest/a2118_dfl_advisory.json",
+    "dfl_shadow_ensemble": "report/group_a_plus/latest/a2118_dfl_shadow_ensemble.json",
+    "dfl_active_date_audit": "results/a2118_dfl_active_date_audit_20260718.json",
+    "finstressts_decision_snapshot": "report/group_a_plus/latest/finstressts_decision_snapshot.json",
+    "trigate_vol_memory_shadow": "report/group_a_plus/latest/trigate_vol_memory_shadow.json",
+    "research_shadow_decision_snapshot": "report/group_a_plus/latest/research_shadow_decision_snapshot.json"
+  },
+  "checks": [
+    {
+      "name": "live_signal_success",
+      "status": "ok",
+      "detail": "live signal loaded"
+    },
+    {
+      "name": "execution_allowed",
+      "status": "ok",
+      "detail": "allowed"
+    },
+    {
+      "name": "data_freshness",
+      "status": "warn",
+      "detail": "0 business days stale, 1 calendar days stale"
+    },
+    {
+      "name": "strategy_status",
+      "status": "ok",
+      "detail": "strategy_status=active, strategy_id=a2118_a2111_ncf_late_bull_deleverage"
+    },
+    {
+      "name": "source_freshness",
+      "status": "ok",
+      "detail": "all required sources ok"
+    },
+    {
+      "name": "cash_constraint",
+      "status": "ok",
+      "detail": "estimated_cash_after_rounding_before_cost=300,372"
+    },
+    {
+      "name": "execution_plan_pre_trade_guard",
+      "status": "warn",
+      "detail": "execution plan has no aligned pre_trade_guard"
+    },
+    {
+      "name": "dfl_advisory_frozen_input_staleness",
+      "status": "ok",
+      "detail": "frozen backtest last covers 2026-07-13 (5 calendar days behind check_date); matched_decision_count is structurally 0 until this is re-run"
+    }
+  ],
+  "signal": {
+    "signal_status": "hold_or_align_to_target",
+    "signal_reason": "A20.7 formal defensive state is inactive",
+    "actual_data_date": "2026-07-17",
+    "requested_as_of_date": "2026-07-18",
+    "business_stale_days": 0,
+    "calendar_stale_days": 1
+  },
+  "group_a_plus": {
+    "overlay_regime": "golden1",
+    "overlay_00679b_weight": 0.0,
+    "cash_after_cost": 300372.01374816895,
+    "target_shares": {
+      "0050.TW": 4992,
+      "00631L.TW": 6207,
+      "00632R.TW": 0,
+      "00679B.TWO": 0
+    },
+    "pre_trade_guard": {},
+    "pre_trade_guards": [],
+    "compounding_regime_pre_trade_guard": {},
+    "compounding_regime_diagnostic": {
+      "status": "ok",
+      "source_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_20260718.json",
+      "report_type": "00631l_leveraged_compounding_regime",
+      "generated_at": "2026-07-18T07:38:37",
+      "date": "2026-07-17",
+      "compounding_regime": "MEAN_REVERTING",
+      "recommended_policy": "prohibit_new_leverage_or_reduce_rebalance_frequency",
+      "trend_score": 1,
+      "mean_reversion_score": 3,
+      "features": {
+        "rolling_AR1_5d": -0.18140049089369714,
+        "rolling_AR1_20d": -0.05761683301835627,
+        "variance_ratio": 0.5215570331390492,
+        "trend_persistence": 0.5789473684210527,
+        "reversal_speed": 0.4444444444444444,
+        "positive_return_streak": 0.0,
+        "negative_return_streak": 1.0,
+        "drawdown_recovery_ratio": 0.0,
+        "00631L_vs_0050_relative_momentum": -0.09407410134461369
+      },
+      "regime_policy": {
+        "TREND_PERSISTENT": "Do not reduce 00631L for high volatility alone.",
+        "MEAN_REVERTING": "Prohibit new leverage or reduce rebalance frequency.",
+        "TRANSITIONAL": "Maintain A21.18; do not actively overlay."
+      },
+      "active_allocation_impact": "none"
+    },
+    "dfl_advisory": {
+      "schema_version": 1,
+      "report_type": "a2118_dfl_advisory",
+      "status": "available",
+      "policy": "advisory_only_no_auto_weight_change",
+      "active_allocation_impact": "none",
+      "generated_at": "2026-07-18T07:38:51",
+      "as_of": "2026-07-17",
+      "action": "KEEP",
+      "advisory_active": false,
+      "recommended_action": "keep_a2118",
+      "selected_decision": null,
+      "input": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json",
+      "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260718.json",
+      "method": {
+        "actions": [
+          "KEEP",
+          "NO_ADD",
+          "CAP10",
+          "REENTER"
+        ],
+        "target": "action_regret = Utility(action) - Utility(KEEP)",
+        "stabilizers": {
+          "regret_clip": 0.02,
+          "edge_threshold": 0.0005,
+          "adjustment_fraction": 0.75,
+          "turnover_cap": 0.05,
+          "finite_actions_only": true,
+          "stateful_actions": true,
+          "reenter_edge_threshold": -0.0005,
+          "require_panel_signal": true
+        },
+        "model": {
+          "type": "expanding_ridge_linear_per_action",
+          "min_train_days": 60,
+          "train_window_days": 420,
+          "ridge_alpha": 10.0,
+          "features": [
+            "prob_up_h1",
+            "prob_up_h5",
+            "prob_up_h20",
+            "prob_fwd_mdd_gt5_h20",
+            "prob_fwd_gain_gt5_h20",
+            "confidence",
+            "ma_gap",
+            "total_risk_score",
+            "w_0050",
+            "w_00631l",
+            "ret_0050_5d",
+            "ret_00631l_5d",
+            "spread_00631l_0050_5d"
+          ]
+        }
+      },
+      "evidence": {
+        "source_status": "research_only",
+        "summary": {
+          "windows": 7,
+          "triple_pass_windows": 7,
+          "all_windows_triple_pass": true
+        },
+        "matched_decision_count": 0,
+        "note": "No DFL non-KEEP action matched the live signal date."
+      },
+      "selective_variants": {
+        "p50": {
+          "schema_version": 1,
+          "report_type": "a2118_dfl_advisory",
+          "status": "available",
+          "policy": "advisory_only_no_auto_weight_change",
+          "active_allocation_impact": "none",
+          "generated_at": "2026-07-18T07:38:51",
+          "as_of": "2026-07-17",
+          "action": "KEEP",
+          "advisory_active": false,
+          "recommended_action": "keep_a2118",
+          "selected_decision": null,
+          "input": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_decision_focused_action_shadow_selective_p50_7win_20260714.json",
+          "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260718.json",
+          "method": {
+            "actions": [
+              "KEEP",
+              "NO_ADD",
+              "CAP10",
+              "REENTER"
+            ],
+            "target": "action_regret = Utility(action) - Utility(KEEP)",
+            "stabilizers": {
+              "regret_clip": 0.02,
+              "edge_threshold": 0.0005,
+              "adjustment_fraction": 0.75,
+              "turnover_cap": 0.05,
+              "finite_actions_only": true,
+              "stateful_actions": true,
+              "reenter_edge_threshold": -0.0005,
+              "require_panel_signal": true,
+              "selective_reliability": true,
+              "reliability_max_error_percentile": 0.5,
+              "reliability_min_train_days": 60
+            },
+            "model": {
+              "type": "expanding_ridge_linear_per_action",
+              "min_train_days": 60,
+              "train_window_days": 420,
+              "ridge_alpha": 10.0,
+              "features": [
+                "prob_up_h1",
+                "prob_up_h5",
+                "prob_up_h20",
+                "prob_fwd_mdd_gt5_h20",
+                "prob_fwd_gain_gt5_h20",
+                "confidence",
+                "ma_gap",
+                "total_risk_score",
+                "w_0050",
+                "w_00631l",
+                "ret_0050_5d",
+                "ret_00631l_5d",
+                "spread_00631l_0050_5d"
+              ]
+            }
+          },
+          "evidence": {
+            "source_status": "research_only",
+            "summary": {
+              "windows": 7,
+              "triple_pass_windows": 7,
+              "all_windows_triple_pass": true,
+              "total_candidate_non_keep_days": 7,
+              "total_rejected_to_keep_days": 5
+            },
+            "matched_decision_count": 0,
+            "note": "No DFL non-KEEP action matched the live signal date."
+          }
+        },
+        "p70": {
+          "schema_version": 1,
+          "report_type": "a2118_dfl_advisory",
+          "status": "available",
+          "policy": "advisory_only_no_auto_weight_change",
+          "active_allocation_impact": "none",
+          "generated_at": "2026-07-18T07:38:51",
+          "as_of": "2026-07-17",
+          "action": "KEEP",
+          "advisory_active": false,
+          "recommended_action": "keep_a2118",
+          "selected_decision": null,
+          "input": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_decision_focused_action_shadow_selective_p70_7win_20260714.json",
+          "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260718.json",
+          "method": {
+            "actions": [
+              "KEEP",
+              "NO_ADD",
+              "CAP10",
+              "REENTER"
+            ],
+            "target": "action_regret = Utility(action) - Utility(KEEP)",
+            "stabilizers": {
+              "regret_clip": 0.02,
+              "edge_threshold": 0.0005,
+              "adjustment_fraction": 0.75,
+              "turnover_cap": 0.05,
+              "finite_actions_only": true,
+              "stateful_actions": true,
+              "reenter_edge_threshold": -0.0005,
+              "require_panel_signal": true,
+              "selective_reliability": true,
+              "reliability_max_error_percentile": 0.7,
+              "reliability_min_train_days": 60
+            },
+            "model": {
+              "type": "expanding_ridge_linear_per_action",
+              "min_train_days": 60,
+              "train_window_days": 420,
+              "ridge_alpha": 10.0,
+              "features": [
+                "prob_up_h1",
+                "prob_up_h5",
+                "prob_up_h20",
+                "prob_fwd_mdd_gt5_h20",
+                "prob_fwd_gain_gt5_h20",
+                "confidence",
+                "ma_gap",
+                "total_risk_score",
+                "w_0050",
+                "w_00631l",
+                "ret_0050_5d",
+                "ret_00631l_5d",
+                "spread_00631l_0050_5d"
+              ]
+            }
+          },
+          "evidence": {
+            "source_status": "research_only",
+            "summary": {
+              "windows": 7,
+              "triple_pass_windows": 7,
+              "all_windows_triple_pass": true,
+              "total_candidate_non_keep_days": 7,
+              "total_rejected_to_keep_days": 3
+            },
+            "matched_decision_count": 0,
+            "note": "No DFL non-KEEP action matched the live signal date."
+          }
+        }
+      }
+    },
+    "dfl_shadow_ensemble": {
+      "schema_version": 1,
+      "report_type": "a2118_dfl_shadow_ensemble",
+      "status": "available",
+      "policy": "shadow_only_no_auto_weight_change",
+      "active_allocation_impact": "none",
+      "generated_at": "2026-07-18T07:38:51",
+      "as_of": "2026-07-17",
+      "ensemble_level": "none",
+      "manual_review_required": false,
+      "signals": {
+        "base": {
+          "action": "KEEP",
+          "active": false,
+          "recommended_action": "keep_a2118",
+          "predicted_regret": null,
+          "candidate_action_before_reliability": null,
+          "candidate_predicted_regret_before_reliability": null,
+          "reliability_error_percentile": null,
+          "reliability_gate_pass": null,
+          "action_allowed": null,
+          "window_label": null,
+          "source_list": null
+        },
+        "p50": {
+          "action": "KEEP",
+          "active": false,
+          "recommended_action": "keep_a2118",
+          "predicted_regret": null,
+          "candidate_action_before_reliability": null,
+          "candidate_predicted_regret_before_reliability": null,
+          "reliability_error_percentile": null,
+          "reliability_gate_pass": null,
+          "action_allowed": null,
+          "window_label": null,
+          "source_list": null
+        },
+        "p70": {
+          "action": "KEEP",
+          "active": false,
+          "recommended_action": "keep_a2118",
+          "predicted_regret": null,
+          "candidate_action_before_reliability": null,
+          "candidate_predicted_regret_before_reliability": null,
+          "reliability_error_percentile": null,
+          "reliability_gate_pass": null,
+          "action_allowed": null,
+          "window_label": null,
+          "source_list": null
+        }
+      },
+      "note": "Observation-only DFL ensemble; not an execution instruction."
+    },
+    "dfl_active_date_audit": {
+      "report_type": "a2118_dfl_active_date_audit",
+      "status": "research_only",
+      "generated_at": "2026-07-18T07:38:57",
+      "source_status": "research_only",
+      "method": {
+        "actions": [
+          "KEEP",
+          "NO_ADD",
+          "CAP10",
+          "REENTER"
+        ],
+        "target": "action_regret = Utility(action) - Utility(KEEP)",
+        "utility": {
+          "horizon": 20,
+          "lambda_mdd": 0.35,
+          "gamma_turnover": 0.015,
+          "eta_missed_rebound": 0.3
+        },
+        "stabilizers": {
+          "regret_clip": 0.02,
+          "edge_threshold": 0.0005,
+          "adjustment_fraction": 0.75,
+          "turnover_cap": 0.05,
+          "finite_actions_only": true,
+          "stateful_actions": true,
+          "reenter_edge_threshold": -0.0005,
+          "require_panel_signal": true
+        },
+        "model": {
+          "type": "expanding_ridge_linear_per_action",
+          "min_train_days": 60,
+          "train_window_days": 420,
+          "ridge_alpha": 10.0,
+          "features": [
+            "prob_up_h1",
+            "prob_up_h5",
+            "prob_up_h20",
+            "prob_fwd_mdd_gt5_h20",
+            "prob_fwd_gain_gt5_h20",
+            "confidence",
+            "ma_gap",
+            "total_risk_score",
+            "w_0050",
+            "w_00631l",
+            "ret_0050_5d",
+            "ret_00631l_5d",
+            "spread_00631l_0050_5d"
+          ]
+        }
+      },
+      "assumptions": {
+        "initial_value": 1000000.0,
+        "commission_rate": 0.001425,
+        "slippage_rate": 0.0005,
+        "equity_etf_sell_tax": 0.001,
+        "min_trade_notional": 5000.0,
+        "turnover_proxy": "CAP10 reduction in 00631L is assumed to move into 0050, so turnover=2*abs(delta_00631L_weight)",
+        "turnover_proxy_note": "For stateful_actions=true, this is a deviation proxy versus A21.18, not exact same-day model turnover.",
+        "policy": "shadow_only_no_auto_weight_change"
+      },
+      "summary": {
+        "active_days": 7,
+        "action_counts": {
+          "CAP10": 7
+        },
+        "all_checks_pass": true,
+        "failed_days": 0,
+        "warning_days": 3,
+        "existing_guard_overlap_days": 0,
+        "max_turnover_proxy": 0.05231753742861231,
+        "total_estimated_cost_per_initial_value": 807.4904151886142,
+        "total_estimated_cost_bps": 8.074904151886141,
+        "max_estimated_cost_bps_single_day": 1.2687002826438487
+      },
+      "conclusion": "passes_replay_audit_with_warnings_shadow_only",
+      "decisions": [
+        {
+          "date": "2025-01-13",
+          "label": "live_2024_2026",
+          "bucket": "tuning_window",
+          "window": {
+            "start": "2024-01-02",
+            "end": "2026-07-13"
+          },
+          "ncf_panel": "results/ncf_00631l_panel_latest_20260707.csv",
+          "action": "CAP10",
+          "predicted_regret": 0.000721077847886251,
+          "predicted_regrets": {
+            "KEEP": 0.0,
+            "NO_ADD": 0.0,
+            "CAP10": 0.000721077847886251,
+            "REENTER": 0.0
+          },
+          "edge_threshold_used": 0.0005,
+          "base_00631l_weight": 0.12626135212102893,
+          "final_00631l_weight": 0.10656533803025724,
+          "delta_00631l_weight": -0.019696014090771694,
+          "turnover_proxy": 0.03939202818154339,
+          "estimated_cost_per_initial_value": {
+            "sell_00631l_notional": 19696.014090771692,
+            "buy_0050_notional": 19696.014090771692,
+            "estimated_cost": 95.5256683402427,
+            "estimated_cost_bps": 0.9552566834024271
+          },
+          "prices": {
+            "0050.TW": 48.599998474121094,
+            "00631L.TW": 10.409090042114258
+          },
+          "share_delta_estimates_per_initial_value": {
+            "00631L.TW": -1892.1936510380217,
+            "0050.TW": 405.26779236957344
+          },
+          "existing_guard_overlap": {
+            "volatility_gate": "low_vol_participation",
+            "volatility_high_vol": false,
+            "a2118_extreme_warning_proxy": false,
+            "covered_by_existing_guard": false
+          },
+          "checks": {
+            "finite_action": true,
+            "action_allowed": true,
+            "panel_date_available": true,
+            "edge_pass": true,
+            "within_regret_clip": true,
+            "turnover_cap_configured": true,
+            "min_trade_notional_pass": true,
+            "price_available": true,
+            "all_pass": true
+          },
+          "warnings": {
+            "turnover_proxy_above_cap": false
+          }
+        },
+        {
+          "date": "2025-01-15",
+          "label": "live_2024_2026",
+          "bucket": "tuning_window",
+          "window": {
+            "start": "2024-01-02",
+            "end": "2026-07-13"
+          },
+          "ncf_panel": "results/ncf_00631l_panel_latest_20260707.csv",
+          "action": "CAP10",
+          "predicted_regret": 0.0007703733941804804,
+          "predicted_regrets": {
+            "KEEP": 0.0,
+            "NO_ADD": 0.0,
+            "CAP10": 0.0007703733941804804,
+            "REENTER": 0.0
+          },
+          "edge_threshold_used": 0.0005,
+          "base_00631l_weight": 0.12626135212102893,
+          "final_00631l_weight": 0.10164133450756431,
+          "delta_00631l_weight": -0.02462001761346462,
+          "turnover_proxy": 0.04924003522692924,
+          "estimated_cost_per_initial_value": {
+            "sell_00631l_notional": 24620.01761346462,
+            "buy_0050_notional": 24620.01761346462,
+            "estimated_cost": 119.40708542530342,
+            "estimated_cost_bps": 1.1940708542530343
+          },
+          "prices": {
+            "0050.TW": 48.525001525878906,
+            "00631L.TW": 10.390910148620605
+          },
+          "share_delta_estimates_per_initial_value": {
+            "00631L.TW": -2369.380281546649,
+            "0050.TW": 507.3676834473565
+          },
+          "existing_guard_overlap": {
+            "volatility_gate": "neutral_vol",
+            "volatility_high_vol": false,
+            "a2118_extreme_warning_proxy": false,
+            "covered_by_existing_guard": false
+          },
+          "checks": {
+            "finite_action": true,
+            "action_allowed": true,
+            "panel_date_available": true,
+            "edge_pass": true,
+            "within_regret_clip": true,
+            "turnover_cap_configured": true,
+            "min_trade_notional_pass": true,
+            "price_available": true,
+            "all_pass": true
+          },
+          "warnings": {
+            "turnover_proxy_above_cap": false
+          }
+        },
+        {
+          "date": "2025-02-21",
+          "label": "live_2024_2026",
+          "bucket": "tuning_window",
+          "window": {
+            "start": "2024-01-02",
+            "end": "2026-07-13"
+          },
+          "ncf_panel": "results/ncf_00631l_panel_latest_20260707.csv",
+          "action": "CAP10",
+          "predicted_regret": 0.0005852723940600749,
+          "predicted_regrets": {
+            "KEEP": 0.0,
+            "NO_ADD": 0.0,
+            "CAP10": 0.0005852723940600749,
+            "REENTER": 0.0
+          },
+          "edge_threshold_used": 0.0005,
+          "base_00631l_weight": 0.12626135212102893,
+          "final_00631l_weight": 0.10041033362689109,
+          "delta_00631l_weight": -0.025851018494137845,
+          "turnover_proxy": 0.05170203698827569,
+          "estimated_cost_per_initial_value": {
+            "sell_00631l_notional": 25851.018494137847,
+            "buy_0050_notional": 25851.018494137847,
+            "estimated_cost": 125.37743969656856,
+            "estimated_cost_bps": 1.2537743969656854
+          },
+          "prices": {
+            "0050.TW": 49.48749923706055,
+            "00631L.TW": 11.384090423583984
+          },
+          "share_delta_estimates_per_initial_value": {
+            "00631L.TW": -2270.8022803985536,
+            "0050.TW": 522.3747187204472
+          },
+          "existing_guard_overlap": {
+            "volatility_gate": "low_vol_participation",
+            "volatility_high_vol": false,
+            "a2118_extreme_warning_proxy": false,
+            "covered_by_existing_guard": false
+          },
+          "checks": {
+            "finite_action": true,
+            "action_allowed": true,
+            "panel_date_available": true,
+            "edge_pass": true,
+            "within_regret_clip": true,
+            "turnover_cap_configured": true,
+            "min_trade_notional_pass": true,
+            "price_available": true,
+            "all_pass": true
+          },
+          "warnings": {
+            "turnover_proxy_above_cap": true
+          }
+        },
+        {
+          "date": "2018-07-27",
+          "label": "2018_correction",
+          "bucket": "out_of_sample",
+          "window": {
+            "start": "2018-01-02",
+            "end": "2018-12-31"
+          },
+          "ncf_panel": "results/ncf_00631l_panel_backfill_2017_2019_20260710.csv",
+          "action": "CAP10",
+          "predicted_regret": 0.0005396739430931988,
+          "predicted_regrets": {
+            "KEEP": 0.0,
+            "NO_ADD": 0.0,
+            "CAP10": 0.0005396739430931988,
+            "REENTER": 0.0
+          },
+          "edge_threshold_used": 0.0005,
+          "base_00631l_weight": 0.12626135212102893,
+          "final_00631l_weight": 0.10656533803025724,
+          "delta_00631l_weight": -0.019696014090771694,
+          "turnover_proxy": 0.03939202818154339,
+          "estimated_cost_per_initial_value": {
+            "sell_00631l_notional": 19696.014090771692,
+            "buy_0050_notional": 19696.014090771692,
+            "estimated_cost": 95.5256683402427,
+            "estimated_cost_bps": 0.9552566834024271
+          },
+          "prices": {
+            "0050.TW": 21.424999237060547,
+            "00631L.TW": 1.8272700309753418
+          },
+          "share_delta_estimates_per_initial_value": {
+            "00631L.TW": -10778.929089237321,
+            "0050.TW": 919.300573728932
+          },
+          "existing_guard_overlap": {
+            "volatility_gate": "low_vol_participation",
+            "volatility_high_vol": false,
+            "a2118_extreme_warning_proxy": false,
+            "covered_by_existing_guard": false
+          },
+          "checks": {
+            "finite_action": true,
+            "action_allowed": true,
+            "panel_date_available": true,
+            "edge_pass": true,
+            "within_regret_clip": true,
+            "turnover_cap_configured": true,
+            "min_trade_notional_pass": true,
+            "price_available": true,
+            "all_pass": true
+          },
+          "warnings": {
+            "turnover_proxy_above_cap": false
+          }
+        },
+        {
+          "date": "2018-10-01",
+          "label": "2018_correction",
+          "bucket": "out_of_sample",
+          "window": {
+            "start": "2018-01-02",
+            "end": "2018-12-31"
+          },
+          "ncf_panel": "results/ncf_00631l_panel_backfill_2017_2019_20260710.csv",
+          "action": "CAP10",
+          "predicted_regret": 0.000782656958475781,
+          "predicted_regrets": {
+            "KEEP": 0.0,
+            "NO_ADD": 0.0,
+            "CAP10": 0.000782656958475781,
+            "REENTER": 0.0
+          },
+          "edge_threshold_used": 0.0005,
+          "base_00631l_weight": 0.12626135212102893,
+          "final_00631l_weight": 0.10164133450756431,
+          "delta_00631l_weight": -0.02462001761346462,
+          "turnover_proxy": 0.04924003522692924,
+          "estimated_cost_per_initial_value": {
+            "sell_00631l_notional": 24620.01761346462,
+            "buy_0050_notional": 24620.01761346462,
+            "estimated_cost": 119.40708542530342,
+            "estimated_cost_bps": 1.1940708542530343
+          },
+          "prices": {
+            "0050.TW": 21.837499618530273,
+            "00631L.TW": 1.8686399459838867
+          },
+          "share_delta_estimates_per_initial_value": {
+            "00631L.TW": -13175.367285912082,
+            "0050.TW": 1127.4192578610619
+          },
+          "existing_guard_overlap": {
+            "volatility_gate": "low_vol_participation",
+            "volatility_high_vol": false,
+            "a2118_extreme_warning_proxy": false,
+            "covered_by_existing_guard": false
+          },
+          "checks": {
+            "finite_action": true,
+            "action_allowed": true,
+            "panel_date_available": true,
+            "edge_pass": true,
+            "within_regret_clip": true,
+            "turnover_cap_configured": true,
+            "min_trade_notional_pass": true,
+            "price_available": true,
+            "all_pass": true
+          },
+          "warnings": {
+            "turnover_proxy_above_cap": false
+          }
+        },
+        {
+          "date": "2018-10-02",
+          "label": "2018_correction",
+          "bucket": "out_of_sample",
+          "window": {
+            "start": "2018-01-02",
+            "end": "2018-12-31"
+          },
+          "ncf_panel": "results/ncf_00631l_panel_backfill_2017_2019_20260710.csv",
+          "action": "CAP10",
+          "predicted_regret": 0.0005936343643500887,
+          "predicted_regrets": {
+            "KEEP": 0.0,
+            "NO_ADD": 0.0,
+            "CAP10": 0.0005936343643500887,
+            "REENTER": 0.0
+          },
+          "edge_threshold_used": 0.0005,
+          "base_00631l_weight": 0.12626135212102893,
+          "final_00631l_weight": 0.10041033362689109,
+          "delta_00631l_weight": -0.025851018494137845,
+          "turnover_proxy": 0.05170203698827569,
+          "estimated_cost_per_initial_value": {
+            "sell_00631l_notional": 25851.018494137847,
+            "buy_0050_notional": 25851.018494137847,
+            "estimated_cost": 125.37743969656856,
+            "estimated_cost_bps": 1.2537743969656854
+          },
+          "prices": {
+            "0050.TW": 21.512500762939453,
+            "00631L.TW": 1.8190900087356567
+          },
+          "share_delta_estimates_per_initial_value": {
+            "00631L.TW": -14210.961728114477,
+            "0050.TW": 1201.6742627464564
+          },
+          "existing_guard_overlap": {
+            "volatility_gate": "low_vol_participation",
+            "volatility_high_vol": false,
+            "a2118_extreme_warning_proxy": false,
+            "covered_by_existing_guard": false
+          },
+          "checks": {
+            "finite_action": true,
+            "action_allowed": true,
+            "panel_date_available": true,
+            "edge_pass": true,
+            "within_regret_clip": true,
+            "turnover_cap_configured": true,
+            "min_trade_notional_pass": true,
+            "price_available": true,
+            "all_pass": true
+          },
+          "warnings": {
+            "turnover_proxy_above_cap": true
+          }
+        },
+        {
+          "date": "2018-10-04",
+          "label": "2018_correction",
+          "bucket": "out_of_sample",
+          "window": {
+            "start": "2018-01-02",
+            "end": "2018-12-31"
+          },
+          "ncf_panel": "results/ncf_00631l_panel_backfill_2017_2019_20260710.csv",
+          "action": "CAP10",
+          "predicted_regret": 0.0007914984133160843,
+          "predicted_regrets": {
+            "KEEP": 0.0,
+            "NO_ADD": 0.0,
+            "CAP10": 0.0007914984133160843,
+            "REENTER": 0.0
+          },
+          "edge_threshold_used": 0.0005,
+          "base_00631l_weight": 0.12626135212102893,
+          "final_00631l_weight": 0.10010258340672278,
+          "delta_00631l_weight": -0.026158768714306155,
+          "turnover_proxy": 0.05231753742861231,
+          "estimated_cost_per_initial_value": {
+            "sell_00631l_notional": 26158.768714306156,
+            "buy_0050_notional": 26158.768714306156,
+            "estimated_cost": 126.87002826438487,
+            "estimated_cost_bps": 1.2687002826438487
+          },
+          "prices": {
+            "0050.TW": 21.225000381469727,
+            "00631L.TW": 1.7677299976348877
+          },
+          "share_delta_estimates_per_initial_value": {
+            "00631L.TW": -14797.943548678222,
+            "0050.TW": 1232.450800667302
+          },
+          "existing_guard_overlap": {
+            "volatility_gate": "low_vol_participation",
+            "volatility_high_vol": false,
+            "a2118_extreme_warning_proxy": false,
+            "covered_by_existing_guard": false
+          },
+          "checks": {
+            "finite_action": true,
+            "action_allowed": true,
+            "panel_date_available": true,
+            "edge_pass": true,
+            "within_regret_clip": true,
+            "turnover_cap_configured": true,
+            "min_trade_notional_pass": true,
+            "price_available": true,
+            "all_pass": true
+          },
+          "warnings": {
+            "turnover_proxy_above_cap": true
+          }
+        }
+      ]
+    },
+    "dfl_frozen_input_staleness": {
+      "status": "ok",
+      "frozen_input_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json",
+      "frozen_input_generated_at": "2026-07-14T14:45:49",
+      "max_live_window_decision_date": "2026-07-13",
+      "calendar_gap_days": 5
+    },
+    "finstressts_decision_snapshot": {
+      "schema_version": 1,
+      "report_type": "group_a_plus_finstressts_decision_snapshot",
+      "generated_at": "2026-07-18T06:44:29",
+      "policy": "research_only_summary_no_weight_change",
+      "status": "blocked",
+      "source_paper": "C:/Users/isaac/Downloads/2606.03184.pdf",
+      "summary": {
+        "readiness_status": "blocked",
+        "blocked_mechanisms": [
+          "heavy_tailed_shocks",
+          "self_exciting_jumps",
+          "zero_inflated_sparse_jumps",
+          "execution_under_stress"
+        ],
+        "reference_loses_to_no_00631l_scenarios": 5,
+        "reference_tail_failure_scenarios": 4,
+        "baseline_best_shadow_candidate": "combined_vol_trend_gate",
+        "baseline_wins_vs_no_00631l": {
+          "reference_20260720": 0,
+          "reduced_leverage": 0,
+          "rolling_vol_gate": 0,
+          "trend_gate": 0,
+          "combined_vol_trend_gate": 0
+        },
+        "baseline_tail_failures": {
+          "reference_20260720": 4,
+          "reduced_leverage": 4,
+          "rolling_vol_gate": 2,
+          "trend_gate": 1,
+          "combined_vol_trend_gate": 1
+        }
+      },
+      "blocking_reasons": [
+        "readiness_review_blocked",
+        "reference_loses_to_no_00631l_under_counterfactuals",
+        "reference_tail_failures_under_counterfactuals",
+        "no_baseline_beats_no_00631l"
+      ],
+      "warning_reasons": [
+        "best_shadow_candidate:combined_vol_trend_gate"
+      ],
+      "decision": {
+        "summary": "FinStressTS consolidated snapshot blocks promotion: readiness is blocked, the 7/20 reference loses to no-00631L under stress, and no tested baseline beats no-00631L on the strict ES95 + max-drawdown rule.",
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "keep_golden1_0531_unchanged": true
+      },
+      "inputs": {
+        "readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_readiness_review.json",
+        "counterfactual": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_counterfactual_shadow.json",
+        "baseline": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_baseline_compare_shadow.json"
+      },
+      "upstream_decisions": {
+        "readiness": {
+          "summary": "Import FinStressTS as model-validation governance only. Current GroupA+ gates are blocked, and the paper is a diagnostic benchmark rather than a Taiwan ETF trading signal.",
+          "promote_to_live": false,
+          "target_weight_change_allowed": false,
+          "auto_rebalance_allowed": false,
+          "allow_00631l_add": false,
+          "keep_golden1_0531_unchanged": true,
+          "next_research_step": "Build a small Taiwan ETF counterfactual stress harness before any model promotion claim."
+        },
+        "counterfactual": {
+          "summary": "Reference 7/20 weights do not pass the FinStressTS-style counterfactual stress review against the no-00631L reference.",
+          "promote_to_live": false,
+          "target_weight_change_allowed": false,
+          "auto_rebalance_allowed": false,
+          "allow_00631l_add": false,
+          "keep_golden1_0531_unchanged": true,
+          "reference_loses_to_no_00631l_scenarios": 5,
+          "reference_tail_failure_scenarios": 4
+        },
+        "baseline": {
+          "summary": "No tested baseline is promoted. The comparison is useful for research, but no rule beats no-00631L cleanly enough to unlock 00631L add or rebalance.",
+          "promote_to_live": false,
+          "target_weight_change_allowed": false,
+          "auto_rebalance_allowed": false,
+          "allow_00631l_add": false,
+          "keep_golden1_0531_unchanged": true
+        }
+      }
+    },
+    "trigate_vol_memory_shadow": {
+      "schema_version": 1,
+      "report_type": "group_a_plus_trigate_vol_memory_shadow",
+      "generated_at": "2026-07-18T06:44:42",
+      "policy": "research_only_vol_memory_decomposition_no_weight_change",
+      "source_paper": {
+        "file": "C:/Users/isaac/Downloads/2512.02166.pdf",
+        "title": "The Three-Dimensional Decomposition of Volatility Memory",
+        "imported_concepts": [
+          "volatility_memory_level_gate",
+          "volatility_memory_shape_or_long_memory_proxy",
+          "volatility_memory_tempo_or_business_time_proxy",
+          "equity_volatility_memory_can_be_regime_and_tempo_dominated"
+        ],
+        "not_imported": [
+          "full_TG_Vol_QMLE_estimator",
+          "G_FIGARCH_fractional_order_estimation",
+          "SPY_EURUSD_empirical_parameters",
+          "automatic_target_weight_change"
+        ]
+      },
+      "input_window": {
+        "start": "2015-01-06",
+        "end": "2026-07-17",
+        "rows": 2804
+      },
+      "latest": {
+        "date": "2026-07-17",
+        "vol_level_20d_ann": 0.7395145955984148,
+        "vol_level_percentile_252d": 0.9325396825396826,
+        "memory_shape_score": 0.8211102762806298,
+        "memory_shape_percentile_252d": 0.9761904761904762,
+        "tempo_score": 7.488685336653031,
+        "tempo_percentile_252d": 1.0,
+        "vol20_vs_vol60_ratio": 1.127032566628849,
+        "0050_00631l_return_corr_60d": 0.9806113566378623
+      },
+      "tri_gate_state": {
+        "level_gate_active": true,
+        "shape_gate_active": true,
+        "tempo_gate_active": true,
+        "stress_gate_count": 3,
+        "state": "blocked_for_leverage_add"
+      },
+      "decision": {
+        "summary": "Import level/shape/tempo volatility-memory decomposition as a shadow diagnostic only. It does not overcome existing GroupA+ execution, rebalance, option-state, and FinStressTS blockers.",
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "keep_golden1_0531_unchanged": true
+      }
+    },
+    "research_shadow_decision_snapshot": {
+      "schema_version": 1,
+      "report_type": "group_a_plus_research_shadow_decision_snapshot",
+      "generated_at": "2026-07-18T06:44:29",
+      "policy": "research_shadow_summary_no_weight_change",
+      "status": "blocked",
+      "summary": {
+        "finstressts_status": "blocked",
+        "finstressts_allow_00631l_add": false,
+        "trigate_state": "blocked_for_leverage_add",
+        "trigate_stress_gate_count": 3,
+        "trigate_allow_00631l_add": false
+      },
+      "blocking_reasons": [
+        "finstressts_snapshot_blocked",
+        "trigate_vol_memory_blocks_leverage_add"
+      ],
+      "warning_reasons": [
+        "trigate_stress_gate_count:3"
+      ],
+      "decision": {
+        "summary": "Research shadow diagnostics do not permit 00631L add: FinStressTS is blocked and tri-gate volatility memory is blocked for leverage add.",
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "keep_golden1_0531_unchanged": true
+      },
+      "inputs": {
+        "finstressts": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_decision_snapshot.json",
+        "trigate_vol_memory": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/trigate_vol_memory_shadow.json"
+      }
+    }
+  }
+}

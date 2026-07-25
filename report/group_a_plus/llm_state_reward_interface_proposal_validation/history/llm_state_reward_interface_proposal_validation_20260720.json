@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_proposal_validation_review",
+  "generated_at": "2026-07-20T23:49:30",
+  "as_of": "2026-07-20",
+  "status": "available_for_manual_offline_review",
+  "policy": "research_only_proposal_validation_no_live_action",
+  "inputs": {
+    "catalog": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_catalog.json",
+    "proposals": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_sample_proposals.json",
+    "catalog_exists": true,
+    "proposal_count": 4
+  },
+  "summary": {
+    "accepted_for_offline_review_count": 3,
+    "rejected_count": 1,
+    "accepted_proposal_ids": [
+      "gift_research_momentum_vol_drawdown_turnover_v1",
+      "gift_research_downside_vol_letf_tail_decay_v1",
+      "gift_research_high_dividend_active_pain_v1"
+    ],
+    "rejected_proposal_ids": [
+      "gift_reject_live_00631l_target_weight_v1"
+    ]
+  },
+  "proposal_results": [
+    {
+      "proposal_id": "gift_research_momentum_vol_drawdown_turnover_v1",
+      "status": "accepted_for_offline_review",
+      "accepted_for_offline_review": true,
+      "rejection_reasons": [],
+      "warning_reasons": [],
+      "feature_families": [
+        "momentum",
+        "volatility"
+      ],
+      "feature_primitives": [
+        "relative_momentum",
+        "realized_volatility"
+      ],
+      "reward_terms": [
+        "drawdown_penalty",
+        "turnover_penalty"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+      "status": "accepted_for_offline_review",
+      "accepted_for_offline_review": true,
+      "rejection_reasons": [],
+      "warning_reasons": [],
+      "feature_families": [
+        "downside_risk",
+        "volatility",
+        "trend_strength"
+      ],
+      "feature_primitives": [
+        "downside_deviation",
+        "realized_volatility",
+        "drawdown_depth",
+        "ema_cross_strength"
+      ],
+      "reward_terms": [
+        "drawdown_penalty",
+        "volatility_scaling",
+        "letf_tail_decay_cost"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "proposal_id": "gift_research_high_dividend_active_pain_v1",
+      "status": "accepted_for_offline_review",
+      "accepted_for_offline_review": true,
+      "rejection_reasons": [],
+      "warning_reasons": [],
+      "feature_families": [
+        "bucket_active_pain",
+        "downside_risk",
+        "volatility"
+      ],
+      "feature_primitives": [
+        "active_bucket_weight",
+        "active_bucket_return_contribution",
+        "active_bucket_drawdown_depth",
+        "reward_signal_concentration_hhi",
+        "high_dividend_active_pain",
+        "drawdown_depth",
+        "realized_volatility"
+      ],
+      "reward_terms": [
+        "active_bucket_drawdown_penalty",
+        "drawdown_penalty",
+        "concentration_penalty"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    {
+      "proposal_id": "gift_reject_live_00631l_target_weight_v1",
+      "status": "rejected",
+      "accepted_for_offline_review": false,
+      "rejection_reasons": [
+        "does_not_append_features_only",
+        "executes_generated_code_live",
+        "ignores_market_impact_for_turnover",
+        "interface_not_frozen_before_oos",
+        "missing_human_review_note",
+        "missing_walk_forward_plan",
+        "outputs_actions",
+        "outputs_target_weights",
+        "requested_live_effect:allow_00631l_add",
+        "requested_live_effect:auto_rebalance",
+        "requested_live_effect:promote_to_live",
+        "requested_live_effect:target_weight_change",
+        "uses_test_time_llm_queries"
+      ],
+      "warning_reasons": [],
+      "feature_families": [
+        "momentum",
+        "volatility"
+      ],
+      "feature_primitives": [
+        "relative_momentum",
+        "realized_volatility"
+      ],
+      "reward_terms": [
+        "drawdown_penalty",
+        "turnover_penalty"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    }
+  ],
+  "decision": {
+    "proposal_validation_available": true,
+    "offline_review_allowed_for_accepted_proposals": true,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

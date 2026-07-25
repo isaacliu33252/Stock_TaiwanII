@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_risk_control_overlay_shadow_backtest",
+  "generated_at": "2026-07-20T21:53:40",
+  "as_of": "2026-07-20",
+  "status": "available_for_manual_offline_review",
+  "policy": "risk_control_overlay_shadow_only_no_model_training_no_live_action",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "panel_sha256": "f59dd35c183f22d362228f2f8f110cdcbeb286ed182687052b39e7a894f98e57",
+    "baseline_shadow_backtest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_baseline_shadow_backtest.json",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "single_name_active_cap": 0.055,
+    "high_dividend_bucket": [
+      "0056.TW",
+      "00713.TW",
+      "00878.TW"
+    ],
+    "high_dividend_bucket_active_cap": 0.035,
+    "bond_bucket": [
+      "00679B.TWO",
+      "00751B.TWO"
+    ],
+    "bond_bucket_active_cap": 0.02,
+    "max_daily_turnover": 0.12
+  },
+  "summary": {
+    "baseline_positive_final_value_folds": 4,
+    "baseline_positive_sharpe_folds": 4,
+    "baseline_non_worse_drawdown_folds": 1,
+    "overlay": {
+      "fold_count": 6,
+      "available_fold_count": 6,
+      "positive_final_value_folds": 4,
+      "positive_sharpe_folds": 4,
+      "non_worse_drawdown_folds": 1,
+      "mean_delta_final_value": 0.009530672404405915,
+      "mean_delta_sharpe_ratio": 0.04691269867500499,
+      "mean_delta_max_drawdown": -0.005791851782983211
+    },
+    "delta_overlay_minus_baseline": {
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0
+    },
+    "pass_risk_control_overlay_gate": false
+  },
+  "fold_results": [
+    {
+      "fold": 1,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2023-05-30",
+      "test_start": "2023-06-07",
+      "test_end": "2023-12-07",
+      "test_days": 126,
+      "overlay": {
+        "final_value": 1.056059778677645,
+        "total_return": 0.05605977867764489,
+        "annual_return": 0.1152622561406762,
+        "annual_volatility": 0.11421633763137098,
+        "sharpe_ratio": 1.0091573458840966,
+        "max_drawdown": -0.09030605003661785,
+        "worst_daily_return": -0.019833505585767398,
+        "mean_daily_turnover": 0.0144926005447113,
+        "total_turnover": 1.8260676686336237
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.059621605790715,
+        "total_return": 0.05962160579071507,
+        "annual_return": 0.12279794745849348,
+        "annual_volatility": 0.1130394711049414,
+        "sharpe_ratio": 1.0863280432769602,
+        "max_drawdown": -0.09111523228221718,
+        "worst_daily_return": -0.01936394622395119,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": -0.0035618271130701817,
+        "sharpe_ratio": -0.07717069739286364,
+        "max_drawdown": 0.000809182245599338
+      }
+    },
+    {
+      "fold": 2,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2023-11-30",
+      "test_start": "2023-12-08",
+      "test_end": "2024-06-19",
+      "test_days": 126,
+      "overlay": {
+        "final_value": 1.178126451216125,
+        "total_return": 0.17812645121612491,
+        "annual_return": 0.38798193505510037,
+        "annual_volatility": 0.09788374320150633,
+        "sharpe_ratio": 3.9637014520009664,
+        "max_drawdown": -0.04794345303174097,
+        "worst_daily_return": -0.020390676707366214,
+        "mean_daily_turnover": 0.012699799463120444,
+        "total_turnover": 1.6001747323531759
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.1547100123539007,
+        "total_return": 0.1547100123539007,
+        "annual_return": 0.3333552126303454,
+        "annual_volatility": 0.09015620427867266,
+        "sharpe_ratio": 3.697529363591496,
+        "max_drawdown": -0.04524303956781861,
+        "worst_daily_return": -0.0186171129367527,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.02341643886222422,
+        "sharpe_ratio": 0.2661720884094705,
+        "max_drawdown": -0.0027004134639223576
+      }
+    },
+    {
+      "fold": 3,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2024-06-12",
+      "test_start": "2024-06-20",
+      "test_end": "2024-12-23",
+      "test_days": 126,
+      "overlay": {
+        "final_value": 0.9518903423218347,
+        "total_return": -0.04810965767816533,
+        "annual_return": -0.09390477619442039,
+        "annual_volatility": 0.12242242824146193,
+        "sharpe_ratio": -0.7670553308190042,
+        "max_drawdown": -0.09804518428906084,
+        "worst_daily_return": -0.043880375492968235,
+        "mean_daily_turnover": 0.014269036311457822,
+        "total_turnover": 1.7978985752436856
+      },
+      "equal_weight_baseline": {
+        "final_value": 0.951236540702902,
+        "total_return": -0.04876345929709802,
+        "annual_return": -0.09514904363157628,
+        "annual_volatility": 0.1149450473508216,
+        "sharpe_ratio": -0.8277785413509264,
+        "max_drawdown": -0.08685616453187539,
+        "worst_daily_return": -0.04217256404257972,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.0006538016189326923,
+        "sharpe_ratio": 0.0607232105319222,
+        "max_drawdown": -0.011189019757185448
+      }
+    },
+    {
+      "fold": 4,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2024-12-16",
+      "test_start": "2024-12-24",
+      "test_end": "2025-07-04",
+      "test_days": 126,
+      "overlay": {
+        "final_value": 0.922738974974961,
+        "total_return": -0.07726102502503895,
+        "annual_return": -0.14855278406215822,
+        "annual_volatility": 0.19591961699183466,
+        "sharpe_ratio": -0.7582333323382796,
+        "max_drawdown": -0.1731863023035698,
+        "worst_daily_return": -0.06933884411614072,
+        "mean_daily_turnover": 0.014715977967048717,
+        "total_turnover": 1.8542132238481384
+      },
+      "equal_weight_baseline": {
+        "final_value": 0.9339563893396428,
+        "total_return": -0.06604361066035724,
+        "annual_return": -0.12772546281165764,
+        "annual_volatility": 0.19170488584070972,
+        "sharpe_ratio": -0.666260863678699,
+        "max_drawdown": -0.16386034082572787,
+        "worst_daily_return": -0.06704733383502962,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": -0.01121741436468171,
+        "sharpe_ratio": -0.09197246865958064,
+        "max_drawdown": -0.009325961477841926
+      }
+    },
+    {
+      "fold": 5,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2025-06-27",
+      "test_start": "2025-07-07",
+      "test_end": "2026-01-06",
+      "test_days": 126,
+      "overlay": {
+        "final_value": 1.1281086882372668,
+        "total_return": 0.12810868823726684,
+        "annual_return": 0.2726292124764069,
+        "annual_volatility": 0.07754732795211228,
+        "sharpe_ratio": 3.515649341841454,
+        "max_drawdown": -0.05045868887862903,
+        "worst_daily_return": -0.016490929118430742,
+        "mean_daily_turnover": 0.009401973232840635,
+        "total_turnover": 1.18464862733792
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.114174535307627,
+        "total_return": 0.11417453530762689,
+        "annual_return": 0.24138489512796624,
+        "annual_volatility": 0.06873598775342113,
+        "sharpe_ratio": 3.511768769423875,
+        "max_drawdown": -0.04592055201778811,
+        "worst_daily_return": -0.013673891166935088,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.013934152929639954,
+        "sharpe_ratio": 0.00388057241757922,
+        "max_drawdown": -0.0045381368608409245
+      }
+    },
+    {
+      "fold": 6,
+      "status": "available_for_manual_offline_review",
+      "train_start": "2016-01-04",
+      "train_end": "2025-12-29",
+      "test_start": "2026-01-07",
+      "test_end": "2026-07-17",
+      "test_days": 126,
+      "overlay": {
+        "final_value": 1.2577612754486849,
+        "total_return": 0.2577612754486849,
+        "annual_return": 0.5819634260183026,
+        "annual_volatility": 0.17152275951920026,
+        "sharpe_ratio": 3.3929224765833927,
+        "max_drawdown": -0.06812837176247821,
+        "worst_daily_return": -0.028102460606170263,
+        "mean_daily_turnover": 0.012977472787483202,
+        "total_turnover": 1.6351615712228835
+      },
+      "equal_weight_baseline": {
+        "final_value": 1.2238023929552944,
+        "total_return": 0.22380239295529436,
+        "annual_return": 0.4976922970031048,
+        "annual_volatility": 0.15205630494956385,
+        "sharpe_ratio": 3.2730789898398904,
+        "max_drawdown": -0.06032161037877026,
+        "worst_daily_return": -0.025712412046519636,
+        "mean_daily_turnover": 0.0,
+        "total_turnover": 0.0
+      },
+      "delta_vs_equal_weight": {
+        "final_value": 0.03395888249339052,
+        "sharpe_ratio": 0.11984348674350231,
+        "max_drawdown": -0.00780676138370795
+      }
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "non_worse_drawdown_folds_below_threshold:1<3"
+  ],
+  "interpretation": [
+    "The overlay constrains reward-tilt concentration without using a learned model.",
+    "Passing this gate requires preserving return and Sharpe fold counts while improving drawdown fold count.",
+    "This report is a shadow diagnostic only and does not authorize live weights."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "risk_control_overlay_ready_for_review": true,
+    "risk_control_overlay_passed_shadow_gate": false,
+    "next_shadow_model_design_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

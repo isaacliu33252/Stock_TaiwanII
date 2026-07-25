@@ -1,0 +1,619 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_letf_tracking_error_effective_fee_readiness_review",
+  "generated_at": "2026-07-19T13:34:05",
+  "as_of": "2026-07-20",
+  "actual_data_end": "2026-07-17",
+  "source_paper": {
+    "path": "C:/Users/isaac/Downloads/1610.09404.pdf",
+    "title": "Understanding the Tracking Errors of Commodity Leveraged ETFs",
+    "imported_concept": "holding-horizon tracking error, realized-variance decay, realized effective-fee proxy"
+  },
+  "policy": "research_only_letf_tracking_error_effective_fee_no_pair_trade_no_weight_change",
+  "status": "blocked",
+  "data": {
+    "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "start": "2020-01-01",
+    "reference_ticker": "0050.TW",
+    "available_tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "required_tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "horizons": [
+      1,
+      5,
+      10,
+      20,
+      30
+    ]
+  },
+  "tracking_error_summary": {
+    "00631L.TW": {
+      "expected_daily_beta": 2.0,
+      "horizon_metrics": {
+        "1": {
+          "horizon_days": 1,
+          "tracking_error": {
+            "count": 1586,
+            "mean": -0.00016231779214288095,
+            "std": 0.007601143368361992,
+            "p05": -0.011255760797675403,
+            "p50": -0.00010118983529337636,
+            "p95": 0.010013233683839894,
+            "latest": -0.023932558876277307
+          },
+          "effective_drag_proxy": {
+            "count": 1586,
+            "mean": 4.3302408177712977e-05,
+            "std": 0.007514343287652905,
+            "p05": -0.01055159265412592,
+            "p50": 4.090476640980181e-05,
+            "p95": 0.010161878299932245,
+            "latest": -0.020267889361021765
+          },
+          "realized_variance": {
+            "count": 1586,
+            "mean": 0.00020562020032059396,
+            "std": 0.000582637246214878,
+            "p05": 1.5489990170628077e-07,
+            "p50": 5.225293638994223e-05,
+            "p95": 0.0008313022296079155,
+            "latest": 0.003664669515255543
+          },
+          "variance_decay_proxy": {
+            "count": 1586,
+            "mean": -0.00020562020032059396,
+            "std": 0.000582637246214878,
+            "p05": -0.0008313022296079155,
+            "p50": -5.225293638994223e-05,
+            "p95": -1.5489990170628077e-07,
+            "latest": -0.003664669515255543
+          },
+          "negative_tracking_error_rate": 0.5069356872635561,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.0020652064811942034,
+            "p05_tracking_error": -0.01932682368959472,
+            "mean_effective_drag_proxy": -0.0016126752968146478
+          }
+        },
+        "5": {
+          "horizon_days": 5,
+          "tracking_error": {
+            "count": 1582,
+            "mean": -0.0007462831647634221,
+            "std": 0.01591172029746569,
+            "p05": -0.026782102104663377,
+            "p50": -0.0001678987786175,
+            "p95": 0.021966134146958947,
+            "latest": -0.024156959811948375
+          },
+          "effective_drag_proxy": {
+            "count": 1582,
+            "mean": 0.000274251319614089,
+            "std": 0.015461163610742458,
+            "p05": -0.024596562903926387,
+            "p50": 0.0004946193463774648,
+            "p95": 0.02282262122243609,
+            "latest": -0.0199312298658015
+          },
+          "realized_variance": {
+            "count": 1582,
+            "mean": 0.0010205344843775114,
+            "std": 0.001775092105888398,
+            "p05": 0.00011884080296327186,
+            "p50": 0.0005604409605039772,
+            "p95": 0.003049145850062333,
+            "latest": 0.004225729946146874
+          },
+          "variance_decay_proxy": {
+            "count": 1582,
+            "mean": -0.0010205344843775114,
+            "std": 0.001775092105888398,
+            "p05": -0.0030491458500623344,
+            "p50": -0.0005604409605039772,
+            "p95": -0.00011884080296327197,
+            "latest": -0.004225729946146874
+          },
+          "negative_tracking_error_rate": 0.5075853350189633,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.008559736578368038,
+            "p05_tracking_error": -0.03386885472477579,
+            "mean_effective_drag_proxy": -0.006538144470515799
+          }
+        },
+        "10": {
+          "horizon_days": 10,
+          "tracking_error": {
+            "count": 1577,
+            "mean": -0.001465591988366457,
+            "std": 0.021963127207639075,
+            "p05": -0.04172554961863838,
+            "p50": 0.00016601778795792554,
+            "p95": 0.03140045963542504,
+            "latest": -0.029990669529515568
+          },
+          "effective_drag_proxy": {
+            "count": 1577,
+            "mean": 0.0005770551046048732,
+            "std": 0.021255571147917592,
+            "p05": -0.036088950479132624,
+            "p50": 0.0016298303231446869,
+            "p95": 0.03294981172844003,
+            "latest": -0.02539097190755009
+          },
+          "realized_variance": {
+            "count": 1577,
+            "mean": 0.00204264709297133,
+            "std": 0.002843905678411624,
+            "p05": 0.0003594394145541844,
+            "p50": 0.0012306025048638394,
+            "p95": 0.0054362574999150025,
+            "latest": 0.004599697621965479
+          },
+          "variance_decay_proxy": {
+            "count": 1577,
+            "mean": -0.00204264709297133,
+            "std": 0.002843905678411624,
+            "p05": -0.005436257499915014,
+            "p50": -0.0012306025048638394,
+            "p95": -0.0003594394145541847,
+            "latest": -0.004599697621965479
+          },
+          "negative_tracking_error_rate": 0.49587824984147116,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.016308085313903712,
+            "p05_tracking_error": -0.04397165254605226,
+            "mean_effective_drag_proxy": -0.012274285957073104
+          }
+        },
+        "20": {
+          "horizon_days": 20,
+          "tracking_error": {
+            "count": 1567,
+            "mean": -0.0031149751790824683,
+            "std": 0.030406397804022794,
+            "p05": -0.05630349754037076,
+            "p50": -0.0008448384021041977,
+            "p95": 0.047738479869003064,
+            "latest": -0.03727944136991085
+          },
+          "effective_drag_proxy": {
+            "count": 1567,
+            "mean": 0.0009592043306957803,
+            "std": 0.02931248306404742,
+            "p05": -0.04900908288641848,
+            "p50": 0.0023493484064909843,
+            "p95": 0.051501640506800526,
+            "latest": -0.027676090820688667
+          },
+          "realized_variance": {
+            "count": 1567,
+            "mean": 0.004074179509778249,
+            "std": 0.0044078615212871245,
+            "p05": 0.0009920645635082851,
+            "p50": 0.002771049406941875,
+            "p95": 0.010327367496383747,
+            "latest": 0.009603350549222182
+          },
+          "variance_decay_proxy": {
+            "count": 1567,
+            "mean": -0.004074179509778249,
+            "std": 0.0044078615212871245,
+            "p05": -0.010327367496383766,
+            "p50": -0.002771049406941875,
+            "p95": -0.0009920645635082858,
+            "latest": -0.009603350549222182
+          },
+          "negative_tracking_error_rate": 0.5118059987236758,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.03103353267672215,
+            "p05_tracking_error": -0.05363262378583843,
+            "mean_effective_drag_proxy": -0.022457232608947678
+          }
+        },
+        "30": {
+          "horizon_days": 30,
+          "tracking_error": {
+            "count": 1557,
+            "mean": -0.004888744513726964,
+            "std": 0.037698681915558085,
+            "p05": -0.06766467069057348,
+            "p50": -0.0021995929759730873,
+            "p95": 0.05888877731019277,
+            "latest": -0.05898968415234139
+          },
+          "effective_drag_proxy": {
+            "count": 1557,
+            "mean": 0.001198008212201039,
+            "std": 0.03626046082601777,
+            "p05": -0.05713895709081508,
+            "p50": 0.00300117982748192,
+            "p95": 0.06399959851388459,
+            "latest": -0.04477677952573382
+          },
+          "realized_variance": {
+            "count": 1557,
+            "mean": 0.0060867527259280034,
+            "std": 0.005663813243210691,
+            "p05": 0.00167179032332986,
+            "p50": 0.004372168063383545,
+            "p95": 0.022229435237104994,
+            "latest": 0.014212904626607573
+          },
+          "variance_decay_proxy": {
+            "count": 1557,
+            "mean": -0.0060867527259280034,
+            "std": 0.005663813243210691,
+            "p05": -0.022229435237104994,
+            "p50": -0.004372168063383545,
+            "p95": -0.0016717903233298614,
+            "latest": -0.014212904626607573
+          },
+          "negative_tracking_error_rate": 0.5221579961464354,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.047052565494729276,
+            "p05_tracking_error": -0.07043268378932155,
+            "mean_effective_drag_proxy": -0.034177189221813266
+          }
+        }
+      }
+    },
+    "00632R.TW": {
+      "expected_daily_beta": -1.0,
+      "horizon_metrics": {
+        "1": {
+          "horizon_days": 1,
+          "tracking_error": {
+            "count": 1586,
+            "mean": 0.0009447246599605232,
+            "std": 0.04908343840177013,
+            "p05": -0.006134955921562941,
+            "p50": -0.0002968552787042222,
+            "p95": 0.00591572066544893,
+            "latest": 0.00529550804616865
+          },
+          "effective_drag_proxy": {
+            "count": 1586,
+            "mean": 0.0011503448602811172,
+            "std": 0.04909348662349609,
+            "p05": -0.005881600870416731,
+            "p50": -0.0001385263534197251,
+            "p95": 0.006299702027317729,
+            "latest": 0.008960177561424192
+          },
+          "realized_variance": {
+            "count": 1586,
+            "mean": 0.00020562020032059396,
+            "std": 0.000582637246214878,
+            "p05": 1.5489990170628077e-07,
+            "p50": 5.225293638994223e-05,
+            "p95": 0.0008313022296079155,
+            "latest": 0.003664669515255543
+          },
+          "variance_decay_proxy": {
+            "count": 1586,
+            "mean": -0.00020562020032059396,
+            "std": 0.000582637246214878,
+            "p05": -0.0008313022296079155,
+            "p50": -5.225293638994223e-05,
+            "p95": -1.5489990170628077e-07,
+            "latest": -0.003664669515255543
+          },
+          "negative_tracking_error_rate": 0.5346784363177806,
+          "recent_60_observations": {
+            "mean_tracking_error": 0.00028207084053212544,
+            "p05_tracking_error": -0.005167275548423736,
+            "mean_effective_drag_proxy": 0.0007346020249116811
+          }
+        },
+        "5": {
+          "horizon_days": 5,
+          "tracking_error": {
+            "count": 1582,
+            "mean": 0.004725520969772518,
+            "std": 0.11019651287845186,
+            "p05": -0.013850205012714402,
+            "p50": -0.0014795755534266208,
+            "p95": 0.011283732884078475,
+            "latest": 0.004070947134375086
+          },
+          "effective_drag_proxy": {
+            "count": 1582,
+            "mean": 0.00574605545415003,
+            "std": 0.11018409952655436,
+            "p05": -0.012531487448408585,
+            "p50": -0.0007223689690724247,
+            "p95": 0.012601361040029674,
+            "latest": 0.00829667708052196
+          },
+          "realized_variance": {
+            "count": 1582,
+            "mean": 0.0010205344843775114,
+            "std": 0.001775092105888398,
+            "p05": 0.00011884080296327186,
+            "p50": 0.0005604409605039772,
+            "p95": 0.003049145850062333,
+            "latest": 0.004225729946146874
+          },
+          "variance_decay_proxy": {
+            "count": 1582,
+            "mean": -0.0010205344843775114,
+            "std": 0.001775092105888398,
+            "p05": -0.0030491458500623344,
+            "p50": -0.0005604409605039772,
+            "p95": -0.00011884080296327197,
+            "latest": -0.004225729946146874
+          },
+          "negative_tracking_error_rate": 0.5847029077117573,
+          "recent_60_observations": {
+            "mean_tracking_error": 0.0009991800858942625,
+            "p05_tracking_error": -0.0100523843146259,
+            "mean_effective_drag_proxy": 0.0030207721937465007
+          }
+        },
+        "10": {
+          "horizon_days": 10,
+          "tracking_error": {
+            "count": 1577,
+            "mean": 0.009467038459841827,
+            "std": 0.15585134480268728,
+            "p05": -0.021123306059200417,
+            "p50": -0.0031080770183459757,
+            "p95": 0.017059567527192582,
+            "latest": 0.013109894073612141
+          },
+          "effective_drag_proxy": {
+            "count": 1577,
+            "mean": 0.011509685552813155,
+            "std": 0.1557788396716846,
+            "p05": -0.018103246168155555,
+            "p50": -0.0013761297269662101,
+            "p95": 0.01987992993440842,
+            "latest": 0.01770959169557762
+          },
+          "realized_variance": {
+            "count": 1577,
+            "mean": 0.00204264709297133,
+            "std": 0.002843905678411624,
+            "p05": 0.0003594394145541844,
+            "p50": 0.0012306025048638394,
+            "p95": 0.0054362574999150025,
+            "latest": 0.004599697621965479
+          },
+          "variance_decay_proxy": {
+            "count": 1577,
+            "mean": -0.00204264709297133,
+            "std": 0.002843905678411624,
+            "p05": -0.005436257499915014,
+            "p50": -0.0012306025048638394,
+            "p95": -0.0003594394145541847,
+            "latest": -0.004599697621965479
+          },
+          "negative_tracking_error_rate": 0.6284083703233989,
+          "recent_60_observations": {
+            "mean_tracking_error": 0.0016795321512384856,
+            "p05_tracking_error": -0.009202863951649017,
+            "mean_effective_drag_proxy": 0.005713331508069092
+          }
+        },
+        "20": {
+          "horizon_days": 20,
+          "tracking_error": {
+            "count": 1567,
+            "mean": 0.0191792772610958,
+            "std": 0.22072564818653925,
+            "p05": -0.032841276036904295,
+            "p50": -0.005492574926106303,
+            "p95": 0.022760516918088926,
+            "latest": 0.007779877887132636
+          },
+          "effective_drag_proxy": {
+            "count": 1567,
+            "mean": 0.02325345677087405,
+            "std": 0.22050420061868084,
+            "p05": -0.02786514113247538,
+            "p50": -0.0020858545329859677,
+            "p95": 0.027480052485129115,
+            "latest": 0.017383228436354817
+          },
+          "realized_variance": {
+            "count": 1567,
+            "mean": 0.004074179509778249,
+            "std": 0.0044078615212871245,
+            "p05": 0.0009920645635082851,
+            "p50": 0.002771049406941875,
+            "p95": 0.010327367496383747,
+            "latest": 0.009603350549222182
+          },
+          "variance_decay_proxy": {
+            "count": 1567,
+            "mean": -0.004074179509778249,
+            "std": 0.0044078615212871245,
+            "p05": -0.010327367496383766,
+            "p50": -0.002771049406941875,
+            "p95": -0.0009920645635082858,
+            "latest": -0.009603350549222182
+          },
+          "negative_tracking_error_rate": 0.6617740906190173,
+          "recent_60_observations": {
+            "mean_tracking_error": 0.0022884708961781334,
+            "p05_tracking_error": -0.010997205402799028,
+            "mean_effective_drag_proxy": 0.010864770963952603
+          }
+        },
+        "30": {
+          "horizon_days": 30,
+          "tracking_error": {
+            "count": 1557,
+            "mean": 0.02914141424224918,
+            "std": 0.27099562306378755,
+            "p05": -0.04194782042073657,
+            "p50": -0.00796021378460221,
+            "p95": 0.028106654664674977,
+            "latest": 0.0081190680562589
+          },
+          "effective_drag_proxy": {
+            "count": 1557,
+            "mean": 0.03522816696817718,
+            "std": 0.2706143155921166,
+            "p05": -0.03489806631983506,
+            "p50": -0.002949755563466546,
+            "p95": 0.032882506698140475,
+            "latest": 0.022331972682866474
+          },
+          "realized_variance": {
+            "count": 1557,
+            "mean": 0.0060867527259280034,
+            "std": 0.005663813243210691,
+            "p05": 0.00167179032332986,
+            "p50": 0.004372168063383545,
+            "p95": 0.022229435237104994,
+            "latest": 0.014212904626607573
+          },
+          "variance_decay_proxy": {
+            "count": 1557,
+            "mean": -0.0060867527259280034,
+            "std": 0.005663813243210691,
+            "p05": -0.022229435237104994,
+            "p50": -0.004372168063383545,
+            "p95": -0.0016717903233298614,
+            "latest": -0.014212904626607573
+          },
+          "negative_tracking_error_rate": 0.666024405908799,
+          "recent_60_observations": {
+            "mean_tracking_error": 0.002729050366663041,
+            "p05_tracking_error": -0.010876108225421257,
+            "mean_effective_drag_proxy": 0.015604426639579056
+          }
+        }
+      }
+    }
+  },
+  "hedge_neutrality": {
+    "00632R.TW": {
+      "status": "review_only",
+      "lookback_days": 60,
+      "realized_beta": -0.9943236718895596,
+      "expected_beta": -1.0,
+      "beta_error": 0.005676328110440387,
+      "absolute_beta_error": 0.005676328110440387,
+      "correlation": -0.9779260056912819
+    }
+  },
+  "parameter_threshold_review": {
+    "policy": "manual_review_thresholds_only_no_live_unlock",
+    "thresholds": {
+      "00631l_30d_mean_tracking_error_floor": -0.003,
+      "00631l_30d_latest_tracking_error_floor": -0.02,
+      "00631l_30d_p05_tracking_error_floor": -0.05,
+      "00631l_30d_latest_realized_variance_ceiling": 0.01,
+      "00632r_60d_abs_beta_error_ceiling": 0.1,
+      "00632r_60d_correlation_ceiling": -0.95,
+      "00632r_30d_p05_tracking_error_floor": -0.03,
+      "minimum_30d_observations": 500
+    },
+    "checks": {
+      "00631l_30d_mean_tracking_error_floor": {
+        "value": -0.004888744513726964,
+        "threshold": -0.003,
+        "passed": false
+      },
+      "00631l_30d_latest_tracking_error_floor": {
+        "value": -0.05898968415234139,
+        "threshold": -0.02,
+        "passed": false
+      },
+      "00631l_30d_p05_tracking_error_floor": {
+        "value": -0.06766467069057348,
+        "threshold": -0.05,
+        "passed": false
+      },
+      "00631l_30d_latest_realized_variance_ceiling": {
+        "value": 0.014212904626607573,
+        "threshold": 0.01,
+        "passed": false
+      },
+      "00631l_minimum_30d_observations": {
+        "value": 1557.0,
+        "threshold": 500,
+        "passed": true
+      },
+      "00632r_60d_abs_beta_error_ceiling": {
+        "value": 0.005676328110440387,
+        "threshold": 0.1,
+        "passed": true
+      },
+      "00632r_60d_correlation_ceiling": {
+        "value": -0.9779260056912819,
+        "threshold": -0.95,
+        "passed": true
+      },
+      "00632r_30d_p05_tracking_error_floor": {
+        "value": -0.04194782042073657,
+        "threshold": -0.03,
+        "passed": false
+      },
+      "00632r_minimum_30d_observations": {
+        "value": 1557.0,
+        "threshold": 500,
+        "passed": true
+      },
+      "effective_fee_proxy_independently_validated": {
+        "value": false,
+        "threshold": true,
+        "passed": false
+      },
+      "live_hedge_policy_validated": {
+        "value": false,
+        "threshold": true,
+        "passed": false
+      }
+    },
+    "failed_checks": [
+      "00631l_30d_mean_tracking_error_floor",
+      "00631l_30d_latest_tracking_error_floor",
+      "00631l_30d_p05_tracking_error_floor",
+      "00631l_30d_latest_realized_variance_ceiling",
+      "00632r_30d_p05_tracking_error_floor",
+      "effective_fee_proxy_independently_validated",
+      "live_hedge_policy_validated"
+    ],
+    "all_thresholds_passed": false,
+    "can_consider_00631l_add_after_manual_review": false,
+    "can_consider_00632r_open_after_manual_review": false,
+    "notes": [
+      "Thresholds are deliberately conservative and advisory-only.",
+      "Passing these thresholds would only permit manual review, not automatic orders.",
+      "Effective-fee proxy and live hedge policy remain hard validation requirements."
+    ]
+  },
+  "blocking_reasons": [
+    "00631l_tw_mean_30d_tracking_error_drag_present",
+    "00632r_hedge_neutrality_not_promoted",
+    "intervention_fatigue_risk_budget_readiness_blocked",
+    "letf_pair_strategy_not_imported",
+    "realized_effective_fee_proxy_not_validated",
+    "research_only_letf_tracking_error_review"
+  ],
+  "decision": {
+    "tracking_error_readiness_ready": false,
+    "realized_effective_fee_proxy_ready": false,
+    "hedge_neutrality_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "letf_pair_trade_allowed": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "intervention_fatigue_risk_budget_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/intervention_fatigue_risk_budget_readiness_review.json"
+  }
+}

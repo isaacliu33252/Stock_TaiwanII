@@ -22,6 +22,33 @@ RESULTS_DIR = PROJECT_ROOT / "results"
 DB_PATH = PROJECT_ROOT / "FinRL" / "data" / "stock_data.db"
 DEFAULT_PROMOTION_BASELINE = "results/a2118_ncf_2330_tsmc_overlay_sweep_20260704.json"
 DEFAULT_PROMOTION_CANDIDATES = (DEFAULT_PROMOTION_BASELINE,)
+PROTECTED_GOLDEN1_RELEASE_ARTIFACTS = frozenset(
+    {
+        PROJECT_ROOT / "GROUP_A_GOLDEN1_0531_RELEASE.md",
+        PROJECT_ROOT / "results" / "group_a_release_Golden1_0531.json",
+        PROJECT_ROOT / "models" / "portfolio" / "group_a_oos_2020_2024_cap20_llm_pva_tripletv4_inst_localregime_20260526.zip",
+        PROJECT_ROOT / "results" / "group_a_backtest_20250101_20260525_20260526_193252.json",
+        PROJECT_ROOT / "results" / "group_a_combined_live_latest.json",
+        PROJECT_ROOT / "results" / "group_a_combined_live_latest.csv",
+        PROJECT_ROOT / "results" / "group_a_combined_bundle_latest.json",
+        PROJECT_ROOT / "Group_A_history.xlsx",
+    }
+)
+OUTPUT_TARGET_FLAGS = frozenset(
+    {
+        "--output",
+        "--output-json",
+        "--output-md",
+        "--output-prefix",
+        "--latest",
+        "--latest-pointer",
+        "--csv",
+        "--log",
+        "--history-dir",
+        "--manifest-output",
+        "--val-predictions-output",
+    }
+)
 # Fallback only -- Fable audit (2026-07-08, #4): this used to be the sole,
 # hardcoded baseline for the daily drift audit, which meant the audit kept
 # comparing against a week-stale snapshot after strategy.json moved on. The
@@ -51,6 +78,7 @@ BEST_EFFORT_STEP_NAMES = frozenset(
         "refresh_market_margin",
         "refresh_derivative_institutional",
         "refresh_securities_lending",
+        "securities_lending_0050_source_status",
         "refresh_dealer_positions",
         "refresh_foreign_shareholding",
         "refresh_short_sale_balances",
@@ -89,6 +117,115 @@ BEST_EFFORT_STEP_NAMES = frozenset(
         # waiting on more historical proxy data; a failure here must never
         # block anything downstream.
         "trough_override_eligibility_shadow_log",
+        # Fable independent review (2026-07-17) of 2607.03082v1: the CVaR/
+        # Hill/POT-GPD tail-risk diagnostic evaluator only ever ran as a
+        # manual one-off with a hardcoded --end date, so
+        # report/group_a_plus/latest/ never had a current snapshot for
+        # periodic human review. Pure diagnostic refresh -- research_only,
+        # never changes target weights; a failure here must never block
+        # anything downstream.
+        "cvar_tail_risk_diagnostic",
+        # Deep-hedging overlay review (2026-07-17): option-state coverage is
+        # a governance/data-readiness check for TXO/SOXX option features.
+        # It only writes a latest JSON report and never changes live target
+        # weights, so keep it best-effort.
+        "option_state_coverage_review",
+        # Black Tuesday Attack review (2026-07-17): adversarial market
+        # integrity is a pre-trade governance check that treats model outputs
+        # and sparse market perturbations as an attack surface. Diagnostic
+        # only; never changes target weights.
+        "adversarial_market_integrity_review",
+        # SciPhyRL review (2026-07-17): target-holding / explicit-cost
+        # optimizer readiness checks are governance-only. They depend on the
+        # preceding source freshness, option-state, adversarial-integrity, and
+        # rebalance gates, and never change target weights.
+        "sciphyrl_readiness_review",
+        # Market-impact review (2026-07-17): pre-trade turnover and POV
+        # readiness check inspired by realistic-impact RL environments.
+        # Diagnostic only; never changes target weights.
+        "market_impact_readiness_review",
+        # FinStressTS review (2026-07-17): mechanism-specific synthetic
+        # stress-test readiness check for forecast/model promotion. Diagnostic
+        # only; never changes target weights.
+        "finstressts_readiness_review",
+        # FinStressTS fixed-weight counterfactual shadow (2026-07-17):
+        # compares 7/20 reference weights against no-00631L under
+        # mechanism-specific stress scenarios. Diagnostic only.
+        "finstressts_counterfactual_shadow",
+        # FinStressTS baseline comparison shadow (2026-07-17): compares
+        # transparent static/dynamic baselines under the same counterfactual
+        # scenarios. Diagnostic only.
+        "finstressts_baseline_compare_shadow",
+        # FinStressTS consolidated daily snapshot (2026-07-17): summarizes the
+        # readiness, counterfactual, and baseline-comparison diagnostics.
+        # Diagnostic only; never unlocks execution.
+        "finstressts_decision_snapshot",
+        # Tri-gate volatility-memory shadow (2026-07-17): level/shape/tempo
+        # volatility-memory diagnostic inspired by 2512.02166. Diagnostic only.
+        "trigate_vol_memory_shadow",
+        # Perpetual money machine review (2026-07-18): systemic bubble
+        # time-at-risk / ETF-coupling / reflexivity-proxy diagnostic inspired
+        # by 1212.2833. Diagnostic only; never changes target weights.
+        "systemic_bubble_time_at_risk_review",
+        # Illiquidity-network review (2026-07-19): data-readiness check
+        # inspired by 2004.01917. Requires high-frequency bid/ask and
+        # market-wide failure events before any liquidity-contagion signal can
+        # be tested. Diagnostic only.
+        "illiquidity_network_readiness_review",
+        # Speculative-influence-network review (2026-07-19): data-readiness
+        # check inspired by 1510.08162. Requires broad sector/firm universe,
+        # HMM bubble-state probabilities, transfer entropy, and max-loss
+        # validation before any SIN signal can be tested. Diagnostic only.
+        "speculative_influence_network_readiness_review",
+        # SIN-lite proxy (2026-07-19): daily-OHLCV weak proxy for correlation,
+        # lagged influence, and downside co-movement. Shadow only.
+        "sin_lite_proxy",
+        # HMM-WJ synthetic scenario readiness (2026-07-18): data and
+        # validation-readiness check inspired by 2603.10202. It does not
+        # generate paths and never changes target weights.
+        "hmm_wj_synthetic_scenario_readiness_review",
+        # Commodity ETF heavy-tail optimization review (2026-07-18):
+        # dynamic CVaR / tail / transaction-cost readiness check inspired by
+        # 2606.26625. Research-only; no optimizer and no weight changes.
+        "dynamic_cvar_tail_cost_readiness_review",
+        # Synthetic augmentation validation review (2026-07-18): validation
+        # gate inspired by 2604.14498. It blocks synthetic directional alpha
+        # unless size-matched null, walk-forward, and block permutation checks
+        # are implemented and passed. Research-only; no weight changes.
+        "synthetic_augmentation_validation_audit",
+        "synthetic_augmentation_validation_readiness_review",
+        # DR-Gym review (2026-07-18): intervention fatigue and finite
+        # risk-budget pacing check inspired by 2605.12462. Research-only; no
+        # target-weight changes.
+        "intervention_history",
+        "broker_holdings_time_series_sample",
+        "broker_holdings_reconciliation_review",
+        "intervention_fatigue_risk_budget_readiness_review",
+        # LETF tracking-error / effective-fee review (2026-07-18): holding-
+        # horizon and inverse-hedge neutrality governance inspired by
+        # 1610.09404. Research-only; no LETF pair strategy and no weight change.
+        "letf_tracking_error_effective_fee_readiness_review",
+        # Asian ETF tail analytics readiness (2026-07-19): CVaR/STARR/Rachev/
+        # Hill tail-risk governance inspired by 2511.12476. Research-only; no
+        # optimizer and no long-short leverage.
+        "asian_etf_tail_analytics_readiness_review",
+        # Consolidated research-shadow decision snapshot (2026-07-17):
+        # summarizes research-only diagnostics such as FinStressTS and
+        # tri-gate volatility memory. Diagnostic only.
+        "gift_human_exception_record_draft",
+        "gift_human_exception_approval_record_schema",
+        "gift_signed_approval_record_template",
+        "gift_signed_approval_validation",
+        "gift_signed_approval_checklist_review",
+        "gift_signed_approval_validator_smoke",
+        "gift_manual_approval_readiness",
+        "gift_pdf_advantage_coverage_review",
+        "research_shadow_decision_snapshot",
+        # FinRL-X review (2026-07-18): deployment-consistency review checks
+        # target-weight / execution-plan / guard / health alignment. It is
+        # diagnostic only and never changes target weights.
+        "deployment_consistency_review",
+        "deployment_summary",
     }
 )
 
@@ -107,6 +244,32 @@ DEFAULT_TICKERS = (
 
 def _result_path(name: str) -> Path:
     return RESULTS_DIR / name
+
+
+def _normalize_project_path(raw: str | Path) -> Path:
+    path = Path(raw)
+    if not path.is_absolute():
+        path = PROJECT_ROOT / path
+    return path.resolve()
+
+
+def _assert_no_protected_golden1_output_targets(commands: dict[str, list[str]]) -> None:
+    protected = {_normalize_project_path(path) for path in PROTECTED_GOLDEN1_RELEASE_ARTIFACTS}
+    protected_prefixes = tuple(str(path) for path in protected)
+    violations: list[str] = []
+    for step, cmd in commands.items():
+        for index, token in enumerate(cmd[:-1]):
+            if token not in OUTPUT_TARGET_FLAGS:
+                continue
+            candidate = _normalize_project_path(cmd[index + 1])
+            candidate_str = str(candidate)
+            if candidate in protected or any(candidate_str.startswith(prefix + ".") for prefix in protected_prefixes):
+                violations.append(f"{step}:{token}={candidate}")
+    if violations:
+        raise ValueError(
+            "daily pipeline attempted to write protected Golden1_0531 release artifact(s): "
+            + "; ".join(sorted(violations))
+        )
 
 
 def _json_load(path: Path) -> dict[str, Any]:
@@ -237,9 +400,13 @@ def _resolve_chip_start(db_path: Path, tables: list[str], default_start: str) ->
 
 def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
     stamp = args.date_stamp
+    as_of = stamp[:4] + "-" + stamp[4:6] + "-" + stamp[6:]
     chip_start = args.chip_start
     chip_end = args.chip_end
     db_path = Path(getattr(args, "db", None) or DB_PATH)
+    live_signal_path = getattr(args, "live_signal_override", None) or str(
+        _result_path(f"group_a_plus_live_signal_v2_{stamp}.json")
+    )
     institutional_start = _resolve_chip_start(db_path, ["institutional_data"], chip_start)
     margin_start = _resolve_chip_start(db_path, ["margin_data"], chip_start)
     market_margin_start = _resolve_chip_start(db_path, ["market_margin_data"], chip_start)
@@ -326,6 +493,22 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
             securities_lending_start,
             "--end",
             chip_end,
+        ]
+        commands["securities_lending_0050_source_status"] = [
+            sys.executable,
+            "scripts/evaluate/build_group_a_plus_securities_lending_source_status.py",
+            "--db",
+            str(db_path),
+            "--query-start",
+            securities_lending_start,
+            "--query-end",
+            chip_end,
+            "--as-of",
+            as_of,
+            "--output",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "securities_lending_0050_source_status.json"),
+            "--output-md",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "securities_lending_0050_source_status.md"),
         ]
         commands["refresh_dealer_positions"] = [
             sys.executable,
@@ -451,6 +634,7 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--val-predictions-output",
         str(_result_path(f"ncf_00631l_panel_latest_{stamp}.csv")),
         "--full-panel",
+        "--no-tabnet",
     ]
     commands["ncf_00632r"] = [
         sys.executable,
@@ -517,6 +701,97 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--csv-output",
         str(_result_path(f"ncf_panel_drift_active_vs_{stamp}.csv")),
     ]
+    commands["ncf_panel_drift_diagnosis"] = [
+        sys.executable,
+        "scripts/evaluate/build_ncf_panel_drift_diagnosis.py",
+        "--drift-audit",
+        str(_result_path(f"ncf_panel_drift_active_vs_{stamp}.json")),
+        "--baseline-panel",
+        getattr(args, "active_ncf_00631l_panel", DEFAULT_ACTIVE_NCF_00631L_PANEL),
+        "--candidate-panel",
+        str(_result_path(f"ncf_00631l_panel_latest_{stamp}.csv")),
+        "--baseline-signal",
+        str(_result_path("ncf_00631l_latest_20260630.json")),
+        "--candidate-signal",
+        str(_result_path(f"ncf_00631l_latest_{stamp}.json")),
+        "--output",
+        str(_result_path(f"ncf_panel_drift_diagnosis_{stamp}.json")),
+    ]
+    commands["panel_drift_triage"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_panel_drift_triage.py",
+        "--diagnosis",
+        str(_result_path(f"ncf_panel_drift_diagnosis_{stamp}.json")),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "panel_drift_triage.json"),
+        "--output-md",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "panel_drift_triage.md"),
+    ]
+    commands["ncf_panel_drift_remediation_plan_initial"] = [
+        sys.executable,
+        "scripts/evaluate/build_ncf_panel_drift_remediation_plan.py",
+        "--diagnosis",
+        str(_result_path(f"ncf_panel_drift_diagnosis_{stamp}.json")),
+        "--output",
+        str(_result_path(f"ncf_panel_drift_remediation_plan_initial_{stamp}.json")),
+    ]
+    commands["external_sensitivity_observation_log"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_external_sensitivity_observation_log.py",
+        "--sensitivity-audit",
+        str(_result_path(f"ncf_panel_drift_no_external_vs_external_{stamp}.json")),
+        "--same-method-baseline-manifest",
+        str(_result_path(f"ncf_panel_same_method_baseline_manifest_{stamp}.json")),
+        "--observation-date",
+        f"{stamp[:4]}-{stamp[4:6]}-{stamp[6:]}",
+        "--existing-log",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "external_sensitivity_observation_log.json"),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "external_sensitivity_observation_log.json"),
+        "--output-md",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "external_sensitivity_observation_log.md"),
+    ]
+    commands["ncf_panel_external_feature_sensitivity_governance"] = [
+        sys.executable,
+        "scripts/evaluate/build_ncf_panel_external_feature_sensitivity_governance.py",
+        "--sensitivity-audit",
+        str(_result_path(f"ncf_panel_drift_no_external_vs_external_{stamp}.json")),
+        "--same-method-baseline-manifest",
+        str(_result_path(f"ncf_panel_same_method_baseline_manifest_{stamp}.json")),
+        "--remediation-plan",
+        str(_result_path(f"ncf_panel_drift_remediation_plan_initial_{stamp}.json")),
+        "--observation-log",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "external_sensitivity_observation_log.json"),
+        "--allow-missing-sensitivity-audit",
+        "--output",
+        str(_result_path(f"ncf_panel_external_feature_sensitivity_governance_{stamp}.json")),
+    ]
+    commands["ncf_panel_drift_remediation_plan"] = [
+        sys.executable,
+        "scripts/evaluate/build_ncf_panel_drift_remediation_plan.py",
+        "--diagnosis",
+        str(_result_path(f"ncf_panel_drift_diagnosis_{stamp}.json")),
+        "--model-set-isolation-report",
+        str(_result_path(f"ncf_panel_drift_model_set_isolation_report_{stamp}.json")),
+        "--same-method-baseline-manifest",
+        str(_result_path(f"ncf_panel_same_method_baseline_manifest_{stamp}.json")),
+        "--external-sensitivity-governance",
+        str(_result_path(f"ncf_panel_external_feature_sensitivity_governance_{stamp}.json")),
+        "--output",
+        str(_result_path(f"ncf_panel_drift_remediation_plan_{stamp}.json")),
+    ]
+    commands["panel_drift_resolution_progress"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_panel_drift_resolution_progress.py",
+        "--remediation-plan",
+        str(_result_path(f"ncf_panel_drift_remediation_plan_{stamp}.json")),
+        "--external-sensitivity-governance",
+        str(_result_path(f"ncf_panel_external_feature_sensitivity_governance_{stamp}.json")),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "panel_drift_resolution_progress.json"),
+        "--output-md",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "panel_drift_resolution_progress.md"),
+    ]
     commands["ncf_panel_coverage"] = [
         sys.executable,
         "scripts/evaluate/evaluate_ncf_panel_coverage.py",
@@ -547,7 +822,7 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         sys.executable,
         "group_a_plus/operations/daily_signal.py",
         "--as-of",
-        stamp[:4] + "-" + stamp[4:6] + "-" + stamp[6:],
+        as_of,
         "--output",
         str(_result_path(f"group_a_plus_live_signal_v2_{stamp}.json")),
     ]
@@ -579,6 +854,334 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--panel",
         str(_result_path(f"ncf_00631l_panel_latest_{stamp}.csv")),
     ]
+    commands["cvar_tail_risk_diagnostic"] = [
+        sys.executable,
+        "scripts/run/build_group_a_plus_cvar_tail_risk_diagnostic_snapshot.py",
+    ]
+    commands["option_state_coverage_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_option_state_coverage_review.py",
+        "--as-of",
+        as_of,
+    ]
+    commands["adversarial_market_integrity_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_adversarial_market_integrity_review.py",
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "adversarial_market_integrity_review.json"),
+    ]
+    commands["sciphyrl_readiness_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_sciphyrl_readiness_review.py",
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "sciphyrl_readiness_review.json"),
+    ]
+    commands["market_impact_readiness_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_market_impact_readiness_review.py",
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "market_impact_readiness_review.json"),
+    ]
+    commands["finstressts_readiness_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_finstressts_readiness_review.py",
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "finstressts_readiness_review.json"),
+    ]
+    commands["finstressts_counterfactual_shadow"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_group_a_plus_finstressts_counterfactual_shadow.py",
+        "--output",
+        str(_result_path(f"group_a_plus_finstressts_counterfactual_shadow_{stamp}.json")),
+        "--latest",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "finstressts_counterfactual_shadow.json"),
+    ]
+    commands["finstressts_baseline_compare_shadow"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_group_a_plus_finstressts_baseline_compare_shadow.py",
+        "--output",
+        str(_result_path(f"group_a_plus_finstressts_baseline_compare_shadow_{stamp}.json")),
+        "--latest",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "finstressts_baseline_compare_shadow.json"),
+    ]
+    commands["finstressts_decision_snapshot"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_finstressts_decision_snapshot.py",
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "finstressts_decision_snapshot.json"),
+    ]
+    commands["trigate_vol_memory_shadow"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_group_a_plus_trigate_vol_memory_shadow.py",
+        "--output",
+        str(_result_path(f"group_a_plus_trigate_vol_memory_shadow_{stamp}.json")),
+        "--latest",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "trigate_vol_memory_shadow.json"),
+    ]
+    commands["systemic_bubble_time_at_risk_review"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_group_a_plus_systemic_bubble_time_at_risk_review.py",
+        "--output",
+        str(_result_path(f"group_a_plus_systemic_bubble_time_at_risk_review_{stamp}.json")),
+        "--latest",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "systemic_bubble_time_at_risk_review.json"),
+    ]
+    commands["illiquidity_network_readiness_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_illiquidity_network_readiness_review.py",
+        "--as-of",
+        as_of,
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "illiquidity_network_readiness_review.json"),
+    ]
+    commands["speculative_influence_network_readiness_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_speculative_influence_network_readiness_review.py",
+        "--as-of",
+        as_of,
+        "--output",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "speculative_influence_network_readiness_review.json"
+        ),
+    ]
+    commands["sin_lite_proxy"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_sin_lite_proxy.py",
+        "--db",
+        str(db_path),
+        "--as-of",
+        as_of,
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "sin_lite_proxy.json"),
+    ]
+    commands["hmm_wj_synthetic_scenario_readiness_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_hmm_wj_synthetic_scenario_readiness_review.py",
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "hmm_wj_synthetic_scenario_readiness_review.json"),
+    ]
+    commands["dynamic_cvar_tail_cost_readiness_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_dynamic_cvar_tail_cost_readiness_review.py",
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "dynamic_cvar_tail_cost_readiness_review.json"),
+    ]
+    commands["synthetic_augmentation_validation_audit"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_synthetic_augmentation_validation_audit.py",
+        "--panel",
+        str(_result_path(f"ncf_00631l_panel_latest_{stamp}.csv")),
+        "--as-of",
+        as_of,
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "synthetic_augmentation_validation_audit.json"),
+    ]
+    commands["synthetic_augmentation_validation_readiness_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_synthetic_augmentation_validation_readiness_review.py",
+        "--validation-audit",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "synthetic_augmentation_validation_audit.json"),
+        "--output",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "synthetic_augmentation_validation_readiness_review.json"
+        ),
+    ]
+    commands["intervention_history"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_intervention_history_from_daily_status.py",
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "intervention_history.json"),
+    ]
+    commands["broker_holdings_time_series_sample"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_broker_holdings_time_series_sample.py",
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "broker_holdings_time_series_sample.json"),
+    ]
+    commands["broker_holdings_reconciliation_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_broker_holdings_reconciliation_review.py",
+        "--sample",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "broker_holdings_time_series_sample.json"),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "broker_holdings_reconciliation_review.json"),
+    ]
+    commands["intervention_fatigue_risk_budget_readiness_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_intervention_fatigue_risk_budget_readiness_review.py",
+        "--intervention-history",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "intervention_history.json"),
+        "--broker-holdings-history",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "broker_holdings_time_series_sample.json"),
+        "--broker-reconciliation",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "broker_holdings_reconciliation_review.json"),
+        "--output",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "intervention_fatigue_risk_budget_readiness_review.json"
+        ),
+    ]
+    commands["letf_tracking_error_effective_fee_readiness_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_letf_tracking_error_effective_fee_readiness_review.py",
+        "--db",
+        str(db_path),
+        "--as-of",
+        stamp[:4] + "-" + stamp[4:6] + "-" + stamp[6:],
+        "--intervention-fatigue",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "intervention_fatigue_risk_budget_readiness_review.json"
+        ),
+        "--output",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "letf_tracking_error_effective_fee_readiness_review.json"
+        ),
+    ]
+    commands["asian_etf_tail_analytics_readiness_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_asian_etf_tail_analytics_readiness_review.py",
+        "--db",
+        str(db_path),
+        "--output",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "asian_etf_tail_analytics_readiness_review.json"
+        ),
+    ]
+    commands["gift_human_exception_record_draft"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_llm_state_reward_human_exception_record_draft.py",
+        "--as-of",
+        as_of,
+    ]
+    commands["gift_human_exception_approval_record_schema"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_llm_state_reward_human_exception_approval_record_schema.py",
+        "--as-of",
+        as_of,
+    ]
+    commands["gift_signed_approval_record_template"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_llm_state_reward_human_exception_signed_approval_record_template.py",
+        "--as-of",
+        as_of,
+    ]
+    commands["gift_signed_approval_validation"] = [
+        sys.executable,
+        "scripts/evaluate/validate_group_a_plus_llm_state_reward_human_exception_signed_approval_record.py",
+        "--as-of",
+        as_of,
+    ]
+    commands["gift_signed_approval_checklist_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_gift_signed_approval_checklist_review.py",
+        "--as-of",
+        as_of,
+    ]
+    commands["gift_signed_approval_validator_smoke"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_gift_signed_approval_validator_smoke.py",
+        "--as-of",
+        as_of,
+    ]
+    commands["gift_manual_approval_readiness"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_llm_state_reward_manual_approval_readiness_review.py",
+        "--as-of",
+        as_of,
+    ]
+    commands["gift_pdf_advantage_coverage_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_gift_pdf_advantage_coverage_review.py",
+        "--as-of",
+        as_of,
+    ]
+    commands["research_shadow_decision_snapshot"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_research_shadow_decision_snapshot.py",
+        "--systemic-bubble",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "systemic_bubble_time_at_risk_review.json"),
+        "--illiquidity-network",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "illiquidity_network_readiness_review.json"),
+        "--speculative-influence",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "speculative_influence_network_readiness_review.json"
+        ),
+        "--sin-lite-proxy",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "sin_lite_proxy.json"),
+        "--hmm-wj",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "hmm_wj_synthetic_scenario_readiness_review.json"),
+        "--dynamic-cvar",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "dynamic_cvar_tail_cost_readiness_review.json"),
+        "--synthetic-augmentation",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "synthetic_augmentation_validation_readiness_review.json"
+        ),
+        "--intervention-fatigue",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "intervention_fatigue_risk_budget_readiness_review.json"
+        ),
+        "--letf-tracking",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "letf_tracking_error_effective_fee_readiness_review.json"
+        ),
+        "--asian-etf-tail-analytics",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "asian_etf_tail_analytics_readiness_review.json"
+        ),
+        "--llm-state-reward-signed-approval-validation",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "llm_state_reward_human_exception_signed_approval_validation.json"
+        ),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "research_shadow_decision_snapshot.json"),
+    ]
     dfl_advisory_input = getattr(
         args,
         "dfl_advisory_input",
@@ -602,7 +1205,7 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--selective-inputs",
         f"p50={dfl_selective_p50_input},p70={dfl_selective_p70_input}",
         "--live-signal",
-        str(_result_path(f"group_a_plus_live_signal_v2_{stamp}.json")),
+        live_signal_path,
         "--output",
         str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "a2118_dfl_advisory.json"),
     ]
@@ -642,7 +1245,7 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--mode",
         "live",
         "--live-signal",
-        str(_result_path(f"group_a_plus_live_signal_v2_{stamp}.json")),
+        live_signal_path,
         "--execution-plan",
         str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "execution_plan.json"),
         "--compounding-regime",
@@ -653,10 +1256,98 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "a2118_dfl_shadow_ensemble.json"),
         "--dfl-active-date-audit",
         str(_result_path(f"a2118_dfl_active_date_audit_{stamp}.json")),
+        "--finstressts-decision-snapshot",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "finstressts_decision_snapshot.json"),
+        "--trigate-vol-memory-shadow",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "trigate_vol_memory_shadow.json"),
+        "--systemic-bubble-time-at-risk-review",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "systemic_bubble_time_at_risk_review.json"),
+        "--illiquidity-network-readiness-review",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "illiquidity_network_readiness_review.json"),
+        "--speculative-influence-network-readiness-review",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "speculative_influence_network_readiness_review.json"
+        ),
+        "--sin-lite-proxy",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "sin_lite_proxy.json"),
+        "--hmm-wj-synthetic-scenario-readiness-review",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "hmm_wj_synthetic_scenario_readiness_review.json"),
+        "--dynamic-cvar-tail-cost-readiness-review",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "dynamic_cvar_tail_cost_readiness_review.json"),
+        "--synthetic-augmentation-validation-readiness-review",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "synthetic_augmentation_validation_readiness_review.json"
+        ),
+        "--intervention-fatigue-risk-budget-readiness-review",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "intervention_fatigue_risk_budget_readiness_review.json"
+        ),
+        "--letf-tracking-error-effective-fee-readiness-review",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "letf_tracking_error_effective_fee_readiness_review.json"
+        ),
+        "--asian-etf-tail-analytics-readiness-review",
+        str(
+            PROJECT_ROOT
+            / "report"
+            / "group_a_plus"
+            / "latest"
+            / "asian_etf_tail_analytics_readiness_review.json"
+        ),
+        "--research-shadow-decision-snapshot",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "research_shadow_decision_snapshot.json"),
+        "--gift-signed-approval-checklist-review",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "gift_signed_approval_checklist_review.json"),
+        "--gift-signed-approval-validator-smoke",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "gift_signed_approval_validator_smoke.json"),
         "--check-date",
         stamp[:4] + "-" + stamp[4:6] + "-" + stamp[6:],
+        "--status-stage",
+        "pre_promotion",
         "--output-prefix",
         str(_result_path(f"group_a_plus_daily_status_{stamp}")),
+    ]
+    commands["deployment_consistency_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_deployment_consistency_review.py",
+        "--live-signal",
+        live_signal_path,
+        "--daily-status",
+        str(_result_path(f"group_a_plus_daily_status_{stamp}.json")),
+        "--securities-lending-source-status",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "securities_lending_0050_source_status.json"),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "deployment_consistency_review.json"),
+    ]
+    commands["deployment_summary"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_deployment_summary.py",
+        "--live-signal",
+        live_signal_path,
+        "--execution-plan",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "execution_plan.json"),
+        "--deployment",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "deployment_consistency_review.json"),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "deployment_summary.json"),
+        "--output-md",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "deployment_summary.md"),
     ]
     if not getattr(args, "skip_promotion_gate", False):
         promotion_candidates = list(getattr(args, "promotion_candidates", DEFAULT_PROMOTION_CANDIDATES))
@@ -674,8 +1365,69 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
             promotion_drift_audit,
             "--multi-window-gate",
             getattr(args, "promotion_multi_window_gate", DEFAULT_PROMOTION_MULTI_WINDOW_GATE),
+            "--deployment-consistency",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "deployment_consistency_review.json"),
+            "--deployment-summary",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "deployment_summary.json"),
             "--output",
             str(_result_path(f"group_a_plus_promotion_gate_{stamp}.json")),
+        ]
+        commands["multi_window_failure_attribution"] = [
+            sys.executable,
+            "scripts/evaluate/build_group_a_plus_multi_window_failure_attribution.py",
+            "--multi-window-gate",
+            getattr(args, "promotion_multi_window_gate", DEFAULT_PROMOTION_MULTI_WINDOW_GATE),
+            "--output",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "multi_window_failure_attribution.json"),
+            "--output-md",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "multi_window_failure_attribution.md"),
+        ]
+        commands["promotion_blocked_diagnostic"] = [
+            sys.executable,
+            "scripts/evaluate/build_group_a_plus_promotion_blocked_diagnostic.py",
+            "--promotion-gate",
+            str(_result_path(f"group_a_plus_promotion_gate_{stamp}.json")),
+            "--output",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "promotion_blocked_diagnostic.json"),
+            "--output-md",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "promotion_blocked_diagnostic.md"),
+        ]
+        commands["daily_status_final"] = list(commands["daily_status"])
+        output_prefix_index = commands["daily_status_final"].index("--output-prefix") + 1
+        commands["daily_status_final"][output_prefix_index] = str(_result_path(f"group_a_plus_daily_status_final_{stamp}"))
+        commands["daily_status_final"].extend(
+            [
+                "--promotion-gate",
+                str(_result_path(f"group_a_plus_promotion_gate_{stamp}.json")),
+            ]
+        )
+        status_stage_index = commands["daily_status_final"].index("--status-stage") + 1
+        commands["daily_status_final"][status_stage_index] = "final"
+        commands["final_governance_snapshot"] = [
+            sys.executable,
+            "scripts/evaluate/build_group_a_plus_final_governance_snapshot.py",
+            "--daily-status",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "daily_status.json"),
+            "--ops-health",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "ops_health.json"),
+            "--promotion-gate",
+            str(_result_path(f"group_a_plus_promotion_gate_{stamp}.json")),
+            "--promotion-blocked-diagnostic",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "promotion_blocked_diagnostic.json"),
+            "--multi-window-failure-attribution",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "multi_window_failure_attribution.json"),
+            "--panel-drift-triage",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "panel_drift_triage.json"),
+            "--panel-drift-resolution-progress",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "panel_drift_resolution_progress.json"),
+            "--external-sensitivity-observation-log",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "external_sensitivity_observation_log.json"),
+            "--deployment-summary",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "deployment_summary.json"),
+            "--output",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "final_governance_snapshot.json"),
+            "--output-md",
+            str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "final_governance_snapshot.md"),
         ]
     commands["ncf_2330_checklist"] = [
         sys.executable,
@@ -687,6 +1439,7 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--output",
         str(_result_path(f"ncf_2330_checklist_{stamp}.json")),
     ]
+    _assert_no_protected_golden1_output_targets(commands)
     return commands
 
 
@@ -737,6 +1490,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--checklist-external-start", default=(today - timedelta(days=365 * 3)).isoformat())
     parser.add_argument("--checklist-external-end", default=(today + timedelta(days=1)).isoformat())
     parser.add_argument("--only-refresh", action="store_true", help="Only run data refresh steps, skip NCF models.")
+    parser.add_argument(
+        "--live-signal-override",
+        default=None,
+        help=(
+            "Override the live signal consumed by downstream governance steps. "
+            "Useful for next-session signals named with a _from_<data-date> suffix."
+        ),
+    )
     parser.add_argument("--skip-promotion-gate", action="store_true", help="Skip GroupA+ promotion governance gate.")
     parser.add_argument("--promotion-baseline", default=DEFAULT_PROMOTION_BASELINE)
     parser.add_argument("--promotion-candidates", nargs="+", default=list(DEFAULT_PROMOTION_CANDIDATES))
@@ -871,6 +1632,9 @@ def main() -> None:
     outputs = {
         "ohlcv_freshness": str(_result_path(f"ohlcv_freshness_{args.date_stamp}.json")),
     }
+    live_signal_output = getattr(args, "live_signal_override", None) or str(
+        _result_path(f"group_a_plus_live_signal_v2_{args.date_stamp}.json")
+    )
     if not args.skip_refresh:
         outputs["data_refresh"] = str(_result_path(f"data_refresh_{args.date_stamp}.json"))
     if not args.only_refresh:
@@ -884,19 +1648,61 @@ def main() -> None:
                 "ncf_panel_manifest": str(_result_path(f"ncf_panel_manifest_{args.date_stamp}.json")),
                 "ncf_panel_drift": str(_result_path(f"ncf_panel_drift_active_vs_{args.date_stamp}.json")),
                 "ncf_panel_drift_csv": str(_result_path(f"ncf_panel_drift_active_vs_{args.date_stamp}.csv")),
+                "panel_drift_triage": str(
+                    PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "panel_drift_triage.json"
+                ),
+                "external_sensitivity_observation_log": str(
+                    PROJECT_ROOT
+                    / "report"
+                    / "group_a_plus"
+                    / "latest"
+                    / "external_sensitivity_observation_log.json"
+                ),
+                "panel_drift_resolution_progress": str(
+                    PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "panel_drift_resolution_progress.json"
+                ),
                 "ncf_panel_coverage": str(_result_path(f"ncf_panel_coverage_{args.date_stamp}.json")),
                 "advisory_panel": str(_result_path(f"ncf_advisory_panel_latest_{args.date_stamp}.csv")),
                 "factor_lens": str(_result_path(f"group_a_plus_factor_lens_{args.date_stamp}.json")),
-                "live_signal": str(_result_path(f"group_a_plus_live_signal_v2_{args.date_stamp}.json")),
+                "live_signal": live_signal_output,
                 "compounding_regime": str(_result_path(f"00631l_leveraged_compounding_regime_{args.date_stamp}.json")),
                 "compounding_regime_csv": str(_result_path(f"00631l_leveraged_compounding_regime_{args.date_stamp}.csv")),
                 "daily_status": str(_result_path(f"group_a_plus_daily_status_{args.date_stamp}.json")),
                 "daily_status_pointer": str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "daily_status.json"),
+                "securities_lending_0050_source_status": str(
+                    PROJECT_ROOT
+                    / "report"
+                    / "group_a_plus"
+                    / "latest"
+                    / "securities_lending_0050_source_status.json"
+                ),
+                "deployment_summary": str(
+                    PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "deployment_summary.json"
+                ),
+                "gift_signed_approval_checklist_review": str(
+                    PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "gift_signed_approval_checklist_review.json"
+                ),
+                "gift_signed_approval_validator_smoke": str(
+                    PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "gift_signed_approval_validator_smoke.json"
+                ),
+                "gift_pdf_advantage_coverage_review": str(
+                    PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "gift_pdf_advantage_coverage_review.json"
+                ),
                 "ncf_2330_checklist": str(_result_path(f"ncf_2330_checklist_{args.date_stamp}.json")),
             }
         )
         if not args.skip_promotion_gate:
             outputs["promotion_gate"] = str(_result_path(f"group_a_plus_promotion_gate_{args.date_stamp}.json"))
+            outputs["multi_window_failure_attribution"] = str(
+                PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "multi_window_failure_attribution.json"
+            )
+            outputs["promotion_blocked_diagnostic"] = str(
+                PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "promotion_blocked_diagnostic.json"
+            )
+            outputs["daily_status_final"] = str(_result_path(f"group_a_plus_daily_status_final_{args.date_stamp}.json"))
+            outputs["final_governance_snapshot"] = str(
+                PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "final_governance_snapshot.json"
+            )
         if args.refresh_external_cache:
             outputs["ncf_2330_checklist_external_cache"] = str(
                 _result_path(f"ncf_2330_checklist_external_cache_{args.date_stamp}.json")

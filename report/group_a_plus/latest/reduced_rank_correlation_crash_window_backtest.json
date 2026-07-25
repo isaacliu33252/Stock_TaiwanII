@@ -1,0 +1,616 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_reduced_rank_correlation_crash_window_backtest",
+  "generated_at": "2026-07-19T23:36:40",
+  "as_of": "2026-07-20",
+  "actual_data_start": "2008-07-30",
+  "actual_data_end": "2026-07-17",
+  "policy": "research_only_reduced_rank_proxy_backtest_no_weight_change",
+  "status": "blocked",
+  "method": {
+    "paper_equivalent": false,
+    "window": 42,
+    "min_history": 63,
+    "min_tickers": 12,
+    "max_stale_days": 10,
+    "baseline_lookback": 252,
+    "state_rule": "watch_if_distance_percentile_ge_0p75_elevated_if_ge_0p90_and_reduced_rank_mean_below_p25"
+  },
+  "windows": [
+    {
+      "name": "taiwan_2015_china_crash",
+      "start": "2015-06-01",
+      "end": "2016-02-29",
+      "type": "crash_window",
+      "status": "available",
+      "available_days": 197,
+      "ticker_count_min": 35,
+      "ticker_count_median": 35.0,
+      "distance_percentile_mean": 0.502357,
+      "distance_percentile_max": 1.0,
+      "reduced_rank_mean_corr_mean": -0.002169,
+      "state_counts": {
+        "normal": 151,
+        "watch": 40,
+        "elevated_fragility": 6
+      },
+      "watch_or_worse_days": 46,
+      "elevated_or_worse_days": 6,
+      "watch_or_worse_rate": 0.233503,
+      "elevated_or_worse_rate": 0.030457,
+      "top_days": [
+        {
+          "dt": "2015-11-06",
+          "state": "watch",
+          "distance_percentile": 1.0,
+          "averaged_distance": 0.109671,
+          "reduced_rank_mean_corr": 0.001298
+        },
+        {
+          "dt": "2015-10-29",
+          "state": "watch",
+          "distance_percentile": 0.996032,
+          "averaged_distance": 0.098372,
+          "reduced_rank_mean_corr": 0.008423
+        },
+        {
+          "dt": "2015-10-21",
+          "state": "watch",
+          "distance_percentile": 0.984127,
+          "averaged_distance": 0.061286,
+          "reduced_rank_mean_corr": -0.003453
+        },
+        {
+          "dt": "2015-08-24",
+          "state": "watch",
+          "distance_percentile": 0.980159,
+          "averaged_distance": 0.06254,
+          "reduced_rank_mean_corr": -0.004125
+        },
+        {
+          "dt": "2015-11-03",
+          "state": "watch",
+          "distance_percentile": 0.972222,
+          "averaged_distance": 0.055725,
+          "reduced_rank_mean_corr": 0.021082
+        },
+        {
+          "dt": "2015-10-22",
+          "state": "elevated_fragility",
+          "distance_percentile": 0.968254,
+          "averaged_distance": 0.048659,
+          "reduced_rank_mean_corr": -0.004723
+        },
+        {
+          "dt": "2015-08-25",
+          "state": "elevated_fragility",
+          "distance_percentile": 0.952381,
+          "averaged_distance": 0.038454,
+          "reduced_rank_mean_corr": -0.004705
+        },
+        {
+          "dt": "2015-12-04",
+          "state": "watch",
+          "distance_percentile": 0.952381,
+          "averaged_distance": 0.040938,
+          "reduced_rank_mean_corr": 0.007699
+        },
+        {
+          "dt": "2015-06-16",
+          "state": "elevated_fragility",
+          "distance_percentile": 0.948413,
+          "averaged_distance": 0.03346,
+          "reduced_rank_mean_corr": -0.003703
+        },
+        {
+          "dt": "2015-11-27",
+          "state": "watch",
+          "distance_percentile": 0.940476,
+          "averaged_distance": 0.034439,
+          "reduced_rank_mean_corr": 0.007894
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2018_trade_war_correction",
+      "start": "2018-01-02",
+      "end": "2018-12-31",
+      "type": "stress_window",
+      "status": "available",
+      "available_days": 260,
+      "ticker_count_min": 35,
+      "ticker_count_median": 35.0,
+      "distance_percentile_mean": 0.470391,
+      "distance_percentile_max": 1.0,
+      "reduced_rank_mean_corr_mean": -0.001037,
+      "state_counts": {
+        "normal": 201,
+        "watch": 53,
+        "elevated_fragility": 6
+      },
+      "watch_or_worse_days": 59,
+      "elevated_or_worse_days": 6,
+      "watch_or_worse_rate": 0.226923,
+      "elevated_or_worse_rate": 0.023077,
+      "top_days": [
+        {
+          "dt": "2018-02-12",
+          "state": "watch",
+          "distance_percentile": 1.0,
+          "averaged_distance": 0.244928,
+          "reduced_rank_mean_corr": 0.008927
+        },
+        {
+          "dt": "2018-03-23",
+          "state": "watch",
+          "distance_percentile": 1.0,
+          "averaged_distance": 0.262229,
+          "reduced_rank_mean_corr": -0.004585
+        },
+        {
+          "dt": "2018-02-09",
+          "state": "watch",
+          "distance_percentile": 0.996032,
+          "averaged_distance": 0.23133,
+          "reduced_rank_mean_corr": 0.036275
+        },
+        {
+          "dt": "2018-05-22",
+          "state": "watch",
+          "distance_percentile": 0.992063,
+          "averaged_distance": 0.232732,
+          "reduced_rank_mean_corr": 0.025882
+        },
+        {
+          "dt": "2018-03-19",
+          "state": "watch",
+          "distance_percentile": 0.988095,
+          "averaged_distance": 0.198697,
+          "reduced_rank_mean_corr": 0.006786
+        },
+        {
+          "dt": "2018-04-05",
+          "state": "watch",
+          "distance_percentile": 0.984127,
+          "averaged_distance": 0.226724,
+          "reduced_rank_mean_corr": -0.004607
+        },
+        {
+          "dt": "2018-02-06",
+          "state": "watch",
+          "distance_percentile": 0.984127,
+          "averaged_distance": 0.113411,
+          "reduced_rank_mean_corr": -0.004559
+        },
+        {
+          "dt": "2018-03-27",
+          "state": "watch",
+          "distance_percentile": 0.984127,
+          "averaged_distance": 0.212743,
+          "reduced_rank_mean_corr": 0.031654
+        },
+        {
+          "dt": "2018-03-20",
+          "state": "watch",
+          "distance_percentile": 0.984127,
+          "averaged_distance": 0.191432,
+          "reduced_rank_mean_corr": 0.038383
+        },
+        {
+          "dt": "2018-05-24",
+          "state": "watch",
+          "distance_percentile": 0.97619,
+          "averaged_distance": 0.220905,
+          "reduced_rank_mean_corr": -0.004362
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2020_covid_crash",
+      "start": "2020-01-02",
+      "end": "2020-06-30",
+      "type": "crash_window",
+      "status": "available",
+      "available_days": 129,
+      "ticker_count_min": 35,
+      "ticker_count_median": 35.0,
+      "distance_percentile_mean": 0.532238,
+      "distance_percentile_max": 0.968254,
+      "reduced_rank_mean_corr_mean": -0.007011,
+      "state_counts": {
+        "normal": 84,
+        "watch": 43,
+        "elevated_fragility": 2
+      },
+      "watch_or_worse_days": 45,
+      "elevated_or_worse_days": 2,
+      "watch_or_worse_rate": 0.348837,
+      "elevated_or_worse_rate": 0.015504,
+      "top_days": [
+        {
+          "dt": "2020-01-06",
+          "state": "watch",
+          "distance_percentile": 0.968254,
+          "averaged_distance": 0.129703,
+          "reduced_rank_mean_corr": -0.007752
+        },
+        {
+          "dt": "2020-01-03",
+          "state": "watch",
+          "distance_percentile": 0.964286,
+          "averaged_distance": 0.117642,
+          "reduced_rank_mean_corr": -0.004416
+        },
+        {
+          "dt": "2020-01-07",
+          "state": "elevated_fragility",
+          "distance_percentile": 0.956349,
+          "averaged_distance": 0.093365,
+          "reduced_rank_mean_corr": -0.00996
+        },
+        {
+          "dt": "2020-03-19",
+          "state": "elevated_fragility",
+          "distance_percentile": 0.956349,
+          "averaged_distance": 0.107779,
+          "reduced_rank_mean_corr": -0.010174
+        },
+        {
+          "dt": "2020-05-18",
+          "state": "watch",
+          "distance_percentile": 0.952381,
+          "averaged_distance": 0.094982,
+          "reduced_rank_mean_corr": -0.006301
+        },
+        {
+          "dt": "2020-03-13",
+          "state": "watch",
+          "distance_percentile": 0.948413,
+          "averaged_distance": 0.087673,
+          "reduced_rank_mean_corr": -0.008514
+        },
+        {
+          "dt": "2020-03-02",
+          "state": "watch",
+          "distance_percentile": 0.940476,
+          "averaged_distance": 0.080046,
+          "reduced_rank_mean_corr": -0.002545
+        },
+        {
+          "dt": "2020-01-31",
+          "state": "watch",
+          "distance_percentile": 0.936508,
+          "averaged_distance": 0.07361,
+          "reduced_rank_mean_corr": -0.001337
+        },
+        {
+          "dt": "2020-02-28",
+          "state": "watch",
+          "distance_percentile": 0.924603,
+          "averaged_distance": 0.062734,
+          "reduced_rank_mean_corr": -0.000957
+        },
+        {
+          "dt": "2020-02-04",
+          "state": "watch",
+          "distance_percentile": 0.924603,
+          "averaged_distance": 0.064886,
+          "reduced_rank_mean_corr": -0.006453
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2022_rate_hike_stress",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "type": "stress_window",
+      "status": "available",
+      "available_days": 216,
+      "ticker_count_min": 35,
+      "ticker_count_median": 35.0,
+      "distance_percentile_mean": 0.494764,
+      "distance_percentile_max": 1.0,
+      "reduced_rank_mean_corr_mean": 0.003105,
+      "state_counts": {
+        "normal": 162,
+        "watch": 53,
+        "elevated_fragility": 1
+      },
+      "watch_or_worse_days": 54,
+      "elevated_or_worse_days": 1,
+      "watch_or_worse_rate": 0.25,
+      "elevated_or_worse_rate": 0.00463,
+      "top_days": [
+        {
+          "dt": "2022-10-04",
+          "state": "watch",
+          "distance_percentile": 1.0,
+          "averaged_distance": 0.269148,
+          "reduced_rank_mean_corr": 0.0086
+        },
+        {
+          "dt": "2022-05-09",
+          "state": "watch",
+          "distance_percentile": 0.996032,
+          "averaged_distance": 0.163013,
+          "reduced_rank_mean_corr": -0.002291
+        },
+        {
+          "dt": "2022-09-28",
+          "state": "watch",
+          "distance_percentile": 0.996032,
+          "averaged_distance": 0.138376,
+          "reduced_rank_mean_corr": 0.043954
+        },
+        {
+          "dt": "2022-02-24",
+          "state": "watch",
+          "distance_percentile": 0.984127,
+          "averaged_distance": 0.13583,
+          "reduced_rank_mean_corr": 0.009213
+        },
+        {
+          "dt": "2022-09-29",
+          "state": "watch",
+          "distance_percentile": 0.980159,
+          "averaged_distance": 0.086638,
+          "reduced_rank_mean_corr": 0.06856
+        },
+        {
+          "dt": "2022-10-03",
+          "state": "watch",
+          "distance_percentile": 0.972222,
+          "averaged_distance": 0.065087,
+          "reduced_rank_mean_corr": 0.100748
+        },
+        {
+          "dt": "2022-10-14",
+          "state": "watch",
+          "distance_percentile": 0.972222,
+          "averaged_distance": 0.082909,
+          "reduced_rank_mean_corr": 0.027043
+        },
+        {
+          "dt": "2022-05-04",
+          "state": "watch",
+          "distance_percentile": 0.968254,
+          "averaged_distance": 0.074667,
+          "reduced_rank_mean_corr": 0.019673
+        },
+        {
+          "dt": "2022-03-07",
+          "state": "watch",
+          "distance_percentile": 0.964286,
+          "averaged_distance": 0.0922,
+          "reduced_rank_mean_corr": 0.000908
+        },
+        {
+          "dt": "2022-10-31",
+          "state": "watch",
+          "distance_percentile": 0.960317,
+          "averaged_distance": 0.061249,
+          "reduced_rank_mean_corr": 0.096952
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2026_q1q2_stress",
+      "start": "2026-02-02",
+      "end": "2026-04-30",
+      "type": "stress_window",
+      "status": "available",
+      "available_days": 64,
+      "ticker_count_min": 35,
+      "ticker_count_median": 35.0,
+      "distance_percentile_mean": 0.472966,
+      "distance_percentile_max": 0.972222,
+      "reduced_rank_mean_corr_mean": 0.023986,
+      "state_counts": {
+        "normal": 50,
+        "watch": 14
+      },
+      "watch_or_worse_days": 14,
+      "elevated_or_worse_days": 0,
+      "watch_or_worse_rate": 0.21875,
+      "elevated_or_worse_rate": 0.0,
+      "top_days": [
+        {
+          "dt": "2026-03-09",
+          "state": "watch",
+          "distance_percentile": 0.972222,
+          "averaged_distance": 0.105277,
+          "reduced_rank_mean_corr": 0.0659
+        },
+        {
+          "dt": "2026-03-04",
+          "state": "watch",
+          "distance_percentile": 0.968254,
+          "averaged_distance": 0.089968,
+          "reduced_rank_mean_corr": 0.030652
+        },
+        {
+          "dt": "2026-04-08",
+          "state": "watch",
+          "distance_percentile": 0.968254,
+          "averaged_distance": 0.089594,
+          "reduced_rank_mean_corr": 0.011532
+        },
+        {
+          "dt": "2026-03-31",
+          "state": "watch",
+          "distance_percentile": 0.964286,
+          "averaged_distance": 0.079705,
+          "reduced_rank_mean_corr": 0.080273
+        },
+        {
+          "dt": "2026-02-03",
+          "state": "watch",
+          "distance_percentile": 0.952381,
+          "averaged_distance": 0.073804,
+          "reduced_rank_mean_corr": 0.00981
+        },
+        {
+          "dt": "2026-04-01",
+          "state": "watch",
+          "distance_percentile": 0.940476,
+          "averaged_distance": 0.068931,
+          "reduced_rank_mean_corr": 0.053553
+        },
+        {
+          "dt": "2026-02-02",
+          "state": "watch",
+          "distance_percentile": 0.924603,
+          "averaged_distance": 0.060646,
+          "reduced_rank_mean_corr": -0.001451
+        },
+        {
+          "dt": "2026-03-23",
+          "state": "watch",
+          "distance_percentile": 0.920635,
+          "averaged_distance": 0.063326,
+          "reduced_rank_mean_corr": 0.05912
+        },
+        {
+          "dt": "2026-04-30",
+          "state": "watch",
+          "distance_percentile": 0.84127,
+          "averaged_distance": 0.045355,
+          "reduced_rank_mean_corr": 0.0045
+        },
+        {
+          "dt": "2026-02-11",
+          "state": "watch",
+          "distance_percentile": 0.825397,
+          "averaged_distance": 0.042774,
+          "reduced_rank_mean_corr": 0.005116
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2026_recent",
+      "start": "2026-05-15",
+      "end": "2026-07-20",
+      "type": "recent_window",
+      "status": "available",
+      "available_days": 46,
+      "ticker_count_min": 35,
+      "ticker_count_median": 35.0,
+      "distance_percentile_mean": 0.470756,
+      "distance_percentile_max": 0.952381,
+      "reduced_rank_mean_corr_mean": -0.006721,
+      "state_counts": {
+        "normal": 39,
+        "watch": 7
+      },
+      "watch_or_worse_days": 7,
+      "elevated_or_worse_days": 0,
+      "watch_or_worse_rate": 0.152174,
+      "elevated_or_worse_rate": 0.0,
+      "top_days": [
+        {
+          "dt": "2026-06-08",
+          "state": "watch",
+          "distance_percentile": 0.952381,
+          "averaged_distance": 0.073059,
+          "reduced_rank_mean_corr": -0.007666
+        },
+        {
+          "dt": "2026-05-28",
+          "state": "watch",
+          "distance_percentile": 0.93254,
+          "averaged_distance": 0.064414,
+          "reduced_rank_mean_corr": -0.005154
+        },
+        {
+          "dt": "2026-06-10",
+          "state": "watch",
+          "distance_percentile": 0.90873,
+          "averaged_distance": 0.059139,
+          "reduced_rank_mean_corr": -0.007435
+        },
+        {
+          "dt": "2026-06-05",
+          "state": "watch",
+          "distance_percentile": 0.900794,
+          "averaged_distance": 0.055719,
+          "reduced_rank_mean_corr": -0.006826
+        },
+        {
+          "dt": "2026-05-20",
+          "state": "watch",
+          "distance_percentile": 0.833333,
+          "averaged_distance": 0.045651,
+          "reduced_rank_mean_corr": -0.00583
+        },
+        {
+          "dt": "2026-05-15",
+          "state": "watch",
+          "distance_percentile": 0.81746,
+          "averaged_distance": 0.042374,
+          "reduced_rank_mean_corr": -0.008637
+        },
+        {
+          "dt": "2026-07-01",
+          "state": "watch",
+          "distance_percentile": 0.789683,
+          "averaged_distance": 0.036979,
+          "reduced_rank_mean_corr": -0.007677
+        },
+        {
+          "dt": "2026-06-01",
+          "state": "normal",
+          "distance_percentile": 0.718254,
+          "averaged_distance": 0.033386,
+          "reduced_rank_mean_corr": -0.005339
+        },
+        {
+          "dt": "2026-07-17",
+          "state": "normal",
+          "distance_percentile": 0.702381,
+          "averaged_distance": 0.031069,
+          "reduced_rank_mean_corr": -0.005076
+        },
+        {
+          "dt": "2026-06-15",
+          "state": "normal",
+          "distance_percentile": 0.654762,
+          "averaged_distance": 0.030193,
+          "reduced_rank_mean_corr": -0.007792
+        }
+      ]
+    }
+  ],
+  "aggregate": {
+    "total_days": 4621,
+    "stress_window_days": 912,
+    "non_window_days": 3709,
+    "stress_window_watch_or_worse_rate": 0.246711,
+    "stress_window_elevated_or_worse_rate": 0.016447,
+    "non_window_watch_or_worse_rate": 0.424373,
+    "non_window_elevated_or_worse_rate": 0.197358,
+    "state_counts_all": {
+      "normal": 2821,
+      "watch": 1052,
+      "elevated_fragility": 747,
+      "unavailable": 1
+    },
+    "distance_percentile_max": 1.0,
+    "reduced_rank_mean_corr_min": -0.014043
+  },
+  "blocking_reasons": [
+    "broad_sector_stock_universe_not_used",
+    "elevated_false_positive_rate_above_10pct",
+    "kmeans_market_state_snapshot_not_used",
+    "no_live_weight_change_allowed",
+    "reduced_rank_proxy_not_paper_equivalent",
+    "watch_false_positive_rate_exceeds_stress_recall"
+  ],
+  "decision": {
+    "promotion_allowed": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

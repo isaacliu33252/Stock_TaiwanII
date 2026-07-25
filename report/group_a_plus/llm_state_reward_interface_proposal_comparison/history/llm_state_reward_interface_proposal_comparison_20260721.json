@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_proposal_comparison_review",
+  "generated_at": "2026-07-21T15:59:19",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "proposal_comparison_only_no_model_training_no_live_action",
+  "inputs": {
+    "v1_diagnostic_refinement": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_diagnostic_refinement_review.json",
+    "v2_diagnostic_refinement": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_diagnostic_refinement_downside_tail_decay_review.json",
+    "v2_tuned_diagnostic_refinement": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_diagnostic_refinement_downside_tail_decay_tuned_review.json",
+    "param_sweep": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_downside_tail_decay_param_sweep.json"
+  },
+  "summary": {
+    "candidate_count": 3,
+    "best_label": "v2_tuned_downside_tail_decay",
+    "best_proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+    "best_reward_alignment_grade": "green",
+    "best_objective": "future_downside_alignment",
+    "best_objective_alignment": -0.0900610103839697,
+    "best_objective_abs_alignment": 0.0900610103839697,
+    "best_reward_snr": 2.713603844684947,
+    "best_ppo_training_queue_candidate": true,
+    "sweep_best_params": {
+      "drawdown_weight": 0.3,
+      "volatility_weight": 0.5,
+      "tail_decay_weight": 0.1,
+      "volatility_scale": 4.0,
+      "tail_decay_scale": 4.0
+    },
+    "sweep_green_candidate_count": 191
+  },
+  "ranked_candidates": [
+    {
+      "label": "v2_tuned_downside_tail_decay",
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_diagnostic_refinement_downside_tail_decay_tuned_review.json",
+      "status": "available_for_manual_offline_review",
+      "proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+      "params": {
+        "drawdown_weight": 0.3,
+        "volatility_weight": 0.5,
+        "tail_decay_weight": 0.1,
+        "volatility_scale": 4.0,
+        "tail_decay_scale": 4.0
+      },
+      "reward_alignment_objective": "future_downside_alignment",
+      "objective_alignment": -0.0900610103839697,
+      "objective_abs_alignment": 0.0900610103839697,
+      "mean_reward_future_return_alignment": -0.0426268937295337,
+      "mean_reward_future_downside_alignment": -0.0900610103839697,
+      "mean_reward_snr": 2.713603844684947,
+      "finite_reward_min_ratio": 1.0,
+      "reward_alignment_grade": "green",
+      "return_alignment_grade": "yellow",
+      "downside_alignment_grade": "green",
+      "downside_alignment_direction": "negative_reward_vs_positive_downside",
+      "downside_alignment_risk_sensitive_useful": true,
+      "warning_count": 11,
+      "blocking_count": 0,
+      "ppo_training_queue_candidate": true
+    },
+    {
+      "label": "v2_default_downside_tail_decay",
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_diagnostic_refinement_downside_tail_decay_review.json",
+      "status": "available_for_manual_offline_review",
+      "proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+      "params": {
+        "drawdown_weight": 0.5,
+        "volatility_weight": 0.3,
+        "tail_decay_weight": 0.2,
+        "volatility_scale": 3.0,
+        "tail_decay_scale": 4.0
+      },
+      "reward_alignment_objective": "future_downside_alignment",
+      "objective_alignment": -0.05787673008883611,
+      "objective_abs_alignment": 0.05787673008883611,
+      "mean_reward_future_return_alignment": -0.026158414830628304,
+      "mean_reward_future_downside_alignment": -0.05787673008883611,
+      "mean_reward_snr": 2.493108604189232,
+      "finite_reward_min_ratio": 1.0,
+      "reward_alignment_grade": "green",
+      "return_alignment_grade": "yellow",
+      "downside_alignment_grade": "green",
+      "downside_alignment_direction": "negative_reward_vs_positive_downside",
+      "downside_alignment_risk_sensitive_useful": true,
+      "warning_count": 11,
+      "blocking_count": 0,
+      "ppo_training_queue_candidate": true
+    },
+    {
+      "label": "v1_default",
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_diagnostic_refinement_review.json",
+      "status": "available_for_manual_offline_review",
+      "proposal_id": "gift_research_momentum_vol_drawdown_turnover_v1",
+      "params": {
+        "drawdown_weight": 0.5,
+        "volatility_weight": 0.3,
+        "tail_decay_weight": 0.2,
+        "volatility_scale": 3.0,
+        "tail_decay_scale": 4.0
+      },
+      "reward_alignment_objective": "future_return_alignment",
+      "objective_alignment": -0.014155265022998449,
+      "objective_abs_alignment": 0.014155265022998449,
+      "mean_reward_future_return_alignment": -0.014155265022998449,
+      "mean_reward_future_downside_alignment": -0.03995148764725214,
+      "mean_reward_snr": 2.1506875096067595,
+      "finite_reward_min_ratio": 1.0,
+      "reward_alignment_grade": "red",
+      "return_alignment_grade": "red",
+      "downside_alignment_grade": "yellow",
+      "downside_alignment_direction": "negative_reward_vs_positive_downside",
+      "downside_alignment_risk_sensitive_useful": true,
+      "warning_count": 12,
+      "blocking_count": 0,
+      "ppo_training_queue_candidate": false
+    }
+  ],
+  "blocking_reasons": [],
+  "interpretation": [
+    "The tuned downside/tail-decay proposal is favored only as the next offline research candidate.",
+    "A green diagnostic grade is not live strategy approval and does not permit PPO training by itself.",
+    "Any future experiment must freeze the state/reward interface before out-of-sample evaluation."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "best_candidate_for_next_offline_experiment": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

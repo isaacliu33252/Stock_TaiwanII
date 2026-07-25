@@ -1,0 +1,933 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_multi_ticker_smoke_review",
+  "generated_at": "2026-07-21T22:48:19",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "multi_ticker_offline_smoke_only_no_model_training_no_live_action",
+  "inputs": {
+    "validation_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_proposal_validation_review.json",
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "0056.TW",
+      "00713.TW",
+      "00878.TW",
+      "00679B.TWO",
+      "00751B.TWO"
+    ],
+    "start": "2016-01-01",
+    "min_rows": 240,
+    "min_end_date": "2026-07-17",
+    "accepted_proposal_id": "gift_research_momentum_vol_drawdown_turnover_v1",
+    "accepted_proposal_found": true
+  },
+  "summary": {
+    "ticker_count": 8,
+    "available_for_manual_offline_review_count": 8,
+    "blocked_tickers": [],
+    "earliest_end": "2026-07-21",
+    "latest_end": "2026-07-21"
+  },
+  "ticker_results": [
+    {
+      "ticker": "0050.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-21",
+        "rows": 2562
+      },
+      "finite_summary": {
+        "rows": 2562,
+        "columns": {
+          "relative_momentum": {
+            "non_null_count": 2542,
+            "finite_count": 2542,
+            "finite_ratio": 0.9921935987509758,
+            "min": -0.25570028026635117,
+            "max": 0.27924276373306545
+          },
+          "realized_volatility": {
+            "non_null_count": 2542,
+            "finite_count": 2542,
+            "finite_ratio": 0.9921935987509758,
+            "min": 0.0034230646195316508,
+            "max": 0.038124043565854665
+          },
+          "drawdown_penalty": {
+            "non_null_count": 2562,
+            "finite_count": 2562,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "turnover_penalty": {
+            "non_null_count": 2562,
+            "finite_count": 2562,
+            "finite_ratio": 1.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "reward_proxy": {
+            "non_null_count": 2562,
+            "finite_count": 2562,
+            "finite_ratio": 1.0,
+            "min": -0.25,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 11,
+        "windows": [
+          {
+            "year": 2016,
+            "rows": 244,
+            "feature_ready_rows": 224,
+            "has_min_rows": true
+          },
+          {
+            "year": 2017,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2018,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2019,
+            "rows": 241,
+            "feature_ready_rows": 241,
+            "has_min_rows": true
+          },
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 131,
+            "feature_ready_rows": 131,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00631L.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-21",
+        "rows": 2566
+      },
+      "finite_summary": {
+        "rows": 2566,
+        "columns": {
+          "relative_momentum": {
+            "non_null_count": 2546,
+            "finite_count": 2546,
+            "finite_ratio": 0.9922057677318784,
+            "min": -0.48588098550309544,
+            "max": 0.5636333201871984
+          },
+          "realized_volatility": {
+            "non_null_count": 2546,
+            "finite_count": 2546,
+            "finite_ratio": 0.9922057677318784,
+            "min": 0.006079467903438019,
+            "max": 0.08021631277459718
+          },
+          "drawdown_penalty": {
+            "non_null_count": 2566,
+            "finite_count": 2566,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "turnover_penalty": {
+            "non_null_count": 2566,
+            "finite_count": 2566,
+            "finite_ratio": 1.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "reward_proxy": {
+            "non_null_count": 2566,
+            "finite_count": 2566,
+            "finite_ratio": 1.0,
+            "min": -0.25,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 11,
+        "windows": [
+          {
+            "year": 2016,
+            "rows": 246,
+            "feature_ready_rows": 226,
+            "has_min_rows": true
+          },
+          {
+            "year": 2017,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2018,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2019,
+            "rows": 241,
+            "feature_ready_rows": 241,
+            "has_min_rows": true
+          },
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 131,
+            "feature_ready_rows": 131,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00632R.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-21",
+        "rows": 2566
+      },
+      "finite_summary": {
+        "rows": 2566,
+        "columns": {
+          "relative_momentum": {
+            "non_null_count": 2546,
+            "finite_count": 2546,
+            "finite_ratio": 0.9922057677318784,
+            "min": -0.22173915777705155,
+            "max": 6.152647604866294
+          },
+          "realized_volatility": {
+            "non_null_count": 2546,
+            "finite_count": 2546,
+            "finite_ratio": 0.9922057677318784,
+            "min": 0.003048133531839522,
+            "max": 1.2763766085899875
+          },
+          "drawdown_penalty": {
+            "non_null_count": 2566,
+            "finite_count": 2566,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "turnover_penalty": {
+            "non_null_count": 2566,
+            "finite_count": 2566,
+            "finite_ratio": 1.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "reward_proxy": {
+            "non_null_count": 2566,
+            "finite_count": 2566,
+            "finite_ratio": 1.0,
+            "min": -0.25,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 11,
+        "windows": [
+          {
+            "year": 2016,
+            "rows": 246,
+            "feature_ready_rows": 226,
+            "has_min_rows": true
+          },
+          {
+            "year": 2017,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2018,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2019,
+            "rows": 241,
+            "feature_ready_rows": 241,
+            "has_min_rows": true
+          },
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 131,
+            "feature_ready_rows": 131,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "0056.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2020-01-02",
+        "end": "2026-07-21",
+        "rows": 1589
+      },
+      "finite_summary": {
+        "rows": 1589,
+        "columns": {
+          "relative_momentum": {
+            "non_null_count": 1569,
+            "finite_count": 1569,
+            "finite_ratio": 0.9874134675896791,
+            "min": -0.2455110126994121,
+            "max": 0.23885501080010463
+          },
+          "realized_volatility": {
+            "non_null_count": 1569,
+            "finite_count": 1569,
+            "finite_ratio": 0.9874134675896791,
+            "min": 0.0027977172553417173,
+            "max": 0.036946885181502936
+          },
+          "drawdown_penalty": {
+            "non_null_count": 1589,
+            "finite_count": 1589,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "turnover_penalty": {
+            "non_null_count": 1589,
+            "finite_count": 1589,
+            "finite_ratio": 1.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "reward_proxy": {
+            "non_null_count": 1589,
+            "finite_count": 1589,
+            "finite_ratio": 1.0,
+            "min": -0.25,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 7,
+        "windows": [
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 225,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 131,
+            "feature_ready_rows": 131,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00713.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2020-01-02",
+        "end": "2026-07-21",
+        "rows": 1589
+      },
+      "finite_summary": {
+        "rows": 1589,
+        "columns": {
+          "relative_momentum": {
+            "non_null_count": 1569,
+            "finite_count": 1569,
+            "finite_ratio": 0.9874134675896791,
+            "min": -0.24898853536881993,
+            "max": 0.22254459287195405
+          },
+          "realized_volatility": {
+            "non_null_count": 1569,
+            "finite_count": 1569,
+            "finite_ratio": 0.9874134675896791,
+            "min": 0.002843952064845609,
+            "max": 0.03386595360230837
+          },
+          "drawdown_penalty": {
+            "non_null_count": 1589,
+            "finite_count": 1589,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "turnover_penalty": {
+            "non_null_count": 1589,
+            "finite_count": 1589,
+            "finite_ratio": 1.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "reward_proxy": {
+            "non_null_count": 1589,
+            "finite_count": 1589,
+            "finite_ratio": 1.0,
+            "min": -0.25,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 7,
+        "windows": [
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 225,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 131,
+            "feature_ready_rows": 131,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00878.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2020-07-10",
+        "end": "2026-07-21",
+        "rows": 1466
+      },
+      "finite_summary": {
+        "rows": 1466,
+        "columns": {
+          "relative_momentum": {
+            "non_null_count": 1446,
+            "finite_count": 1446,
+            "finite_ratio": 0.9863574351978172,
+            "min": -0.19566200126128064,
+            "max": 0.23542517938142704
+          },
+          "realized_volatility": {
+            "non_null_count": 1446,
+            "finite_count": 1446,
+            "finite_ratio": 0.9863574351978172,
+            "min": 0.0022193860002830486,
+            "max": 0.035594397875194944
+          },
+          "drawdown_penalty": {
+            "non_null_count": 1466,
+            "finite_count": 1466,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "turnover_penalty": {
+            "non_null_count": 1466,
+            "finite_count": 1466,
+            "finite_ratio": 1.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "reward_proxy": {
+            "non_null_count": 1466,
+            "finite_count": 1466,
+            "finite_ratio": 1.0,
+            "min": -0.25,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 7,
+        "windows": [
+          {
+            "year": 2020,
+            "rows": 122,
+            "feature_ready_rows": 102,
+            "has_min_rows": false
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 131,
+            "feature_ready_rows": 131,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00679B.TWO",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2017-01-11",
+        "end": "2026-07-21",
+        "rows": 2311
+      },
+      "finite_summary": {
+        "rows": 2311,
+        "columns": {
+          "relative_momentum": {
+            "non_null_count": 2291,
+            "finite_count": 2291,
+            "finite_ratio": 0.9913457377758547,
+            "min": -0.15154505584449673,
+            "max": 0.22011723698570096
+          },
+          "realized_volatility": {
+            "non_null_count": 2291,
+            "finite_count": 2291,
+            "finite_ratio": 0.9913457377758547,
+            "min": 0.003173240357514443,
+            "max": 0.034450920762172835
+          },
+          "drawdown_penalty": {
+            "non_null_count": 2311,
+            "finite_count": 2311,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "turnover_penalty": {
+            "non_null_count": 2311,
+            "finite_count": 2311,
+            "finite_ratio": 1.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "reward_proxy": {
+            "non_null_count": 2311,
+            "finite_count": 2311,
+            "finite_ratio": 1.0,
+            "min": -0.25,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 10,
+        "windows": [
+          {
+            "year": 2017,
+            "rows": 236,
+            "feature_ready_rows": 216,
+            "has_min_rows": true
+          },
+          {
+            "year": 2018,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2019,
+            "rows": 241,
+            "feature_ready_rows": 241,
+            "has_min_rows": true
+          },
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 131,
+            "feature_ready_rows": 131,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00751B.TWO",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2020-01-02",
+        "end": "2026-07-21",
+        "rows": 1589
+      },
+      "finite_summary": {
+        "rows": 1589,
+        "columns": {
+          "relative_momentum": {
+            "non_null_count": 1569,
+            "finite_count": 1569,
+            "finite_ratio": 0.9874134675896791,
+            "min": -0.21815224570314795,
+            "max": 0.28995324662326794
+          },
+          "realized_volatility": {
+            "non_null_count": 1569,
+            "finite_count": 1569,
+            "finite_ratio": 0.9874134675896791,
+            "min": 0.0032839601225892676,
+            "max": 0.04221166989645735
+          },
+          "drawdown_penalty": {
+            "non_null_count": 1589,
+            "finite_count": 1589,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "turnover_penalty": {
+            "non_null_count": 1589,
+            "finite_count": 1589,
+            "finite_ratio": 1.0,
+            "min": 0.0,
+            "max": 0.0
+          },
+          "reward_proxy": {
+            "non_null_count": 1589,
+            "finite_count": 1589,
+            "finite_ratio": 1.0,
+            "min": -0.25,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 7,
+        "windows": [
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 225,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 131,
+            "feature_ready_rows": 131,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

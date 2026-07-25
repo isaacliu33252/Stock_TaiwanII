@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_asian_etf_tail_analytics_readiness_review",
+  "generated_at": "2026-07-21T22:38:58",
+  "as_of": "2026-07-20",
+  "status": "blocked",
+  "policy": "research_only_asian_etf_tail_analytics_no_optimizer_no_weight_change",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2511.12476.pdf",
+    "title": "Performance and Risk Analytics of Asian Exchange-Traded Funds",
+    "arxiv": "2511.12476v1",
+    "imported_concepts": [
+      "equal_weight_etf_benchmark",
+      "markowitz_and_cvar_frontier_as_research_benchmark",
+      "sharpe_rachev_starr_reward_risk_ratios",
+      "hill_tail_index_as_extreme_loss_diagnostic",
+      "friction_cost_caution_for_long_short_leverage"
+    ],
+    "not_imported": [
+      "29_us_listed_asian_etf_allocation",
+      "long_short_10_20_30_percent_leverage",
+      "markowitz_or_cvar_live_optimizer",
+      "automatic_rebalance"
+    ]
+  },
+  "data_readiness": {
+    "available_ticker_count": 37,
+    "paper_etf_coverage": {
+      "paper_etf_count": 29,
+      "available_paper_etf_count": 1,
+      "available_paper_etfs": [
+        "EWT"
+      ],
+      "missing_paper_etfs": [
+        "AAXJ",
+        "ACWX",
+        "AIA",
+        "ASEA",
+        "CHIQ",
+        "DVYA",
+        "DVYE",
+        "EDIV",
+        "EEM",
+        "EEMA",
+        "EEMS",
+        "EIDO",
+        "EPHE",
+        "EWM",
+        "EWX",
+        "EWY",
+        "FM",
+        "GMF",
+        "GXC",
+        "HAUZ",
+        "HYEM",
+        "INDA",
+        "KBWB",
+        "KWEB",
+        "MCHI",
+        "THD",
+        "VNM",
+        "VWO"
+      ],
+      "paper_universe_ready": false
+    }
+  },
+  "component_readiness": {
+    "cvar_tail_risk": {
+      "status": "research_only",
+      "promotion_decision": "research_only",
+      "golden1_starr_95": 15.208210413984315,
+      "golden1_rachev_95_95": 1.042372888137112,
+      "00631l_expected_shortfall_loss_95": 0.0811159172627952,
+      "00631l_rachev_95_95": 0.9604260807450556,
+      "00631l_hill_xi_95": 0.365186858046869
+    },
+    "market_impact": {
+      "status": "blocked",
+      "auto_rebalance_allowed": false
+    },
+    "rebalance": {
+      "status": "available",
+      "auto_rebalance_allowed": false,
+      "target_weight_change_allowed": false,
+      "allow_00631l_add": false
+    },
+    "letf_tracking_error": {
+      "status": "blocked",
+      "allow_00631l_add": false,
+      "allow_00632r_open": false
+    }
+  },
+  "tail_reward_risk_monitor": {
+    "status": "available",
+    "tier": "defensive_preference",
+    "golden1_rachev_95_95": 1.042372888137112,
+    "00631l_rachev_95_95": 0.9604260807450556,
+    "golden1_beats_00631l_by_rachev": true,
+    "00631l_rachev_below_one": true,
+    "interpretation": "Golden1 has stronger tail gain/loss balance than 00631L, while 00631L is below 1.0; keep the current defensive preference and do not add leveraged exposure automatically."
+  },
+  "validation_readiness": {
+    "markowitz_frontier_implemented": false,
+    "cvar_frontier_implemented": false,
+    "starr_rachev_ratio_monitor_implemented": true,
+    "hill_tail_index_monitor_implemented": false,
+    "long_short_cost_model_implemented": false,
+    "taiwan_group_a_plus_walkforward_validated": false
+  },
+  "blocking_reasons": [
+    "asian_29_etf_universe_not_available",
+    "asian_etf_walkforward_validation_missing",
+    "cvar_tail_risk_diagnostic_research_only",
+    "letf_tracking_error_review_disallows_00631l_add",
+    "leverage_10_20_30_percent_not_portable_to_group_a_plus",
+    "long_short_etf_strategy_not_allowed",
+    "market_impact_disallows_auto_rebalance",
+    "market_impact_readiness_blocked",
+    "rachev_starr_hill_optimizer_not_implemented",
+    "rebalance_review_disallows_auto_rebalance",
+    "rebalance_review_disallows_target_weight_change",
+    "transaction_borrow_financing_costs_missing"
+  ],
+  "warning_reasons": [
+    "00631l_rachev_below_one_tail_reward_unfavorable",
+    "rachev_prefers_golden1_over_00631l"
+  ],
+  "decision": {
+    "summary": "Use 2511.12476 as ETF tail-risk analytics governance only. Current GroupA+ lacks the paper's 29-ETF Asian universe, long-short cost model, and optimizer validation; live weights remain unchanged.",
+    "tail_analytics_ready": false,
+    "optimizer_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "cvar_tail_risk": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/cvar_tail_risk_diagnostic.json",
+    "market_impact": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+    "rebalance": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rebalance_review_20260720.json",
+    "letf_tracking_error": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json"
+  }
+}

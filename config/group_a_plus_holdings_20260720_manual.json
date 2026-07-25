@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-07-20",
+  "source": "manual_reconciliation_from_user_values_and_isaac_tra_20260718_transaction_history",
+  "assumptions": [
+    "0050.TW uses user-provided current holding: 2794 shares.",
+    "00631L.TW uses user-provided current holding: 500 shares.",
+    "00679B.TWO uses transaction-history net holding estimate from isaac_tra_20260718.xlsx: 3000 shares.",
+    "00632R.TW is assumed to be 0 shares.",
+    "cash balance is not included in this file; execution_plan.py still receives cash through --cash-balance."
+  ],
+  "holdings": {
+    "0050.TW": 2794,
+    "00631L.TW": 500,
+    "00632R.TW": 0,
+    "00679B.TWO": 3000
+  }
+}

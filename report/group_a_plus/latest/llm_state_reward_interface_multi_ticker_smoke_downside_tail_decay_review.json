@@ -1,0 +1,1101 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_multi_ticker_smoke_review",
+  "generated_at": "2026-07-20T11:26:01",
+  "as_of": "2026-07-20",
+  "status": "available_for_manual_offline_review",
+  "policy": "multi_ticker_offline_smoke_only_no_model_training_no_live_action",
+  "inputs": {
+    "validation_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_proposal_validation_review.json",
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "0056.TW",
+      "00713.TW",
+      "00878.TW",
+      "00679B.TWO",
+      "00751B.TWO"
+    ],
+    "start": "2016-01-01",
+    "min_rows": 240,
+    "min_end_date": "2026-07-17",
+    "accepted_proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+    "accepted_proposal_found": true
+  },
+  "summary": {
+    "ticker_count": 8,
+    "available_for_manual_offline_review_count": 8,
+    "blocked_tickers": [],
+    "earliest_end": "2026-07-17",
+    "latest_end": "2026-07-17"
+  },
+  "ticker_results": [
+    {
+      "ticker": "0050.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-17",
+        "rows": 2560
+      },
+      "finite_summary": {
+        "rows": 2560,
+        "columns": {
+          "downside_deviation": {
+            "non_null_count": 2540,
+            "finite_count": 2540,
+            "finite_ratio": 0.9921875,
+            "min": 0.0010138945590241505,
+            "max": 0.023937587085369198
+          },
+          "realized_volatility": {
+            "non_null_count": 2540,
+            "finite_count": 2540,
+            "finite_ratio": 0.9921875,
+            "min": 0.0034230646195316508,
+            "max": 0.038124043565854665
+          },
+          "drawdown_depth": {
+            "non_null_count": 2560,
+            "finite_count": 2560,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.3638158095510382
+          },
+          "ema_cross_strength": {
+            "non_null_count": 2535,
+            "finite_count": 2535,
+            "finite_ratio": 0.990234375,
+            "min": -0.06366669181083107,
+            "max": 0.05426603770279326
+          },
+          "drawdown_penalty": {
+            "non_null_count": 2560,
+            "finite_count": 2560,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "volatility_scaling_penalty": {
+            "non_null_count": 2540,
+            "finite_count": 2540,
+            "finite_ratio": 0.9921875,
+            "min": 0.010269193858594951,
+            "max": 0.114372130697564
+          },
+          "letf_tail_decay_cost": {
+            "non_null_count": 2560,
+            "finite_count": 2560,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.034173603797658714
+          },
+          "reward_proxy": {
+            "non_null_count": 2560,
+            "finite_count": 2560,
+            "finite_ratio": 1.0,
+            "min": -0.15807048905451102,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 11,
+        "windows": [
+          {
+            "year": 2016,
+            "rows": 244,
+            "feature_ready_rows": 219,
+            "has_min_rows": true
+          },
+          {
+            "year": 2017,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2018,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2019,
+            "rows": 241,
+            "feature_ready_rows": 241,
+            "has_min_rows": true
+          },
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 129,
+            "feature_ready_rows": 129,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00631L.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-17",
+        "rows": 2564
+      },
+      "finite_summary": {
+        "rows": 2564,
+        "columns": {
+          "downside_deviation": {
+            "non_null_count": 2544,
+            "finite_count": 2544,
+            "finite_ratio": 0.9921996879875195,
+            "min": 0.0015789696013016985,
+            "max": 0.05237193143906055
+          },
+          "realized_volatility": {
+            "non_null_count": 2544,
+            "finite_count": 2544,
+            "finite_ratio": 0.9921996879875195,
+            "min": 0.006079467903438019,
+            "max": 0.08021631277459718
+          },
+          "drawdown_depth": {
+            "non_null_count": 2564,
+            "finite_count": 2564,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.5
+          },
+          "ema_cross_strength": {
+            "non_null_count": 2539,
+            "finite_count": 2539,
+            "finite_ratio": 0.9902496099843994,
+            "min": -0.1362779196127506,
+            "max": 0.0933517873221219
+          },
+          "drawdown_penalty": {
+            "non_null_count": 2564,
+            "finite_count": 2564,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "volatility_scaling_penalty": {
+            "non_null_count": 2544,
+            "finite_count": 2544,
+            "finite_ratio": 0.9921996879875195,
+            "min": 0.018238403710314058,
+            "max": 0.24064893832379153
+          },
+          "letf_tail_decay_cost": {
+            "non_null_count": 2564,
+            "finite_count": 2564,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.08021631277459718
+          },
+          "reward_proxy": {
+            "non_null_count": 2564,
+            "finite_count": 2564,
+            "finite_ratio": 1.0,
+            "min": -0.2132379440520569,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 11,
+        "windows": [
+          {
+            "year": 2016,
+            "rows": 246,
+            "feature_ready_rows": 221,
+            "has_min_rows": true
+          },
+          {
+            "year": 2017,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2018,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2019,
+            "rows": 241,
+            "feature_ready_rows": 241,
+            "has_min_rows": true
+          },
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 129,
+            "feature_ready_rows": 129,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00632R.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-17",
+        "rows": 2564
+      },
+      "finite_summary": {
+        "rows": 2564,
+        "columns": {
+          "downside_deviation": {
+            "non_null_count": 2544,
+            "finite_count": 2544,
+            "finite_ratio": 0.9921996879875195,
+            "min": 0.0015620759412111873,
+            "max": 0.023587836771859775
+          },
+          "realized_volatility": {
+            "non_null_count": 2544,
+            "finite_count": 2544,
+            "finite_ratio": 0.9921996879875195,
+            "min": 0.003048133531839522,
+            "max": 1.2763766085899875
+          },
+          "drawdown_depth": {
+            "non_null_count": 2564,
+            "finite_count": 2564,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.5
+          },
+          "ema_cross_strength": {
+            "non_null_count": 2539,
+            "finite_count": 2539,
+            "finite_ratio": 0.9902496099843994,
+            "min": -0.05355266612345133,
+            "max": 0.25
+          },
+          "drawdown_penalty": {
+            "non_null_count": 2564,
+            "finite_count": 2564,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "volatility_scaling_penalty": {
+            "non_null_count": 2544,
+            "finite_count": 2544,
+            "finite_ratio": 0.9921996879875195,
+            "min": 0.009144400595518565,
+            "max": 0.25
+          },
+          "letf_tail_decay_cost": {
+            "non_null_count": 2564,
+            "finite_count": 2564,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.1555081547544373
+          },
+          "reward_proxy": {
+            "non_null_count": 2564,
+            "finite_count": 2564,
+            "finite_ratio": 1.0,
+            "min": -0.163322385569432,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 11,
+        "windows": [
+          {
+            "year": 2016,
+            "rows": 246,
+            "feature_ready_rows": 221,
+            "has_min_rows": true
+          },
+          {
+            "year": 2017,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2018,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2019,
+            "rows": 241,
+            "feature_ready_rows": 241,
+            "has_min_rows": true
+          },
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 129,
+            "feature_ready_rows": 129,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "0056.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2020-01-02",
+        "end": "2026-07-17",
+        "rows": 1587
+      },
+      "finite_summary": {
+        "rows": 1587,
+        "columns": {
+          "downside_deviation": {
+            "non_null_count": 1567,
+            "finite_count": 1567,
+            "finite_ratio": 0.9873976055450535,
+            "min": 0.0002893258309323026,
+            "max": 0.025243473807428952
+          },
+          "realized_volatility": {
+            "non_null_count": 1567,
+            "finite_count": 1567,
+            "finite_ratio": 0.9873976055450535,
+            "min": 0.0027977172553417173,
+            "max": 0.036946885181502936
+          },
+          "drawdown_depth": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.3546511584925439
+          },
+          "ema_cross_strength": {
+            "non_null_count": 1562,
+            "finite_count": 1562,
+            "finite_ratio": 0.984247006931317,
+            "min": -0.057866820142548625,
+            "max": 0.058585067880900565
+          },
+          "drawdown_penalty": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "volatility_scaling_penalty": {
+            "non_null_count": 1567,
+            "finite_count": 1567,
+            "finite_ratio": 0.9873976055450535,
+            "min": 0.008393151766025151,
+            "max": 0.11084065554450881
+          },
+          "letf_tail_decay_cost": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.036796871525330906
+          },
+          "reward_proxy": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.16547655867786398,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 7,
+        "windows": [
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 220,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 129,
+            "feature_ready_rows": 129,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00713.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2020-01-02",
+        "end": "2026-07-17",
+        "rows": 1587
+      },
+      "finite_summary": {
+        "rows": 1587,
+        "columns": {
+          "downside_deviation": {
+            "non_null_count": 1567,
+            "finite_count": 1567,
+            "finite_ratio": 0.9873976055450535,
+            "min": 0.000598823842944706,
+            "max": 0.022923222324508725
+          },
+          "realized_volatility": {
+            "non_null_count": 1567,
+            "finite_count": 1567,
+            "finite_ratio": 0.9873976055450535,
+            "min": 0.002843952064845609,
+            "max": 0.03386595360230837
+          },
+          "drawdown_depth": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.2579951162022226
+          },
+          "ema_cross_strength": {
+            "non_null_count": 1562,
+            "finite_count": 1562,
+            "finite_ratio": 0.984247006931317,
+            "min": -0.05902777275220039,
+            "max": 0.037611847044997315
+          },
+          "drawdown_penalty": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "volatility_scaling_penalty": {
+            "non_null_count": 1567,
+            "finite_count": 1567,
+            "finite_ratio": 0.9873976055450535,
+            "min": 0.008531856194536828,
+            "max": 0.1015978608069251
+          },
+          "letf_tail_decay_cost": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.02368336757705441
+          },
+          "reward_proxy": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.14481566027049306,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 7,
+        "windows": [
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 220,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 129,
+            "feature_ready_rows": 129,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00878.TW",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2020-07-10",
+        "end": "2026-07-17",
+        "rows": 1464
+      },
+      "finite_summary": {
+        "rows": 1464,
+        "columns": {
+          "downside_deviation": {
+            "non_null_count": 1444,
+            "finite_count": 1444,
+            "finite_ratio": 0.9863387978142076,
+            "min": 0.000715230323356681,
+            "max": 0.02365875445356673
+          },
+          "realized_volatility": {
+            "non_null_count": 1444,
+            "finite_count": 1444,
+            "finite_ratio": 0.9863387978142076,
+            "min": 0.0022193860002830486,
+            "max": 0.035594397875194944
+          },
+          "drawdown_depth": {
+            "non_null_count": 1464,
+            "finite_count": 1464,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.2758340401826678
+          },
+          "ema_cross_strength": {
+            "non_null_count": 1439,
+            "finite_count": 1439,
+            "finite_ratio": 0.9829234972677595,
+            "min": -0.03764429760553656,
+            "max": 0.06264221748893273
+          },
+          "drawdown_penalty": {
+            "non_null_count": 1464,
+            "finite_count": 1464,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "volatility_scaling_penalty": {
+            "non_null_count": 1444,
+            "finite_count": 1444,
+            "finite_ratio": 0.9863387978142076,
+            "min": 0.006658158000849146,
+            "max": 0.10678319362558483
+          },
+          "letf_tail_decay_cost": {
+            "non_null_count": 1464,
+            "finite_count": 1464,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.029012583069498367
+          },
+          "reward_proxy": {
+            "non_null_count": 1464,
+            "finite_count": 1464,
+            "finite_ratio": 1.0,
+            "min": -0.15202744808447227,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 7,
+        "windows": [
+          {
+            "year": 2020,
+            "rows": 122,
+            "feature_ready_rows": 97,
+            "has_min_rows": false
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 129,
+            "feature_ready_rows": 129,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00679B.TWO",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2017-01-11",
+        "end": "2026-07-17",
+        "rows": 2309
+      },
+      "finite_summary": {
+        "rows": 2309,
+        "columns": {
+          "downside_deviation": {
+            "non_null_count": 2289,
+            "finite_count": 2289,
+            "finite_ratio": 0.9913382416630576,
+            "min": 0.0009610473516241866,
+            "max": 0.01955110614530192
+          },
+          "realized_volatility": {
+            "non_null_count": 2289,
+            "finite_count": 2289,
+            "finite_ratio": 0.9913382416630576,
+            "min": 0.003173240357514443,
+            "max": 0.034450920762172835
+          },
+          "drawdown_depth": {
+            "non_null_count": 2309,
+            "finite_count": 2309,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.5
+          },
+          "ema_cross_strength": {
+            "non_null_count": 2284,
+            "finite_count": 2284,
+            "finite_ratio": 0.989172802078822,
+            "min": -0.032593904781265226,
+            "max": 0.0412185682353714
+          },
+          "drawdown_penalty": {
+            "non_null_count": 2309,
+            "finite_count": 2309,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "volatility_scaling_penalty": {
+            "non_null_count": 2289,
+            "finite_count": 2289,
+            "finite_ratio": 0.9913382416630576,
+            "min": 0.009519721072543329,
+            "max": 0.1033527622865185
+          },
+          "letf_tail_decay_cost": {
+            "non_null_count": 2309,
+            "finite_count": 2309,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.02412206702666558
+          },
+          "reward_proxy": {
+            "non_null_count": 2309,
+            "finite_count": 2309,
+            "finite_ratio": 1.0,
+            "min": -0.15153427372933215,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 10,
+        "windows": [
+          {
+            "year": 2017,
+            "rows": 236,
+            "feature_ready_rows": 211,
+            "has_min_rows": true
+          },
+          {
+            "year": 2018,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2019,
+            "rows": 241,
+            "feature_ready_rows": 241,
+            "has_min_rows": true
+          },
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 245,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 129,
+            "feature_ready_rows": 129,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    },
+    {
+      "ticker": "00751B.TWO",
+      "status": "available_for_manual_offline_review",
+      "data_range": {
+        "start": "2020-01-02",
+        "end": "2026-07-17",
+        "rows": 1587
+      },
+      "finite_summary": {
+        "rows": 1587,
+        "columns": {
+          "downside_deviation": {
+            "non_null_count": 1567,
+            "finite_count": 1567,
+            "finite_ratio": 0.9873976055450535,
+            "min": 0.000899804463570069,
+            "max": 0.028635511422726308
+          },
+          "realized_volatility": {
+            "non_null_count": 1567,
+            "finite_count": 1567,
+            "finite_ratio": 0.9873976055450535,
+            "min": 0.0032839601225892676,
+            "max": 0.04221166989645735
+          },
+          "drawdown_depth": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.4439999898274739
+          },
+          "ema_cross_strength": {
+            "non_null_count": 1562,
+            "finite_count": 1562,
+            "finite_ratio": 0.984247006931317,
+            "min": -0.046230879472456854,
+            "max": 0.02403652542304724
+          },
+          "drawdown_penalty": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.25
+          },
+          "volatility_scaling_penalty": {
+            "non_null_count": 1567,
+            "finite_count": 1567,
+            "finite_ratio": 0.9873976055450535,
+            "min": 0.009851880367767803,
+            "max": 0.12663500968937205
+          },
+          "letf_tail_decay_cost": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.0,
+            "max": 0.03229033353593845
+          },
+          "reward_proxy": {
+            "non_null_count": 1587,
+            "finite_count": 1587,
+            "finite_ratio": 1.0,
+            "min": -0.16051936688953228,
+            "max": -0.0
+          }
+        }
+      },
+      "window_summary": {
+        "window_count": 7,
+        "windows": [
+          {
+            "year": 2020,
+            "rows": 245,
+            "feature_ready_rows": 220,
+            "has_min_rows": true
+          },
+          {
+            "year": 2021,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2022,
+            "rows": 246,
+            "feature_ready_rows": 246,
+            "has_min_rows": true
+          },
+          {
+            "year": 2023,
+            "rows": 239,
+            "feature_ready_rows": 239,
+            "has_min_rows": true
+          },
+          {
+            "year": 2024,
+            "rows": 242,
+            "feature_ready_rows": 242,
+            "has_min_rows": true
+          },
+          {
+            "year": 2025,
+            "rows": 243,
+            "feature_ready_rows": 243,
+            "has_min_rows": true
+          },
+          {
+            "year": 2026,
+            "rows": 129,
+            "feature_ready_rows": 129,
+            "has_min_rows": true
+          }
+        ],
+        "all_windows_have_min_rows": true
+      },
+      "blocking_reasons": [],
+      "warning_reasons": []
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

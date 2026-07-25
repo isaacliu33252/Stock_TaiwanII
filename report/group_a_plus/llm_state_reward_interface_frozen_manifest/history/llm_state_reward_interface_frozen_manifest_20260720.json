@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_frozen_manifest",
+  "generated_at": "2026-07-20T13:14:19",
+  "as_of": "2026-07-20",
+  "status": "frozen_for_manual_offline_review",
+  "policy": "frozen_interface_manifest_only_no_model_training_no_live_action",
+  "freeze": {
+    "freeze_id": "group_a_plus_gift_downside_tail_decay_v2_tuned_20260720",
+    "proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+    "selected_label": "v2_tuned_downside_tail_decay",
+    "state_columns": [
+      "downside_deviation",
+      "realized_volatility",
+      "drawdown_depth",
+      "ema_cross_strength"
+    ],
+    "reward_columns": [
+      "drawdown_penalty",
+      "volatility_scaling_penalty",
+      "letf_tail_decay_cost",
+      "reward_proxy"
+    ],
+    "reward_params": {
+      "drawdown_weight": 0.3,
+      "volatility_weight": 0.5,
+      "tail_decay_weight": 0.1,
+      "volatility_scale": 4.0,
+      "tail_decay_scale": 4.0
+    },
+    "reward_alignment_objective": "future_downside_alignment",
+    "objective_alignment": -0.0900610103839697,
+    "objective_abs_alignment": 0.0900610103839697,
+    "mean_reward_snr": 2.713603844684947,
+    "finite_reward_min_ratio": 1.0,
+    "source_hashes": {
+      "comparison_review": {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_proposal_comparison_review.json",
+        "sha256": "769bad0fe0f21cbf319e65386a1772f27a24560903ee1e76fb9bf8f426ec8688",
+        "exists": true
+      },
+      "selected_dgr_review": {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_diagnostic_refinement_downside_tail_decay_tuned_review.json",
+        "sha256": "37fcc8ff4f38108c9e6bd276450e3fac4c23569f32058c0f660767501f250b5d",
+        "exists": true
+      }
+    },
+    "frozen_manifest_sha256": "35142e40cceab135b56a2440e10ed53f01ca5763e693244c2e1c1ccd004a3b3c"
+  },
+  "blocking_reasons": [],
+  "interpretation": [
+    "This manifest freezes the selected state/reward interface before out-of-sample work.",
+    "Future offline experiments should reference this freeze_id and frozen_manifest_sha256.",
+    "Changing reward parameters requires a new comparison review and a new freeze manifest."
+  ],
+  "decision": {
+    "frozen_for_manual_offline_review": true,
+    "offline_feature_reward_export_allowed": true,
+    "offline_walk_forward_design_allowed": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

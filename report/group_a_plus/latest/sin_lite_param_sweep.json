@@ -1,0 +1,717 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_sin_lite_param_sweep",
+  "generated_at": "2026-07-19T19:55:17",
+  "as_of": "2026-07-20",
+  "policy": "research_only_sin_lite_param_sweep_no_weight_change",
+  "status": "blocked",
+  "grid": {
+    "lookbacks": [
+      60,
+      120
+    ],
+    "min_histories": [
+      40,
+      80
+    ],
+    "min_tickers_values": [
+      6,
+      10
+    ],
+    "edge_thresholds": [
+      0.2,
+      0.35,
+      0.45
+    ],
+    "candidate_count": 18,
+    "sampled_non_window": true,
+    "non_window_sample_step": 5
+  },
+  "best_candidate": {
+    "params": {
+      "lookback": 60,
+      "min_history": 40,
+      "min_tickers": 6,
+      "edge_threshold": 0.2
+    },
+    "metrics": {
+      "objective": 0.420091,
+      "stress_window_watch_or_worse_rate": 0.515939,
+      "stress_window_elevated_or_worse_rate": 0.197166,
+      "non_window_watch_or_worse_rate": 0.295203,
+      "non_window_elevated_or_worse_rate": 0.079336,
+      "post_2020_min_watch_or_worse_rate": 0.371287
+    },
+    "blocking_reasons": [
+      "hmm_bubble_state_not_used",
+      "limited_ticker_coverage_in_some_windows",
+      "no_live_weight_change_allowed",
+      "sin_lite_proxy_not_paper_equivalent",
+      "transfer_entropy_not_used"
+    ],
+    "windows": [
+      {
+        "name": "taiwan_2015_china_crash",
+        "watch_or_worse_rate": 0.702703,
+        "elevated_or_worse_rate": 0.502703,
+        "usable_ticker_count_min": 4
+      },
+      {
+        "name": "taiwan_2018_trade_war_correction",
+        "watch_or_worse_rate": 0.477551,
+        "elevated_or_worse_rate": 0.240816,
+        "usable_ticker_count_min": 5
+      },
+      {
+        "name": "taiwan_2020_covid_crash",
+        "watch_or_worse_rate": 0.396552,
+        "elevated_or_worse_rate": 0.094828,
+        "usable_ticker_count_min": 9
+      },
+      {
+        "name": "taiwan_2022_rate_hike_stress",
+        "watch_or_worse_rate": 0.371287,
+        "elevated_or_worse_rate": 0.0,
+        "usable_ticker_count_min": 14
+      },
+      {
+        "name": "taiwan_2026_q1q2_stress",
+        "watch_or_worse_rate": 0.87037,
+        "elevated_or_worse_rate": 0.074074,
+        "usable_ticker_count_min": 14
+      },
+      {
+        "name": "taiwan_2026_recent",
+        "watch_or_worse_rate": 0.488889,
+        "elevated_or_worse_rate": 0.0,
+        "usable_ticker_count_min": 14
+      }
+    ]
+  },
+  "top_candidates": [
+    {
+      "params": {
+        "lookback": 60,
+        "min_history": 40,
+        "min_tickers": 6,
+        "edge_threshold": 0.2
+      },
+      "metrics": {
+        "objective": 0.420091,
+        "stress_window_watch_or_worse_rate": 0.515939,
+        "stress_window_elevated_or_worse_rate": 0.197166,
+        "non_window_watch_or_worse_rate": 0.295203,
+        "non_window_elevated_or_worse_rate": 0.079336,
+        "post_2020_min_watch_or_worse_rate": 0.371287
+      },
+      "blocking_reasons": [
+        "hmm_bubble_state_not_used",
+        "limited_ticker_coverage_in_some_windows",
+        "no_live_weight_change_allowed",
+        "sin_lite_proxy_not_paper_equivalent",
+        "transfer_entropy_not_used"
+      ],
+      "windows": [
+        {
+          "name": "taiwan_2015_china_crash",
+          "watch_or_worse_rate": 0.702703,
+          "elevated_or_worse_rate": 0.502703,
+          "usable_ticker_count_min": 4
+        },
+        {
+          "name": "taiwan_2018_trade_war_correction",
+          "watch_or_worse_rate": 0.477551,
+          "elevated_or_worse_rate": 0.240816,
+          "usable_ticker_count_min": 5
+        },
+        {
+          "name": "taiwan_2020_covid_crash",
+          "watch_or_worse_rate": 0.396552,
+          "elevated_or_worse_rate": 0.094828,
+          "usable_ticker_count_min": 9
+        },
+        {
+          "name": "taiwan_2022_rate_hike_stress",
+          "watch_or_worse_rate": 0.371287,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_q1q2_stress",
+          "watch_or_worse_rate": 0.87037,
+          "elevated_or_worse_rate": 0.074074,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_recent",
+          "watch_or_worse_rate": 0.488889,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        }
+      ]
+    },
+    {
+      "params": {
+        "lookback": 60,
+        "min_history": 40,
+        "min_tickers": 10,
+        "edge_threshold": 0.2
+      },
+      "metrics": {
+        "objective": 0.420091,
+        "stress_window_watch_or_worse_rate": 0.515939,
+        "stress_window_elevated_or_worse_rate": 0.197166,
+        "non_window_watch_or_worse_rate": 0.295203,
+        "non_window_elevated_or_worse_rate": 0.079336,
+        "post_2020_min_watch_or_worse_rate": 0.371287
+      },
+      "blocking_reasons": [
+        "hmm_bubble_state_not_used",
+        "limited_ticker_coverage_in_some_windows",
+        "no_live_weight_change_allowed",
+        "sin_lite_proxy_not_paper_equivalent",
+        "transfer_entropy_not_used"
+      ],
+      "windows": [
+        {
+          "name": "taiwan_2015_china_crash",
+          "watch_or_worse_rate": 0.702703,
+          "elevated_or_worse_rate": 0.502703,
+          "usable_ticker_count_min": 4
+        },
+        {
+          "name": "taiwan_2018_trade_war_correction",
+          "watch_or_worse_rate": 0.477551,
+          "elevated_or_worse_rate": 0.240816,
+          "usable_ticker_count_min": 5
+        },
+        {
+          "name": "taiwan_2020_covid_crash",
+          "watch_or_worse_rate": 0.396552,
+          "elevated_or_worse_rate": 0.094828,
+          "usable_ticker_count_min": 9
+        },
+        {
+          "name": "taiwan_2022_rate_hike_stress",
+          "watch_or_worse_rate": 0.371287,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_q1q2_stress",
+          "watch_or_worse_rate": 0.87037,
+          "elevated_or_worse_rate": 0.074074,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_recent",
+          "watch_or_worse_rate": 0.488889,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        }
+      ]
+    },
+    {
+      "params": {
+        "lookback": 120,
+        "min_history": 40,
+        "min_tickers": 6,
+        "edge_threshold": 0.35
+      },
+      "metrics": {
+        "objective": 0.200043,
+        "stress_window_watch_or_worse_rate": 0.186541,
+        "stress_window_elevated_or_worse_rate": 0.060213,
+        "non_window_watch_or_worse_rate": 0.02214,
+        "non_window_elevated_or_worse_rate": 0.0,
+        "post_2020_min_watch_or_worse_rate": 0.0
+      },
+      "blocking_reasons": [
+        "hmm_bubble_state_not_used",
+        "limited_ticker_coverage_in_some_windows",
+        "no_live_weight_change_allowed",
+        "sin_lite_proxy_not_paper_equivalent",
+        "transfer_entropy_not_used"
+      ],
+      "windows": [
+        {
+          "name": "taiwan_2015_china_crash",
+          "watch_or_worse_rate": 0.8,
+          "elevated_or_worse_rate": 0.27027,
+          "usable_ticker_count_min": 4
+        },
+        {
+          "name": "taiwan_2018_trade_war_correction",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 5
+        },
+        {
+          "name": "taiwan_2020_covid_crash",
+          "watch_or_worse_rate": 0.086207,
+          "elevated_or_worse_rate": 0.008621,
+          "usable_ticker_count_min": 9
+        },
+        {
+          "name": "taiwan_2022_rate_hike_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_q1q2_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_recent",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        }
+      ]
+    },
+    {
+      "params": {
+        "lookback": 120,
+        "min_history": 40,
+        "min_tickers": 10,
+        "edge_threshold": 0.35
+      },
+      "metrics": {
+        "objective": 0.200043,
+        "stress_window_watch_or_worse_rate": 0.186541,
+        "stress_window_elevated_or_worse_rate": 0.060213,
+        "non_window_watch_or_worse_rate": 0.02214,
+        "non_window_elevated_or_worse_rate": 0.0,
+        "post_2020_min_watch_or_worse_rate": 0.0
+      },
+      "blocking_reasons": [
+        "hmm_bubble_state_not_used",
+        "limited_ticker_coverage_in_some_windows",
+        "no_live_weight_change_allowed",
+        "sin_lite_proxy_not_paper_equivalent",
+        "transfer_entropy_not_used"
+      ],
+      "windows": [
+        {
+          "name": "taiwan_2015_china_crash",
+          "watch_or_worse_rate": 0.8,
+          "elevated_or_worse_rate": 0.27027,
+          "usable_ticker_count_min": 4
+        },
+        {
+          "name": "taiwan_2018_trade_war_correction",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 5
+        },
+        {
+          "name": "taiwan_2020_covid_crash",
+          "watch_or_worse_rate": 0.086207,
+          "elevated_or_worse_rate": 0.008621,
+          "usable_ticker_count_min": 9
+        },
+        {
+          "name": "taiwan_2022_rate_hike_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_q1q2_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_recent",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        }
+      ]
+    },
+    {
+      "params": {
+        "lookback": 120,
+        "min_history": 80,
+        "min_tickers": 6,
+        "edge_threshold": 0.35
+      },
+      "metrics": {
+        "objective": 0.199896,
+        "stress_window_watch_or_worse_rate": 0.175915,
+        "stress_window_elevated_or_worse_rate": 0.059032,
+        "non_window_watch_or_worse_rate": 0.00738,
+        "non_window_elevated_or_worse_rate": 0.0,
+        "post_2020_min_watch_or_worse_rate": 0.0
+      },
+      "blocking_reasons": [
+        "hmm_bubble_state_not_used",
+        "limited_ticker_coverage_in_some_windows",
+        "no_live_weight_change_allowed",
+        "sin_lite_proxy_not_paper_equivalent",
+        "transfer_entropy_not_used"
+      ],
+      "windows": [
+        {
+          "name": "taiwan_2015_china_crash",
+          "watch_or_worse_rate": 0.8,
+          "elevated_or_worse_rate": 0.27027,
+          "usable_ticker_count_min": 4
+        },
+        {
+          "name": "taiwan_2018_trade_war_correction",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 5
+        },
+        {
+          "name": "taiwan_2020_covid_crash",
+          "watch_or_worse_rate": 0.008621,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 9
+        },
+        {
+          "name": "taiwan_2022_rate_hike_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_q1q2_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_recent",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        }
+      ]
+    },
+    {
+      "params": {
+        "lookback": 120,
+        "min_history": 80,
+        "min_tickers": 10,
+        "edge_threshold": 0.35
+      },
+      "metrics": {
+        "objective": 0.199896,
+        "stress_window_watch_or_worse_rate": 0.175915,
+        "stress_window_elevated_or_worse_rate": 0.059032,
+        "non_window_watch_or_worse_rate": 0.00738,
+        "non_window_elevated_or_worse_rate": 0.0,
+        "post_2020_min_watch_or_worse_rate": 0.0
+      },
+      "blocking_reasons": [
+        "hmm_bubble_state_not_used",
+        "limited_ticker_coverage_in_some_windows",
+        "no_live_weight_change_allowed",
+        "sin_lite_proxy_not_paper_equivalent",
+        "transfer_entropy_not_used"
+      ],
+      "windows": [
+        {
+          "name": "taiwan_2015_china_crash",
+          "watch_or_worse_rate": 0.8,
+          "elevated_or_worse_rate": 0.27027,
+          "usable_ticker_count_min": 4
+        },
+        {
+          "name": "taiwan_2018_trade_war_correction",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 5
+        },
+        {
+          "name": "taiwan_2020_covid_crash",
+          "watch_or_worse_rate": 0.008621,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 9
+        },
+        {
+          "name": "taiwan_2022_rate_hike_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_q1q2_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_recent",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        }
+      ]
+    },
+    {
+      "params": {
+        "lookback": 120,
+        "min_history": 40,
+        "min_tickers": 6,
+        "edge_threshold": 0.2
+      },
+      "metrics": {
+        "objective": 0.177659,
+        "stress_window_watch_or_worse_rate": 0.318772,
+        "stress_window_elevated_or_worse_rate": 0.101535,
+        "non_window_watch_or_worse_rate": 0.132841,
+        "non_window_elevated_or_worse_rate": 0.046125,
+        "post_2020_min_watch_or_worse_rate": 0.0
+      },
+      "blocking_reasons": [
+        "hmm_bubble_state_not_used",
+        "limited_ticker_coverage_in_some_windows",
+        "no_live_weight_change_allowed",
+        "sin_lite_proxy_not_paper_equivalent",
+        "transfer_entropy_not_used"
+      ],
+      "windows": [
+        {
+          "name": "taiwan_2015_china_crash",
+          "watch_or_worse_rate": 0.918919,
+          "elevated_or_worse_rate": 0.318919,
+          "usable_ticker_count_min": 4
+        },
+        {
+          "name": "taiwan_2018_trade_war_correction",
+          "watch_or_worse_rate": 0.244898,
+          "elevated_or_worse_rate": 0.085714,
+          "usable_ticker_count_min": 5
+        },
+        {
+          "name": "taiwan_2020_covid_crash",
+          "watch_or_worse_rate": 0.215517,
+          "elevated_or_worse_rate": 0.051724,
+          "usable_ticker_count_min": 9
+        },
+        {
+          "name": "taiwan_2022_rate_hike_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_q1q2_stress",
+          "watch_or_worse_rate": 0.185185,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_recent",
+          "watch_or_worse_rate": 0.111111,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        }
+      ]
+    },
+    {
+      "params": {
+        "lookback": 120,
+        "min_history": 40,
+        "min_tickers": 10,
+        "edge_threshold": 0.2
+      },
+      "metrics": {
+        "objective": 0.177659,
+        "stress_window_watch_or_worse_rate": 0.318772,
+        "stress_window_elevated_or_worse_rate": 0.101535,
+        "non_window_watch_or_worse_rate": 0.132841,
+        "non_window_elevated_or_worse_rate": 0.046125,
+        "post_2020_min_watch_or_worse_rate": 0.0
+      },
+      "blocking_reasons": [
+        "hmm_bubble_state_not_used",
+        "limited_ticker_coverage_in_some_windows",
+        "no_live_weight_change_allowed",
+        "sin_lite_proxy_not_paper_equivalent",
+        "transfer_entropy_not_used"
+      ],
+      "windows": [
+        {
+          "name": "taiwan_2015_china_crash",
+          "watch_or_worse_rate": 0.918919,
+          "elevated_or_worse_rate": 0.318919,
+          "usable_ticker_count_min": 4
+        },
+        {
+          "name": "taiwan_2018_trade_war_correction",
+          "watch_or_worse_rate": 0.244898,
+          "elevated_or_worse_rate": 0.085714,
+          "usable_ticker_count_min": 5
+        },
+        {
+          "name": "taiwan_2020_covid_crash",
+          "watch_or_worse_rate": 0.215517,
+          "elevated_or_worse_rate": 0.051724,
+          "usable_ticker_count_min": 9
+        },
+        {
+          "name": "taiwan_2022_rate_hike_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_q1q2_stress",
+          "watch_or_worse_rate": 0.185185,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_recent",
+          "watch_or_worse_rate": 0.111111,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        }
+      ]
+    },
+    {
+      "params": {
+        "lookback": 120,
+        "min_history": 80,
+        "min_tickers": 6,
+        "edge_threshold": 0.2
+      },
+      "metrics": {
+        "objective": 0.158217,
+        "stress_window_watch_or_worse_rate": 0.293979,
+        "stress_window_elevated_or_worse_rate": 0.095632,
+        "non_window_watch_or_worse_rate": 0.121771,
+        "non_window_elevated_or_worse_rate": 0.046125,
+        "post_2020_min_watch_or_worse_rate": 0.0
+      },
+      "blocking_reasons": [
+        "hmm_bubble_state_not_used",
+        "limited_ticker_coverage_in_some_windows",
+        "no_live_weight_change_allowed",
+        "sin_lite_proxy_not_paper_equivalent",
+        "transfer_entropy_not_used"
+      ],
+      "windows": [
+        {
+          "name": "taiwan_2015_china_crash",
+          "watch_or_worse_rate": 0.918919,
+          "elevated_or_worse_rate": 0.318919,
+          "usable_ticker_count_min": 4
+        },
+        {
+          "name": "taiwan_2018_trade_war_correction",
+          "watch_or_worse_rate": 0.244898,
+          "elevated_or_worse_rate": 0.085714,
+          "usable_ticker_count_min": 5
+        },
+        {
+          "name": "taiwan_2020_covid_crash",
+          "watch_or_worse_rate": 0.034483,
+          "elevated_or_worse_rate": 0.008621,
+          "usable_ticker_count_min": 9
+        },
+        {
+          "name": "taiwan_2022_rate_hike_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_q1q2_stress",
+          "watch_or_worse_rate": 0.185185,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_recent",
+          "watch_or_worse_rate": 0.111111,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        }
+      ]
+    },
+    {
+      "params": {
+        "lookback": 120,
+        "min_history": 80,
+        "min_tickers": 10,
+        "edge_threshold": 0.2
+      },
+      "metrics": {
+        "objective": 0.158217,
+        "stress_window_watch_or_worse_rate": 0.293979,
+        "stress_window_elevated_or_worse_rate": 0.095632,
+        "non_window_watch_or_worse_rate": 0.121771,
+        "non_window_elevated_or_worse_rate": 0.046125,
+        "post_2020_min_watch_or_worse_rate": 0.0
+      },
+      "blocking_reasons": [
+        "hmm_bubble_state_not_used",
+        "limited_ticker_coverage_in_some_windows",
+        "no_live_weight_change_allowed",
+        "sin_lite_proxy_not_paper_equivalent",
+        "transfer_entropy_not_used"
+      ],
+      "windows": [
+        {
+          "name": "taiwan_2015_china_crash",
+          "watch_or_worse_rate": 0.918919,
+          "elevated_or_worse_rate": 0.318919,
+          "usable_ticker_count_min": 4
+        },
+        {
+          "name": "taiwan_2018_trade_war_correction",
+          "watch_or_worse_rate": 0.244898,
+          "elevated_or_worse_rate": 0.085714,
+          "usable_ticker_count_min": 5
+        },
+        {
+          "name": "taiwan_2020_covid_crash",
+          "watch_or_worse_rate": 0.034483,
+          "elevated_or_worse_rate": 0.008621,
+          "usable_ticker_count_min": 9
+        },
+        {
+          "name": "taiwan_2022_rate_hike_stress",
+          "watch_or_worse_rate": 0.0,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_q1q2_stress",
+          "watch_or_worse_rate": 0.185185,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        },
+        {
+          "name": "taiwan_2026_recent",
+          "watch_or_worse_rate": 0.111111,
+          "elevated_or_worse_rate": 0.0,
+          "usable_ticker_count_min": 14
+        }
+      ]
+    }
+  ],
+  "blocking_reasons": [
+    "no_hmm_bubble_state",
+    "no_live_weight_change_allowed",
+    "no_transfer_entropy",
+    "sin_lite_sweep_research_only"
+  ],
+  "decision": {
+    "promotion_allowed": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

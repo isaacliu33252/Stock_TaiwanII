@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_reduced_rank_correlation_proxy",
+  "generated_at": "2026-07-19T23:21:33",
+  "as_of": "2026-07-20",
+  "actual_data_end": "2026-07-17",
+  "status": "available_for_manual_review",
+  "policy": "weak_cross_market_reduced_rank_proxy_no_crash_predictor_no_weight_change",
+  "method": {
+    "paper_equivalent": false,
+    "source_paper": "C:/Users/isaac/Downloads/2107.09048.pdf",
+    "window_trading_days": 42,
+    "analysis_lookback": 252,
+    "min_history": 84,
+    "min_tickers": 12,
+    "max_stale_days": 10,
+    "market_mode_removed": "largest_correlation_eigenmode",
+    "distance_metric": "frobenius_distance_between_consecutive_reduced_rank_correlation_matrices_divided_by_ticker_count"
+  },
+  "coverage": {
+    "usable_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "00646.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW",
+      "2308.TW",
+      "2317.TW",
+      "2330.TW",
+      "2382.TW",
+      "2454.TW",
+      "AMD",
+      "ASML",
+      "AVGO",
+      "DX-Y.NYB",
+      "EWT",
+      "GC=F",
+      "JPY=X",
+      "NVDA",
+      "QQQ",
+      "SOXX",
+      "TSM",
+      "TWD=X",
+      "^GSPC",
+      "^HSI",
+      "^IRX",
+      "^IXIC",
+      "^KS11",
+      "^N225",
+      "^TNX",
+      "^TWII",
+      "^VIX"
+    ],
+    "usable_ticker_count": 35,
+    "stale_tickers_excluded": [
+      "0050",
+      "wf"
+    ],
+    "return_observations": 252,
+    "snapshot_count": 211
+  },
+  "latest": {
+    "dt": "2026-07-17",
+    "ticker_count": 35,
+    "window_observations": 42,
+    "lambda1": 13.055273,
+    "lambda1_share": 0.373008,
+    "reduced_rank_mean_corr": -0.005076,
+    "averaged_distance": 0.031069,
+    "distance_percentile": 0.685714,
+    "reduced_rank_mean_corr_p25": -0.005635,
+    "state": "normal",
+    "manual_review_required": false,
+    "state_reasons": [
+      "distance_percentile=0.6857",
+      "reduced_rank_mean_corr=-0.0051",
+      "reduced_rank_mean_corr_p25=-0.0056"
+    ]
+  },
+  "recent_snapshots": [
+    {
+      "dt": "2026-07-06",
+      "ticker_count": 35,
+      "window_observations": 42,
+      "lambda1": 13.086713,
+      "lambda1_share": 0.373906,
+      "reduced_rank_mean_corr": -0.008475,
+      "averaged_distance": 0.022871
+    },
+    {
+      "dt": "2026-07-07",
+      "ticker_count": 35,
+      "window_observations": 42,
+      "lambda1": 13.501512,
+      "lambda1_share": 0.385757,
+      "reduced_rank_mean_corr": -0.006775,
+      "averaged_distance": 0.020873
+    },
+    {
+      "dt": "2026-07-08",
+      "ticker_count": 35,
+      "window_observations": 42,
+      "lambda1": 13.427228,
+      "lambda1_share": 0.383635,
+      "reduced_rank_mean_corr": -0.00666,
+      "averaged_distance": 0.020034
+    },
+    {
+      "dt": "2026-07-09",
+      "ticker_count": 35,
+      "window_observations": 42,
+      "lambda1": 13.314344,
+      "lambda1_share": 0.38041,
+      "reduced_rank_mean_corr": -0.006688,
+      "averaged_distance": 0.010623
+    },
+    {
+      "dt": "2026-07-10",
+      "ticker_count": 35,
+      "window_observations": 42,
+      "lambda1": 13.402848,
+      "lambda1_share": 0.382939,
+      "reduced_rank_mean_corr": -0.007488,
+      "averaged_distance": 0.010693
+    },
+    {
+      "dt": "2026-07-13",
+      "ticker_count": 35,
+      "window_observations": 42,
+      "lambda1": 13.469822,
+      "lambda1_share": 0.384852,
+      "reduced_rank_mean_corr": -0.007759,
+      "averaged_distance": 0.01857
+    },
+    {
+      "dt": "2026-07-14",
+      "ticker_count": 35,
+      "window_observations": 42,
+      "lambda1": 13.027363,
+      "lambda1_share": 0.37221,
+      "reduced_rank_mean_corr": -0.008032,
+      "averaged_distance": 0.02404
+    },
+    {
+      "dt": "2026-07-15",
+      "ticker_count": 35,
+      "window_observations": 42,
+      "lambda1": 13.01435,
+      "lambda1_share": 0.371839,
+      "reduced_rank_mean_corr": -0.006858,
+      "averaged_distance": 0.012379
+    },
+    {
+      "dt": "2026-07-16",
+      "ticker_count": 35,
+      "window_observations": 42,
+      "lambda1": 12.910547,
+      "lambda1_share": 0.368873,
+      "reduced_rank_mean_corr": -0.00685,
+      "averaged_distance": 0.01204
+    },
+    {
+      "dt": "2026-07-17",
+      "ticker_count": 35,
+      "window_observations": 42,
+      "lambda1": 13.055273,
+      "lambda1_share": 0.373008,
+      "reduced_rank_mean_corr": -0.005076,
+      "averaged_distance": 0.031069
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "daily_close_proxy_uses_holiday_ffill_limit_3",
+    "missing_cross_market_returns_filled_with_zero_after_ticker_filter",
+    "research_only_no_live_weight_change",
+    "stale_tickers_excluded_from_proxy",
+    "weak_cross_market_proxy_not_paper_equivalent"
+  ],
+  "decision": {
+    "proxy_available_for_shadow_review": true,
+    "paper_equivalent": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

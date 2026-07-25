@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_finpilot_lite_planning_review",
+  "status": "available",
+  "generated_at": "2026-07-17T18:12:09",
+  "policy": "shadow_planning_only_no_weight_change",
+  "active_allocation_impact": "none",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2605.12653.pdf",
+    "title": "Plan Before You Trade: Inference-Time Optimization for RL Trading Agents",
+    "implementation_note": "FinPILOT-lite review only. No actor update, no gradient step, no live optimization."
+  },
+  "dates": {
+    "requested_as_of_date": "2026-07-20",
+    "actual_data_date": "2026-07-17"
+  },
+  "strategy": {
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "execution_regime": "golden1",
+    "market_state": {
+      "state": "bull_pullback_deep",
+      "bucket": "bull_pullback",
+      "label_zh": "多頭深回檔",
+      "allocation_bias": "0050 core, keep cash buffer",
+      "risk_level": "medium_high",
+      "inputs": {
+        "execution_regime": "golden1",
+        "ma_gap": 0.09195184809533363,
+        "drawdown": -0.09896536076465001,
+        "exit_momentum_5d": -0.053402659384753526,
+        "total_risk_score": 8,
+        "tail_risk_score": 1,
+        "signal_alignment": "wide_divergence",
+        "dominant_direction": "bullish"
+      },
+      "reason": "execution_regime=golden1; ma_gap=0.0920; drawdown=-0.0990; exit_momentum_5d=-0.0534; total_risk_score=8; tail_risk_score=1; signal_alignment=wide_divergence; dominant_direction=bullish"
+    }
+  },
+  "forecast_quality_gate": {
+    "status": "failed",
+    "forecast_freshness_failed": true,
+    "required_source_failed": true,
+    "execution_guard_reasons": [
+      "required strategy sources are stale or missing: ['institutional_0050']"
+    ],
+    "execution_warning_reasons": [
+      "soft strategy sources are stale or missing: ['securities_lending_0050']",
+      "NCF live overlay skipped: date mismatch {'00631L.TW': '2026-07-16', '00632R.TW': '2026-07-16'}, actual 2026-07-17"
+    ]
+  },
+  "downside_risk_gate": {
+    "status": "high",
+    "heterogeneous_vol_level": "high",
+    "heterogeneous_vol_suggested_review": "avoid_adding_00631l_until_manual_review"
+  },
+  "candidate_plans": [
+    {
+      "name": "base_target_reference_only",
+      "weights": {
+        "0050.TW": 0.5,
+        "00631L.TW": 0.2,
+        "00632R.TW": 0.0,
+        "00679B.TWO": 0.0,
+        "cash": 0.30000000000000004
+      },
+      "expected_return_proxy": "uses_latest_groupa_target_as_reference",
+      "downside_penalty": "high",
+      "freshness_penalty": "failed",
+      "turnover_penalty": "unknown_until_fresh_execution_plan",
+      "auto_apply_allowed": false,
+      "rationale": "Reference target remains useful, but stale/missing sources and high heterogeneous volatility block auto apply."
+    },
+    {
+      "name": "no_00631l_add",
+      "weights": {
+        "0050.TW": 0.5,
+        "00631L.TW": 0.0,
+        "00632R.TW": 0.0,
+        "00679B.TWO": 0.0,
+        "cash": 0.5
+      },
+      "expected_return_proxy": "lower_leveraged_upside",
+      "downside_penalty": "lower_than_base_target",
+      "freshness_penalty": "more_robust_to_forecast_mismatch",
+      "turnover_penalty": "requires_fresh_holdings_before_execution",
+      "auto_apply_allowed": false,
+      "rationale": "Preferred manual-review candidate while forecast freshness and volatility advisory are not clean."
+    },
+    {
+      "name": "higher_cash_buffer",
+      "weights": {
+        "0050.TW": 0.5,
+        "00631L.TW": 0.1,
+        "00632R.TW": 0.0,
+        "00679B.TWO": 0.0,
+        "cash": 0.4
+      },
+      "expected_return_proxy": "reduced_upside_capture",
+      "downside_penalty": "reduced_00631l_downside",
+      "freshness_penalty": "more_robust_to_forecast_mismatch",
+      "turnover_penalty": "requires_fresh_execution_plan",
+      "auto_apply_allowed": false,
+      "rationale": "Alternative if manual review wants to preserve core 0050 while lowering leveraged exposure."
+    }
+  ],
+  "recommended_plan_for_manual_review": "no_00631l_add_or_wait_for_fresh_data",
+  "auto_apply_allowed": false,
+  "manual_review_required": true,
+  "decision": {
+    "summary": "Use FinPILOT-lite as preview-only planning. Do not auto-apply any plan until source data, NCF freshness, and execution plan are rebuilt.",
+    "target_weight_change_allowed": false,
+    "allow_00631l_auto_add": false,
+    "allow_inference_time_policy_update": false,
+    "allow_auto_rebalance": false
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal_20260720_estimate.json",
+    "rebalance_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rebalance_review_20260720.json",
+    "heterogeneous_vol_regime_advisory": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/heterogeneous_vol_regime_advisory.json",
+    "rebalance_review_decision": {
+      "summary": "Do not auto-rebalance for 2026-07-20. Keep target weights as reference only; require manual review before any execution.",
+      "auto_rebalance_allowed": false,
+      "manual_review_required": true,
+      "allow_00631l_add": false,
+      "target_weight_change_allowed": false
+    }
+  }
+}

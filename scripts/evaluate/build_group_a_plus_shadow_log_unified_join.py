@@ -44,6 +44,7 @@ DEFAULT_SOURCES: dict[str, Path] = {
     "ncf_signal_archive": PROJECT_ROOT / "results" / "ncf_signal_archive.jsonl",
     "recovery_boost_spillover_gate": PROJECT_ROOT / "results" / "group_a_plus_recovery_boost_spillover_gate_shadow_log.jsonl",
     "signal_alignment_shadow_variant": PROJECT_ROOT / "results" / "signal_alignment_shadow_variant_log.jsonl",
+    "trough_override_eligibility": PROJECT_ROOT / "results" / "group_a_plus_trough_override_eligibility_shadow_log.jsonl",
 }
 DEFAULT_TICKER = "00631L.TW"
 DEFAULT_HORIZONS = (1, 5, 20)

@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_live_hedge_policy_review",
+  "generated_at": "2026-07-21T12:22:57",
+  "as_of": "2026-07-21",
+  "status": "blocked",
+  "policy": "define_manual_hedge_policy_boundary_no_live_permission",
+  "inputs": {
+    "manual_hedge_eligibility": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_manual_hedge_eligibility_review.json",
+    "tail_tracking_error_gate": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/00632r_tail_tracking_error_gate_review.json",
+    "effective_fee_proxy_validation": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/00632r_effective_fee_proxy_validation_review.json"
+  },
+  "policy_rules": {
+    "scope": "manual_discussion_policy_only",
+    "target_ticker": "00632R.TW",
+    "benchmark_ticker": "0050.TW",
+    "minimum_conditions_before_discussion": [
+      "manual_hedge_eligibility_review_allows_discussion",
+      "tail_gate_manual_discussion_tier_passes",
+      "effective_fee_proxy_validated_for_manual_review",
+      "market_impact_and_research_shadow_no_longer_block",
+      "human_operator_confirms_risk_budget"
+    ],
+    "hard_prohibitions": [
+      "no_llm_generated_order",
+      "no_ppo_or_rl_allocator_order",
+      "no_script_generated_target_weight",
+      "no_auto_rebalance",
+      "no_market_order_instruction",
+      "no_position_open_without_manual_broker_action"
+    ],
+    "manual_discussion_bounds_if_all_future_gates_pass": {
+      "max_initial_00632r_weight_note": "policy placeholder only; no target weight emitted",
+      "max_holding_days_note": "policy placeholder only; no trade lifecycle emitted",
+      "exit_conditions_note": "must be separately approved; no automated exit emitted"
+    }
+  },
+  "checks": [
+    {
+      "name": "manual_hedge_policy_text_defined",
+      "passed": true,
+      "value": true,
+      "threshold": true,
+      "blocking_reason_if_failed": "manual_hedge_policy_text_defined"
+    },
+    {
+      "name": "policy_forbids_automatic_orders",
+      "passed": true,
+      "value": [
+        "no_llm_generated_order",
+        "no_ppo_or_rl_allocator_order",
+        "no_script_generated_target_weight",
+        "no_auto_rebalance",
+        "no_market_order_instruction",
+        "no_position_open_without_manual_broker_action"
+      ],
+      "threshold": "contains no order/no target/no rebalance prohibitions",
+      "blocking_reason_if_failed": "policy_forbids_automatic_orders"
+    },
+    {
+      "name": "manual_hedge_eligibility_allows_discussion",
+      "passed": false,
+      "value": false,
+      "threshold": true,
+      "blocking_reason_if_failed": "manual_hedge_eligibility_blocks_discussion"
+    },
+    {
+      "name": "tail_gate_manual_discussion_tier_passes",
+      "passed": true,
+      "value": true,
+      "threshold": true,
+      "blocking_reason_if_failed": "tail_gate_manual_discussion_tier_not_passed"
+    },
+    {
+      "name": "effective_fee_proxy_validated_for_manual_review",
+      "passed": false,
+      "value": false,
+      "threshold": true,
+      "blocking_reason_if_failed": "effective_fee_proxy_not_validated_for_manual_review"
+    }
+  ],
+  "summary": {
+    "policy_defined": true,
+    "policy_validated_for_manual_discussion": false,
+    "failed_check_count": 2,
+    "manual_hedge_discussion_allowed": false,
+    "live_hedge_policy_validated": false
+  },
+  "blocking_reasons": [
+    "effective_fee_proxy_not_validated_for_manual_review",
+    "live_hedge_policy_not_validated_for_live_action",
+    "manual_hedge_eligibility_blocks_discussion"
+  ],
+  "warning_reasons": [
+    "policy_definition_does_not_unlock_live_hedge",
+    "future_manual_discussion_still_requires_all_external_gates"
+  ],
+  "interpretation": [
+    "The policy boundary is now explicit: even perfect evidence cannot create an automatic 00632R order.",
+    "Current evidence gates still fail, especially effective-fee proxy validation.",
+    "This artifact reduces ambiguity but intentionally leaves live hedge validation false."
+  ],
+  "decision": {
+    "policy_defined": true,
+    "live_hedge_policy_validated": false,
+    "manual_hedge_discussion_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

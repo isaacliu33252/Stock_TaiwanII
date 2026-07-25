@@ -1,0 +1,446 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_windowed_stability_review",
+  "generated_at": "2026-07-20T04:05:14",
+  "as_of": "2026-07-20",
+  "status": "available_for_manual_offline_review",
+  "policy": "windowed_stability_review_only_no_model_training_no_live_action",
+  "inputs": {
+    "validation_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_proposal_validation_review.json",
+    "multi_ticker_smoke_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_multi_ticker_smoke_review.json",
+    "feature_stability_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_feature_stability_review.json",
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "benchmark": "0050.TW",
+    "targets": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "start": "2016-01-01",
+    "rolling_windows": [
+      63,
+      126,
+      252
+    ],
+    "stress_windows": [
+      {
+        "name": "taiwan_2015_china_crash",
+        "start": "2015-06-01",
+        "end": "2016-02-29",
+        "type": "crash_window"
+      },
+      {
+        "name": "taiwan_2018_trade_war_correction",
+        "start": "2018-01-02",
+        "end": "2018-12-31",
+        "type": "stress_window"
+      },
+      {
+        "name": "taiwan_2020_covid_crash",
+        "start": "2020-01-02",
+        "end": "2020-06-30",
+        "type": "crash_window"
+      },
+      {
+        "name": "taiwan_2022_rate_hike_stress",
+        "start": "2022-01-03",
+        "end": "2022-10-31",
+        "type": "stress_window"
+      },
+      {
+        "name": "taiwan_2026_q1q2_stress",
+        "start": "2026-02-02",
+        "end": "2026-04-30",
+        "type": "stress_window"
+      },
+      {
+        "name": "taiwan_2026_recent",
+        "start": "2026-05-15",
+        "end": "2026-07-20",
+        "type": "recent_window"
+      }
+    ],
+    "min_overlap": 40,
+    "zscore_window": 252,
+    "zscore_threshold": 3.0,
+    "accepted_proposal_id": "gift_research_momentum_vol_drawdown_turnover_v1",
+    "accepted_proposal_found": true
+  },
+  "summary": {
+    "ticker_count": 3,
+    "available_ticker_count": 3,
+    "missing_tickers": [],
+    "latest_rolling_by_target": {
+      "00631L.TW": {
+        "63": {
+          "latest_correlation": 0.9804545943921081,
+          "latest_beta": 1.9004889933924094
+        },
+        "126": {
+          "latest_correlation": 0.9710141700279369,
+          "latest_beta": 1.9374371393631045
+        },
+        "252": {
+          "latest_correlation": 0.9709061213727571,
+          "latest_beta": 1.9068014182501556
+        }
+      },
+      "00632R.TW": {
+        "63": {
+          "latest_correlation": -0.9779370370774443,
+          "latest_beta": -0.9951325582163222
+        },
+        "126": {
+          "latest_correlation": -0.9785023640596672,
+          "latest_beta": -1.0141874201460217
+        },
+        "252": {
+          "latest_correlation": -0.975772171326609,
+          "latest_beta": -0.9832319101817458
+        }
+      }
+    },
+    "recent_0050_drawdown_extreme_days": 1,
+    "recent_0050_reward_extreme_days": 1
+  },
+  "rolling_relationships": [
+    {
+      "target": "00631L.TW",
+      "window_days": 63,
+      "available": true,
+      "latest_date": "2026-07-17",
+      "latest_correlation": 0.9804545943921081,
+      "latest_beta": 1.9004889933924094,
+      "max_correlation": 0.9888476158797489,
+      "min_correlation": 0.8404341555655194,
+      "max_abs_correlation": 0.9888476158797489
+    },
+    {
+      "target": "00631L.TW",
+      "window_days": 126,
+      "available": true,
+      "latest_date": "2026-07-17",
+      "latest_correlation": 0.9710141700279369,
+      "latest_beta": 1.9374371393631045,
+      "max_correlation": 0.9846538185737298,
+      "min_correlation": 0.9078860427817224,
+      "max_abs_correlation": 0.9846538185737298
+    },
+    {
+      "target": "00631L.TW",
+      "window_days": 252,
+      "available": true,
+      "latest_date": "2026-07-17",
+      "latest_correlation": 0.9709061213727571,
+      "latest_beta": 1.9068014182501556,
+      "max_correlation": 0.9813711241890078,
+      "min_correlation": 0.9114170360133399,
+      "max_abs_correlation": 0.9813711241890078
+    },
+    {
+      "target": "00632R.TW",
+      "window_days": 63,
+      "available": true,
+      "latest_date": "2026-07-17",
+      "latest_correlation": -0.9779370370774443,
+      "latest_beta": -0.9951325582163222,
+      "max_correlation": 0.2524486390364804,
+      "min_correlation": -0.9878231421649697,
+      "max_abs_correlation": 0.9878231421649697
+    },
+    {
+      "target": "00632R.TW",
+      "window_days": 126,
+      "available": true,
+      "latest_date": "2026-07-17",
+      "latest_correlation": -0.9785023640596672,
+      "latest_beta": -1.0141874201460217,
+      "max_correlation": 0.15627664038482486,
+      "min_correlation": -0.9807994692936414,
+      "max_abs_correlation": 0.9807994692936414
+    },
+    {
+      "target": "00632R.TW",
+      "window_days": 252,
+      "available": true,
+      "latest_date": "2026-07-17",
+      "latest_correlation": -0.975772171326609,
+      "latest_beta": -0.9832319101817458,
+      "max_correlation": 0.05521098094292899,
+      "min_correlation": -0.9787104980263953,
+      "max_abs_correlation": 0.9787104980263953
+    }
+  ],
+  "stress_window_relationships": [
+    {
+      "name": "taiwan_2015_china_crash",
+      "start": "2015-06-01",
+      "end": "2016-02-29",
+      "type": "crash_window",
+      "relationships": [
+        {
+          "target": "00631L.TW",
+          "status": "low_overlap",
+          "overlap_rows": 32,
+          "correlation": null,
+          "beta": null,
+          "relationship": "low_overlap"
+        },
+        {
+          "target": "00632R.TW",
+          "status": "low_overlap",
+          "overlap_rows": 32,
+          "correlation": null,
+          "beta": null,
+          "relationship": "low_overlap"
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2018_trade_war_correction",
+      "start": "2018-01-02",
+      "end": "2018-12-31",
+      "type": "stress_window",
+      "relationships": [
+        {
+          "target": "00631L.TW",
+          "status": "available",
+          "overlap_rows": 245,
+          "correlation": 0.9691216405312906,
+          "beta": 1.9246892104645954,
+          "relationship": "high_positive_benchmark_correlation"
+        },
+        {
+          "target": "00632R.TW",
+          "status": "available",
+          "overlap_rows": 245,
+          "correlation": -0.9581997284313736,
+          "beta": -0.9307819247740824,
+          "relationship": "high_negative_benchmark_correlation"
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2020_covid_crash",
+      "start": "2020-01-02",
+      "end": "2020-06-30",
+      "type": "crash_window",
+      "relationships": [
+        {
+          "target": "00631L.TW",
+          "status": "available",
+          "overlap_rows": 116,
+          "correlation": 0.9729101860724241,
+          "beta": 1.9951972028222642,
+          "relationship": "high_positive_benchmark_correlation"
+        },
+        {
+          "target": "00632R.TW",
+          "status": "available",
+          "overlap_rows": 116,
+          "correlation": -0.969374791130877,
+          "beta": -1.0059258889687406,
+          "relationship": "high_negative_benchmark_correlation"
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2022_rate_hike_stress",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "type": "stress_window",
+      "relationships": [
+        {
+          "target": "00631L.TW",
+          "status": "available",
+          "overlap_rows": 202,
+          "correlation": 0.9618460847853261,
+          "beta": 1.8214492694677702,
+          "relationship": "high_positive_benchmark_correlation"
+        },
+        {
+          "target": "00632R.TW",
+          "status": "available",
+          "overlap_rows": 202,
+          "correlation": -0.9584372527444128,
+          "beta": -0.8961098200544976,
+          "relationship": "high_negative_benchmark_correlation"
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2026_q1q2_stress",
+      "start": "2026-02-02",
+      "end": "2026-04-30",
+      "type": "stress_window",
+      "relationships": [
+        {
+          "target": "00631L.TW",
+          "status": "available",
+          "overlap_rows": 54,
+          "correlation": 0.961042104129546,
+          "beta": 1.9365538488626117,
+          "relationship": "high_positive_benchmark_correlation"
+        },
+        {
+          "target": "00632R.TW",
+          "status": "available",
+          "overlap_rows": 54,
+          "correlation": -0.9827157473027719,
+          "beta": -1.0273703676107726,
+          "relationship": "high_negative_benchmark_correlation"
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2026_recent",
+      "start": "2026-05-15",
+      "end": "2026-07-20",
+      "type": "recent_window",
+      "relationships": [
+        {
+          "target": "00631L.TW",
+          "status": "available",
+          "overlap_rows": 45,
+          "correlation": 0.985022304645767,
+          "beta": 1.967670773865783,
+          "relationship": "high_positive_benchmark_correlation"
+        },
+        {
+          "target": "00632R.TW",
+          "status": "available",
+          "overlap_rows": 45,
+          "correlation": -0.9803311350577403,
+          "beta": -1.0230849199964227,
+          "relationship": "high_negative_benchmark_correlation"
+        }
+      ]
+    }
+  ],
+  "benchmark_zscore_windows": [
+    {
+      "name": "taiwan_2015_china_crash",
+      "start": "2015-06-01",
+      "end": "2016-02-29",
+      "type": "crash_window",
+      "status": "available",
+      "available_days": 33,
+      "latest_date": "2016-02-26",
+      "latest_drawdown_penalty_zscore": null,
+      "latest_reward_proxy_zscore": null,
+      "max_abs_drawdown_penalty_zscore": null,
+      "max_abs_reward_proxy_zscore": null,
+      "drawdown_penalty_extreme_days": 0,
+      "reward_proxy_extreme_days": 0
+    },
+    {
+      "name": "taiwan_2018_trade_war_correction",
+      "start": "2018-01-02",
+      "end": "2018-12-31",
+      "type": "stress_window",
+      "status": "available",
+      "available_days": 245,
+      "latest_date": "2018-12-28",
+      "latest_drawdown_penalty_zscore": 1.8071632041067063,
+      "latest_reward_proxy_zscore": -1.8071632041067063,
+      "max_abs_drawdown_penalty_zscore": 5.713974613391083,
+      "max_abs_reward_proxy_zscore": 5.713974613391083,
+      "drawdown_penalty_extreme_days": 10,
+      "reward_proxy_extreme_days": 10
+    },
+    {
+      "name": "taiwan_2020_covid_crash",
+      "start": "2020-01-02",
+      "end": "2020-06-30",
+      "type": "crash_window",
+      "status": "available",
+      "available_days": 116,
+      "latest_date": "2020-06-30",
+      "latest_drawdown_penalty_zscore": 0.12821304575178355,
+      "latest_reward_proxy_zscore": -0.12821304575178355,
+      "max_abs_drawdown_penalty_zscore": 4.0978997614076365,
+      "max_abs_reward_proxy_zscore": 4.0978997614076365,
+      "drawdown_penalty_extreme_days": 9,
+      "reward_proxy_extreme_days": 9
+    },
+    {
+      "name": "taiwan_2022_rate_hike_stress",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "type": "stress_window",
+      "status": "available",
+      "available_days": 202,
+      "latest_date": "2022-10-31",
+      "latest_drawdown_penalty_zscore": 1.209703718769614,
+      "latest_reward_proxy_zscore": -1.209703718769614,
+      "max_abs_drawdown_penalty_zscore": 3.8463653155437423,
+      "max_abs_reward_proxy_zscore": 3.8463653155437423,
+      "drawdown_penalty_extreme_days": 13,
+      "reward_proxy_extreme_days": 13
+    },
+    {
+      "name": "taiwan_2026_q1q2_stress",
+      "start": "2026-02-02",
+      "end": "2026-04-30",
+      "type": "stress_window",
+      "status": "available",
+      "available_days": 54,
+      "latest_date": "2026-04-30",
+      "latest_drawdown_penalty_zscore": -0.2921135164545433,
+      "latest_reward_proxy_zscore": 0.2921135164545433,
+      "max_abs_drawdown_penalty_zscore": 0.9118380733472684,
+      "max_abs_reward_proxy_zscore": 0.9118380733472684,
+      "drawdown_penalty_extreme_days": 0,
+      "reward_proxy_extreme_days": 0
+    },
+    {
+      "name": "taiwan_2026_recent",
+      "start": "2026-05-15",
+      "end": "2026-07-20",
+      "type": "recent_window",
+      "status": "available",
+      "available_days": 45,
+      "latest_date": "2026-07-17",
+      "latest_drawdown_penalty_zscore": 3.1250437792177244,
+      "latest_reward_proxy_zscore": -3.1250437792177244,
+      "max_abs_drawdown_penalty_zscore": 3.1250437792177244,
+      "max_abs_reward_proxy_zscore": 3.1250437792177244,
+      "drawdown_penalty_extreme_days": 1,
+      "reward_proxy_extreme_days": 1
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "recent_0050_drawdown_zscore_extreme_days_present",
+    "recent_0050_reward_zscore_extreme_days_present",
+    "taiwan_2015_china_crash:00632r_not_stable_high_negative_hedge",
+    "taiwan_2018_trade_war_correction:00631l_amplified_benchmark_exposure",
+    "taiwan_2020_covid_crash:00631l_amplified_benchmark_exposure",
+    "taiwan_2022_rate_hike_stress:00631l_amplified_benchmark_exposure",
+    "taiwan_2026_q1q2_stress:00631l_amplified_benchmark_exposure",
+    "taiwan_2026_recent:00631l_amplified_benchmark_exposure"
+  ],
+  "interpretation": [
+    "00631L high positive rolling or stress-window correlation means amplified benchmark exposure, not diversification.",
+    "00632R needs persistent high negative stress-window correlation before it can be considered hedge-like; this review still cannot open it automatically.",
+    "0050 drawdown/reward z-score extremes are manual-review evidence only, not live rebalance signals."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "windowed_stability_ready_for_research_review": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

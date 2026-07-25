@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_option_state_coverage_review",
+  "status": "blocked",
+  "generated_at": "2026-07-21T22:38:07",
+  "policy": "diagnostic_only_no_weight_change",
+  "as_of": "2026-07-21",
+  "coverage": {
+    "txo_options_daily": {
+      "rows": 3011278,
+      "min_dt": "2020-01-02",
+      "max_dt": "2026-07-17"
+    },
+    "soxx_external_options_iv": {
+      "rows": 6,
+      "min_dt": "2026-07-10",
+      "max_dt": "2026-07-21",
+      "latest_rows": [
+        {
+          "dt": "2026-07-10",
+          "atm_iv": 0.00196310546875,
+          "put_call_iv_skew": 0.0,
+          "put_call_volume_ratio": 5.394495412844036,
+          "put_call_oi_ratio": null,
+          "contract_count": 140.0
+        },
+        {
+          "dt": "2026-07-14",
+          "atm_iv": 0.6228065063476562,
+          "put_call_iv_skew": 0.10055441436767587,
+          "put_call_volume_ratio": 6.82,
+          "put_call_oi_ratio": 2.8983957219251337,
+          "contract_count": 88.0
+        },
+        {
+          "dt": "2026-07-15",
+          "atm_iv": 0.00025413818359375,
+          "put_call_iv_skew": 0.0,
+          "put_call_volume_ratio": 2.6064814814814814,
+          "put_call_oi_ratio": null,
+          "contract_count": 119.0
+        },
+        {
+          "dt": "2026-07-16",
+          "atm_iv": 0.062509375,
+          "put_call_iv_skew": 0.0,
+          "put_call_volume_ratio": 1.8680851063829786,
+          "put_call_oi_ratio": 2.460093896713615,
+          "contract_count": 119.0
+        },
+        {
+          "dt": "2026-07-17",
+          "atm_iv": 0.6627688752746583,
+          "put_call_iv_skew": 0.005950868225097605,
+          "put_call_volume_ratio": 2.053475935828877,
+          "put_call_oi_ratio": 2.460093896713615,
+          "contract_count": 119.0
+        },
+        {
+          "dt": "2026-07-21",
+          "atm_iv": 0.6448704946899415,
+          "put_call_iv_skew": -0.040252283020019486,
+          "put_call_volume_ratio": 0.5952489721333942,
+          "put_call_oi_ratio": 1.7661913109394987,
+          "contract_count": 204.0
+        }
+      ]
+    }
+  },
+  "requirements": {
+    "txo_options_lag_days_max": 1,
+    "soxx_options_snapshot_rows_min": 20,
+    "soxx_options_valid_atm_iv_rows_min": 10,
+    "soxx_latest_atm_iv_range": [
+      0.05,
+      2.0
+    ]
+  },
+  "computed": {
+    "txo_lag_days_vs_as_of": 4,
+    "soxx_lag_days_vs_as_of": 0,
+    "soxx_valid_atm_iv_rows_in_latest_10": 4
+  },
+  "blocking_reasons": [
+    "txo_options_daily_stale_gt_1_day",
+    "soxx_options_iv_history_lt_20_snapshots",
+    "soxx_options_iv_valid_history_lt_10_snapshots"
+  ],
+  "warning_reasons": [],
+  "decision": {
+    "option_state_gate_passed": false,
+    "allow_deep_hedging_overlay_research_promotion": false,
+    "target_weight_change_allowed": false,
+    "summary": "TXO options are mostly covered, but SOXX option IV history/quality is insufficient for z-score based overlay gates."
+  }
+}

@@ -234,7 +234,8 @@ def test_golden_signal_stale_is_a_visible_warning(tmp_path: Path, monkeypatch) -
 
     assert report["artifact_health"]["golden_signal_freshness"]["status"] == "stale"
     assert report["artifact_health"]["golden_signal_freshness"]["lag_days"] > 3
-    assert "golden_signal_stale" in report["artifact_health"]["missing_optional"]
+    assert "golden_signal_stale" not in report["artifact_health"]["missing_optional"]
+    assert "golden_signal_stale" in report["artifact_health"]["legacy_frozen_artifact_warnings"]
 
 
 def test_golden_signal_fresh_is_not_flagged(tmp_path: Path, monkeypatch) -> None:
@@ -252,6 +253,7 @@ def test_golden_signal_fresh_is_not_flagged(tmp_path: Path, monkeypatch) -> None
 
     assert report["artifact_health"]["golden_signal_freshness"]["status"] == "fresh"
     assert "golden_signal_stale" not in report["artifact_health"]["missing_optional"]
+    assert "golden_signal_stale" not in report["artifact_health"]["legacy_frozen_artifact_warnings"]
 
 
 def test_group_a_plus_decision_signal_stale_is_a_visible_warning(tmp_path: Path) -> None:
@@ -278,7 +280,8 @@ def test_group_a_plus_decision_signal_stale_is_a_visible_warning(tmp_path: Path)
 
     assert report["artifact_health"]["group_a_plus_decision_signal_freshness"]["status"] == "stale"
     assert report["artifact_health"]["group_a_plus_decision_signal_freshness"]["lag_days"] > 14
-    assert "group_a_plus_decision_signal_stale" in report["artifact_health"]["missing_optional"]
+    assert "group_a_plus_decision_signal_stale" not in report["artifact_health"]["missing_optional"]
+    assert "group_a_plus_decision_signal_stale" in report["artifact_health"]["legacy_frozen_artifact_warnings"]
 
 
 def test_volatility_gate_active_requires_aligned_execution_plan_guard(tmp_path: Path) -> None:
@@ -526,6 +529,106 @@ def test_pipeline_health_flags_failed_run_manifest_as_error(tmp_path: Path) -> N
 
     assert result["status"] == "error"
     assert "pipeline_run_failed" in result["errors"]
+
+
+def test_pipeline_health_requires_final_daily_status_after_promotion_gate(tmp_path: Path) -> None:
+    stamp = _today_stamp()
+    _write(
+        tmp_path / f"results/ncf_daily_pipeline_{stamp}.json",
+        json.dumps(
+            {
+                "date_stamp": stamp,
+                "outputs": {
+                    "promotion_gate": str(tmp_path / f"results/group_a_plus_promotion_gate_{stamp}.json"),
+                    "daily_status_final": str(tmp_path / f"results/group_a_plus_daily_status_final_{stamp}.json"),
+                },
+                "signals": {},
+            }
+        ),
+    )
+    _write(tmp_path / f"results/group_a_plus_promotion_gate_{stamp}.json", "{}")
+    _write(
+        tmp_path / f"results/group_a_plus_daily_status_final_{stamp}.json",
+        json.dumps({"status_stage": "final", "overall_status": "warn"}),
+    )
+    managed = tmp_path / "report/group_a_plus/daily/json/final.json"
+    _write(managed, json.dumps({"status_stage": "final", "overall_status": "warn"}))
+    _write(
+        tmp_path / "report/group_a_plus/latest/daily_status.json",
+        json.dumps({"report_type": "daily_status", "json": str(managed)}),
+    )
+
+    result = collect_pipeline_health(tmp_path)
+
+    assert result["status"] == "ok"
+    assert result["final_daily_status"]["status"] == "ok"
+    assert result["final_daily_status"]["final_output_status_stage"] == "final"
+    assert result["final_daily_status"]["latest_payload_status_stage"] == "final"
+
+
+def test_pipeline_health_flags_latest_daily_status_pointer_not_final(tmp_path: Path) -> None:
+    stamp = _today_stamp()
+    _write(
+        tmp_path / f"results/ncf_daily_pipeline_{stamp}.json",
+        json.dumps(
+            {
+                "date_stamp": stamp,
+                "outputs": {
+                    "promotion_gate": str(tmp_path / f"results/group_a_plus_promotion_gate_{stamp}.json"),
+                    "daily_status_final": str(tmp_path / f"results/group_a_plus_daily_status_final_{stamp}.json"),
+                },
+                "signals": {},
+            }
+        ),
+    )
+    _write(tmp_path / f"results/group_a_plus_promotion_gate_{stamp}.json", "{}")
+    _write(
+        tmp_path / f"results/group_a_plus_daily_status_final_{stamp}.json",
+        json.dumps({"status_stage": "final", "overall_status": "warn"}),
+    )
+    managed = tmp_path / "report/group_a_plus/daily/json/pre.json"
+    _write(managed, json.dumps({"status_stage": "pre_promotion", "overall_status": "warn"}))
+    _write(
+        tmp_path / "report/group_a_plus/latest/daily_status.json",
+        json.dumps({"report_type": "daily_status", "json": str(managed)}),
+    )
+
+    result = collect_pipeline_health(tmp_path)
+
+    assert result["status"] == "error"
+    assert "daily_status_latest_pointer_not_final" in result["errors"]
+    assert result["final_daily_status"]["latest_payload_status_stage"] == "pre_promotion"
+
+
+def test_pipeline_health_warns_when_legacy_manifest_omits_final_daily_status_but_pointer_is_final(
+    tmp_path: Path,
+) -> None:
+    stamp = _today_stamp()
+    _write(
+        tmp_path / f"results/ncf_daily_pipeline_{stamp}.json",
+        json.dumps(
+            {
+                "date_stamp": stamp,
+                "outputs": {
+                    "promotion_gate": str(tmp_path / f"results/group_a_plus_promotion_gate_{stamp}.json"),
+                },
+                "signals": {},
+            }
+        ),
+    )
+    _write(tmp_path / f"results/group_a_plus_promotion_gate_{stamp}.json", "{}")
+    managed = tmp_path / "report/group_a_plus/daily/json/final.json"
+    _write(managed, json.dumps({"status_stage": "final", "overall_status": "warn"}))
+    _write(
+        tmp_path / "report/group_a_plus/latest/daily_status.json",
+        json.dumps({"report_type": "daily_status", "json": str(managed)}),
+    )
+
+    result = collect_pipeline_health(tmp_path)
+
+    assert result["status"] == "warning"
+    assert result["errors"] == []
+    assert "daily_status_final_missing_from_manifest" in result["final_daily_status"]["warnings"]
 
 
 def test_tsmc_weight_assumption_health_reports_ok_after_calibration() -> None:

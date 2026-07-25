@@ -81,7 +81,19 @@ def _drift_gate(
             "checks": {},
         }
 
-    audit = _load_json(drift_audit_path)
+    path = _resolve(drift_audit_path)
+    if not path.exists():
+        return {
+            "status": "fail" if require_drift_audit else "not_required",
+            "path": str(path),
+            "reason": "panel drift audit is required but the file is missing"
+            if require_drift_audit
+            else "panel drift audit file is missing but not required for this gate run",
+            "limits": limits,
+            "checks": {},
+        }
+
+    audit = _load_json(path)
     column_summary = audit.get("column_summary") or {}
     tier_by_column = {
         column: tier
@@ -111,7 +123,7 @@ def _drift_gate(
 
     return {
         "status": "pass" if not failures else "fail",
-        "path": str(_resolve(drift_audit_path)),
+        "path": str(path),
         "reason": "all drift checks passed" if not failures else f"drift exceeds limits: {', '.join(failures)}",
         "limits": limits,
         "overlap_rows": audit.get("overlap_rows"),
@@ -166,6 +178,183 @@ def _multi_window_gate(
     }
 
 
+def _deployment_governance_context(deployment_consistency_path: str | Path | None) -> dict[str, Any]:
+    if deployment_consistency_path is None:
+        return {
+            "status": "not_provided",
+            "path": None,
+            "gift_signed_approval_governance": {},
+            "blocking_reasons": [],
+            "warning_reasons": [],
+        }
+    path = _resolve(deployment_consistency_path)
+    if not path.exists():
+        return {
+            "status": "missing",
+            "path": str(path),
+            "gift_signed_approval_governance": {},
+            "blocking_reasons": ["deployment_consistency_review_missing"],
+            "warning_reasons": [],
+        }
+    review = _load_json(path)
+    computed = review.get("computed") if isinstance(review.get("computed"), dict) else {}
+    gift = (
+        computed.get("gift_signed_approval_governance")
+        if isinstance(computed.get("gift_signed_approval_governance"), dict)
+        else {}
+    )
+    return {
+        "status": review.get("status"),
+        "path": str(path),
+        "broker_actionable": (review.get("decision") or {}).get("broker_actionable", review.get("broker_actionable")),
+        "gift_signed_approval_governance": gift,
+        "blocking_reasons": list(review.get("blocking_reasons") or []),
+        "warning_reasons": list(review.get("warning_reasons") or []),
+        "gift_signed_approval_record_valid": gift.get("signed_approval_record_valid"),
+        "gift_human_exception_approved": gift.get("human_exception_approved"),
+        "gift_training_queue_allowed": gift.get("training_queue_allowed"),
+        "gift_model_training_allowed": gift.get("model_training_allowed"),
+        "gift_ppo_training_allowed": gift.get("ppo_training_allowed"),
+        "gift_promote_to_live": gift.get("promote_to_live"),
+    }
+
+
+def _deployment_consistency_gate(deployment_context: dict[str, Any]) -> dict[str, Any]:
+    if deployment_context.get("status") == "not_provided":
+        return {
+            "status": "not_required",
+            "reason": "deployment consistency review not provided for this gate run",
+            "blocking_reasons": [],
+            "hard_blocking_reasons": [],
+            "manual_approval_pending_reasons": [],
+        }
+
+    blocking_reasons = list(deployment_context.get("blocking_reasons") or [])
+    warning_reasons = list(deployment_context.get("warning_reasons") or [])
+    gate_blockers: list[str] = []
+    manual_pending: list[str] = []
+
+    if deployment_context.get("status") in {"missing", "blocked"}:
+        gate_blockers.append(f"deployment_consistency_status:{deployment_context.get('status')}")
+    if deployment_context.get("broker_actionable") is not True:
+        gate_blockers.append("deployment_consistency_not_broker_actionable")
+    if deployment_context.get("gift_signed_approval_record_valid") is False:
+        manual_pending.append("gift_signed_approval_record_missing_or_invalid")
+    if deployment_context.get("gift_human_exception_approved") is False:
+        manual_pending.append("gift_human_exception_not_approved")
+    if deployment_context.get("gift_training_queue_allowed") is True:
+        gate_blockers.append("gift_training_queue_unexpectedly_allowed")
+    if deployment_context.get("gift_model_training_allowed") is True:
+        gate_blockers.append("gift_model_training_unexpectedly_allowed")
+    if deployment_context.get("gift_ppo_training_allowed") is True:
+        gate_blockers.append("gift_ppo_training_unexpectedly_allowed")
+    if deployment_context.get("gift_promote_to_live") is True:
+        gate_blockers.append("gift_promote_to_live_unexpectedly_allowed")
+
+    hard_blockers = list(dict.fromkeys([*blocking_reasons, *gate_blockers]))
+    manual_pending = list(
+        dict.fromkeys(
+            [
+                *manual_pending,
+                *[
+                    reason
+                    for reason in warning_reasons
+                    if reason.startswith("gift_") or reason.endswith("_manual_completion_pending")
+                ],
+            ]
+        )
+    )
+    all_reasons = list(dict.fromkeys([*hard_blockers, *manual_pending, *warning_reasons]))
+    passed = not gate_blockers and not blocking_reasons
+    return {
+        "status": "pass" if passed else "fail",
+        "reason": "deployment consistency governance passed"
+        if passed
+        else "deployment consistency governance blocks promotion",
+        "blocking_reasons": hard_blockers,
+        "hard_blocking_reasons": hard_blockers,
+        "manual_approval_pending_reasons": manual_pending,
+        "warning_reasons": warning_reasons,
+        "all_reasons": all_reasons,
+    }
+
+
+def _deployment_summary_context(deployment_summary_path: str | Path | None) -> dict[str, Any]:
+    if deployment_summary_path is None:
+        return {
+            "status": "not_provided",
+            "path": None,
+            "consistency_review": {},
+            "blocking_reasons": [],
+        }
+    path = _resolve(deployment_summary_path)
+    if not path.exists():
+        return {
+            "status": "missing",
+            "path": str(path),
+            "consistency_review": {},
+            "blocking_reasons": ["deployment_summary_missing"],
+        }
+    summary = _load_json(path)
+    decision = summary.get("decision") if isinstance(summary.get("decision"), dict) else {}
+    consistency_review = (
+        summary.get("consistency_review") if isinstance(summary.get("consistency_review"), dict) else {}
+    )
+    return {
+        "status": summary.get("status"),
+        "path": str(path),
+        "broker_actionable": summary.get("broker_actionable"),
+        "consistency_review": consistency_review,
+        "consistency_review_status": consistency_review.get("status"),
+        "consistency_review_errors": list(consistency_review.get("errors") or []),
+        "summary_only": decision.get("summary_only"),
+        "creates_orders": decision.get("creates_orders"),
+        "target_weight_change_allowed": decision.get("target_weight_change_allowed"),
+        "auto_rebalance_allowed": decision.get("auto_rebalance_allowed"),
+        "allow_00631l_add": decision.get("allow_00631l_add"),
+        "allow_00632r_open": decision.get("allow_00632r_open"),
+        "keep_golden1_0531_unchanged": decision.get("keep_golden1_0531_unchanged"),
+        "blocking_reasons": list(summary.get("blocking_reasons") or []),
+        "warning_reasons": list(summary.get("warning_reasons") or []),
+    }
+
+
+def _deployment_summary_gate(summary_context: dict[str, Any]) -> dict[str, Any]:
+    if summary_context.get("status") == "not_provided":
+        return {
+            "status": "not_required",
+            "reason": "deployment summary not provided for this gate run",
+            "blocking_reasons": [],
+        }
+
+    blockers = list(summary_context.get("blocking_reasons") or [])
+    if summary_context.get("status") == "missing":
+        blockers.append("deployment_summary_missing")
+    if summary_context.get("consistency_review_status") != "ok":
+        blockers.append(f"deployment_summary_consistency_review:{summary_context.get('consistency_review_status')}")
+    for key, expected in {
+        "summary_only": True,
+        "creates_orders": False,
+        "target_weight_change_allowed": False,
+        "auto_rebalance_allowed": False,
+        "allow_00631l_add": False,
+        "allow_00632r_open": False,
+        "keep_golden1_0531_unchanged": True,
+    }.items():
+        if summary_context.get(key) is not expected:
+            blockers.append(f"deployment_summary_{key}_unexpected")
+    blockers.extend(summary_context.get("consistency_review_errors") or [])
+    blockers = list(dict.fromkeys(blockers))
+    passed = not blockers
+    return {
+        "status": "pass" if passed else "fail",
+        "reason": "deployment summary governance passed"
+        if passed
+        else "deployment summary governance blocks promotion",
+        "blocking_reasons": blockers,
+    }
+
+
 def build_promotion_gate(
     baseline: str | Path,
     candidates: list[str | Path],
@@ -175,6 +364,8 @@ def build_promotion_gate(
     require_drift_audit: bool = True,
     multi_window_gate: str | Path | None = None,
     require_multi_window_gate: bool = False,
+    deployment_consistency: str | Path | None = None,
+    deployment_summary: str | Path | None = None,
 ) -> dict[str, Any]:
     comparison = compare_candidates(_resolve(baseline), [_resolve(path) for path in candidates])
     drift = _drift_gate(
@@ -186,6 +377,10 @@ def build_promotion_gate(
         multi_window_gate,
         require_multi_window_gate=require_multi_window_gate,
     )
+    deployment_context = _deployment_governance_context(deployment_consistency)
+    deployment_gate = _deployment_consistency_gate(deployment_context)
+    summary_context = _deployment_summary_context(deployment_summary)
+    summary_gate = _deployment_summary_gate(summary_context)
 
     formal_rows = [row for row in comparison.get("rows", []) if row.get("formal_upgrade_pass")]
     watchlist_rows = [row for row in comparison.get("rows", []) if row.get("research_watchlist_pass")]
@@ -193,12 +388,39 @@ def build_promotion_gate(
 
     drift_failed = drift["status"] == "fail"
     multi_window_failed = multi_window["status"] == "fail"
-    if drift_failed and multi_window_failed:
+    deployment_failed = deployment_gate["status"] == "fail"
+    manual_approval_pending = bool(deployment_gate.get("manual_approval_pending_reasons"))
+    summary_failed = summary_gate["status"] == "fail"
+    blocking_gates = [
+        gate
+        for gate, failed in (
+            ("panel_drift", drift_failed),
+            ("multi_window", multi_window_failed),
+            ("deployment_consistency", deployment_failed),
+            ("deployment_summary", summary_failed),
+        )
+        if failed
+    ]
+    governance_failed = deployment_failed or summary_failed
+    model_failed = drift_failed or multi_window_failed
+    if governance_failed and model_failed:
+        decision = "blocked_deployment_consistency_and_model_gates"
+    elif model_failed and manual_approval_pending:
+        decision = "blocked_model_gates_manual_approval_pending"
+    elif drift_failed and multi_window_failed:
         decision = "blocked_panel_drift_and_multi_window"
+    elif deployment_failed and summary_failed:
+        decision = "blocked_deployment_governance"
+    elif deployment_failed:
+        decision = "blocked_deployment_consistency"
+    elif summary_failed:
+        decision = "blocked_deployment_summary"
     elif drift_failed:
         decision = "blocked_panel_drift"
     elif multi_window_failed:
         decision = "blocked_multi_window"
+    elif manual_approval_pending:
+        decision = "manual_approval_pending"
     elif formal_rows:
         decision = "promotion_ready"
     elif watchlist_rows:
@@ -210,6 +432,7 @@ def build_promotion_gate(
         "report_type": "group_a_plus_promotion_gate",
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "decision": decision,
+        "blocking_gates": blocking_gates,
         "active_allocation_impact": "none",
         "baseline": str(_resolve(baseline)),
         "candidates": [str(_resolve(path)) for path in candidates],
@@ -222,6 +445,21 @@ def build_promotion_gate(
         },
         "panel_drift_gate": drift,
         "multi_window_gate": multi_window,
+        "deployment_consistency_gate": deployment_gate,
+        "deployment_summary_gate": summary_gate,
+        "governance_context": {
+            "deployment_consistency": deployment_context,
+            "deployment_summary": summary_context,
+            "active_allocation_impact": "none",
+            "target_weight_change_allowed": False,
+            "auto_rebalance_allowed": False,
+            "model_training_allowed": False,
+            "ppo_training_allowed": False,
+            "promote_to_live": False,
+            "allow_00631l_add": False,
+            "allow_00632r_open": False,
+            "keep_golden1_0531_unchanged": True,
+        },
         "comparison": comparison,
     }
 
@@ -237,6 +475,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--no-require-drift-audit", action="store_true")
     parser.add_argument("--multi-window-gate", default=None)
     parser.add_argument("--require-multi-window-gate", action="store_true")
+    parser.add_argument("--deployment-consistency", default=None)
+    parser.add_argument("--deployment-summary", default=None)
     parser.add_argument("--output", default="results/group_a_plus_promotion_gate_latest.json")
     return parser.parse_args()
 
@@ -256,6 +496,8 @@ def main() -> None:
         require_drift_audit=not args.no_require_drift_audit,
         multi_window_gate=args.multi_window_gate,
         require_multi_window_gate=args.require_multi_window_gate,
+        deployment_consistency=args.deployment_consistency,
+        deployment_summary=args.deployment_summary,
     )
     output = _resolve(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_offline_smoke_review",
+  "generated_at": "2026-07-20T02:49:34",
+  "as_of": "2026-07-20",
+  "status": "available_for_manual_offline_review",
+  "policy": "offline_smoke_only_no_model_training_no_live_action",
+  "inputs": {
+    "validation_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_proposal_validation_review.json",
+    "data_source": "duckdb_ohlcv",
+    "data": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "fallback_data": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/data/cache/0050_TW_2016-01-01_2026-05-05_1d.parquet.bak",
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "db_ticker": "0050.TW",
+    "db_start": "2016-01-01",
+    "accepted_proposal_id": "gift_research_momentum_vol_drawdown_turnover_v1",
+    "accepted_proposal_found": true
+  },
+  "data_range": {
+    "start": "2016-01-04",
+    "end": "2026-07-17",
+    "rows": 2560
+  },
+  "feature_proxy": {
+    "relative_momentum": {
+      "window_days": 20,
+      "uses_future_data": false
+    },
+    "realized_volatility": {
+      "window_days": 20,
+      "uses_future_data": false
+    }
+  },
+  "reward_proxy": {
+    "drawdown_penalty": {
+      "bounded_range": [
+        0.0,
+        0.25
+      ]
+    },
+    "turnover_penalty": {
+      "value": 0.0,
+      "reason": "no_action_no_rebalance_smoke_test"
+    },
+    "reward_proxy": {
+      "bounded_range": [
+        -0.25,
+        0.0
+      ]
+    }
+  },
+  "finite_summary": {
+    "rows": 2560,
+    "columns": {
+      "relative_momentum": {
+        "non_null_count": 2540,
+        "finite_count": 2540,
+        "finite_ratio": 0.9921875,
+        "min": -0.25570028026635117,
+        "max": 0.27924276373306545
+      },
+      "realized_volatility": {
+        "non_null_count": 2540,
+        "finite_count": 2540,
+        "finite_ratio": 0.9921875,
+        "min": 0.0034230646195316508,
+        "max": 0.038124043565854665
+      },
+      "drawdown_penalty": {
+        "non_null_count": 2560,
+        "finite_count": 2560,
+        "finite_ratio": 1.0,
+        "min": -0.0,
+        "max": 0.25
+      },
+      "turnover_penalty": {
+        "non_null_count": 2560,
+        "finite_count": 2560,
+        "finite_ratio": 1.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "reward_proxy": {
+        "non_null_count": 2560,
+        "finite_count": 2560,
+        "finite_ratio": 1.0,
+        "min": -0.25,
+        "max": -0.0
+      }
+    }
+  },
+  "window_summary": {
+    "window_count": 11,
+    "windows": [
+      {
+        "year": 2016,
+        "rows": 244,
+        "feature_ready_rows": 224,
+        "has_min_rows": true
+      },
+      {
+        "year": 2017,
+        "rows": 243,
+        "feature_ready_rows": 243,
+        "has_min_rows": true
+      },
+      {
+        "year": 2018,
+        "rows": 245,
+        "feature_ready_rows": 245,
+        "has_min_rows": true
+      },
+      {
+        "year": 2019,
+        "rows": 241,
+        "feature_ready_rows": 241,
+        "has_min_rows": true
+      },
+      {
+        "year": 2020,
+        "rows": 245,
+        "feature_ready_rows": 245,
+        "has_min_rows": true
+      },
+      {
+        "year": 2021,
+        "rows": 243,
+        "feature_ready_rows": 243,
+        "has_min_rows": true
+      },
+      {
+        "year": 2022,
+        "rows": 246,
+        "feature_ready_rows": 246,
+        "has_min_rows": true
+      },
+      {
+        "year": 2023,
+        "rows": 239,
+        "feature_ready_rows": 239,
+        "has_min_rows": true
+      },
+      {
+        "year": 2024,
+        "rows": 242,
+        "feature_ready_rows": 242,
+        "has_min_rows": true
+      },
+      {
+        "year": 2025,
+        "rows": 243,
+        "feature_ready_rows": 243,
+        "has_min_rows": true
+      },
+      {
+        "year": 2026,
+        "rows": 129,
+        "feature_ready_rows": 129,
+        "has_min_rows": true
+      }
+    ],
+    "all_windows_have_min_rows": true
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

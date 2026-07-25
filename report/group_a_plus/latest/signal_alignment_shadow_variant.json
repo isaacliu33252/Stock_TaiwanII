@@ -1,99 +1,57 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-16T05:44:49Z",
-  "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
-  "signal_date": "2026-07-14",
-  "alignment": "wide_divergence",
-  "dominant_direction": "bullish",
+  "generated_at": "2026-07-22T23:59:46Z",
+  "strategy_id": null,
+  "signal_date": null,
+  "alignment": "bearish_alignment",
+  "dominant_direction": "bearish",
   "direction_counts": {
-    "bullish": 5,
-    "bearish": 4,
-    "neutral": 4
+    "bullish": 0,
+    "bearish": 2,
+    "neutral": 0
   },
   "weighted_share": {
-    "bullish": 0.4585,
-    "bearish": 0.4164,
-    "neutral": 0.1251
+    "bullish": 0.0,
+    "bearish": 1.0,
+    "neutral": 0.0
   },
-  "available_sources": 13,
+  "available_sources": 2,
   "total_sources": 13,
-  "divergent_sources": [
-    "composite_risk_score",
-    "tbrain_kdj",
-    "trough_nowcast",
-    "crash_risk_alert"
-  ],
-  "confidence_penalty": 0.25,
+  "divergent_sources": [],
+  "confidence_penalty": 0.1,
   "leverage_suitability": {
     "schema_version": 1,
-    "tier": 1,
-    "label_zh": "只適合 0050",
-    "action": "0050_only",
+    "tier": 0,
+    "label_zh": "不利 00631L",
+    "action": "avoid_00631l",
     "policy": "advisory_only_no_weight_change",
-    "reason": "risk is elevated or TSMC-led breadth is narrow; do not add leverage",
+    "reason": "defensive/high-risk or ncf_2330 TSMC weakness context",
     "shadow_momentum_candidate": false,
     "shadow_momentum_note": null,
     "inputs": {
-      "execution_regime": "golden1",
-      "alignment": "wide_divergence",
-      "dominant_direction": "bullish",
+      "execution_regime": "",
+      "alignment": "bearish_alignment",
+      "dominant_direction": "bearish",
       "weighted_share": {
-        "bullish": 0.4585,
-        "bearish": 0.4164,
-        "neutral": 0.1251
+        "bullish": 0.0,
+        "bearish": 1.0,
+        "neutral": 0.0
       },
-      "total_risk_score": 9,
+      "total_risk_score": 0,
       "chip_data_stale": false,
       "tail_risk_score": 0,
-      "ncf_2330_tsmc_state": "stale",
-      "ncf_2330_reference_action": "diagnostic_only",
-      "ncf_2330_market_state": {
-        "state": 2,
-        "label_zh": "高檔震盪",
-        "bias": "neutral_bullish",
-        "policy": "diagnostic_only_no_weight_change",
-        "rule_version": "tsmc_market_state_v1",
-        "reasons": [
-          "direction remains constructive but not strong enough for leadership",
-          "expected return is flat or signals are mixed",
-          "severe drawdown risk remains contained"
-        ],
-        "inputs": {
-          "h1_direction": "UP",
-          "h5_direction": "UP",
-          "h20_direction": "UP",
-          "h1_probability_up": 0.55003,
-          "h5_probability_up": 0.79933,
-          "h20_probability_up": 0.902641,
-          "h1_return": 0.000254,
-          "h5_return": 0.006198,
-          "h20_return": 0.032832,
-          "combined_probability_up": 0.719099,
-          "calibrated_probability_up": 0.666474,
-          "confidence": 0.656872,
-          "weighted_return": 0.002342,
-          "prob_fwd_mdd_gt5_h20": 0.454952,
-          "prob_fwd_mdd_gt8_h20": 0.097585,
-          "prob_fwd_gain_gt5_h20": 0.441882,
-          "tail_reward_risk_score": -0.01307
-        },
-        "state_map": {
-          "1": "強勢領漲",
-          "2": "高檔震盪",
-          "3": "假突破",
-          "4": "拉回整理",
-          "5": "趨勢轉弱"
-        }
-      },
+      "ncf_2330_tsmc_state": "unavailable",
+      "ncf_2330_reference_action": null,
+      "ncf_2330_market_state": {},
       "ncf_00631l_direction": "neutral",
-      "ncf_00631l_prob_up": 0.5309,
-      "ncf_00631l_prob_fwd_mdd_gt5_h20": 0.183954,
-      "ncf_2330_prob_fwd_mdd_gt5_h20": 0.454952,
-      "ncf_2330_prob_fwd_mdd_gt8_h20": 0.097585,
+      "ncf_00631l_prob_up": 0.5,
+      "ncf_00631l_prob_fwd_mdd_gt5_h20": null,
+      "ncf_2330_prob_fwd_mdd_gt5_h20": null,
+      "ncf_2330_prob_fwd_mdd_gt8_h20": null,
       "ncf_cross_ticker_direction": "neutral",
-      "ncf_2330_factor_quality_signal": "bearish",
-      "ncf_2330_factor_quality_risk_score": 5.0,
-      "ncf_2330_factor_quality_net_score": -4.0
+      "ncf_2330_factor_quality_signal": null,
+      "ncf_2330_factor_quality_risk_score": null,
+      "ncf_2330_factor_quality_net_score": null
     },
     "tier_map": {
       "0": "不利 00631L",
@@ -105,95 +63,95 @@
   "sources": [
     {
       "name": "ncf_00631l",
-      "available": true,
+      "available": false,
       "direction": "neutral",
-      "strength": 0.0618,
-      "reason": "00631L calibrated_prob_up=0.5309, direction=UP"
+      "strength": 0.0,
+      "reason": "00631L calibrated_prob_up=0.5000, direction=?"
     },
     {
       "name": "ncf_00632r_inverse",
-      "available": true,
+      "available": false,
       "direction": "neutral",
-      "strength": 0.0524,
-      "reason": "00632R calibrated_prob_up=0.5262, inverse_direction=neutral"
+      "strength": 0.0,
+      "reason": "00632R calibrated_prob_up=0.5000, inverse_direction=neutral"
     },
     {
       "name": "ncf_cross_ticker",
-      "available": true,
+      "available": false,
       "direction": "neutral",
-      "strength": 0.4326,
-      "reason": "market_probability_up=0.4977, agreement=0.8652"
+      "strength": 0.0,
+      "reason": "market_probability_up=0.5000, agreement=0.0000"
     },
     {
       "name": "ncf_2330_tsmc",
-      "available": true,
+      "available": false,
       "direction": "neutral",
-      "strength": 0.15,
-      "reason": "state=stale, 2330_h20_prob_up=0.9026, 2330_tail_risk=0.454952, 2330_severe_tail=0.097585, 2330_market_state=2, 2330_5d=-0.00813, 0050_ex_tsmc_5d=-0.029284"
+      "strength": 0.0,
+      "reason": "tsmc_0050_health unavailable: unknown"
     },
     {
       "name": "finbert_sentiment",
-      "available": true,
-      "direction": "bullish",
-      "strength": 0.4548,
-      "reason": "finbert_risk_score=0.2226, status=ok"
+      "available": false,
+      "direction": "neutral",
+      "strength": 0.9,
+      "reason": "finbert_risk_score=0.0000, status=unknown"
     },
     {
       "name": "lm_dictionary_sentiment",
       "available": false,
       "direction": "neutral",
       "strength": 0.0,
-      "reason": "lm_status=no_dictionary_hits, risk_score=0.0000, pos=0, neg=0, hits=0",
+      "reason": "lm_status=unknown, risk_score=0.0000, pos=0, neg=0, hits=0",
       "structural_limitation": "english_only_dictionary_vs_chinese_news_source"
     },
     {
       "name": "composite_risk_score",
-      "available": true,
-      "direction": "bearish",
-      "strength": 0.9,
-      "reason": "total_risk_score=9, chip=7, derivative=2"
+      "available": false,
+      "direction": "bullish",
+      "strength": 0.0,
+      "reason": "total_risk_score=0, chip=None, derivative=None"
     },
     {
       "name": "factor_lens",
-      "available": true,
-      "direction": "bullish",
-      "strength": 0.55,
-      "reason": "all_key_factors_pass=True, ic_20d_warnings=0"
+      "available": false,
+      "direction": "neutral",
+      "strength": 0.0,
+      "reason": "all_key_factors_pass=None, ic_20d_warnings=0"
     },
     {
       "name": "tbrain_kdj",
-      "available": true,
-      "direction": "bearish",
-      "strength": 0.5871,
-      "reason": "J=0.148, K=0.307, D=0.386 (fast); K_slow=0.536, D_slow=0.612, J_q_low=0.148, J_q_high=1.072"
+      "available": false,
+      "direction": "neutral",
+      "strength": 0.0,
+      "reason": "tbrain_shadow unavailable"
     },
     {
       "name": "weekly_ma_bull",
-      "available": true,
-      "direction": "bullish",
-      "strength": 0.6,
-      "reason": "weekly MA short=105.41, mid=100.82, long=88.47, bull_aligned=True"
+      "available": false,
+      "direction": "neutral",
+      "strength": 0.0,
+      "reason": "weekly_ma unavailable"
     },
     {
       "name": "execution_regime",
-      "available": true,
+      "available": false,
       "direction": "bullish",
       "strength": 0.35,
-      "reason": "execution_regime=golden1"
+      "reason": "execution_regime="
     },
     {
       "name": "trough_nowcast",
-      "available": true,
-      "direction": "bearish",
-      "strength": 0.5,
-      "reason": "trough_nowcast state=CAPITULATION_WARNING, capitulation_score=2"
+      "available": false,
+      "direction": "neutral",
+      "strength": 0.0,
+      "reason": "trough_nowcast state=NO_TROUGH (no active crash/re-entry context)"
     },
     {
       "name": "compounding_regime",
       "available": true,
-      "direction": "bullish",
+      "direction": "bearish",
       "strength": 0.6,
-      "reason": "compounding_regime=TREND_PERSISTENT, trend_score=3"
+      "reason": "compounding_regime=MEAN_REVERTING, mean_reversion_score=3"
     },
     {
       "name": "crash_risk_alert",

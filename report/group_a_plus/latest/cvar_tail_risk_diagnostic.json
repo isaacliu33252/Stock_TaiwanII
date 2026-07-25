@@ -1,0 +1,140 @@
+{
+  "report_type": "cvar_tail_risk_diagnostic_shadow",
+  "status": "research_only",
+  "policy": "shadow_only_no_weight_change",
+  "generated_at": "2026-07-21T22:38:03",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2607.03082v1.pdf",
+    "title": "Portfolio Optimization and Tail-Risk Analytics of Actively Managed ETFs",
+    "implementation_note": "Long-only/cash Taiwan ETF diagnostic proxy, not active-ETF optimizer promotion."
+  },
+  "window": {
+    "start": "2025-01-02",
+    "end": "2026-07-21",
+    "rows": 374
+  },
+  "ranking_by_starr95": [
+    {
+      "strategy": "0050_only",
+      "annualized_return": 0.6456750290018014,
+      "max_drawdown": -0.284735805705145,
+      "expected_shortfall_loss_95": 0.03690918804248765,
+      "expected_tail_gain_95": 0.04133511523321552,
+      "sharpe": 2.359689900496268,
+      "starr_95": 17.493612383413556,
+      "rachev_95_95": 1.1199139679158754
+    },
+    {
+      "strategy": "defensive_0050_70_cash30",
+      "annualized_return": 0.42852326999564005,
+      "max_drawdown": -0.20708882099569104,
+      "expected_shortfall_loss_95": 0.025836431629741353,
+      "expected_tail_gain_95": 0.028934580663250865,
+      "sharpe": 2.2372644063898983,
+      "starr_95": 16.586008320992352,
+      "rachev_95_95": 1.1199139679158754
+    },
+    {
+      "strategy": "golden1_frozen_proxy_50_20_30",
+      "annualized_return": 0.5257602595480635,
+      "max_drawdown": -0.25924564731487054,
+      "expected_shortfall_loss_95": 0.03457081702818987,
+      "expected_tail_gain_95": 0.036035682390933924,
+      "sharpe": 2.1488876036455085,
+      "starr_95": 15.208210413984315,
+      "rachev_95_95": 1.042372888137112
+    },
+    {
+      "strategy": "00631l_only",
+      "annualized_return": 1.1633772890411787,
+      "max_drawdown": -0.5022632537851175,
+      "expected_shortfall_loss_95": 0.0811159172627952,
+      "expected_tail_gain_95": 0.0779058425027466,
+      "sharpe": 2.1261284625391186,
+      "starr_95": 14.342157843967028,
+      "rachev_95_95": 0.9604260807450556
+    },
+    {
+      "strategy": "dynamic_tangency_cvar_gross",
+      "annualized_return": 0.13655091799227748,
+      "max_drawdown": -0.10929939504082153,
+      "expected_shortfall_loss_95": 0.018154557955505527,
+      "expected_tail_gain_95": 0.01868728783307027,
+      "sharpe": 1.171537189601533,
+      "starr_95": 7.521577684620365,
+      "rachev_95_95": 1.0293441392993645
+    },
+    {
+      "strategy": "dynamic_tangency_cvar_net_cost10bps",
+      "annualized_return": 0.13219444578259654,
+      "max_drawdown": -0.10992430727880997,
+      "expected_shortfall_loss_95": 0.01818588904212573,
+      "expected_tail_gain_95": 0.01868728783307027,
+      "sharpe": 1.1340174850579676,
+      "starr_95": 7.269066993446501,
+      "rachev_95_95": 1.0275707604826523
+    },
+    {
+      "strategy": "dynamic_min_cvar_gross",
+      "annualized_return": 0.0,
+      "max_drawdown": 0.0,
+      "expected_shortfall_loss_95": 0.0,
+      "expected_tail_gain_95": 0.0,
+      "sharpe": null,
+      "starr_95": null,
+      "rachev_95_95": null
+    },
+    {
+      "strategy": "dynamic_min_cvar_net_cost10bps",
+      "annualized_return": 0.0,
+      "max_drawdown": 0.0,
+      "expected_shortfall_loss_95": 0.0,
+      "expected_tail_gain_95": 0.0,
+      "sharpe": null,
+      "starr_95": null,
+      "rachev_95_95": null
+    }
+  ],
+  "00631l_only_tail_diagnostics": {
+    "var_loss_95": 0.04601279922533324,
+    "var_loss_99": 0.10314230013924004,
+    "expected_shortfall_loss_95": 0.0811159172627952,
+    "expected_shortfall_loss_99": 0.13958238180763255,
+    "expected_tail_gain_95": 0.0779058425027466,
+    "expected_tail_gain_99": 0.12099347526293891,
+    "max_drawdown": -0.5022632537851175,
+    "starr_95": 14.342157843967028,
+    "rachev_95_95": 0.9604260807450556,
+    "rachev_99_99": 0.866824836315573,
+    "hill_95": {
+      "threshold_quantile": 0.95,
+      "threshold": 0.07599584741810672,
+      "exceedances": 8,
+      "hill_xi": 0.365186858046869
+    },
+    "hill_99": {
+      "threshold_quantile": 0.99,
+      "threshold": 0.12120057564788096,
+      "exceedances": 2,
+      "hill_xi": null
+    },
+    "pot_gpd_95": {
+      "threshold_quantile": 0.95,
+      "threshold": 0.07599584741810672,
+      "exceedances": 8,
+      "shape_xi": -0.07162970315917858,
+      "scale": 0.04099986278589557,
+      "loc": 0.0
+    },
+    "pot_gpd_99": {
+      "threshold_quantile": 0.99,
+      "threshold": 0.12120057564788096,
+      "exceedances": 2,
+      "shape_xi": null,
+      "scale": null
+    }
+  },
+  "promotion_decision": "research_only",
+  "interpretation": "CVaR and POT/Hill diagnostics are useful risk-reporting tools. Dynamic CVaR grid allocations here are research-only and do not replace GroupA+ weights.",
+  "full_report_output": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/cvar_tail_risk_diagnostic_shadow_20260721.json"
+}

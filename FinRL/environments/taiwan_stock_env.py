@@ -174,6 +174,7 @@ class TaiwanStockTradingEnv(gym.Env):
             "ma_cross_signal",
             "macd_line", "signal_line", "histogram", "histogram_change",
             "macd_turn_positive",
+            "macd_turn_negative",
             "rsi_14", "rsi_28",
             "kdj_k", "kdj_d", "kdj_j",
             "williams_r",

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_high_dividend_active_pain_walk_forward_panel_review",
+  "generated_at": "2026-07-21T16:02:29",
+  "as_of": "2026-07-21",
+  "status": "blocked",
+  "policy": "fold_aware_v3_panel_only_no_model_training_no_live_action",
+  "inputs": {
+    "source_frozen_panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "source_frozen_panel_sha256": "66aa5e59dbe67b896a8b1b9846091596ad64aa766a5607eecf9e169b998ee0b8",
+    "baseline_shadow_backtest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_baseline_shadow_backtest.json",
+    "v3_frozen_manifest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_high_dividend_active_pain_frozen_manifest.json",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "reward_params": {
+      "active_penalty_scale": 1.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.05
+    }
+  },
+  "summary": {
+    "row_count": 0,
+    "fold_count": 0,
+    "ticker_count": 0,
+    "date_start": null,
+    "date_end": null,
+    "finite_redesigned_reward_ratio": null,
+    "state_columns": [
+      "active_bucket_weight",
+      "active_bucket_return_contribution",
+      "active_bucket_drawdown_depth",
+      "reward_signal_concentration_hhi",
+      "high_dividend_active_pain",
+      "drawdown_depth",
+      "realized_volatility"
+    ],
+    "reward_columns": [
+      "active_bucket_drawdown_penalty",
+      "original_reward_proxy",
+      "redesigned_reward_proxy"
+    ]
+  },
+  "blocking_reasons": [
+    "offline_walk_forward_panel_export_not_allowed",
+    "v3_frozen_manifest_not_available:blocked"
+  ],
+  "decision": {
+    "available_for_manual_offline_review": false,
+    "offline_walk_forward_input_ready": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "outputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_high_dividend_active_pain_walk_forward_panel.parquet",
+    "panel_sha256": "f7f9952b7a623f60bd26a3b07927344bb760c1e4c49c349ed0a1d56112418370",
+    "review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_high_dividend_active_pain_walk_forward_panel_review.json"
+  }
+}

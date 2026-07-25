@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_frozen_panel_baseline_param_sweep",
+  "generated_at": "2026-07-20T21:12:17",
+  "as_of": "2026-07-20",
+  "status": "available_for_manual_offline_review",
+  "policy": "baseline_param_sweep_only_no_model_training_no_live_action",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "panel_sha256": "f59dd35c183f22d362228f2f8f110cdcbeb286ed182687052b39e7a894f98e57",
+    "walk_forward_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_walk_forward_audit.json",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "grid_size": 9,
+    "thresholds": {
+      "min_positive_final_folds": 4,
+      "min_positive_sharpe_folds": 4,
+      "min_non_worse_drawdown_folds": 2
+    }
+  },
+  "summary": {
+    "evaluated_count": 9,
+    "recommended_count": 0,
+    "best_params": {
+      "low_quantile": 0.3,
+      "high_quantile": 0.7,
+      "low_score": 0.5,
+      "mid_score": 1.0,
+      "high_score": 1.5,
+      "cost_bps": 5.0
+    },
+    "best_aggregate": {
+      "fold_count": 6,
+      "available_fold_count": 6,
+      "positive_final_value_folds": 4,
+      "positive_sharpe_folds": 4,
+      "non_worse_drawdown_folds": 1,
+      "mean_delta_final_value": 0.013863402815589213,
+      "mean_delta_sharpe_ratio": 0.0684790496693679,
+      "mean_delta_max_drawdown": -0.00919663436563182
+    },
+    "best_recommended_params": null,
+    "best_recommended_aggregate": null
+  },
+  "top_candidates": [
+    {
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 0.5,
+        "mid_score": 1.0,
+        "high_score": 1.5,
+        "cost_bps": 5.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 1,
+        "mean_delta_final_value": 0.013863402815589213,
+        "mean_delta_sharpe_ratio": 0.0684790496693679,
+        "mean_delta_max_drawdown": -0.00919663436563182
+      },
+      "rank_score": 78.85163270181366
+    },
+    {
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 0.75,
+        "mid_score": 1.0,
+        "high_score": 1.5,
+        "cost_bps": 5.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 1,
+        "mean_delta_final_value": 0.008912578226196047,
+        "mean_delta_sharpe_ratio": 0.07544858614216077,
+        "mean_delta_max_drawdown": -0.004123017254100895
+      },
+      "rank_score": 78.74041149693859
+    },
+    {
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 0.9,
+        "mid_score": 1.0,
+        "high_score": 1.5,
+        "cost_bps": 5.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 1,
+        "mean_delta_final_value": 0.006308039988711545,
+        "mean_delta_sharpe_ratio": 0.07559207412950823,
+        "mean_delta_max_drawdown": -0.0015758527539790161
+      },
+      "rank_score": 78.66184531500355
+    },
+    {
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 0.75,
+        "mid_score": 1.0,
+        "high_score": 1.25,
+        "cost_bps": 5.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 1,
+        "mean_delta_final_value": 0.006645661146371347,
+        "mean_delta_sharpe_ratio": 0.043154027902272386,
+        "mean_delta_max_drawdown": -0.004238065066653658
+      },
+      "rank_score": 78.46329189549685
+    },
+    {
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 0.9,
+        "mid_score": 1.0,
+        "high_score": 1.25,
+        "cost_bps": 5.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 1,
+        "mean_delta_final_value": 0.004049287959731511,
+        "mean_delta_sharpe_ratio": 0.04263000733492641,
+        "mean_delta_max_drawdown": -0.001613387563532076
+      },
+      "rank_score": 78.38334668339057
+    },
+    {
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 0.9,
+        "mid_score": 1.0,
+        "high_score": 1.1,
+        "cost_bps": 5.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 1,
+        "mean_delta_final_value": 0.002597403745507154,
+        "mean_delta_sharpe_ratio": 0.019811310043369945,
+        "mean_delta_max_drawdown": -0.0016270364822718042
+      },
+      "rank_score": 78.19638600784677
+    },
+    {
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 0.5,
+        "mid_score": 1.0,
+        "high_score": 1.25,
+        "cost_bps": 5.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 3,
+        "non_worse_drawdown_folds": 1,
+        "mean_delta_final_value": 0.01161936841784178,
+        "mean_delta_sharpe_ratio": 0.03657697703353504,
+        "mean_delta_max_drawdown": -0.009480569261614577
+      },
+      "rank_score": 70.57424192082748
+    },
+    {
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 0.5,
+        "mid_score": 1.0,
+        "high_score": 1.1,
+        "cost_bps": 5.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 3,
+        "non_worse_drawdown_folds": 1,
+        "mean_delta_final_value": 0.010182681872095848,
+        "mean_delta_sharpe_ratio": 0.014924422431339845,
+        "mean_delta_max_drawdown": -0.009664656401083141
+      },
+      "rank_score": 70.39046307773982
+    },
+    {
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 0.75,
+        "mid_score": 1.0,
+        "high_score": 1.1,
+        "cost_bps": 5.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 3,
+        "non_worse_drawdown_folds": 1,
+        "mean_delta_final_value": 0.005189100051446886,
+        "mean_delta_sharpe_ratio": 0.0209141584876244,
+        "mean_delta_max_drawdown": -0.004304306469757324
+      },
+      "rank_score": 70.27793966561532
+    }
+  ],
+  "recommended_candidates": [],
+  "blocking_reasons": [],
+  "interpretation": [
+    "This sweep searches transparent no-model reward-tilt parameters only.",
+    "Recommended candidates must preserve return and Sharpe fold counts while improving drawdown fold count.",
+    "Any selected parameters require a separate frozen baseline review before model design."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "baseline_param_sweep_ready_for_review": true,
+    "recommended_baseline_variant_available": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

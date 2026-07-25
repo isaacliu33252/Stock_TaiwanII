@@ -1,0 +1,627 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_baseline_drawdown_attribution",
+  "generated_at": "2026-07-20T21:45:05",
+  "as_of": "2026-07-20",
+  "status": "available_for_manual_offline_review",
+  "policy": "drawdown_failure_attribution_only_no_model_training_no_live_action",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "panel_sha256": "f59dd35c183f22d362228f2f8f110cdcbeb286ed182687052b39e7a894f98e57",
+    "baseline_shadow_backtest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_baseline_shadow_backtest.json",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "top_n": 5
+  },
+  "summary": {
+    "baseline_fold_count": 6,
+    "failing_drawdown_fold_count": 5,
+    "attributed_fold_count": 5,
+    "worst_fold": 3,
+    "worst_delta_max_drawdown": -0.022937559989707035,
+    "worst_trough_date": "2024-08-05"
+  },
+  "failing_fold_attribution": [
+    {
+      "fold": 3,
+      "test_start": "2024-06-20",
+      "test_end": "2024-12-23",
+      "baseline_report_delta_max_drawdown": -0.022937559989707035,
+      "thresholds": {
+        "low_reward_threshold": -0.06576817707511189,
+        "high_reward_threshold": -0.025386480275254128
+      },
+      "attribution": {
+        "candidate_max_drawdown": -0.10979372452158243,
+        "baseline_max_drawdown": -0.08685616453187539,
+        "delta_max_drawdown": -0.022937559989707035,
+        "candidate_trough_date": "2024-08-05",
+        "baseline_trough_date": "2024-08-05",
+        "active_cumulative_return_end": -0.015528376580571046,
+        "trough_detail": {
+          "date": "2024-08-05",
+          "candidate_return": -0.05033557012954779,
+          "baseline_return": -0.04217256404257972,
+          "active_return": -0.008163006086968072,
+          "turnover": 0.15555555555555547,
+          "largest_negative_active_tickers": [
+            {
+              "ticker": "0056.TW",
+              "active_contribution": -0.00422514530650356
+            },
+            {
+              "ticker": "00878.TW",
+              "active_contribution": -0.0037652458036501434
+            },
+            {
+              "ticker": "00713.TW",
+              "active_contribution": -0.0030809837182047307
+            },
+            {
+              "ticker": "00679B.TWO",
+              "active_contribution": -0.0016339870277395736
+            },
+            {
+              "ticker": "00751B.TWO",
+              "active_contribution": -0.0004520528128409726
+            }
+          ],
+          "weights": {
+            "0050.TW": 0.1111111111111111,
+            "0056.TW": 0.2222222222222222,
+            "00679B.TWO": 0.1111111111111111,
+            "00713.TW": 0.2222222222222222,
+            "00751B.TWO": 0.1111111111111111,
+            "00878.TW": 0.2222222222222222
+          }
+        },
+        "worst_active_return_dates": [
+          {
+            "date": "2024-08-05",
+            "active_return": -0.008163006086968072,
+            "candidate_return": -0.05033557012954779,
+            "baseline_return": -0.04217256404257972,
+            "turnover": 0.15555555555555547
+          },
+          {
+            "date": "2024-09-04",
+            "active_return": -0.005177822491787828,
+            "candidate_return": -0.024951414447946848,
+            "baseline_return": -0.01977359195615902,
+            "turnover": 0.16363636363636366
+          },
+          {
+            "date": "2024-09-18",
+            "active_return": -0.0036890512665043364,
+            "candidate_return": -0.01082723016426701,
+            "baseline_return": -0.0071381788977626735,
+            "turnover": 0.0
+          },
+          {
+            "date": "2024-11-12",
+            "active_return": -0.0030655138666830844,
+            "candidate_return": -0.009030257194265373,
+            "baseline_return": -0.005964743327582288,
+            "turnover": 0.0
+          },
+          {
+            "date": "2024-07-29",
+            "active_return": -0.0026006990089982814,
+            "candidate_return": -0.0013720448207183201,
+            "baseline_return": 0.0012286541882799613,
+            "turnover": 0.16363636363636366
+          }
+        ],
+        "worst_active_contribution_tickers": [
+          {
+            "ticker": "0056.TW",
+            "active_contribution_sum": -0.009088600622646294
+          },
+          {
+            "ticker": "00878.TW",
+            "active_contribution_sum": -0.006580764460954119
+          },
+          {
+            "ticker": "00713.TW",
+            "active_contribution_sum": -0.004251724653449484
+          },
+          {
+            "ticker": "0050.TW",
+            "active_contribution_sum": 0.0015454193086407418
+          },
+          {
+            "ticker": "00679B.TWO",
+            "active_contribution_sum": 0.0020488265431493815
+          }
+        ]
+      }
+    },
+    {
+      "fold": 4,
+      "test_start": "2024-12-24",
+      "test_end": "2025-07-04",
+      "baseline_report_delta_max_drawdown": -0.016714045402032918,
+      "thresholds": {
+        "low_reward_threshold": -0.06783627226484501,
+        "high_reward_threshold": -0.026156413240034537
+      },
+      "attribution": {
+        "candidate_max_drawdown": -0.18057438622776079,
+        "baseline_max_drawdown": -0.16386034082572787,
+        "delta_max_drawdown": -0.016714045402032918,
+        "candidate_trough_date": "2025-04-09",
+        "baseline_trough_date": "2025-04-09",
+        "active_cumulative_return_end": -0.018736847362528453,
+        "trough_detail": {
+          "date": "2025-04-09",
+          "candidate_return": -0.04795146266812064,
+          "baseline_return": -0.04795146266812064,
+          "active_return": 0.0,
+          "turnover": 0.0,
+          "largest_negative_active_tickers": [
+            {
+              "ticker": "0050.TW",
+              "active_contribution": 0.0
+            },
+            {
+              "ticker": "0056.TW",
+              "active_contribution": 0.0
+            },
+            {
+              "ticker": "00679B.TWO",
+              "active_contribution": 0.0
+            },
+            {
+              "ticker": "00713.TW",
+              "active_contribution": 0.0
+            },
+            {
+              "ticker": "00751B.TWO",
+              "active_contribution": 0.0
+            }
+          ],
+          "weights": {
+            "0050.TW": 0.16666666666666666,
+            "0056.TW": 0.16666666666666666,
+            "00679B.TWO": 0.16666666666666666,
+            "00713.TW": 0.16666666666666666,
+            "00751B.TWO": 0.16666666666666666,
+            "00878.TW": 0.16666666666666666
+          }
+        },
+        "worst_active_return_dates": [
+          {
+            "date": "2025-04-07",
+            "active_return": -0.008185205003377063,
+            "candidate_return": -0.07523253883840668,
+            "baseline_return": -0.06704733383502962,
+            "turnover": 0.0
+          },
+          {
+            "date": "2025-03-31",
+            "active_return": -0.005488735969581425,
+            "candidate_return": -0.01881502433141549,
+            "baseline_return": -0.013326288361834063,
+            "turnover": 0.0
+          },
+          {
+            "date": "2025-02-03",
+            "active_return": -0.004453147048095357,
+            "candidate_return": -0.007987548248711457,
+            "baseline_return": -0.0035344012006160996,
+            "turnover": 0.1777777777777777
+          },
+          {
+            "date": "2024-12-31",
+            "active_return": -0.0032848684521583887,
+            "candidate_return": -0.00377364396088317,
+            "baseline_return": -0.0004887755087247813,
+            "turnover": 0.0
+          },
+          {
+            "date": "2025-03-11",
+            "active_return": -0.0026729101042382683,
+            "candidate_return": -0.00651246822635938,
+            "baseline_return": -0.0038395581221211113,
+            "turnover": 0.0
+          }
+        ],
+        "worst_active_contribution_tickers": [
+          {
+            "ticker": "00713.TW",
+            "active_contribution_sum": -0.008715841842534384
+          },
+          {
+            "ticker": "00878.TW",
+            "active_contribution_sum": -0.007779858877386107
+          },
+          {
+            "ticker": "0056.TW",
+            "active_contribution_sum": -0.0027526005916818693
+          },
+          {
+            "ticker": "00679B.TWO",
+            "active_contribution_sum": -0.0010704575061110686
+          },
+          {
+            "ticker": "00751B.TWO",
+            "active_contribution_sum": 0.0011397489785119007
+          }
+        ]
+      }
+    },
+    {
+      "fold": 6,
+      "test_start": "2026-01-07",
+      "test_end": "2026-07-17",
+      "baseline_report_delta_max_drawdown": -0.009982756165557216,
+      "thresholds": {
+        "low_reward_threshold": -0.07190656211668717,
+        "high_reward_threshold": -0.028575190726655538
+      },
+      "attribution": {
+        "candidate_max_drawdown": -0.07030436654432748,
+        "baseline_max_drawdown": -0.06032161037877026,
+        "delta_max_drawdown": -0.009982756165557216,
+        "candidate_trough_date": "2026-03-31",
+        "baseline_trough_date": "2026-03-31",
+        "active_cumulative_return_end": 0.04834124392211958,
+        "trough_detail": {
+          "date": "2026-03-31",
+          "candidate_return": -0.01021940625841551,
+          "baseline_return": -0.006637094608533345,
+          "active_return": -0.003582311649882165,
+          "turnover": 0.0,
+          "largest_negative_active_tickers": [
+            {
+              "ticker": "00679B.TWO",
+              "active_contribution": -0.0007846014185089638
+            },
+            {
+              "ticker": "00751B.TWO",
+              "active_contribution": -0.0007186604002746989
+            },
+            {
+              "ticker": "0050.TW",
+              "active_contribution": -0.0006991443481071391
+            },
+            {
+              "ticker": "0056.TW",
+              "active_contribution": -0.0006340796433568665
+            },
+            {
+              "ticker": "00878.TW",
+              "active_contribution": -0.0004522857472148054
+            }
+          ],
+          "weights": {
+            "0050.TW": 0.2,
+            "0056.TW": 0.2,
+            "00679B.TWO": 0.1,
+            "00713.TW": 0.2,
+            "00751B.TWO": 0.1,
+            "00878.TW": 0.2
+          }
+        },
+        "worst_active_return_dates": [
+          {
+            "date": "2026-03-04",
+            "active_return": -0.005147830719205982,
+            "candidate_return": -0.027426688882587747,
+            "baseline_return": -0.022278858163381765,
+            "turnover": 0.0
+          },
+          {
+            "date": "2026-04-23",
+            "active_return": -0.004994478236349367,
+            "candidate_return": -0.01862857858408012,
+            "baseline_return": -0.013634100347730754,
+            "turnover": 0.13636363636363638
+          },
+          {
+            "date": "2026-06-08",
+            "active_return": -0.004729599303801221,
+            "candidate_return": -0.030442011350320857,
+            "baseline_return": -0.025712412046519636,
+            "turnover": 0.0
+          },
+          {
+            "date": "2026-06-26",
+            "active_return": -0.0042887630144210626,
+            "candidate_return": -0.023985957641441027,
+            "baseline_return": -0.019697194627019965,
+            "turnover": 0.0
+          },
+          {
+            "date": "2026-06-10",
+            "active_return": -0.003821916295754792,
+            "candidate_return": -0.017873175644757544,
+            "baseline_return": -0.014051259349002752,
+            "turnover": 0.0
+          }
+        ],
+        "worst_active_contribution_tickers": [
+          {
+            "ticker": "00679B.TWO",
+            "active_contribution_sum": 0.0003994184559065391
+          },
+          {
+            "ticker": "00751B.TWO",
+            "active_contribution_sum": 0.0015673316310697112
+          },
+          {
+            "ticker": "00713.TW",
+            "active_contribution_sum": 0.007138070538461858
+          },
+          {
+            "ticker": "0056.TW",
+            "active_contribution_sum": 0.007341486437971724
+          },
+          {
+            "ticker": "0050.TW",
+            "active_contribution_sum": 0.014717401557887007
+          }
+        ]
+      }
+    },
+    {
+      "fold": 5,
+      "test_start": "2025-07-07",
+      "test_end": "2026-01-06",
+      "baseline_report_delta_max_drawdown": -0.006109475159670419,
+      "thresholds": {
+        "low_reward_threshold": -0.07131120681458374,
+        "high_reward_threshold": -0.027556775854808924
+      },
+      "attribution": {
+        "candidate_max_drawdown": -0.05203002717745853,
+        "baseline_max_drawdown": -0.04592055201778811,
+        "delta_max_drawdown": -0.006109475159670419,
+        "candidate_trough_date": "2025-11-19",
+        "baseline_trough_date": "2025-11-19",
+        "active_cumulative_return_end": 0.020632184745375648,
+        "trough_detail": {
+          "date": "2025-11-19",
+          "candidate_return": -0.004876639507601911,
+          "baseline_return": -0.004472921159519638,
+          "active_return": -0.00040371834808227303,
+          "turnover": 0.1777777777777777,
+          "largest_negative_active_tickers": [
+            {
+              "ticker": "0050.TW",
+              "active_contribution": -0.00036761466853275134
+            },
+            {
+              "ticker": "00713.TW",
+              "active_contribution": -0.00028958626332404366
+            },
+            {
+              "ticker": "00878.TW",
+              "active_contribution": -0.00024570065765983713
+            },
+            {
+              "ticker": "00751B.TWO",
+              "active_contribution": 3.4475226751712944e-05
+            },
+            {
+              "ticker": "00679B.TWO",
+              "active_contribution": 0.00014090115510613353
+            }
+          ],
+          "weights": {
+            "0050.TW": 0.2222222222222222,
+            "0056.TW": 0.1111111111111111,
+            "00679B.TWO": 0.1111111111111111,
+            "00713.TW": 0.2222222222222222,
+            "00751B.TWO": 0.1111111111111111,
+            "00878.TW": 0.2222222222222222
+          }
+        },
+        "worst_active_return_dates": [
+          {
+            "date": "2025-08-20",
+            "active_return": -0.004607151896862673,
+            "candidate_return": -0.012057011500596146,
+            "baseline_return": -0.007449859603733473,
+            "turnover": 0.0
+          },
+          {
+            "date": "2025-11-18",
+            "active_return": -0.004005862811275376,
+            "candidate_return": -0.017679753978210463,
+            "baseline_return": -0.013673891166935088,
+            "turnover": 0.0
+          },
+          {
+            "date": "2025-10-13",
+            "active_return": -0.0030918532659084054,
+            "candidate_return": -0.005870349906809498,
+            "baseline_return": -0.0027784966409010923,
+            "turnover": 0.0
+          },
+          {
+            "date": "2025-10-17",
+            "active_return": -0.002903938625248186,
+            "candidate_return": -0.0030779185856852397,
+            "baseline_return": -0.00017397996043705356,
+            "turnover": 0.0
+          },
+          {
+            "date": "2025-11-21",
+            "active_return": -0.0023301955709321594,
+            "candidate_return": -0.013123338721041274,
+            "baseline_return": -0.010793143150109114,
+            "turnover": 0.0
+          }
+        ],
+        "worst_active_contribution_tickers": [
+          {
+            "ticker": "00679B.TWO",
+            "active_contribution_sum": -0.00644063260179491
+          },
+          {
+            "ticker": "00751B.TWO",
+            "active_contribution_sum": -0.005573667673182482
+          },
+          {
+            "ticker": "0056.TW",
+            "active_contribution_sum": -0.0014907473741932382
+          },
+          {
+            "ticker": "00713.TW",
+            "active_contribution_sum": 0.00038843191014902327
+          },
+          {
+            "ticker": "00878.TW",
+            "active_contribution_sum": 0.0007550820875699449
+          }
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "test_start": "2023-12-08",
+      "test_end": "2024-06-19",
+      "baseline_report_delta_max_drawdown": -0.0031390752341928785,
+      "thresholds": {
+        "low_reward_threshold": -0.06526638188361454,
+        "high_reward_threshold": -0.026102387645646215
+      },
+      "attribution": {
+        "candidate_max_drawdown": -0.04838211480201149,
+        "baseline_max_drawdown": -0.04524303956781861,
+        "delta_max_drawdown": -0.0031390752341928785,
+        "candidate_trough_date": "2024-04-22",
+        "baseline_trough_date": "2024-04-22",
+        "active_cumulative_return_end": 0.020323968269831516,
+        "trough_detail": {
+          "date": "2024-04-22",
+          "candidate_return": -0.004418146889621255,
+          "baseline_return": -0.0053752471168547755,
+          "active_return": 0.0009571002272335209,
+          "turnover": 0.13636363636363638,
+          "largest_negative_active_tickers": [
+            {
+              "ticker": "0056.TW",
+              "active_contribution": -0.0001422877627304045
+            },
+            {
+              "ticker": "00878.TW",
+              "active_contribution": -0.00013241931926763245
+            },
+            {
+              "ticker": "0050.TW",
+              "active_contribution": -4.518314019352602e-05
+            },
+            {
+              "ticker": "00713.TW",
+              "active_contribution": 0.00029244205348155975
+            },
+            {
+              "ticker": "00751B.TWO",
+              "active_contribution": 0.00042598768745057266
+            }
+          ],
+          "weights": {
+            "0050.TW": 0.18181818181818182,
+            "0056.TW": 0.18181818181818182,
+            "00679B.TWO": 0.09090909090909091,
+            "00713.TW": 0.2727272727272727,
+            "00751B.TWO": 0.09090909090909091,
+            "00878.TW": 0.18181818181818182
+          }
+        },
+        "worst_active_return_dates": [
+          {
+            "date": "2024-04-19",
+            "active_return": -0.0040361237061974295,
+            "candidate_return": -0.01967321079217892,
+            "baseline_return": -0.01563708708598149,
+            "turnover": 0.0
+          },
+          {
+            "date": "2024-06-04",
+            "active_return": -0.003630593686671236,
+            "candidate_return": -0.00586951711646544,
+            "baseline_return": -0.002238923429794204,
+            "turnover": 0.12087912087912095
+          },
+          {
+            "date": "2024-04-16",
+            "active_return": -0.003205781398901115,
+            "candidate_return": -0.021822894335653816,
+            "baseline_return": -0.0186171129367527,
+            "turnover": 0.12087912087912095
+          },
+          {
+            "date": "2023-12-15",
+            "active_return": -0.002659564438731656,
+            "candidate_return": -0.0005519019153498637,
+            "baseline_return": 0.0021076625233817925,
+            "turnover": 0.0
+          },
+          {
+            "date": "2024-03-22",
+            "active_return": -0.0026586516830467556,
+            "candidate_return": -0.0014110289177592147,
+            "baseline_return": 0.001247622765287541,
+            "turnover": 0.0
+          }
+        ],
+        "worst_active_contribution_tickers": [
+          {
+            "ticker": "0050.TW",
+            "active_contribution_sum": -0.0022395875430069956
+          },
+          {
+            "ticker": "00751B.TWO",
+            "active_contribution_sum": -0.0006659427806706025
+          },
+          {
+            "ticker": "00679B.TWO",
+            "active_contribution_sum": -0.0004910140560830007
+          },
+          {
+            "ticker": "00878.TW",
+            "active_contribution_sum": 0.0051172018408160245
+          },
+          {
+            "ticker": "0056.TW",
+            "active_contribution_sum": 0.007213211166807144
+          }
+        ]
+      }
+    }
+  ],
+  "blocking_reasons": [],
+  "interpretation": [
+    "Attribution explains why the no-model reward tilt worsened drawdown in specific OOS folds.",
+    "Negative active contribution means the reward tilt underweighted winners or overweighted losers versus equal weight.",
+    "This report is diagnostic only and does not authorize model training or live allocation changes."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "drawdown_failure_attribution_ready": true,
+    "drawdown_issue_requires_additional_risk_control": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

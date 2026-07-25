@@ -1,0 +1,422 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_illiquidity_network_readiness_review",
+  "generated_at": "2026-07-19T14:36:23",
+  "as_of": "2026-07-20",
+  "actual_data_end": "2026-07-17",
+  "source_paper": {
+    "path": "C:/Users/isaac/Downloads/2004.01917.pdf",
+    "title": "The illiquidity network of stocks in China's market crash",
+    "imported_concept": "illiquidity comovement network, systemic liquidity-failure early warning, finance-sector and low-degree trigger inspection"
+  },
+  "policy": "research_only_illiquidity_network_readiness_no_crash_guard_no_weight_change",
+  "status": "blocked",
+  "data": {
+    "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "db_exists": true,
+    "available_tables": [
+      "day_trading_data",
+      "dealer_futures_data",
+      "dealer_options_data",
+      "derivative_institutional_data",
+      "external_data_version",
+      "external_market_ohlcv",
+      "external_options_iv",
+      "foreign_shareholding_data",
+      "institutional_data",
+      "margin_data",
+      "market_margin_data",
+      "ohlcv",
+      "securities_lending_data",
+      "shareholding_distribution",
+      "short_sale_balance_data",
+      "stock_per_data",
+      "taifex_futures_daily",
+      "taifex_futures_institutional",
+      "taifex_options_daily",
+      "total_return_index_data"
+    ],
+    "table_counts": {
+      "day_trading_data": 1446,
+      "dealer_futures_data": 38518,
+      "dealer_options_data": 34378,
+      "derivative_institutional_data": 17949,
+      "external_data_version": 146,
+      "external_market_ohlcv": 59122,
+      "external_options_iv": 5,
+      "foreign_shareholding_data": 1443,
+      "institutional_data": 14144,
+      "margin_data": 9662,
+      "market_margin_data": 2462,
+      "ohlcv": 29641,
+      "securities_lending_data": 472,
+      "shareholding_distribution": 488369,
+      "short_sale_balance_data": 1427,
+      "stock_per_data": 854,
+      "taifex_futures_daily": 87937,
+      "taifex_futures_institutional": 48,
+      "taifex_options_daily": 3011278,
+      "total_return_index_data": 704
+    },
+    "ohlcv_summary": {
+      "distinct_tickers": 15,
+      "min_dt": "2009-01-02",
+      "max_dt": "2026-07-17",
+      "rows": 29641
+    },
+    "requirements": {
+      "high_frequency_bid_ask": {
+        "required_any_of": [
+          "intraday_bid_ask_quotes",
+          "order_book_quotes",
+          "twse_best_bid_ask"
+        ],
+        "matched_tables": [],
+        "matched_table_counts": {},
+        "populated_tables": [],
+        "available": false
+      },
+      "intraday_minute_liquidity": {
+        "required_any_of": [
+          "intraday_minute_illiquidity",
+          "intraday_minute_quotes"
+        ],
+        "matched_tables": [],
+        "matched_table_counts": {},
+        "populated_tables": [],
+        "available": false
+      },
+      "market_wide_failure_events": {
+        "required_any_of": [
+          "limit_down_events",
+          "no_bid_no_quote_events",
+          "stock_failure_events"
+        ],
+        "matched_tables": [],
+        "matched_table_counts": {},
+        "populated_tables": [],
+        "available": false
+      },
+      "stock_sector_style_mapping": {
+        "required_any_of": [
+          "stock_sector_style",
+          "stock_industry_mapping",
+          "ticker_metadata"
+        ],
+        "matched_tables": [],
+        "matched_table_counts": {},
+        "populated_tables": [],
+        "available": false
+      }
+    }
+  },
+  "candidate_imports": {
+    "liquidity_contagion_watch": "possible only after high-frequency bid/ask or reliable intraday spread data exists",
+    "five_day_systemic_failure_count": "paper idea retained, not implemented as live signal",
+    "finance_sector_core_watch": "concept maps to Taiwan finance-heavy systemic-risk watch, but sector/style metadata is missing",
+    "low_degree_trigger_watch": "research-only; requires full universe graph and limit-down/no-bid failure timing"
+  },
+  "daily_ohlcv_liquidity_stress_proxy": {
+    "status": "available_research_proxy",
+    "paper_equivalent": false,
+    "policy": "daily_ohlcv_proxy_only_no_live_weight_change",
+    "live_strategy_effect": "none",
+    "actual_data_end": "2026-07-17",
+    "coverage_tickers": 9,
+    "stress_score": 0.21666666666666667,
+    "stress_state": "elevated",
+    "state_thresholds": {
+      "normal_lt": 0.1,
+      "watch_gte": 0.1,
+      "elevated_gte": 0.2,
+      "stress_gte": 0.35
+    },
+    "state_reasons": [
+      "limit_down_proxy_count:1",
+      "negative_return_count:4",
+      "range_spike_count:3"
+    ],
+    "manual_review_required": true,
+    "component_counts": {
+      "volume_drought": 0,
+      "range_spike": 3,
+      "negative_return": 4,
+      "limit_down_proxy": 1
+    },
+    "latest_rows": [
+      {
+        "ticker": "0050.TW",
+        "daily_return": -0.05874060066136233,
+        "range_pct": 0.028665441804678754,
+        "volume_ratio_20d": 5.029906957244553,
+        "volume_drought_flag": false,
+        "range_spike_flag": true,
+        "negative_return_flag": true,
+        "limit_down_proxy_flag": false
+      },
+      {
+        "ticker": "0056.TW",
+        "daily_return": -0.03608739735638955,
+        "range_pct": 0.0199430048742628,
+        "volume_ratio_20d": 3.7580412591643335,
+        "volume_drought_flag": false,
+        "range_spike_flag": false,
+        "negative_return_flag": true,
+        "limit_down_proxy_flag": false
+      },
+      {
+        "ticker": "00631L.TW",
+        "daily_return": -0.13498253947657923,
+        "range_pct": 0.07475134973513035,
+        "volume_ratio_20d": 3.413901802776466,
+        "volume_drought_flag": false,
+        "range_spike_flag": true,
+        "negative_return_flag": true,
+        "limit_down_proxy_flag": true
+      },
+      {
+        "ticker": "00632R.TW",
+        "daily_return": 0.06804729359182615,
+        "range_pct": 0.0355029235195547,
+        "volume_ratio_20d": 2.0860506732136015,
+        "volume_drought_flag": false,
+        "range_spike_flag": true,
+        "negative_return_flag": false,
+        "limit_down_proxy_flag": false
+      },
+      {
+        "ticker": "00646.TW",
+        "daily_return": -0.010409830035750467,
+        "range_pct": 0.0065061810010103365,
+        "volume_ratio_20d": 0.8141063134354034,
+        "volume_drought_flag": false,
+        "range_spike_flag": false,
+        "negative_return_flag": false,
+        "limit_down_proxy_flag": false
+      },
+      {
+        "ticker": "00679B.TWO",
+        "daily_return": 0.004847168888682862,
+        "range_pct": 0.0033557104255023183,
+        "volume_ratio_20d": 1.6825409197194077,
+        "volume_drought_flag": false,
+        "range_spike_flag": false,
+        "negative_return_flag": false,
+        "limit_down_proxy_flag": false
+      },
+      {
+        "ticker": "00713.TW",
+        "daily_return": -0.010673259599225049,
+        "range_pct": 0.01231527062739554,
+        "volume_ratio_20d": 1.4743941405746799,
+        "volume_drought_flag": false,
+        "range_spike_flag": false,
+        "negative_return_flag": false,
+        "limit_down_proxy_flag": false
+      },
+      {
+        "ticker": "00751B.TWO",
+        "daily_return": 0.0019120897034961004,
+        "range_pct": 0.001912028921192522,
+        "volume_ratio_20d": 1.4590411811794006,
+        "volume_drought_flag": false,
+        "range_spike_flag": false,
+        "negative_return_flag": false,
+        "limit_down_proxy_flag": false
+      },
+      {
+        "ticker": "00878.TW",
+        "daily_return": -0.03459791413052982,
+        "range_pct": 0.018512858539567207,
+        "volume_ratio_20d": 2.427076333699421,
+        "volume_drought_flag": false,
+        "range_spike_flag": false,
+        "negative_return_flag": true,
+        "limit_down_proxy_flag": false
+      }
+    ],
+    "recent_daily_scores": [
+      {
+        "dt": "2026-07-06",
+        "stress_score": 0.06538461538461539,
+        "coverage_tickers": 13
+      },
+      {
+        "dt": "2026-07-07",
+        "stress_score": 0.11538461538461539,
+        "coverage_tickers": 13
+      },
+      {
+        "dt": "2026-07-08",
+        "stress_score": 0.06153846153846154,
+        "coverage_tickers": 13
+      },
+      {
+        "dt": "2026-07-09",
+        "stress_score": 0.023076923076923075,
+        "coverage_tickers": 13
+      },
+      {
+        "dt": "2026-07-10",
+        "stress_score": 0.3,
+        "coverage_tickers": 13
+      },
+      {
+        "dt": "2026-07-13",
+        "stress_score": 0.0,
+        "coverage_tickers": 13
+      },
+      {
+        "dt": "2026-07-14",
+        "stress_score": 0.17307692307692307,
+        "coverage_tickers": 13
+      },
+      {
+        "dt": "2026-07-15",
+        "stress_score": 0.06923076923076922,
+        "coverage_tickers": 13
+      },
+      {
+        "dt": "2026-07-16",
+        "stress_score": 0.03333333333333333,
+        "coverage_tickers": 9
+      },
+      {
+        "dt": "2026-07-17",
+        "stress_score": 0.21666666666666667,
+        "coverage_tickers": 9
+      }
+    ],
+    "limitations": [
+      "Daily OHLCV cannot observe bid/ask spread.",
+      "Daily OHLCV cannot observe no-bid/no-quote intervals.",
+      "ETF-only or small-universe coverage cannot reproduce paper-level market-wide network contagion.",
+      "This proxy is for research dashboard use only."
+    ]
+  },
+  "data_backfill_plan": {
+    "current_decision": {
+      "high_frequency_backfill": "deferred",
+      "decision_date": "2026-07-19",
+      "reason": "High-frequency full-market bid/ask data is too large for the current phase.",
+      "allowed_next_step": "daily_ohlcv_volume_proxy_only_research_dashboard",
+      "live_strategy_effect": "none"
+    },
+    "priority": [
+      "stock_sector_style_mapping",
+      "daily_ohlcv_volume_proxy",
+      "market_wide_failure_events_proxy",
+      "high_frequency_bid_ask_deferred",
+      "intraday_minute_liquidity_deferred"
+    ],
+    "minimum_viable_tables": {
+      "intraday_bid_ask_quotes": {
+        "purpose": "Build bid-ask spread or weighted-spread illiquidity at intraday frequency.",
+        "minimum_columns": [
+          "ticker",
+          "dt",
+          "timestamp",
+          "best_bid_price",
+          "best_bid_volume",
+          "best_ask_price",
+          "best_ask_volume"
+        ],
+        "preferred_columns": [
+          "bid_price_1_to_5",
+          "bid_volume_1_to_5",
+          "ask_price_1_to_5",
+          "ask_volume_1_to_5"
+        ],
+        "minimum_frequency": "1min_or_better",
+        "required_universe": "Taiwan listed stocks, not only GroupA+ ETFs"
+      },
+      "intraday_minute_illiquidity": {
+        "purpose": "Cache derived minute-level spread or weighted-spread illiquidity.",
+        "minimum_columns": [
+          "ticker",
+          "dt",
+          "minute",
+          "spread_pct",
+          "weighted_spread_pct",
+          "source"
+        ],
+        "dependency": "intraday_bid_ask_quotes"
+      },
+      "stock_failure_events": {
+        "purpose": "Identify systemic liquidity-failure intervals used by the five-day warning candidate.",
+        "minimum_columns": [
+          "ticker",
+          "dt",
+          "timestamp",
+          "event_type",
+          "limit_down_price",
+          "last_price",
+          "no_bid_flag",
+          "no_quote_flag"
+        ],
+        "event_types": [
+          "limit_down_touch",
+          "limit_down_lock",
+          "no_bid",
+          "no_quote"
+        ]
+      },
+      "ticker_metadata": {
+        "purpose": "Inspect sector/style concentration of critical liquidity-stress nodes.",
+        "minimum_columns": [
+          "ticker",
+          "name",
+          "market",
+          "sector",
+          "industry",
+          "market_cap_bucket",
+          "is_financial_sector"
+        ]
+      }
+    },
+    "validation_requirements": [
+      "Build shadow-only signal first; no live target-weight effect.",
+      "Validate on Taiwan crash/stress windows including 2015, 2020, 2022, and 2026.",
+      "Measure one-day-ahead hit rate, false-positive rate, and overlap with SRR-lite crash watch.",
+      "Run randomization/null tests before treating network links as non-spurious.",
+      "Keep China 2015 thresholds separate from Taiwan-calibrated thresholds."
+    ],
+    "proxies_allowed_now": {
+      "daily_ohlcv_volume_proxy": {
+        "allowed": true,
+        "use": "coarse monitoring only",
+        "paper_equivalent": false,
+        "reason": "Daily OHLCV cannot identify no-bid/no-quote timing or intraday systemic failures."
+      },
+      "etf_only_universe": {
+        "allowed": true,
+        "use": "sanity-check dashboard only",
+        "paper_equivalent": false,
+        "reason": "The paper's network relies on a broad stock universe, not a few ETFs."
+      }
+    }
+  },
+  "blocking_reasons": [
+    "china_2015_parameters_not_portable_to_group_a_plus",
+    "crash_warning_not_allowed_to_change_live_weights",
+    "five_day_systemic_failure_signal_not_validated_for_taiwan",
+    "missing_high_frequency_bid_ask",
+    "missing_intraday_minute_liquidity",
+    "missing_market_wide_failure_events",
+    "missing_stock_sector_style_mapping",
+    "nmi_illiquidity_network_not_implemented"
+  ],
+  "decision": {
+    "illiquidity_network_ready": false,
+    "daily_ohlcv_liquidity_stress_proxy_available": true,
+    "high_frequency_liquidity_data_ready": false,
+    "systemic_failure_signal_ready": false,
+    "promote_to_live": false,
+    "crash_guard_allowed": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

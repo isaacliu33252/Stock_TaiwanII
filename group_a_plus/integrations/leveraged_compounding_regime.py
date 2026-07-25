@@ -101,8 +101,8 @@ def rolling_compounding_effect(
     leverage: float = 2.0,
     window: int = 20,
 ) -> pd.Series:
-    ret_00631l = price_00631l.astype(float).pct_change(window)
-    ret_0050 = price_0050.astype(float).reindex(price_00631l.index).pct_change(window)
+    ret_00631l = price_00631l.astype(float).pct_change(window, fill_method=None)
+    ret_0050 = price_0050.astype(float).reindex(price_00631l.index).pct_change(window, fill_method=None)
     return ret_00631l - float(leverage) * ret_0050
 
 
@@ -115,8 +115,8 @@ def build_compounding_features(
 ) -> pd.DataFrame:
     price_00631l = price_00631l.astype(float).sort_index()
     price_0050 = price_0050.astype(float).reindex(price_00631l.index).astype(float)
-    returns = price_00631l.pct_change()
-    ret_0050 = price_0050.pct_change()
+    returns = price_00631l.pct_change(fill_method=None)
+    ret_0050 = price_0050.pct_change(fill_method=None)
     out = pd.DataFrame(index=price_00631l.index)
     out["rolling_AR1_5d"] = rolling_ar1(returns, short_window)
     out["rolling_AR1_20d"] = rolling_ar1(returns, long_window)

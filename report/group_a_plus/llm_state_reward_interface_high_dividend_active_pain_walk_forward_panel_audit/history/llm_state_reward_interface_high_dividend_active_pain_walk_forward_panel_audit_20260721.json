@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_high_dividend_active_pain_walk_forward_panel_audit",
+  "generated_at": "2026-07-21T16:02:37",
+  "as_of": "2026-07-21",
+  "status": "blocked",
+  "policy": "v3_fold_aware_panel_audit_only_no_model_training_no_live_action",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_high_dividend_active_pain_walk_forward_panel.parquet",
+    "panel_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_high_dividend_active_pain_walk_forward_panel_review.json",
+    "expected_panel_sha256": "f7f9952b7a623f60bd26a3b07927344bb760c1e4c49c349ed0a1d56112418370",
+    "actual_panel_sha256": "f7f9952b7a623f60bd26a3b07927344bb760c1e4c49c349ed0a1d56112418370",
+    "min_finite_ratio": 0.95,
+    "forward_horizon": 5
+  },
+  "summary": {
+    "row_count": 4536,
+    "fold_count": 6,
+    "ticker_count": 6,
+    "date_count": 756,
+    "duplicate_fold_date_ticker_rows": 0,
+    "freeze_id_count": 1,
+    "frozen_manifest_hash_count": 1,
+    "proposal_ids": [
+      "gift_research_high_dividend_active_pain_v1"
+    ],
+    "finite_ratios": {
+      "original_reward_proxy": 1.0,
+      "redesigned_reward_proxy": 1.0,
+      "active_bucket_weight": 1.0,
+      "active_bucket_return_contribution": 1.0,
+      "active_bucket_drawdown_depth": 1.0,
+      "reward_signal_concentration_hhi": 1.0,
+      "high_dividend_active_pain": 1.0,
+      "active_bucket_drawdown_penalty": 1.0
+    },
+    "folds_complete": true,
+    "folds_test_dates_match": true,
+    "purge_covers_forward_horizon": true
+  },
+  "folds": [
+    {
+      "fold": 1,
+      "rows": 756,
+      "expected_complete_rows": 756,
+      "complete_grid": true,
+      "ticker_count": 6,
+      "date_count": 126,
+      "date_start": "2023-06-07",
+      "date_end": "2023-12-07",
+      "test_start": "2023-06-07",
+      "test_end": "2023-12-07",
+      "train_end": "2023-05-30",
+      "purge_calendar_days": 8,
+      "test_dates_match_panel_dates": true
+    },
+    {
+      "fold": 2,
+      "rows": 756,
+      "expected_complete_rows": 756,
+      "complete_grid": true,
+      "ticker_count": 6,
+      "date_count": 126,
+      "date_start": "2023-12-08",
+      "date_end": "2024-06-19",
+      "test_start": "2023-12-08",
+      "test_end": "2024-06-19",
+      "train_end": "2023-11-30",
+      "purge_calendar_days": 8,
+      "test_dates_match_panel_dates": true
+    },
+    {
+      "fold": 3,
+      "rows": 756,
+      "expected_complete_rows": 756,
+      "complete_grid": true,
+      "ticker_count": 6,
+      "date_count": 126,
+      "date_start": "2024-06-20",
+      "date_end": "2024-12-23",
+      "test_start": "2024-06-20",
+      "test_end": "2024-12-23",
+      "train_end": "2024-06-12",
+      "purge_calendar_days": 8,
+      "test_dates_match_panel_dates": true
+    },
+    {
+      "fold": 4,
+      "rows": 756,
+      "expected_complete_rows": 756,
+      "complete_grid": true,
+      "ticker_count": 6,
+      "date_count": 126,
+      "date_start": "2024-12-24",
+      "date_end": "2025-07-04",
+      "test_start": "2024-12-24",
+      "test_end": "2025-07-04",
+      "train_end": "2024-12-16",
+      "purge_calendar_days": 8,
+      "test_dates_match_panel_dates": true
+    },
+    {
+      "fold": 5,
+      "rows": 756,
+      "expected_complete_rows": 756,
+      "complete_grid": true,
+      "ticker_count": 6,
+      "date_count": 126,
+      "date_start": "2025-07-07",
+      "date_end": "2026-01-06",
+      "test_start": "2025-07-07",
+      "test_end": "2026-01-06",
+      "train_end": "2025-06-27",
+      "purge_calendar_days": 10,
+      "test_dates_match_panel_dates": true
+    },
+    {
+      "fold": 6,
+      "rows": 756,
+      "expected_complete_rows": 756,
+      "complete_grid": true,
+      "ticker_count": 6,
+      "date_count": 126,
+      "date_start": "2026-01-07",
+      "date_end": "2026-07-17",
+      "test_start": "2026-01-07",
+      "test_end": "2026-07-17",
+      "train_end": "2025-12-29",
+      "purge_calendar_days": 9,
+      "test_dates_match_panel_dates": true
+    }
+  ],
+  "blocking_reasons": [
+    "v3_panel_review_not_available:blocked"
+  ],
+  "warning_reasons": [],
+  "decision": {
+    "available_for_manual_offline_review": false,
+    "v3_walk_forward_panel_audit_passed": false,
+    "v3_shadow_gate_update_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

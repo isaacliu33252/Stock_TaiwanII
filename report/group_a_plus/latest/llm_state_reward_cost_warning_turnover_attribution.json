@@ -1,0 +1,1234 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_cost_warning_turnover_attribution",
+  "generated_at": "2026-07-21T18:18:30",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "cost_warning_turnover_attribution_only_no_training_no_live_action",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "panel_sha256": "66aa5e59dbe67b896a8b1b9846091596ad64aa766a5607eecf9e169b998ee0b8",
+    "walk_forward_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_walk_forward_audit.json",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "high_scores": [
+      1.01,
+      1.02,
+      1.03
+    ],
+    "warning_cost_bps": 5.0,
+    "low_quantile": 0.3,
+    "high_quantile": 0.7,
+    "low_score": 1.0,
+    "mid_score": 1.0,
+    "thresholds": {
+      "min_positive_final_folds": 4,
+      "min_positive_sharpe_folds": 4,
+      "min_non_worse_drawdown_folds": 3
+    }
+  },
+  "summary": {
+    "evaluated_count": 3,
+    "best_high_score": 1.02,
+    "best_failure_cause": "turnover_cost_and_raw_signal",
+    "best_cost_caused_failure_fold_count": 1,
+    "best_raw_signal_failure_fold_count": 3,
+    "best_no_cost_aggregate": {
+      "fold_count": 6,
+      "available_fold_count": 6,
+      "positive_final_value_folds": 4,
+      "positive_sharpe_folds": 4,
+      "non_worse_drawdown_folds": 4,
+      "mean_delta_final_value": 0.0002625261972675208,
+      "mean_delta_sharpe_ratio": 0.004764612310193002,
+      "mean_delta_max_drawdown": 9.439688334389462e-06
+    },
+    "best_with_cost_aggregate": {
+      "fold_count": 6,
+      "available_fold_count": 6,
+      "positive_final_value_folds": 4,
+      "positive_sharpe_folds": 3,
+      "non_worse_drawdown_folds": 4,
+      "mean_delta_final_value": 0.0002042853478419667,
+      "mean_delta_sharpe_ratio": 0.00353582975895006,
+      "mean_delta_max_drawdown": -3.974231642796718e-06
+    },
+    "best_aggregate_cost_drag": {
+      "mean_delta_final_value": -5.82408494255541e-05,
+      "mean_delta_sharpe_ratio": -0.0012287825512429422,
+      "mean_delta_max_drawdown": -1.3413919977186179e-05
+    }
+  },
+  "candidate_results": [
+    {
+      "high_score": 1.01,
+      "warning_cost_bps": 5.0,
+      "no_cost_aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 3,
+        "mean_delta_final_value": 0.00013153506755581024,
+        "mean_delta_sharpe_ratio": 0.0023914551931926895,
+        "mean_delta_max_drawdown": 4.705306746917899e-06
+      },
+      "with_cost_aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 3,
+        "non_worse_drawdown_folds": 3,
+        "mean_delta_final_value": 0.00010233922397049715,
+        "mean_delta_sharpe_ratio": 0.0017753529434439974,
+        "mean_delta_max_drawdown": -2.0182668421705094e-06
+      },
+      "aggregate_cost_drag": {
+        "mean_delta_final_value": -2.919584358531309e-05,
+        "mean_delta_sharpe_ratio": -0.0006161022497486921,
+        "mean_delta_max_drawdown": -6.723573589088408e-06
+      },
+      "fold_results": [
+        {
+          "fold": 1,
+          "train_start": "2016-01-04",
+          "train_end": "2023-05-30",
+          "test_start": "2023-06-07",
+          "test_end": "2023-12-07",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0007828247656849047,
+          "total_turnover": 0.09863592047629799,
+          "estimated_cost_drag_return": 4.931796023814899e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.00014676494737320134,
+            "sharpe_ratio": 0.0027645576766028856,
+            "max_drawdown": 6.202609379934998e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 9.451622114098335e-05,
+            "sharpe_ratio": 0.001783715777410988,
+            "max_drawdown": 3.730501036192102e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -5.224872623221799e-05,
+            "sharpe_ratio": -0.0009808418991918977,
+            "max_drawdown": -2.472108343742896e-05
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": false
+        },
+        {
+          "fold": 2,
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.00047848592592714915,
+          "total_turnover": 0.060289226666820794,
+          "estimated_cost_drag_return": 3.0144613333410398e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 6.002456289921909e-05,
+            "sharpe_ratio": 0.00047736256217101314,
+            "max_drawdown": 1.3841880553533414e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 2.5201028833743422e-05,
+            "sharpe_ratio": -0.00045632276216878154,
+            "max_drawdown": 9.854144483290028e-06
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -3.482353406547567e-05,
+            "sharpe_ratio": -0.0009336853243397947,
+            "max_drawdown": -3.987736070243386e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "cost_caused_sharpe_failure",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": true,
+          "raw_signal_any_failure": false
+        },
+        {
+          "fold": 3,
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.00036935999163820047,
+          "total_turnover": 0.046539358946413256,
+          "estimated_cost_drag_return": 2.326967947320663e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -2.684849434442249e-05,
+            "sharpe_ratio": -0.0005157433878765216,
+            "max_drawdown": -3.2652247532904966e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -4.90152129590804e-05,
+            "sharpe_ratio": -0.0008798288903436591,
+            "max_drawdown": -3.9004717703794434e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -2.216671861465791e-05,
+            "sharpe_ratio": -0.00036408550246713745,
+            "max_drawdown": -6.352470170889468e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 4,
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 8.803669369392803e-05,
+          "total_turnover": 0.011092623405434932,
+          "estimated_cost_drag_return": 5.546311702717466e-06,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -9.727865980302397e-06,
+            "sharpe_ratio": -9.100069474066164e-05,
+            "max_drawdown": -3.3306690738754696e-16
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -1.4923513003695099e-05,
+            "sharpe_ratio": -0.0001411124477687098,
+            "max_drawdown": -3.3306690738754696e-16
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -5.195647023392702e-06,
+            "sharpe_ratio": -5.0111753028048156e-05,
+            "max_drawdown": 0.0
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 5,
+          "train_start": "2016-01-04",
+          "train_end": "2025-06-27",
+          "test_start": "2025-07-07",
+          "test_end": "2026-01-06",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0003301376013522301,
+          "total_turnover": 0.04159733777038099,
+          "estimated_cost_drag_return": 2.0798668885190498e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.00037792819967275015,
+            "sharpe_ratio": 0.008812307577509504,
+            "max_drawdown": 4.589887082295796e-06
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 0.0003547512057024971,
+            "sharpe_ratio": 0.008040270656946014,
+            "max_drawdown": 1.9345057884478933e-06
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -2.317699397025308e-05,
+            "sharpe_ratio": -0.0007720369205634903,
+            "max_drawdown": -2.6553812938479027e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": false
+        },
+        {
+          "fold": 6,
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0004883696654333512,
+          "total_turnover": 0.061534577844602256,
+          "estimated_cost_drag_return": 3.076728892230113e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.00024106905571441573,
+            "sharpe_ratio": 0.0029012474254899168,
+            "max_drawdown": -1.957377342043376e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 0.00020350561410853452,
+            "sharpe_ratio": 0.0023053953265881333,
+            "max_drawdown": -2.2198543982554497e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -3.756344160588121e-05,
+            "sharpe_ratio": -0.0005958520989017835,
+            "max_drawdown": -2.6247705621207373e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        }
+      ],
+      "cost_caused_failure_folds": [
+        {
+          "fold": 2,
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.00047848592592714915,
+          "total_turnover": 0.060289226666820794,
+          "estimated_cost_drag_return": 3.0144613333410398e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 6.002456289921909e-05,
+            "sharpe_ratio": 0.00047736256217101314,
+            "max_drawdown": 1.3841880553533414e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 2.5201028833743422e-05,
+            "sharpe_ratio": -0.00045632276216878154,
+            "max_drawdown": 9.854144483290028e-06
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -3.482353406547567e-05,
+            "sharpe_ratio": -0.0009336853243397947,
+            "max_drawdown": -3.987736070243386e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "cost_caused_sharpe_failure",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": true,
+          "raw_signal_any_failure": false
+        }
+      ],
+      "raw_signal_failure_folds": [
+        {
+          "fold": 3,
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.00036935999163820047,
+          "total_turnover": 0.046539358946413256,
+          "estimated_cost_drag_return": 2.326967947320663e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -2.684849434442249e-05,
+            "sharpe_ratio": -0.0005157433878765216,
+            "max_drawdown": -3.2652247532904966e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -4.90152129590804e-05,
+            "sharpe_ratio": -0.0008798288903436591,
+            "max_drawdown": -3.9004717703794434e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -2.216671861465791e-05,
+            "sharpe_ratio": -0.00036408550246713745,
+            "max_drawdown": -6.352470170889468e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 4,
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 8.803669369392803e-05,
+          "total_turnover": 0.011092623405434932,
+          "estimated_cost_drag_return": 5.546311702717466e-06,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -9.727865980302397e-06,
+            "sharpe_ratio": -9.100069474066164e-05,
+            "max_drawdown": -3.3306690738754696e-16
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -1.4923513003695099e-05,
+            "sharpe_ratio": -0.0001411124477687098,
+            "max_drawdown": -3.3306690738754696e-16
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -5.195647023392702e-06,
+            "sharpe_ratio": -5.0111753028048156e-05,
+            "max_drawdown": 0.0
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 6,
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0004883696654333512,
+          "total_turnover": 0.061534577844602256,
+          "estimated_cost_drag_return": 3.076728892230113e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.00024106905571441573,
+            "sharpe_ratio": 0.0029012474254899168,
+            "max_drawdown": -1.957377342043376e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 0.00020350561410853452,
+            "sharpe_ratio": 0.0023053953265881333,
+            "max_drawdown": -2.2198543982554497e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -3.756344160588121e-05,
+            "sharpe_ratio": -0.0005958520989017835,
+            "max_drawdown": -2.6247705621207373e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        }
+      ],
+      "cost_caused_failure_fold_count": 1,
+      "raw_signal_failure_fold_count": 3,
+      "passes_required_thresholds_after_cost": false
+    },
+    {
+      "high_score": 1.02,
+      "warning_cost_bps": 5.0,
+      "no_cost_aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 4,
+        "mean_delta_final_value": 0.0002625261972675208,
+        "mean_delta_sharpe_ratio": 0.004764612310193002,
+        "mean_delta_max_drawdown": 9.439688334389462e-06
+      },
+      "with_cost_aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 3,
+        "non_worse_drawdown_folds": 4,
+        "mean_delta_final_value": 0.0002042853478419667,
+        "mean_delta_sharpe_ratio": 0.00353582975895006,
+        "mean_delta_max_drawdown": -3.974231642796718e-06
+      },
+      "aggregate_cost_drag": {
+        "mean_delta_final_value": -5.82408494255541e-05,
+        "mean_delta_sharpe_ratio": -0.0012287825512429422,
+        "mean_delta_max_drawdown": -1.3413919977186179e-05
+      },
+      "fold_results": [
+        {
+          "fold": 1,
+          "train_start": "2016-01-04",
+          "train_end": "2023-05-30",
+          "test_start": "2023-06-07",
+          "test_end": "2023-12-07",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0015616573533041472,
+          "total_turnover": 0.19676882651632255,
+          "estimated_cost_drag_return": 9.838441325816128e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.00029291492175254064,
+            "sharpe_ratio": 0.0055168168399306605,
+            "max_drawdown": 0.00012387301819771768
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 0.0001886720383634799,
+            "sharpe_ratio": 0.003559640081878257,
+            "max_drawdown": 7.454344912705135e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -0.00010424288338906074,
+            "sharpe_ratio": -0.0019571767580524035,
+            "max_drawdown": -4.9329569070666324e-05
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": false
+        },
+        {
+          "fold": 2,
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0009527841273033457,
+          "total_turnover": 0.12005080004022156,
+          "estimated_cost_drag_return": 6.002540002011079e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.00011923469550589871,
+            "sharpe_ratio": 0.0009275241739374884,
+            "max_drawdown": 2.7678443811907094e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 4.988979057074516e-05,
+            "sharpe_ratio": -0.0009313244540796184,
+            "max_drawdown": 1.9737133420516528e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -6.934490493515355e-05,
+            "sharpe_ratio": -0.0018588486280171068,
+            "max_drawdown": -7.941310391390566e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "cost_caused_sharpe_failure",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": true,
+          "raw_signal_any_failure": false
+        },
+        {
+          "fold": 3,
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0007367140122425428,
+          "total_turnover": 0.0928259655425604,
+          "estimated_cost_drag_return": 4.64129827712802e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -5.378097678854221e-05,
+            "sharpe_ratio": -0.0010318648117667584,
+            "max_drawdown": -6.502605858549337e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -9.799237706364927e-05,
+            "sharpe_ratio": -0.0017580448698533147,
+            "max_drawdown": -7.769945810176537e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -4.421140027510706e-05,
+            "sharpe_ratio": -0.0007261800580865563,
+            "max_drawdown": -1.2673399516272e-05
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 4,
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.00017578090667791545,
+          "total_turnover": 0.022148394241417346,
+          "estimated_cost_drag_return": 1.1074197120708673e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -1.9424082802532716e-05,
+            "sharpe_ratio": -0.0001816738148241459,
+            "max_drawdown": 0.0
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -2.9797937939779473e-05,
+            "sharpe_ratio": -0.00028172863900977063,
+            "max_drawdown": 1.1102230246251565e-16
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -1.0373855137246757e-05,
+            "sharpe_ratio": -0.00010005482418562472,
+            "max_drawdown": 1.1102230246251565e-16
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 5,
+          "train_start": "2016-01-04",
+          "train_end": "2025-06-27",
+          "test_start": "2025-07-07",
+          "test_end": "2026-01-06",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0006591784000421829,
+          "total_turnover": 0.08305647840531505,
+          "estimated_cost_drag_return": 4.1528239202657525e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.0007547094678852506,
+            "sharpe_ratio": 0.01756521607239314,
+            "max_drawdown": 9.164287239737945e-06
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 0.0007084173165103902,
+            "sharpe_ratio": 0.016024018995895783,
+            "max_drawdown": 3.8623377064395115e-06
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -4.6292151374860424e-05,
+            "sharpe_ratio": -0.0015411970764973582,
+            "max_drawdown": -5.3019495332984334e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": false
+        },
+        {
+          "fold": 6,
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.000974652742490629,
+          "total_turnover": 0.12280624555381925,
+          "estimated_cost_drag_return": 6.140312277690962e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.00048150315805250976,
+            "sharpe_ratio": 0.005791655401487628,
+            "max_drawdown": -3.905156065753257e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 0.0004065232566106136,
+            "sharpe_ratio": 0.004602417438869022,
+            "max_drawdown": -4.428885200913335e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -7.497990144189615e-05,
+            "sharpe_ratio": -0.0011892379626186056,
+            "max_drawdown": -5.237291351600781e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        }
+      ],
+      "cost_caused_failure_folds": [
+        {
+          "fold": 2,
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0009527841273033457,
+          "total_turnover": 0.12005080004022156,
+          "estimated_cost_drag_return": 6.002540002011079e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.00011923469550589871,
+            "sharpe_ratio": 0.0009275241739374884,
+            "max_drawdown": 2.7678443811907094e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 4.988979057074516e-05,
+            "sharpe_ratio": -0.0009313244540796184,
+            "max_drawdown": 1.9737133420516528e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -6.934490493515355e-05,
+            "sharpe_ratio": -0.0018588486280171068,
+            "max_drawdown": -7.941310391390566e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "cost_caused_sharpe_failure",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": true,
+          "raw_signal_any_failure": false
+        }
+      ],
+      "raw_signal_failure_folds": [
+        {
+          "fold": 3,
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0007367140122425428,
+          "total_turnover": 0.0928259655425604,
+          "estimated_cost_drag_return": 4.64129827712802e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -5.378097678854221e-05,
+            "sharpe_ratio": -0.0010318648117667584,
+            "max_drawdown": -6.502605858549337e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -9.799237706364927e-05,
+            "sharpe_ratio": -0.0017580448698533147,
+            "max_drawdown": -7.769945810176537e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -4.421140027510706e-05,
+            "sharpe_ratio": -0.0007261800580865563,
+            "max_drawdown": -1.2673399516272e-05
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 4,
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.00017578090667791545,
+          "total_turnover": 0.022148394241417346,
+          "estimated_cost_drag_return": 1.1074197120708673e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -1.9424082802532716e-05,
+            "sharpe_ratio": -0.0001816738148241459,
+            "max_drawdown": 0.0
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -2.9797937939779473e-05,
+            "sharpe_ratio": -0.00028172863900977063,
+            "max_drawdown": 1.1102230246251565e-16
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -1.0373855137246757e-05,
+            "sharpe_ratio": -0.00010005482418562472,
+            "max_drawdown": 1.1102230246251565e-16
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 6,
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.000974652742490629,
+          "total_turnover": 0.12280624555381925,
+          "estimated_cost_drag_return": 6.140312277690962e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.00048150315805250976,
+            "sharpe_ratio": 0.005791655401487628,
+            "max_drawdown": -3.905156065753257e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 0.0004065232566106136,
+            "sharpe_ratio": 0.004602417438869022,
+            "max_drawdown": -4.428885200913335e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -7.497990144189615e-05,
+            "sharpe_ratio": -0.0011892379626186056,
+            "max_drawdown": -5.237291351600781e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        }
+      ],
+      "cost_caused_failure_fold_count": 1,
+      "raw_signal_failure_fold_count": 3,
+      "passes_required_thresholds_after_cost": false
+    },
+    {
+      "high_score": 1.03,
+      "warning_cost_bps": 5.0,
+      "no_cost_aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 4,
+        "mean_delta_final_value": 0.00039297879422783843,
+        "mean_delta_sharpe_ratio": 0.007119719883366515,
+        "mean_delta_max_drawdown": 1.4202407314774698e-05
+      },
+      "with_cost_aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 3,
+        "non_worse_drawdown_folds": 3,
+        "mean_delta_final_value": 0.00030584228049549783,
+        "mean_delta_sharpe_ratio": 0.0052816484734498625,
+        "mean_delta_max_drawdown": -5.868927980397694e-06
+      },
+      "aggregate_cost_drag": {
+        "mean_delta_final_value": -8.71365137323406e-05,
+        "mean_delta_sharpe_ratio": -0.0018380714099166529,
+        "mean_delta_max_drawdown": -2.0071335295172393e-05
+      },
+      "fold_results": [
+        {
+          "fold": 1,
+          "train_start": "2016-01-04",
+          "train_end": "2023-05-30",
+          "test_start": "2023-06-07",
+          "test_end": "2023-12-07",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.002336532221371302,
+          "total_turnover": 0.29440305989278404,
+          "estimated_cost_drag_return": 0.00014720152994639202,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.0004384543945608055,
+            "sharpe_ratio": 0.008256867212105723,
+            "max_drawdown": 0.0001855414231728414
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 0.0002824697855616787,
+            "sharpe_ratio": 0.005327829088620284,
+            "max_drawdown": 0.00011171509395146995
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -0.0001559846089991268,
+            "sharpe_ratio": -0.002929038123485439,
+            "max_drawdown": -7.382632922137145e-05
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": false
+        },
+        {
+          "fold": 2,
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0014229532965529266,
+          "total_turnover": 0.17929211536566875,
+          "estimated_cost_drag_return": 8.964605768283438e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.00017764792025753984,
+            "sharpe_ratio": 0.0013513412699772687,
+            "max_drawdown": 4.150909918798629e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 7.407963157124442e-05,
+            "sharpe_ratio": -0.0014242569057492105,
+            "max_drawdown": 2.9647897955675795e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -0.00010356828868629542,
+            "sharpe_ratio": -0.002775598175726479,
+            "max_drawdown": -1.1861201232310492e-05
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "cost_caused_sharpe_failure",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": true,
+          "raw_signal_any_failure": false
+        },
+        {
+          "fold": 3,
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0011020839400723002,
+          "total_turnover": 0.13886257644910982,
+          "estimated_cost_drag_return": 6.94312882245549e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -8.079385371984049e-05,
+            "sharpe_ratio": -0.0015483220292329403,
+            "max_drawdown": -9.712521192140056e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -0.00014692922295012067,
+            "sharpe_ratio": -0.002634625983342076,
+            "max_drawdown": -0.00011608828656073378
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -6.613536923028018e-05,
+            "sharpe_ratio": -0.0010863039541091357,
+            "max_drawdown": -1.896307463933322e-05
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 4,
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.00026323409407986493,
+          "total_turnover": 0.03316749585406298,
+          "estimated_cost_drag_return": 1.658374792703149e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -2.908880458074581e-05,
+            "sharpe_ratio": -0.0002720211038463871,
+            "max_drawdown": 0.0
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -4.462351656497887e-05,
+            "sharpe_ratio": -0.00042185116194592975,
+            "max_drawdown": -4.440892098500626e-16
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -1.5534711984233063e-05,
+            "sharpe_ratio": -0.00014983005809954264,
+            "max_drawdown": -4.440892098500626e-16
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "cost_caused_drawdown_failure"
+          },
+          "cost_caused_any_failure": true,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 5,
+          "train_start": "2016-01-04",
+          "train_end": "2025-06-27",
+          "test_start": "2025-07-07",
+          "test_end": "2026-01-06",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0009871278527994933,
+          "total_turnover": 0.12437810945273617,
+          "estimated_cost_drag_return": 6.218905472636809e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.0011303489955831747,
+            "sharpe_ratio": 0.02625917041850334,
+            "max_drawdown": 1.3723278701527342e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 0.001061003284799522,
+            "sharpe_ratio": 0.023951686112604342,
+            "max_drawdown": 5.783530181657781e-06
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -6.934571078365259e-05,
+            "sharpe_ratio": -0.002307484305898999,
+            "max_drawdown": -7.93974851986956e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": false
+        },
+        {
+          "fold": 6,
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.001458864199615885,
+          "total_turnover": 0.18381688915160152,
+          "estimated_cost_drag_return": 9.190844457580076e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.0007213041132660969,
+            "sharpe_ratio": 0.008671283532692087,
+            "max_drawdown": -5.843414525230628e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 0.0006090537205556412,
+            "sharpe_ratio": 0.006891109690511765,
+            "max_drawdown": -6.627180341001182e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -0.00011225039271045567,
+            "sharpe_ratio": -0.0017801738421803215,
+            "max_drawdown": -7.83765815770554e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        }
+      ],
+      "cost_caused_failure_folds": [
+        {
+          "fold": 2,
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0014229532965529266,
+          "total_turnover": 0.17929211536566875,
+          "estimated_cost_drag_return": 8.964605768283438e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.00017764792025753984,
+            "sharpe_ratio": 0.0013513412699772687,
+            "max_drawdown": 4.150909918798629e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 7.407963157124442e-05,
+            "sharpe_ratio": -0.0014242569057492105,
+            "max_drawdown": 2.9647897955675795e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -0.00010356828868629542,
+            "sharpe_ratio": -0.002775598175726479,
+            "max_drawdown": -1.1861201232310492e-05
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "cost_caused_sharpe_failure",
+            "max_drawdown": "non_worse_after_cost"
+          },
+          "cost_caused_any_failure": true,
+          "raw_signal_any_failure": false
+        },
+        {
+          "fold": 4,
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.00026323409407986493,
+          "total_turnover": 0.03316749585406298,
+          "estimated_cost_drag_return": 1.658374792703149e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -2.908880458074581e-05,
+            "sharpe_ratio": -0.0002720211038463871,
+            "max_drawdown": 0.0
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -4.462351656497887e-05,
+            "sharpe_ratio": -0.00042185116194592975,
+            "max_drawdown": -4.440892098500626e-16
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -1.5534711984233063e-05,
+            "sharpe_ratio": -0.00014983005809954264,
+            "max_drawdown": -4.440892098500626e-16
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "cost_caused_drawdown_failure"
+          },
+          "cost_caused_any_failure": true,
+          "raw_signal_any_failure": true
+        }
+      ],
+      "raw_signal_failure_folds": [
+        {
+          "fold": 3,
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.0011020839400723002,
+          "total_turnover": 0.13886257644910982,
+          "estimated_cost_drag_return": 6.94312882245549e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -8.079385371984049e-05,
+            "sharpe_ratio": -0.0015483220292329403,
+            "max_drawdown": -9.712521192140056e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -0.00014692922295012067,
+            "sharpe_ratio": -0.002634625983342076,
+            "max_drawdown": -0.00011608828656073378
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -6.613536923028018e-05,
+            "sharpe_ratio": -0.0010863039541091357,
+            "max_drawdown": -1.896307463933322e-05
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 4,
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.00026323409407986493,
+          "total_turnover": 0.03316749585406298,
+          "estimated_cost_drag_return": 1.658374792703149e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": -2.908880458074581e-05,
+            "sharpe_ratio": -0.0002720211038463871,
+            "max_drawdown": 0.0
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": -4.462351656497887e-05,
+            "sharpe_ratio": -0.00042185116194592975,
+            "max_drawdown": -4.440892098500626e-16
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -1.5534711984233063e-05,
+            "sharpe_ratio": -0.00014983005809954264,
+            "max_drawdown": -4.440892098500626e-16
+          },
+          "metric_cost_classification": {
+            "final_value": "raw_signal_final_failure",
+            "sharpe_ratio": "raw_signal_sharpe_failure",
+            "max_drawdown": "cost_caused_drawdown_failure"
+          },
+          "cost_caused_any_failure": true,
+          "raw_signal_any_failure": true
+        },
+        {
+          "fold": 6,
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "warning_cost_bps": 5.0,
+          "mean_daily_turnover": 0.001458864199615885,
+          "total_turnover": 0.18381688915160152,
+          "estimated_cost_drag_return": 9.190844457580076e-05,
+          "no_cost_delta_vs_equal_weight": {
+            "final_value": 0.0007213041132660969,
+            "sharpe_ratio": 0.008671283532692087,
+            "max_drawdown": -5.843414525230628e-05
+          },
+          "with_cost_delta_vs_equal_weight": {
+            "final_value": 0.0006090537205556412,
+            "sharpe_ratio": 0.006891109690511765,
+            "max_drawdown": -6.627180341001182e-05
+          },
+          "cost_drag_delta_vs_equal_weight": {
+            "final_value": -0.00011225039271045567,
+            "sharpe_ratio": -0.0017801738421803215,
+            "max_drawdown": -7.83765815770554e-06
+          },
+          "metric_cost_classification": {
+            "final_value": "positive_after_cost",
+            "sharpe_ratio": "positive_after_cost",
+            "max_drawdown": "raw_signal_drawdown_failure"
+          },
+          "cost_caused_any_failure": false,
+          "raw_signal_any_failure": true
+        }
+      ],
+      "cost_caused_failure_fold_count": 2,
+      "raw_signal_failure_fold_count": 3,
+      "passes_required_thresholds_after_cost": false
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "interpretation": [
+    "If a fold passes at 0 bps but fails at the warning cost, turnover cost caused that fold failure.",
+    "If a fold already fails at 0 bps, the raw micro-tilt signal is insufficient in that fold.",
+    "This report is diagnostic only and does not authorize training or live changes."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "turnover_cost_attribution_ready": true,
+    "shadow_training_ready": false,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

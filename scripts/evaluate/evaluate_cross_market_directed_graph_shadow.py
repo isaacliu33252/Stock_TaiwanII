@@ -209,6 +209,29 @@ def _ols_tstat(x: pd.Series, y: pd.Series) -> tuple[float | None, float | None]:
     return beta, float(beta / se)
 
 
+def _ols_tstat_values(x_values: np.ndarray, y_values: np.ndarray) -> tuple[float | None, float | None]:
+    valid = np.isfinite(x_values) & np.isfinite(y_values)
+    if int(valid.sum()) < 20:
+        return None, None
+    xv = x_values[valid].astype(float)
+    yv = y_values[valid].astype(float)
+    x_mean = float(xv.mean())
+    y_mean = float(yv.mean())
+    x_centered = xv - x_mean
+    ssx = float(np.square(x_centered).sum())
+    if ssx <= 0.0:
+        return None, None
+    beta = float((x_centered * (yv - y_mean)).sum() / ssx)
+    alpha = float(y_mean - beta * x_mean)
+    resid = yv - (alpha + beta * xv)
+    if len(xv) <= 2:
+        return beta, None
+    se = math.sqrt(max(float(np.square(resid).sum()) / (len(xv) - 2), 0.0) / ssx)
+    if se <= 0.0:
+        return beta, None
+    return beta, float(beta / se)
+
+
 def select_directed_edges(
     features: pd.DataFrame,
     outcomes: pd.DataFrame,
@@ -222,12 +245,20 @@ def select_directed_edges(
     rows: list[dict[str, Any]] = []
     target_cols = [col for col in outcomes.columns if col.startswith("target_") and col.endswith("_ret1d_fwd")]
     joined = features.join(outcomes[target_cols], how="inner")
+    joined_values = {
+        col: pd.to_numeric(joined[col], errors="coerce").to_numpy(dtype=float)
+        for col in [*features.columns, *target_cols]
+    }
     for source_col in features.columns:
+        source_values = joined_values[source_col]
         for target_col in target_cols:
+            target_values = joined_values[target_col]
             stats = []
             for end in range(window, len(joined) + 1, step):
-                sample = joined.iloc[end - window : end]
-                beta, tstat = _ols_tstat(sample[source_col], sample[target_col])
+                beta, tstat = _ols_tstat_values(
+                    source_values[end - window : end],
+                    target_values[end - window : end],
+                )
                 if beta is None or tstat is None:
                     continue
                 stats.append({"beta": beta, "tstat": tstat, "selected": abs(tstat) >= tstat_threshold})
@@ -370,6 +401,37 @@ def _metrics_by_condition(
     return out
 
 
+def _prediction_frame_records(
+    dates: list[str],
+    truth: dict[str, list[int]],
+    predictions: dict[str, list[float]],
+    condition_values: dict[str, list[int]],
+    *,
+    no_add_threshold: float = 0.65,
+) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    for i, date in enumerate(dates):
+        reenter_prob = float(predictions["REENTER"][i])
+        no_add_prob = float(predictions["NO_ADD"][i])
+        row: dict[str, Any] = {
+            "date": date,
+            "prob_REENTER": reenter_prob,
+            "prob_NO_ADD": no_add_prob,
+            "label_REENTER": int(truth["REENTER"][i]),
+            "label_NO_ADD": int(truth["NO_ADD"][i]),
+            "no_add_active": bool(no_add_prob >= no_add_threshold and no_add_prob > reenter_prob),
+            "shadow_action": (
+                "NO_ADD"
+                if no_add_prob >= 0.55 and no_add_prob > reenter_prob
+                else "REENTER" if reenter_prob >= 0.55 else "KEEP"
+            ),
+        }
+        for condition, values in condition_values.items():
+            row[condition] = int(values[i])
+        records.append(row)
+    return records
+
+
 def walk_forward_action_models(
     features: pd.DataFrame,
     outcomes: pd.DataFrame,
@@ -434,6 +496,7 @@ def walk_forward_action_models(
         "metrics": metrics,
         "metrics_by_year": _metrics_by_year(dates, truth, predictions),
         "metrics_by_condition": _metrics_by_condition(dates, condition_values, truth, predictions),
+        "prediction_frame": _prediction_frame_records(dates, truth, predictions, condition_values),
         "latest_probabilities": latest,
         "latest_shadow_action": decision,
         "policy": "shadow_only_no_weight_change",
@@ -565,6 +628,7 @@ def walk_forward_graph_action_models(
         "metrics": metrics,
         "metrics_by_year": _metrics_by_year(dates, truth, predictions),
         "metrics_by_condition": _metrics_by_condition(dates, condition_values, truth, predictions),
+        "prediction_frame": _prediction_frame_records(dates, truth, predictions, condition_values),
         "latest_probabilities": latest_probabilities,
         "latest_shadow_action": decision,
         "policy": "shadow_only_no_weight_change",

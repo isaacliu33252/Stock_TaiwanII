@@ -1,5 +1,20 @@
 # FinRL 台股強化學習交易系統
 
+## 專案入口
+
+這個 repository 目前是台股/ETF 研究、回測與每日訊號產出的工作區。為了相容既有工作流程，原本的研究紀錄仍完整保留在下方。
+
+目前建議從這些文件開始：
+
+- 每日操作與常用命令：`docs/OPERATIONS.md`
+- 產出檔與 Git 追蹤政策：`docs/ARTIFACT_POLICY.md`
+- 相容型整理的變更紀錄與原因：`docs/CHANGELOG_20260716_COMPAT_CLEANUP.md`
+
+相容性說明：
+
+- 2026-07-16 的相容型整理沒有移動既有 scripts、reports、model outputs 或 data paths。
+- 根目錄實驗紀錄目前仍保留在本檔案中。未來若要搬移歷史紀錄，應先留下導引或相容說明，避免影響 coworker。
+
 ## 2026-05-09 0056 資料起始日期檢查
 
 新增資料範圍檢查工具：

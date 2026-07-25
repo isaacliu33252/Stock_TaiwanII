@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "a2120_letf_compounding_shadow_scorecard",
-  "generated_at": "2026-07-16T01:57:54+00:00",
+  "generated_at": "2026-07-16T08:50:32+00:00",
   "strategy_id": "A21.20_LETF_COMPOUNDING_REGIME_SHADOW",
   "candidate": {
     "name": "score3_ar0_persist50_rev50__base40_mr0_trend100",
@@ -94,6 +94,7 @@
         "recommended_action": "BLOCKED_BY_HARD_GUARD",
         "production_effect": "none",
         "hard_blockers": [
+          "compounding regime date does not align with execution_plan actual_data_date: 2026-07-16 != 2026-07-15",
           "turnover ratio 59.16% exceeds automatic limit 50.00%"
         ]
       },

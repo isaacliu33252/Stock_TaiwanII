@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_panel_drift_triage",
+  "generated_at": "2026-07-22T23:36:49",
+  "status": "blocked",
+  "policy": "diagnostic_only_no_strategy_change_no_weight_change",
+  "active_allocation_impact": "none",
+  "source_diagnosis": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_diagnosis_20260722.json",
+  "overlap": {
+    "start": "2025-01-02",
+    "end": "2026-06-30",
+    "rows": 359
+  },
+  "summary": {
+    "exceeded_columns": [
+      "ensemble_prob_up",
+      "h20_prob_up",
+      "confidence"
+    ],
+    "trigger_critical_exceeded": [
+      "h20_prob_up",
+      "confidence"
+    ],
+    "source_hypotheses": [
+      "model_set_changed",
+      "panel_method_schema_changed",
+      "external_feature_sensitivity_visible",
+      "horizon_ensemble_or_confidence_blend_check_needed"
+    ],
+    "top_exceed_months": [
+      {
+        "month": "2026-01",
+        "exceed_count": 8
+      },
+      {
+        "month": "2025-03",
+        "exceed_count": 7
+      },
+      {
+        "month": "2025-05",
+        "exceed_count": 5
+      },
+      {
+        "month": "2025-09",
+        "exceed_count": 4
+      },
+      {
+        "month": "2025-06",
+        "exceed_count": 2
+      }
+    ],
+    "next_checks": [
+      "compare baseline/candidate horizon model sets and best-model selections",
+      "rerun or isolate external-feature and no-external panel sensitivity",
+      "inspect horizon ensemble weights/confidence blend around max-drift dates"
+    ]
+  },
+  "columns": [
+    {
+      "column": "ensemble_prob_up",
+      "tier": "diagnostic",
+      "limit": 0.15,
+      "max_abs_delta": 0.24570435280144232,
+      "max_abs_delta_date": "2025-05-09",
+      "signed_delta_at_max": 0.24570435280144232,
+      "direction": "positive",
+      "baseline_value_at_max": 0.6506411381447924,
+      "candidate_value_at_max": 0.8963454909462347,
+      "top_months": [
+        {
+          "month": "2025-03",
+          "exceed_count": 5,
+          "row_count": 21,
+          "mean_abs_delta": 0.09156193186149951,
+          "max_abs_delta": 0.23449296777478212
+        },
+        {
+          "month": "2025-05",
+          "exceed_count": 2,
+          "row_count": 20,
+          "mean_abs_delta": 0.07227656835474686,
+          "max_abs_delta": 0.24570435280144232
+        },
+        {
+          "month": "2025-06",
+          "exceed_count": 2,
+          "row_count": 21,
+          "mean_abs_delta": 0.07085005697216984,
+          "max_abs_delta": 0.21279656121300683
+        }
+      ]
+    },
+    {
+      "column": "h20_prob_up",
+      "tier": "trigger_critical",
+      "limit": 0.15,
+      "max_abs_delta": 0.26368676066031893,
+      "max_abs_delta_date": "2025-09-18",
+      "signed_delta_at_max": -0.26368676066031893,
+      "direction": "negative",
+      "baseline_value_at_max": 0.7280562366136349,
+      "candidate_value_at_max": 0.464369475953316,
+      "top_months": [
+        {
+          "month": "2026-01",
+          "exceed_count": 8,
+          "row_count": 21,
+          "mean_abs_delta": 0.1267998785760525,
+          "max_abs_delta": 0.25124469494560325
+        },
+        {
+          "month": "2025-09",
+          "exceed_count": 4,
+          "row_count": 21,
+          "mean_abs_delta": 0.10750962005456287,
+          "max_abs_delta": 0.26368676066031893
+        },
+        {
+          "month": "2025-08",
+          "exceed_count": 2,
+          "row_count": 21,
+          "mean_abs_delta": 0.07348197511819625,
+          "max_abs_delta": 0.21335376601324457
+        }
+      ]
+    },
+    {
+      "column": "confidence",
+      "tier": "trigger_critical",
+      "limit": 0.28,
+      "max_abs_delta": 0.49140870560288463,
+      "max_abs_delta_date": "2025-05-09",
+      "signed_delta_at_max": 0.49140870560288463,
+      "direction": "positive",
+      "baseline_value_at_max": 0.3012822762895848,
+      "candidate_value_at_max": 0.7926909818924694,
+      "top_months": [
+        {
+          "month": "2025-05",
+          "exceed_count": 3,
+          "row_count": 20,
+          "mean_abs_delta": 0.14445117434013904,
+          "max_abs_delta": 0.49140870560288463
+        },
+        {
+          "month": "2025-03",
+          "exceed_count": 2,
+          "row_count": 21,
+          "mean_abs_delta": 0.1048198189227995,
+          "max_abs_delta": 0.4689859355495643
+        },
+        {
+          "month": "2025-04",
+          "exceed_count": 2,
+          "row_count": 20,
+          "mean_abs_delta": 0.16926473751652185,
+          "max_abs_delta": 0.32937457237586987
+        }
+      ]
+    }
+  ],
+  "decision": {
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

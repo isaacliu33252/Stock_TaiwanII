@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_frozen_panel_walk_forward_audit",
+  "generated_at": "2026-07-21T16:00:01",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "leakage_audit_and_walk_forward_plan_only_no_model_training_no_live_action",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "panel_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_review.json",
+    "expected_panel_sha256": "66aa5e59dbe67b896a8b1b9846091596ad64aa766a5607eecf9e169b998ee0b8",
+    "actual_panel_sha256": "66aa5e59dbe67b896a8b1b9846091596ad64aa766a5607eecf9e169b998ee0b8",
+    "n_splits": 6,
+    "test_size": 126,
+    "train_size": null,
+    "purge": 5,
+    "min_train_size": 756,
+    "forward_horizon": 5,
+    "min_finite_ratio": 0.95
+  },
+  "summary": {
+    "row_count": 16222,
+    "ticker_count": 8,
+    "date_count": 2565,
+    "date_start": "2016-01-04",
+    "date_end": "2026-07-17",
+    "duplicate_date_ticker_rows": 0,
+    "frozen_manifest_hash_count": 1,
+    "finite_ratios": {
+      "downside_deviation": 0.9901368511897424,
+      "drawdown_depth": 1.0,
+      "drawdown_penalty": 1.0,
+      "ema_cross_strength": 0.9876710639871779,
+      "letf_tail_decay_cost": 1.0,
+      "realized_volatility": 0.9901368511897424,
+      "reward_proxy": 1.0,
+      "volatility_scaling_penalty": 0.9901368511897424
+    },
+    "low_finite_columns": {},
+    "fold_count": 6,
+    "purge_covers_forward_horizon": true
+  },
+  "folds": [
+    {
+      "fold": 1,
+      "train_start": "2016-01-04",
+      "train_end": "2023-05-30",
+      "test_start": "2023-06-07",
+      "test_end": "2023-12-07",
+      "train_days": 1804,
+      "test_days": 126,
+      "purge_days": 8,
+      "purge_observations": 5
+    },
+    {
+      "fold": 2,
+      "train_start": "2016-01-04",
+      "train_end": "2023-11-30",
+      "test_start": "2023-12-08",
+      "test_end": "2024-06-19",
+      "train_days": 1930,
+      "test_days": 126,
+      "purge_days": 8,
+      "purge_observations": 5
+    },
+    {
+      "fold": 3,
+      "train_start": "2016-01-04",
+      "train_end": "2024-06-12",
+      "test_start": "2024-06-20",
+      "test_end": "2024-12-23",
+      "train_days": 2056,
+      "test_days": 126,
+      "purge_days": 8,
+      "purge_observations": 5
+    },
+    {
+      "fold": 4,
+      "train_start": "2016-01-04",
+      "train_end": "2024-12-16",
+      "test_start": "2024-12-24",
+      "test_end": "2025-07-04",
+      "train_days": 2182,
+      "test_days": 126,
+      "purge_days": 8,
+      "purge_observations": 5
+    },
+    {
+      "fold": 5,
+      "train_start": "2016-01-04",
+      "train_end": "2025-06-27",
+      "test_start": "2025-07-07",
+      "test_end": "2026-01-06",
+      "train_days": 2308,
+      "test_days": 126,
+      "purge_days": 10,
+      "purge_observations": 5
+    },
+    {
+      "fold": 6,
+      "train_start": "2016-01-04",
+      "train_end": "2025-12-29",
+      "test_start": "2026-01-07",
+      "test_end": "2026-07-17",
+      "train_days": 2434,
+      "test_days": 126,
+      "purge_days": 9,
+      "purge_observations": 5
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "interpretation": [
+    "The split plan uses unique trading dates, then maps each fold to all tickers on those dates.",
+    "The purge gap must be at least the forward label horizon before any OOS shadow experiment.",
+    "This audit prepares validation design only and does not permit PPO training."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "frozen_panel_leakage_audit_passed": true,
+    "purged_walk_forward_plan_ready": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

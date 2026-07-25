@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_research_shadow_blocker_triage",
+  "generated_at": "2026-07-22T08:29:08",
+  "as_of": "2026-07-22",
+  "status": "available_for_manual_exception_review",
+  "policy": "research_shadow_blocker_triage_only_no_training_no_live_action",
+  "sources": {
+    "research_shadow_decision_snapshot": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/research_shadow_decision_snapshot.json",
+      "sha256": "e4741f896342c257a9b9550fdb6bdf12f5d8b38ee12e4814d8c43c4341695ffc",
+      "exists": true
+    },
+    "manual_approval_readiness": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_manual_approval_readiness_review.json",
+      "sha256": "b453b3337af808ab04d1d795c5d19004366d91890ade171288b01d6a4e9d65c6",
+      "exists": true
+    }
+  },
+  "summary": {
+    "research_shadow_status": "blocked",
+    "research_shadow_blocker_count": 14,
+    "live_allocation_blocker_count": 12,
+    "training_governance_blocker_count": 2,
+    "uncategorized_blocker_count": 0,
+    "manual_approval_review_ready": true,
+    "manual_approval_queue_blockers": [
+      "human_exception_record_draft_not_approved"
+    ],
+    "alignment_remediation_resolves_return_red": true,
+    "manual_exception_review_ready": true,
+    "human_exception_record_required": true
+  },
+  "classified_blockers": {
+    "live_allocation_or_broker_action_blockers": [
+      "finstressts_snapshot_blocked",
+      "trigate_vol_memory_blocks_leverage_add",
+      "illiquidity_network_readiness_blocked",
+      "speculative_influence_network_readiness_blocked",
+      "sin_lite_proxy_blocked",
+      "hmm_wj_synthetic_scenario_readiness_blocked",
+      "dynamic_cvar_tail_cost_readiness_blocked",
+      "synthetic_augmentation_validation_readiness_blocked",
+      "intervention_fatigue_risk_budget_readiness_blocked",
+      "letf_tracking_error_effective_fee_readiness_blocked",
+      "asian_etf_tail_analytics_readiness_blocked",
+      "reduced_rank_correlation_readiness_blocked"
+    ],
+    "training_governance_blockers": [
+      "rl_governance_readiness_blocked",
+      "llm_state_reward_interface_readiness_blocked"
+    ],
+    "uncategorized_blockers": []
+  },
+  "manual_exception_scope": {
+    "may_review_exception": true,
+    "may_approve_non_ppo_shadow_queue_without_additional_record": false,
+    "may_run_model_training": false,
+    "may_run_ppo_training": false,
+    "may_emit_actions": false,
+    "may_emit_target_weights": false,
+    "may_change_live_strategy": false,
+    "may_add_00631l": false,
+    "may_open_00632r": false
+  },
+  "required_human_exception_record_fields": [
+    "scope: non-PPO offline shadow experiment only",
+    "allowed universe excluding 00631L.TW and 00632R.TW",
+    "frozen GIFT state/reward manifest hash",
+    "explicit acknowledgement that research_shadow remains blocked for live allocation",
+    "explicit no-live-action/no-target-weight/no-auto-rebalance constraints",
+    "expiry date and reviewer identity"
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "decision": {
+    "manual_exception_review_ready": true,
+    "human_exception_record_required": true,
+    "manual_exception_to_queue_training_allowed": false,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-16T08:51:57Z",
+  "status": "available",
+  "policy": "alert_only_no_auto_weight_change",
+  "as_of": "2026-07-15",
+  "requested_as_of": "latest",
+  "watch_level": "medium",
+  "alert_level": null,
+  "alert_active": false,
+  "category_score": 2,
+  "category_flags": {
+    "options_tail": true,
+    "liquidity_forced_selling": false,
+    "cross_market_shock": true
+  },
+  "condition_details": {
+    "options_tail": {
+      "txo_pcr_volume_z20_ge_1": false,
+      "txo_pcr_oi_z20_ge_1": false,
+      "txo_foreign_put_call_net_oi_chg5_z60_ge_1": true
+    },
+    "liquidity_forced_selling": {
+      "market_margin_forced_repay_z60_ge_1": false,
+      "market_margin_balance_chg20_z252_le_minus_1": false,
+      "securities_lending_0050_volume_z60_ge_1": false
+    },
+    "cross_market_shock": {
+      "vix_level_z60_ge_1": false,
+      "vix_chg5_z60_ge_1": false,
+      "soxx_ret1_le_minus_3pct": false,
+      "soxx_realized_vol20_z60_ge_1": false,
+      "soxx_downside_vol20_z60_ge_1": true,
+      "vix_soxx_realized_vol_gap_z60_ge_1": false,
+      "soxx_atm_iv30_raw_ge_55pct": true,
+      "soxx_put_call_volume_ratio_raw_ge_3": true,
+      "soxx_put_call_oi_ratio_raw_ge_3": false,
+      "soxx_atm_iv30_z252_ge_1": false,
+      "soxx_iv_rank_252_ge_80pct": false,
+      "soxx_iv_minus_rv20_z252_ge_1": false,
+      "soxx_put_call_iv_skew_z252_ge_1": false,
+      "soxx_put_call_volume_ratio_z60_ge_1": false,
+      "soxx_put_call_oi_ratio_z60_ge_1": false,
+      "qqq_ret1_le_minus_2_5pct": false,
+      "us_taiwan_gap1_le_minus_3pct": false,
+      "usdtwd_ret5_z60_ge_1": false
+    }
+  },
+  "active_reason_lines": [
+    "Options tail demand: Foreign TXO put-vs-call net OI increased sharply",
+    "Cross-market price/FX: SOXX 20-day downside volatility is elevated",
+    "Cross-market implied volatility: SOXX 30-day ATM implied volatility is above 55%; SOXX options put/call volume ratio is above 3"
+  ],
+  "manual_review": {
+    "recommended_action": "none",
+    "do_not_auto_sell": true,
+    "do_not_auto_deleverage": true,
+    "no_buy_advisory": false,
+    "rationale": [
+      "Options tail demand: Foreign TXO put-vs-call net OI increased sharply",
+      "Cross-market price/FX: SOXX 20-day downside volatility is elevated",
+      "Cross-market implied volatility: SOXX 30-day ATM implied volatility is above 55%; SOXX options put/call volume ratio is above 3"
+    ]
+  },
+  "persistence": {
+    "previous_as_of": "2026-07-14",
+    "previous_score": 1,
+    "persistent_2of3": false,
+    "immediate_high": false
+  },
+  "latest_source_dates": {
+    "options_tail": "2026-07-16",
+    "liquidity_forced_selling": "2026-07-15",
+    "cross_market_shock": "2026-07-16"
+  },
+  "freshness": {
+    "status": "ok",
+    "stale_family_count": 0,
+    "families": {
+      "options_tail": {
+        "latest_date_at_or_before_as_of": "2026-07-15",
+        "lag_days_vs_as_of": 0,
+        "stale": false
+      },
+      "liquidity_forced_selling": {
+        "latest_date_at_or_before_as_of": "2026-07-15",
+        "lag_days_vs_as_of": 0,
+        "stale": false
+      },
+      "cross_market_shock": {
+        "latest_date_at_or_before_as_of": "2026-07-14",
+        "lag_days_vs_as_of": 1,
+        "stale": false
+      }
+    }
+  },
+  "soxx_iv_health": {
+    "status": "warning",
+    "warnings": [
+      "atm_iv_outside_5pct_200pct"
+    ],
+    "latest_snapshot": {
+      "date": "2026-07-15",
+      "lag_days_vs_generated_date": 1,
+      "spot": 555.27001953125,
+      "expiry": "2026-08-14",
+      "dte": 30.0,
+      "atm_iv": 0.00025413818359375,
+      "put_call_iv_skew": 0.0,
+      "put_call_volume_ratio": 2.6064814814814814,
+      "put_call_oi_ratio": null,
+      "contract_count": 119.0
+    },
+    "as_of_snapshot": {
+      "date": "2026-07-15",
+      "atm_iv": 0.00025413818359375,
+      "put_call_volume_ratio": 2.6064814814814814,
+      "put_call_oi_ratio": null
+    }
+  },
+  "as_of_advancement": {
+    "as_of": "2026-07-15",
+    "latest_available_feature_date": "2026-07-16",
+    "blocked_dates": [
+      {
+        "date": "2026-07-16",
+        "missing_families": [
+          "liquidity_forced_selling"
+        ]
+      }
+    ]
+  },
+  "feature_values": {
+    "txo_pcr_volume_z20": -0.6112374125585367,
+    "txo_pcr_oi_z20": -0.34737196450253904,
+    "txo_foreign_put_call_net_oi_chg5_z60": 1.0394768803538577,
+    "market_margin_forced_repay_z60": -0.63068795275092,
+    "market_margin_balance_chg20_z252": 0.7295377635823695,
+    "securities_lending_0050_volume_z60": -0.2262131661096388,
+    "vix_level_z60": -0.835945296799574,
+    "vix_chg5_z60": 0.10228953122206494,
+    "soxx_ret1": 0.037679929740276785,
+    "soxx_realized_vol20_z60": 0.8596058134086648,
+    "soxx_downside_vol20_z60": 1.1553332124347728,
+    "vix_soxx_realized_vol_gap_z60": -0.9187125821646238,
+    "soxx_atm_iv30_raw": 0.6228065063476562,
+    "soxx_options_dte": 31.0,
+    "soxx_options_contract_count": 88.0,
+    "soxx_put_call_iv_skew_raw": 0.10055441436767587,
+    "soxx_put_call_volume_ratio_raw": 6.82,
+    "soxx_put_call_oi_ratio_raw": 2.8983957219251337,
+    "soxx_atm_iv30_z252": null,
+    "soxx_iv_rank_252": null,
+    "soxx_iv_minus_rv20_z252": null,
+    "soxx_put_call_iv_skew_z252": null,
+    "soxx_put_call_volume_ratio_z60": null,
+    "soxx_put_call_oi_ratio_z60": null,
+    "qqq_ret1": 0.014208892640758863,
+    "us_taiwan_gap1": 0.05183953653053208,
+    "usdtwd_ret5_z60": 0.09917420068522446
+  },
+  "signal_alert": null,
+  "research_context": {
+    "source_script": "scripts/evaluate/evaluate_00631l_multisource_crash_risk.py",
+    "promotion_status": "not_promoted_to_trading_rule",
+    "reason": "2-of-3 ensemble had only local 2018 OOS value and failed broader trading validation."
+  }
+}

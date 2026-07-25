@@ -1,0 +1,645 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_alignment_remediation_review",
+  "generated_at": "2026-07-22T05:50:48",
+  "as_of": "2026-07-22",
+  "status": "available_for_manual_offline_review",
+  "policy": "reward_alignment_remediation_review_only_no_training_no_live_action",
+  "sources": {
+    "diagnostic_refinement": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_diagnostic_refinement_review.json",
+      "sha256": "f1d23ff787b8d73cb5fb3d6aeaa500661525a6042f2509b0d3aa66105e780669",
+      "exists": true
+    },
+    "downside_tail_decay_param_sweep": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_downside_tail_decay_param_sweep.json",
+      "sha256": "755f8d01055e23e049166712a56bdef8c2626c71fa2d03ed0145bbb6e3db26fd",
+      "exists": true
+    }
+  },
+  "summary": {
+    "current_return_alignment": -0.014168007561183181,
+    "current_return_alignment_grade": "red",
+    "current_ppo_training_queue_allowed_by_alignment": false,
+    "evaluated_candidate_count": 50,
+    "acceptable_candidate_count": 50,
+    "best_return_alignment": -0.043489774125321075,
+    "best_return_alignment_grade": "yellow",
+    "best_acceptable_params": {
+      "drawdown_weight": 0.3,
+      "volatility_weight": 0.5,
+      "tail_decay_weight": 0.4,
+      "volatility_scale": 4.0,
+      "tail_decay_scale": 8.0
+    },
+    "best_acceptable_return_alignment": -0.043489774125321075,
+    "best_acceptable_return_alignment_grade": "yellow",
+    "best_acceptable_downside_alignment": -0.09096951620030973,
+    "best_acceptable_downside_grade": "green",
+    "candidate_resolves_return_alignment_red_for_manual_review": true,
+    "candidate_allows_ppo_queue_by_alignment": false
+  },
+  "best_return_candidate": {
+    "params": {
+      "drawdown_weight": 0.3,
+      "volatility_weight": 0.5,
+      "tail_decay_weight": 0.4,
+      "volatility_scale": 4.0,
+      "tail_decay_scale": 8.0
+    },
+    "ticker_scores": [
+      {
+        "ticker": "0050.TW",
+        "return_alignment": -0.04649303451820835,
+        "downside_alignment": -0.05544133616575225,
+        "reward_snr": 1.5113824725972655,
+        "finite_reward_ratio": 1.0
+      },
+      {
+        "ticker": "00631L.TW",
+        "return_alignment": -0.08656428975373011,
+        "downside_alignment": -0.06904349529831888,
+        "reward_snr": 1.554069494812681,
+        "finite_reward_ratio": 1.0
+      },
+      {
+        "ticker": "00632R.TW",
+        "return_alignment": 0.0025880018959752154,
+        "downside_alignment": -0.14842371713685806,
+        "reward_snr": 4.2962407680793815,
+        "finite_reward_ratio": 1.0
+      }
+    ],
+    "mean_return_alignment": -0.043489774125321075,
+    "mean_downside_alignment": -0.09096951620030973,
+    "mean_reward_snr": 2.4538975784964427,
+    "finite_reward_min_ratio": 1.0,
+    "downside_grade": "green",
+    "downside_abs_alignment": 0.09096951620030973,
+    "downside_direction": "negative_reward_vs_positive_downside",
+    "risk_sensitive_useful": true,
+    "ppo_training_queue_candidate": true,
+    "rank_score": 0.11550849198527416,
+    "return_alignment_gate": {
+      "grade": "yellow",
+      "abs_alignment": 0.043489774125321075,
+      "ppo_training_queue_allowed": false,
+      "reason": "alignment_requires_manual_review"
+    }
+  },
+  "best_acceptable_candidate": {
+    "params": {
+      "drawdown_weight": 0.3,
+      "volatility_weight": 0.5,
+      "tail_decay_weight": 0.4,
+      "volatility_scale": 4.0,
+      "tail_decay_scale": 8.0
+    },
+    "ticker_scores": [
+      {
+        "ticker": "0050.TW",
+        "return_alignment": -0.04649303451820835,
+        "downside_alignment": -0.05544133616575225,
+        "reward_snr": 1.5113824725972655,
+        "finite_reward_ratio": 1.0
+      },
+      {
+        "ticker": "00631L.TW",
+        "return_alignment": -0.08656428975373011,
+        "downside_alignment": -0.06904349529831888,
+        "reward_snr": 1.554069494812681,
+        "finite_reward_ratio": 1.0
+      },
+      {
+        "ticker": "00632R.TW",
+        "return_alignment": 0.0025880018959752154,
+        "downside_alignment": -0.14842371713685806,
+        "reward_snr": 4.2962407680793815,
+        "finite_reward_ratio": 1.0
+      }
+    ],
+    "mean_return_alignment": -0.043489774125321075,
+    "mean_downside_alignment": -0.09096951620030973,
+    "mean_reward_snr": 2.4538975784964427,
+    "finite_reward_min_ratio": 1.0,
+    "downside_grade": "green",
+    "downside_abs_alignment": 0.09096951620030973,
+    "downside_direction": "negative_reward_vs_positive_downside",
+    "risk_sensitive_useful": true,
+    "ppo_training_queue_candidate": true,
+    "rank_score": 0.11550849198527416,
+    "return_alignment_gate": {
+      "grade": "yellow",
+      "abs_alignment": 0.043489774125321075,
+      "ppo_training_queue_allowed": false,
+      "reason": "alignment_requires_manual_review"
+    }
+  },
+  "top_candidates": [
+    {
+      "params": {
+        "drawdown_weight": 0.3,
+        "volatility_weight": 0.5,
+        "tail_decay_weight": 0.4,
+        "volatility_scale": 4.0,
+        "tail_decay_scale": 8.0
+      },
+      "ticker_scores": [
+        {
+          "ticker": "0050.TW",
+          "return_alignment": -0.04649303451820835,
+          "downside_alignment": -0.05544133616575225,
+          "reward_snr": 1.5113824725972655,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00631L.TW",
+          "return_alignment": -0.08656428975373011,
+          "downside_alignment": -0.06904349529831888,
+          "reward_snr": 1.554069494812681,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00632R.TW",
+          "return_alignment": 0.0025880018959752154,
+          "downside_alignment": -0.14842371713685806,
+          "reward_snr": 4.2962407680793815,
+          "finite_reward_ratio": 1.0
+        }
+      ],
+      "mean_return_alignment": -0.043489774125321075,
+      "mean_downside_alignment": -0.09096951620030973,
+      "mean_reward_snr": 2.4538975784964427,
+      "finite_reward_min_ratio": 1.0,
+      "downside_grade": "green",
+      "downside_abs_alignment": 0.09096951620030973,
+      "downside_direction": "negative_reward_vs_positive_downside",
+      "risk_sensitive_useful": true,
+      "ppo_training_queue_candidate": true,
+      "rank_score": 0.11550849198527416,
+      "return_alignment_gate": {
+        "grade": "yellow",
+        "abs_alignment": 0.043489774125321075,
+        "ppo_training_queue_allowed": false,
+        "reason": "alignment_requires_manual_review"
+      }
+    },
+    {
+      "params": {
+        "drawdown_weight": 0.3,
+        "volatility_weight": 0.5,
+        "tail_decay_weight": 0.4,
+        "volatility_scale": 4.0,
+        "tail_decay_scale": 6.0
+      },
+      "ticker_scores": [
+        {
+          "ticker": "0050.TW",
+          "return_alignment": -0.045679589279958334,
+          "downside_alignment": -0.056030609790666944,
+          "reward_snr": 1.5342279769197469,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00631L.TW",
+          "return_alignment": -0.08658577753520069,
+          "downside_alignment": -0.06903013386354424,
+          "reward_snr": 1.5832533209377062,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00632R.TW",
+          "return_alignment": 0.00227416411731664,
+          "downside_alignment": -0.14626610181887745,
+          "reward_snr": 4.429244472466049,
+          "finite_reward_ratio": 1.0
+        }
+      ],
+      "mean_return_alignment": -0.04333040089928079,
+      "mean_downside_alignment": -0.09044228182436287,
+      "mean_reward_snr": 2.515575256774501,
+      "finite_reward_min_ratio": 1.0,
+      "downside_grade": "green",
+      "downside_abs_alignment": 0.09044228182436287,
+      "downside_direction": "negative_reward_vs_positive_downside",
+      "risk_sensitive_useful": true,
+      "ppo_training_queue_candidate": true,
+      "rank_score": 0.11559803439210788,
+      "return_alignment_gate": {
+        "grade": "yellow",
+        "abs_alignment": 0.04333040089928079,
+        "ppo_training_queue_allowed": false,
+        "reason": "alignment_requires_manual_review"
+      }
+    },
+    {
+      "params": {
+        "drawdown_weight": 0.3,
+        "volatility_weight": 0.5,
+        "tail_decay_weight": 0.2,
+        "volatility_scale": 4.0,
+        "tail_decay_scale": 8.0
+      },
+      "ticker_scores": [
+        {
+          "ticker": "0050.TW",
+          "return_alignment": -0.04480839604504225,
+          "downside_alignment": -0.05665141417295096,
+          "reward_snr": 1.5583696099643682,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00631L.TW",
+          "return_alignment": -0.08566629729584754,
+          "downside_alignment": -0.07019586933566878,
+          "reward_snr": 1.6262051687127124,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00632R.TW",
+          "return_alignment": 0.0019186670901155786,
+          "downside_alignment": -0.1452771472007558,
+          "reward_snr": 4.600951151502498,
+          "finite_reward_ratio": 1.0
+        }
+      ],
+      "mean_return_alignment": -0.042852008750258075,
+      "mean_downside_alignment": -0.09070814356979184,
+      "mean_reward_snr": 2.5951753100598594,
+      "finite_reward_min_ratio": 1.0,
+      "downside_grade": "green",
+      "downside_abs_alignment": 0.09070814356979184,
+      "downside_direction": "negative_reward_vs_positive_downside",
+      "risk_sensitive_useful": true,
+      "ppo_training_queue_candidate": true,
+      "rank_score": 0.11665989667039044,
+      "return_alignment_gate": {
+        "grade": "yellow",
+        "abs_alignment": 0.042852008750258075,
+        "ppo_training_queue_allowed": false,
+        "reason": "alignment_requires_manual_review"
+      }
+    },
+    {
+      "params": {
+        "drawdown_weight": 0.3,
+        "volatility_weight": 0.5,
+        "tail_decay_weight": 0.4,
+        "volatility_scale": 4.0,
+        "tail_decay_scale": 4.0
+      },
+      "ticker_scores": [
+        {
+          "ticker": "0050.TW",
+          "return_alignment": -0.04480839604504225,
+          "downside_alignment": -0.05665141417295096,
+          "reward_snr": 1.5583696099643682,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00631L.TW",
+          "return_alignment": -0.08566629729584754,
+          "downside_alignment": -0.07019586933566878,
+          "reward_snr": 1.6262051687127124,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00632R.TW",
+          "return_alignment": 0.0019205856090604456,
+          "downside_alignment": -0.14476566411584255,
+          "reward_snr": 4.591552881696985,
+          "finite_reward_ratio": 1.0
+        }
+      ],
+      "mean_return_alignment": -0.042851369243943116,
+      "mean_downside_alignment": -0.0905376492081541,
+      "mean_reward_snr": 2.592042553458022,
+      "finite_reward_min_ratio": 1.0,
+      "downside_grade": "green",
+      "downside_abs_alignment": 0.0905376492081541,
+      "downside_direction": "negative_reward_vs_positive_downside",
+      "risk_sensitive_useful": true,
+      "ppo_training_queue_candidate": true,
+      "rank_score": 0.11645807474273431,
+      "return_alignment_gate": {
+        "grade": "yellow",
+        "abs_alignment": 0.042851369243943116,
+        "ppo_training_queue_allowed": false,
+        "reason": "alignment_requires_manual_review"
+      }
+    },
+    {
+      "params": {
+        "drawdown_weight": 0.3,
+        "volatility_weight": 0.5,
+        "tail_decay_weight": 0.2,
+        "volatility_scale": 4.0,
+        "tail_decay_scale": 6.0
+      },
+      "ticker_scores": [
+        {
+          "ticker": "0050.TW",
+          "return_alignment": -0.04434930712414574,
+          "downside_alignment": -0.05697433460313725,
+          "reward_snr": 1.5709579442818844,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00631L.TW",
+          "return_alignment": -0.08515879298424743,
+          "downside_alignment": -0.0708185506985349,
+          "reward_snr": 1.649260649857958,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00632R.TW",
+          "return_alignment": 0.0017259662517964008,
+          "downside_alignment": -0.1437878742194569,
+          "reward_snr": 4.674835366967271,
+          "finite_reward_ratio": 1.0
+        }
+      ],
+      "mean_return_alignment": -0.04259404461886559,
+      "mean_downside_alignment": -0.09052691984037635,
+      "mean_reward_snr": 2.631684653702371,
+      "finite_reward_min_ratio": 1.0,
+      "downside_grade": "green",
+      "downside_abs_alignment": 0.09052691984037635,
+      "downside_direction": "negative_reward_vs_positive_downside",
+      "risk_sensitive_useful": true,
+      "ppo_training_queue_candidate": true,
+      "rank_score": 0.11684376637740006,
+      "return_alignment_gate": {
+        "grade": "yellow",
+        "abs_alignment": 0.04259404461886559,
+        "ppo_training_queue_allowed": false,
+        "reason": "alignment_requires_manual_review"
+      }
+    },
+    {
+      "params": {
+        "drawdown_weight": 0.3,
+        "volatility_weight": 0.5,
+        "tail_decay_weight": 0.1,
+        "volatility_scale": 4.0,
+        "tail_decay_scale": 8.0
+      },
+      "ticker_scores": [
+        {
+          "ticker": "0050.TW",
+          "return_alignment": -0.04387348220455214,
+          "downside_alignment": -0.057305990013502596,
+          "reward_snr": 1.5839091745681726,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00631L.TW",
+          "return_alignment": -0.08461526403694311,
+          "downside_alignment": -0.0714699261651045,
+          "reward_snr": 1.6734655728103809,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00632R.TW",
+          "return_alignment": 0.0015166149711221667,
+          "downside_alignment": -0.14286068960242793,
+          "reward_snr": 4.7629404072596495,
+          "finite_reward_ratio": 1.0
+        }
+      ],
+      "mean_return_alignment": -0.04232404375679103,
+      "mean_downside_alignment": -0.09054553526034499,
+      "mean_reward_snr": 2.6734383848794008,
+      "finite_reward_min_ratio": 1.0,
+      "downside_grade": "green",
+      "downside_abs_alignment": 0.09054553526034499,
+      "downside_direction": "negative_reward_vs_positive_downside",
+      "risk_sensitive_useful": true,
+      "ppo_training_queue_candidate": true,
+      "rank_score": 0.117279919109139,
+      "return_alignment_gate": {
+        "grade": "yellow",
+        "abs_alignment": 0.04232404375679103,
+        "ppo_training_queue_allowed": false,
+        "reason": "alignment_requires_manual_review"
+      }
+    },
+    {
+      "params": {
+        "drawdown_weight": 0.3,
+        "volatility_weight": 0.5,
+        "tail_decay_weight": 0.2,
+        "volatility_scale": 4.0,
+        "tail_decay_scale": 4.0
+      },
+      "ticker_scores": [
+        {
+          "ticker": "0050.TW",
+          "return_alignment": -0.04387348220455214,
+          "downside_alignment": -0.057305990013502596,
+          "reward_snr": 1.5839091745681726,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00631L.TW",
+          "return_alignment": -0.08461526403694311,
+          "downside_alignment": -0.0714699261651045,
+          "reward_snr": 1.6734655728103809,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00632R.TW",
+          "return_alignment": 0.001518485966112578,
+          "downside_alignment": -0.14263010766674725,
+          "reward_snr": 4.759021845410253,
+          "finite_reward_ratio": 1.0
+        }
+      ],
+      "mean_return_alignment": -0.04232342009179423,
+      "mean_downside_alignment": -0.09046867461511811,
+      "mean_reward_snr": 2.672132197596268,
+      "finite_reward_min_ratio": 1.0,
+      "downside_grade": "green",
+      "downside_abs_alignment": 0.09046867461511811,
+      "downside_direction": "negative_reward_vs_positive_downside",
+      "risk_sensitive_useful": true,
+      "ppo_training_queue_candidate": true,
+      "rank_score": 0.11718999659108079,
+      "return_alignment_gate": {
+        "grade": "yellow",
+        "abs_alignment": 0.04232342009179423,
+        "ppo_training_queue_allowed": false,
+        "reason": "alignment_requires_manual_review"
+      }
+    },
+    {
+      "params": {
+        "drawdown_weight": 0.3,
+        "volatility_weight": 0.5,
+        "tail_decay_weight": 0.1,
+        "volatility_scale": 4.0,
+        "tail_decay_scale": 6.0
+      },
+      "ticker_scores": [
+        {
+          "ticker": "0050.TW",
+          "return_alignment": -0.04362902361865263,
+          "downside_alignment": -0.05747518800388393,
+          "reward_snr": 1.5905252691265304,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00631L.TW",
+          "return_alignment": -0.08432887365104316,
+          "downside_alignment": -0.07180691291218563,
+          "reward_snr": 1.6860236926687018,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00632R.TW",
+          "return_alignment": 0.0014097026669237284,
+          "downside_alignment": -0.14197631996189045,
+          "reward_snr": 4.8012968441359964,
+          "finite_reward_ratio": 1.0
+        }
+      ],
+      "mean_return_alignment": -0.04218273153425736,
+      "mean_downside_alignment": -0.09041947362598668,
+      "mean_reward_snr": 2.6926152686437432,
+      "finite_reward_min_ratio": 1.0,
+      "downside_grade": "green",
+      "downside_abs_alignment": 0.09041947362598668,
+      "downside_direction": "negative_reward_vs_positive_downside",
+      "risk_sensitive_useful": true,
+      "ppo_training_queue_candidate": true,
+      "rank_score": 0.11734562631242411,
+      "return_alignment_gate": {
+        "grade": "yellow",
+        "abs_alignment": 0.04218273153425736,
+        "ppo_training_queue_allowed": false,
+        "reason": "alignment_requires_manual_review"
+      }
+    },
+    {
+      "params": {
+        "drawdown_weight": 0.3,
+        "volatility_weight": 0.5,
+        "tail_decay_weight": 0.1,
+        "volatility_scale": 4.0,
+        "tail_decay_scale": 4.0
+      },
+      "ticker_scores": [
+        {
+          "ticker": "0050.TW",
+          "return_alignment": -0.04338004988659531,
+          "downside_alignment": -0.05764668453048194,
+          "reward_snr": 1.5972374337011623,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00631L.TW",
+          "return_alignment": -0.08403208144605037,
+          "downside_alignment": -0.07215173195762989,
+          "reward_snr": 1.6988994845358587,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00632R.TW",
+          "return_alignment": 0.001297445797820168,
+          "downside_alignment": -0.1412683619943815,
+          "reward_snr": 4.843594153874773,
+          "finite_reward_ratio": 1.0
+        }
+      ],
+      "mean_return_alignment": -0.042038228511608496,
+      "mean_downside_alignment": -0.09035559282749778,
+      "mean_reward_snr": 2.7132436907039312,
+      "finite_reward_min_ratio": 1.0,
+      "downside_grade": "green",
+      "downside_abs_alignment": 0.09035559282749778,
+      "downside_direction": "negative_reward_vs_positive_downside",
+      "risk_sensitive_useful": true,
+      "ppo_training_queue_candidate": true,
+      "rank_score": 0.11748802973453709,
+      "return_alignment_gate": {
+        "grade": "yellow",
+        "abs_alignment": 0.042038228511608496,
+        "ppo_training_queue_allowed": false,
+        "reason": "alignment_requires_manual_review"
+      }
+    },
+    {
+      "params": {
+        "drawdown_weight": 0.3,
+        "volatility_weight": 0.5,
+        "tail_decay_weight": 0.4,
+        "volatility_scale": 3.0,
+        "tail_decay_scale": 8.0
+      },
+      "ticker_scores": [
+        {
+          "ticker": "0050.TW",
+          "return_alignment": -0.03979915639165329,
+          "downside_alignment": -0.05468598608868391,
+          "reward_snr": 1.410513162530271,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00631L.TW",
+          "return_alignment": -0.08243510092833065,
+          "downside_alignment": -0.06692750592178653,
+          "reward_snr": 1.4389142092134328,
+          "finite_reward_ratio": 1.0
+        },
+        {
+          "ticker": "00632R.TW",
+          "return_alignment": 0.0010024257743164956,
+          "downside_alignment": -0.12275138246641945,
+          "reward_snr": 4.351522519347277,
+          "finite_reward_ratio": 1.0
+        }
+      ],
+      "mean_return_alignment": -0.04041061051522248,
+      "mean_downside_alignment": -0.0814549581589633,
+      "mean_reward_snr": 2.4003166303636605,
+      "finite_reward_min_ratio": 1.0,
+      "downside_grade": "green",
+      "downside_abs_alignment": 0.0814549581589633,
+      "downside_direction": "negative_reward_vs_positive_downside",
+      "risk_sensitive_useful": true,
+      "ppo_training_queue_candidate": true,
+      "rank_score": 0.1054581244625999,
+      "return_alignment_gate": {
+        "grade": "yellow",
+        "abs_alignment": 0.04041061051522248,
+        "ppo_training_queue_allowed": false,
+        "reason": "alignment_requires_manual_review"
+      }
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "candidate_requires_manual_review_yellow_alignment"
+  ],
+  "interpretation": [
+    "This review can only suggest a revised offline reward proxy for manual review.",
+    "Yellow alignment does not permit PPO queueing without a separate human waiver.",
+    "No live strategy, target weights, or broker actions are changed by this review."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "candidate_resolves_return_alignment_red_for_manual_review": true,
+    "candidate_allows_ppo_queue_by_alignment": false,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

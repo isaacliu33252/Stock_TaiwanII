@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "report_type": "density_head_tail_risk_promotion_review",
+  "status": "available",
+  "generated_at": "2026-07-17T18:45:48",
+  "policy": "research_only_no_weight_change",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2606.30037.pdf",
+    "title": "Heads, Not Backbones: Output Heads Dominate Architectures on Fat-Tailed Returns"
+  },
+  "promotion_gate": {
+    "candidate": "gmm_residual_head",
+    "baseline": "gaussian_residual_head",
+    "required_windows": [
+      "2018_correction",
+      "2020_covid",
+      "2022_rate_hike_backfill",
+      "2025_2026_main",
+      "2026_recent"
+    ],
+    "rules": {
+      "all_required_windows_available": true,
+      "no_required_crash_window_failure": true,
+      "aggregate_gmm_crps_win_rate_min": 0.7,
+      "aggregate_gmm_q05_win_rate_min": 0.6,
+      "per_window_stable_gmm_win": "gmm_crps_win_rate >= 0.80 and gmm_q05_win_rate >= 0.60"
+    }
+  },
+  "aggregate": {
+    "available_windows": 5,
+    "total_rows": 150,
+    "gmm_crps_win_rate": 0.4,
+    "gmm_q05_win_rate": 0.2,
+    "stable_gmm_windows": [
+      "2022_rate_hike_backfill"
+    ],
+    "crash_failures": [
+      "2018_correction",
+      "2020_covid"
+    ]
+  },
+  "windows": [
+    {
+      "window": "2018_correction",
+      "role": "crash",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/density_head_tail_risk_param_sweep_00631l_2018_correction.json",
+      "available": true,
+      "rows": 30,
+      "win_counts": {
+        "gmm_wins_crps": 0,
+        "gmm_wins_pinball_q05": 0,
+        "gaussian_wins_crps": 30,
+        "gaussian_wins_pinball_q05": 30
+      },
+      "rates": {
+        "gmm_crps_win_rate": 0.0,
+        "gmm_q05_win_rate": 0.0
+      },
+      "stable_gmm_win": false,
+      "best_gmm_candidate": {
+        "gmm_components": 2,
+        "alert_quantile": 0.1,
+        "seed": 137,
+        "gmm_crps": 0.2551158766455044,
+        "gaussian_crps": 0.14165386743529546,
+        "gmm_pinball_q05": 0.05736299825167233,
+        "gaussian_pinball_q05": 0.027921082135050422,
+        "gmm_tail_alert_precision": 0.3684210526315789,
+        "gmm_tail_alert_fpr": 0.10810810810810811
+      }
+    },
+    {
+      "window": "2020_covid",
+      "role": "crash",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/density_head_tail_risk_param_sweep_00631l_2020_covid.json",
+      "available": true,
+      "rows": 30,
+      "win_counts": {
+        "gmm_wins_crps": 0,
+        "gmm_wins_pinball_q05": 0,
+        "gaussian_wins_crps": 30,
+        "gaussian_wins_pinball_q05": 30
+      },
+      "rates": {
+        "gmm_crps_win_rate": 0.0,
+        "gmm_q05_win_rate": 0.0
+      },
+      "stable_gmm_win": false,
+      "best_gmm_candidate": {
+        "gmm_components": 2,
+        "alert_quantile": 0.1,
+        "seed": 137,
+        "gmm_crps": 0.19137895269081256,
+        "gaussian_crps": 0.12503276539483094,
+        "gmm_pinball_q05": 0.05294632606593985,
+        "gaussian_pinball_q05": 0.05220767402339189,
+        "gmm_tail_alert_precision": 0.0,
+        "gmm_tail_alert_fpr": 0.14516129032258066
+      }
+    },
+    {
+      "window": "2022_rate_hike_backfill",
+      "role": "stress",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/density_head_tail_risk_param_sweep_00631l_2022_rate_hike_backfill_20260717.json",
+      "available": true,
+      "rows": 30,
+      "win_counts": {
+        "gmm_wins_crps": 30,
+        "gmm_wins_pinball_q05": 24,
+        "gaussian_wins_crps": 0,
+        "gaussian_wins_pinball_q05": 6
+      },
+      "rates": {
+        "gmm_crps_win_rate": 1.0,
+        "gmm_q05_win_rate": 0.8
+      },
+      "stable_gmm_win": true,
+      "best_gmm_candidate": {
+        "gmm_components": 2,
+        "alert_quantile": 0.1,
+        "seed": 42,
+        "gmm_crps": 0.15644288307371151,
+        "gaussian_crps": 0.22257384667977084,
+        "gmm_pinball_q05": 0.06947965554417482,
+        "gaussian_pinball_q05": 0.11794967447411588,
+        "gmm_tail_alert_precision": 0.8571428571428571,
+        "gmm_tail_alert_fpr": 0.06666666666666667
+      }
+    },
+    {
+      "window": "2025_2026_main",
+      "role": "main",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/density_head_tail_risk_param_sweep_00631l_20250102_20260716.json",
+      "available": true,
+      "rows": 30,
+      "win_counts": {
+        "gmm_wins_crps": 0,
+        "gmm_wins_pinball_q05": 0,
+        "gaussian_wins_crps": 30,
+        "gaussian_wins_pinball_q05": 30
+      },
+      "rates": {
+        "gmm_crps_win_rate": 0.0,
+        "gmm_q05_win_rate": 0.0
+      },
+      "stable_gmm_win": false,
+      "best_gmm_candidate": {
+        "gmm_components": 2,
+        "alert_quantile": 0.1,
+        "seed": 42,
+        "gmm_crps": 0.13413558311578175,
+        "gaussian_crps": 0.12322027847131652,
+        "gmm_pinball_q05": 0.02939624676278917,
+        "gaussian_pinball_q05": 0.027841527479079094,
+        "gmm_tail_alert_precision": 0.7142857142857143,
+        "gmm_tail_alert_fpr": 0.04020100502512563
+      }
+    },
+    {
+      "window": "2026_recent",
+      "role": "recent",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/density_head_tail_risk_param_sweep_00631l_2026_recent.json",
+      "available": true,
+      "rows": 30,
+      "win_counts": {
+        "gmm_wins_crps": 30,
+        "gmm_wins_pinball_q05": 6,
+        "gaussian_wins_crps": 0,
+        "gaussian_wins_pinball_q05": 0
+      },
+      "rates": {
+        "gmm_crps_win_rate": 1.0,
+        "gmm_q05_win_rate": 0.2
+      },
+      "stable_gmm_win": false,
+      "best_gmm_candidate": {
+        "gmm_components": 2,
+        "alert_quantile": 0.1,
+        "seed": 42,
+        "gmm_crps": 0.08931431730019777,
+        "gaussian_crps": 0.18921341653722942,
+        "gmm_pinball_q05": 0.008849029564272252,
+        "gaussian_pinball_q05": 0.017237108711751922,
+        "gmm_tail_alert_precision": 1.0,
+        "gmm_tail_alert_fpr": 0.0
+      }
+    }
+  ],
+  "decision": {
+    "promote_to_live": false,
+    "promote_to_no_add_guard": false,
+    "allow_auto_weight_change": false,
+    "allow_00631l_auto_add": false,
+    "recommended_research_baseline": "gaussian_residual_head",
+    "summary": "Do not promote GMM: it improved 2022 backfill and 2026 recent, but failed required 2018/2020 crash-window stability.",
+    "blockers": [
+      "gmm_failed_required_crash_windows",
+      "aggregate_gmm_crps_win_rate_below_70pct",
+      "aggregate_gmm_q05_win_rate_below_60pct"
+    ]
+  }
+}

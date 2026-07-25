@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_deep_hedging_overlay_review",
+  "status": "available",
+  "generated_at": "2026-07-17T20:05:16",
+  "policy": "research_review_only_no_weight_change",
+  "active_allocation_impact": "none",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2512.12420.pdf",
+    "title": "Deep Hedging with Reinforcement Learning: A Practical Framework for Option Risk Management",
+    "imported_concepts": [
+      "cost_aware_overlay_reward",
+      "position_limits",
+      "rebalance_cadence_review",
+      "option_surface_and_macro_state_features",
+      "deterministic_replay_and_monitoring",
+      "overlay_as_risk_management_sleeve_not_alpha_claim"
+    ],
+    "not_imported": [
+      "actor_critic_rl_policy",
+      "SPX_SPY_specific_trained_agent",
+      "automatic_hedge_execution"
+    ]
+  },
+  "paper_evidence_summary": {
+    "final_test_sharpe": 0.502,
+    "selected_rebalance_every_days": 25,
+    "selected_slippage_bps": 8,
+    "transaction_cost_bps_per_abs_delta_position": 10,
+    "position_limit": 2.0,
+    "authors_limitations": [
+      "confidence_intervals_overlap_long_spy_benchmark",
+      "daily_bars_ignore_intraday_inventory_and_execution_costs",
+      "formal_model_selection_left_for_future_work"
+    ]
+  },
+  "group_a_plus_mapping": {
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "requested_as_of_date": "2026-07-20",
+    "actual_data_date": "2026-07-17",
+    "execution_regime": "golden1",
+    "market_state": {
+      "state": "bull_pullback_deep",
+      "bucket": "bull_pullback",
+      "label_zh": "多頭深回檔",
+      "allocation_bias": "0050 core, keep cash buffer",
+      "risk_level": "medium_high",
+      "inputs": {
+        "execution_regime": "golden1",
+        "ma_gap": 0.09195184809533363,
+        "drawdown": -0.09896536076465001,
+        "exit_momentum_5d": -0.053402659384753526,
+        "total_risk_score": 8,
+        "tail_risk_score": 1,
+        "signal_alignment": "wide_divergence",
+        "dominant_direction": "bullish"
+      },
+      "reason": "execution_regime=golden1; ma_gap=0.0920; drawdown=-0.0990; exit_momentum_5d=-0.0534; total_risk_score=8; tail_risk_score=1; signal_alignment=wide_divergence; dominant_direction=bullish"
+    },
+    "target_weights": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.2,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.30000000000000004
+    },
+    "00631l_overlay_weight": 0.2,
+    "paper_style_overlay_cap_reference": 0.2,
+    "state_features_available": {
+      "total_risk_score": 8,
+      "tail_risk_score": 1,
+      "drawdown": -0.09896536076465001,
+      "txo_foreign_put_call_net_oi_chg5_z60": 0.033123732366347844,
+      "tx_foreign_net_oi_z60": -1.5623318980576892,
+      "usdtwd_ret5_z60": -0.3627818544769754
+    },
+    "option_state_missing": [
+      "txo_pcr_volume_z20",
+      "txo_pcr_oi_z20",
+      "soxx_put_call_iv_skew_z252",
+      "soxx_put_call_volume_ratio_z60",
+      "soxx_put_call_oi_ratio_z60"
+    ]
+  },
+  "cross_checks": {
+    "live_signal_execution_allowed": false,
+    "rebalance_review": {
+      "auto_rebalance_allowed": false,
+      "allow_00631l_add": false,
+      "target_weight_change_allowed": false
+    },
+    "heterogeneous_vol_level": "high",
+    "density_promotion": {
+      "promote_to_live": false,
+      "recommended_research_baseline": "gaussian_residual_head",
+      "blockers": [
+        "gmm_failed_required_crash_windows",
+        "aggregate_gmm_crps_win_rate_below_70pct",
+        "aggregate_gmm_q05_win_rate_below_60pct"
+      ]
+    },
+    "cvar_tail_risk": {
+      "best_strategy_by_starr95": "0050_only",
+      "golden1_starr95": 17.339408036642002,
+      "golden1_max_drawdown": -0.25924564731487054
+    }
+  },
+  "overlay_review": {
+    "allow_overlay_increase": false,
+    "allow_00631l_auto_add": false,
+    "allow_deep_hedging_rl_import": false,
+    "suggested_rebalance_cadence_days_if_researched": 20,
+    "cost_stress_required": true,
+    "position_limit_required": true,
+    "deterministic_replay_required": true,
+    "monitoring_required": [
+      "rolling_sharpe",
+      "turnover",
+      "realized_cost_per_weight_change",
+      "option_state_coverage",
+      "policy_drift_vs_rule_baseline"
+    ]
+  },
+  "blocking_reasons": [
+    "live_signal_execution_not_allowed",
+    "option_surface_state_incomplete",
+    "medium_high_or_high_risk_context",
+    "rebalance_review_disallows_00631l_add"
+  ],
+  "warning_reasons": [
+    "density_head_gmm_not_promoted",
+    "cvar_ranking_does_not_prefer_golden1_proxy"
+  ],
+  "decision": {
+    "summary": "Import governance ideas only. Do not import the RL actor or change GroupA+ weights; current stale/incomplete option state and high-risk context block any 00631L overlay increase.",
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "manual_review_required": true,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal_20260720_estimate.json",
+    "rebalance_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rebalance_review_20260720.json",
+    "heterogeneous_vol_regime_advisory": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/heterogeneous_vol_regime_advisory.json",
+    "cvar_tail_risk_diagnostic": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/cvar_tail_risk_diagnostic.json",
+    "density_head_tail_risk_promotion_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/density_head_tail_risk_promotion_review.json"
+  }
+}

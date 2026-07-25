@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_shadow_training_request_package",
+  "generated_at": "2026-07-21T22:49:16",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_review",
+  "policy": "manual_shadow_training_request_package_no_training_no_live_action",
+  "sources": {
+    "design_review": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_shadow_model_design_review.json",
+      "sha256": "c709421ee2c6bcfa9a947f8c531c89e9a114f44d922466badfbcc2a5a30e9175",
+      "exists": true
+    },
+    "training_readiness": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_shadow_training_readiness_review.json",
+      "sha256": "b1ae1ebeb8157ccd0fc373c4a9ba9d77637650c8c59ab56cb43c7e73d93dc557",
+      "exists": true
+    },
+    "regime_filtered_micro_tilt": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_regime_filtered_micro_tilt_shadow_backtest.json",
+      "sha256": "9ef92167cee7a2b7475755922fc44f0e28e0182c21ececcbc285556cc3fbbe13",
+      "exists": true
+    },
+    "research_shadow_decision_snapshot": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/research_shadow_decision_snapshot.json",
+      "sha256": "92364f5c03ff0b35141e035495e122bc14e6003ee629021a64acdb314bd8043c",
+      "exists": true
+    }
+  },
+  "request_boundary": {
+    "request_id": "group_a_plus_gift_downside_tail_decay_v2_tuned_20260721_manual_shadow_training_request",
+    "design_id": "group_a_plus_gift_downside_tail_decay_v2_tuned_20260721_shadow_model_design",
+    "freeze_id": "group_a_plus_gift_downside_tail_decay_v2_tuned_20260721",
+    "frozen_manifest_sha256": "a1813b27cfea9ef23df3fb4a7789cbc8855eb416e1f98c89fef88dceb2a833ac",
+    "proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+    "selected_label": "v2_tuned_downside_tail_decay",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "state_columns": [
+      "downside_deviation",
+      "realized_volatility",
+      "drawdown_depth",
+      "ema_cross_strength"
+    ],
+    "reward_columns": [
+      "drawdown_penalty",
+      "volatility_scaling_penalty",
+      "letf_tail_decay_cost",
+      "reward_proxy"
+    ],
+    "allowed_shadow_model_family": "tabular_or_sequence_shadow_model_design_only",
+    "allowed_training_label": "future_return_or_downside_proxy_for_offline_design",
+    "recommended_regime_filter": {
+      "regime_rule": "trend_above_train_median",
+      "high_score": 1.03,
+      "cost_bps": 5.0,
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 5,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 4,
+        "mean_delta_final_value": 0.00030346868071762234,
+        "mean_delta_sharpe_ratio": 0.004525255442848708,
+        "mean_delta_max_drawdown": -1.4211215278521946e-05
+      },
+      "rank_score": 106.03751548694456,
+      "mean_active_day_ratio": 0.5132275132275133
+    },
+    "validation_plan": {
+      "walk_forward_required": true,
+      "purge_required": true,
+      "regime_filter_required": true,
+      "required_cost_bps": [
+        0.0,
+        2.0,
+        5.0
+      ],
+      "minimum_positive_final_folds": 4,
+      "minimum_positive_sharpe_folds": 4,
+      "minimum_non_worse_drawdown_folds": 3,
+      "must_compare_to_equal_weight": true,
+      "must_report_turnover_and_cost_drag": true,
+      "must_exclude_live_blocked_tickers": [
+        "00631L.TW",
+        "00632R.TW"
+      ]
+    },
+    "hard_constraints": {
+      "no_model_training_in_this_step": true,
+      "no_ppo_training": true,
+      "no_live_signal_output": true,
+      "no_target_weight_output": true,
+      "no_auto_rebalance": true,
+      "no_00631l_add": true,
+      "no_00632r_open": true,
+      "no_training_in_this_package": true,
+      "separate_training_approval_required": true
+    }
+  },
+  "summary": {
+    "shadow_training_ready": true,
+    "research_shadow_status": "blocked",
+    "research_shadow_blocking_reasons_count": 14,
+    "regime_filter_resolves_5bps_warning": true,
+    "recommended_regime_rule": "trend_above_train_median",
+    "recommended_high_score": 1.03,
+    "recommended_cost_bps": 5.0,
+    "package_ready_for_manual_review": true
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "interpretation": [
+    "This package is suitable only for manual review of a future shadow training request.",
+    "It does not train a model, enqueue PPO, emit target weights, or change live strategy state.",
+    "A separate explicit approval artifact is required before any training command may be run."
+  ],
+  "decision": {
+    "available_for_manual_review": true,
+    "shadow_training_request_package_ready": true,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

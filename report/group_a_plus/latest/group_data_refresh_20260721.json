@@ -1,0 +1,362 @@
+{
+  "status": "refreshed",
+  "precheck": {
+    "group": "both",
+    "target_date": "2026-07-21",
+    "group_a_start": "2020-01-01",
+    "group_b_start": "2020-01-01",
+    "market_starts": [
+      "2020-01-01",
+      "2024-01-01"
+    ],
+    "stock_cache_status": [
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/0050_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": false,
+        "min_date": null,
+        "max_date": null,
+        "has_target_date": false,
+        "rows": 0
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00631L_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": false,
+        "min_date": null,
+        "max_date": null,
+        "has_target_date": false,
+        "rows": 0
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00632R_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": false,
+        "min_date": null,
+        "max_date": null,
+        "has_target_date": false,
+        "rows": 0
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/0056_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": false,
+        "min_date": null,
+        "max_date": null,
+        "has_target_date": false,
+        "rows": 0
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00646_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": false,
+        "min_date": null,
+        "max_date": null,
+        "has_target_date": false,
+        "rows": 0
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00679B_TWO_20200101_20260721_1d_raw_v1.parquet",
+        "exists": false,
+        "min_date": null,
+        "max_date": null,
+        "has_target_date": false,
+        "rows": 0
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00713_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": false,
+        "min_date": null,
+        "max_date": null,
+        "has_target_date": false,
+        "rows": 0
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00751B_TWO_20200101_20260721_1d_raw_v1.parquet",
+        "exists": false,
+        "min_date": null,
+        "max_date": null,
+        "has_target_date": false,
+        "rows": 0
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00878_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": false,
+        "min_date": null,
+        "max_date": null,
+        "has_target_date": false,
+        "rows": 0
+      }
+    ],
+    "market_cache_status": [
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/TWII_DJI_20200101_20260721_1d_market_v3.parquet",
+        "exists": false,
+        "min_date": null,
+        "max_date": null,
+        "has_target_date": false,
+        "rows": 0
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/TWII_DJI_20240101_20260721_1d_market_v3.parquet",
+        "exists": false,
+        "min_date": null,
+        "max_date": null,
+        "has_target_date": false,
+        "rows": 0
+      }
+    ],
+    "db_status": [
+      {
+        "ticker": "0050.TW",
+        "min_date": "2009-01-02",
+        "max_date": "2026-07-17",
+        "has_target_date": false,
+        "rows": 3304
+      },
+      {
+        "ticker": "0056.TW",
+        "min_date": "2020-01-02",
+        "max_date": "2026-07-17",
+        "has_target_date": false,
+        "rows": 1587
+      },
+      {
+        "ticker": "00631L.TW",
+        "min_date": "2015-01-05",
+        "max_date": "2026-07-17",
+        "has_target_date": false,
+        "rows": 2810
+      },
+      {
+        "ticker": "00632R.TW",
+        "min_date": "2015-01-05",
+        "max_date": "2026-07-17",
+        "has_target_date": false,
+        "rows": 2810
+      },
+      {
+        "ticker": "00646.TW",
+        "min_date": "2020-01-02",
+        "max_date": "2026-07-17",
+        "has_target_date": false,
+        "rows": 1587
+      },
+      {
+        "ticker": "00679B.TWO",
+        "min_date": "2017-01-11",
+        "max_date": "2026-07-17",
+        "has_target_date": false,
+        "rows": 2309
+      },
+      {
+        "ticker": "00713.TW",
+        "min_date": "2020-01-02",
+        "max_date": "2026-07-17",
+        "has_target_date": false,
+        "rows": 1587
+      },
+      {
+        "ticker": "00751B.TWO",
+        "min_date": "2020-01-02",
+        "max_date": "2026-07-17",
+        "has_target_date": false,
+        "rows": 1587
+      },
+      {
+        "ticker": "00878.TW",
+        "min_date": "2020-07-10",
+        "max_date": "2026-07-17",
+        "has_target_date": false,
+        "rows": 1464
+      }
+    ]
+  },
+  "refresh": {
+    "group": "both",
+    "target_date": "2026-07-21",
+    "group_a_start": "2020-01-01",
+    "group_b_start": "2020-01-01",
+    "market_starts": [
+      "2020-01-01",
+      "2024-01-01"
+    ],
+    "strict": true,
+    "copied_paths": [
+      "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/0050_TW_20200101_20260721_1d_raw_v1.parquet",
+      "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00631L_TW_20200101_20260721_1d_raw_v1.parquet",
+      "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00632R_TW_20200101_20260721_1d_raw_v1.parquet",
+      "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/0056_TW_20200101_20260721_1d_raw_v1.parquet",
+      "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00646_TW_20200101_20260721_1d_raw_v1.parquet",
+      "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00679B_TWO_20200101_20260721_1d_raw_v1.parquet",
+      "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00713_TW_20200101_20260721_1d_raw_v1.parquet",
+      "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00751B_TWO_20200101_20260721_1d_raw_v1.parquet",
+      "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/00878_TW_20200101_20260721_1d_raw_v1.parquet",
+      "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/TWII_DJI_20200101_20260721_1d_market_v3.parquet",
+      "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/portfolio_cache/TWII_DJI_20240101_20260721_1d_market_v3.parquet"
+    ],
+    "raw_cache_status": {
+      "0050.TW": {
+        "path": "/tmp/group_data_refresh_6zbeqxhc/0050_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": true,
+        "min_date": "2020-01-02 00:00:00",
+        "max_date": "2026-07-21 00:00:00",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      "00631L.TW": {
+        "path": "/tmp/group_data_refresh_6zbeqxhc/00631L_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": true,
+        "min_date": "2020-01-02 00:00:00",
+        "max_date": "2026-07-21 00:00:00",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      "00632R.TW": {
+        "path": "/tmp/group_data_refresh_6zbeqxhc/00632R_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": true,
+        "min_date": "2020-01-02 00:00:00",
+        "max_date": "2026-07-21 00:00:00",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      "0056.TW": {
+        "path": "/tmp/group_data_refresh_6zbeqxhc/0056_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": true,
+        "min_date": "2020-01-02 00:00:00",
+        "max_date": "2026-07-21 00:00:00",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      "00646.TW": {
+        "path": "/tmp/group_data_refresh_6zbeqxhc/00646_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": true,
+        "min_date": "2020-01-02 00:00:00",
+        "max_date": "2026-07-21 00:00:00",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      "00679B.TWO": {
+        "path": "/tmp/group_data_refresh_6zbeqxhc/00679B_TWO_20200101_20260721_1d_raw_v1.parquet",
+        "exists": true,
+        "min_date": "2020-01-02 00:00:00",
+        "max_date": "2026-07-21 00:00:00",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      "00713.TW": {
+        "path": "/tmp/group_data_refresh_6zbeqxhc/00713_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": true,
+        "min_date": "2020-01-02 00:00:00",
+        "max_date": "2026-07-21 00:00:00",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      "00751B.TWO": {
+        "path": "/tmp/group_data_refresh_6zbeqxhc/00751B_TWO_20200101_20260721_1d_raw_v1.parquet",
+        "exists": true,
+        "min_date": "2020-01-02 00:00:00",
+        "max_date": "2026-07-21 00:00:00",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      "00878.TW": {
+        "path": "/tmp/group_data_refresh_6zbeqxhc/00878_TW_20200101_20260721_1d_raw_v1.parquet",
+        "exists": true,
+        "min_date": "2020-07-10 00:00:00",
+        "max_date": "2026-07-21 00:00:00",
+        "has_target_date": true,
+        "rows": 1466
+      }
+    },
+    "market_cache_status": [
+      {
+        "path": "/tmp/group_data_refresh_6zbeqxhc/TWII_DJI_20200101_20260721_1d_market_v3.parquet",
+        "exists": true,
+        "min_date": "2020-01-02 00:00:00",
+        "max_date": "2026-07-21 00:00:00",
+        "has_target_date": true,
+        "rows": 1588
+      },
+      {
+        "path": "/tmp/group_data_refresh_6zbeqxhc/TWII_DJI_20240101_20260721_1d_market_v3.parquet",
+        "exists": true,
+        "min_date": "2024-01-02 00:00:00",
+        "max_date": "2026-07-21 00:00:00",
+        "has_target_date": true,
+        "rows": 615
+      }
+    ],
+    "db_rows_written": {
+      "0050.TW": 1589,
+      "00631L.TW": 1589,
+      "00632R.TW": 1589,
+      "0056.TW": 1589,
+      "00646.TW": 1589,
+      "00679B.TWO": 1589,
+      "00713.TW": 1589,
+      "00751B.TWO": 1589,
+      "00878.TW": 1466
+    },
+    "db_status": [
+      {
+        "ticker": "0050.TW",
+        "min_date": "2009-01-02",
+        "max_date": "2026-07-21",
+        "has_target_date": true,
+        "rows": 3306
+      },
+      {
+        "ticker": "0056.TW",
+        "min_date": "2020-01-02",
+        "max_date": "2026-07-21",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      {
+        "ticker": "00631L.TW",
+        "min_date": "2015-01-05",
+        "max_date": "2026-07-21",
+        "has_target_date": true,
+        "rows": 2812
+      },
+      {
+        "ticker": "00632R.TW",
+        "min_date": "2015-01-05",
+        "max_date": "2026-07-21",
+        "has_target_date": true,
+        "rows": 2812
+      },
+      {
+        "ticker": "00646.TW",
+        "min_date": "2020-01-02",
+        "max_date": "2026-07-21",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      {
+        "ticker": "00679B.TWO",
+        "min_date": "2017-01-11",
+        "max_date": "2026-07-21",
+        "has_target_date": true,
+        "rows": 2311
+      },
+      {
+        "ticker": "00713.TW",
+        "min_date": "2020-01-02",
+        "max_date": "2026-07-21",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      {
+        "ticker": "00751B.TWO",
+        "min_date": "2020-01-02",
+        "max_date": "2026-07-21",
+        "has_target_date": true,
+        "rows": 1589
+      },
+      {
+        "ticker": "00878.TW",
+        "min_date": "2020-07-10",
+        "max_date": "2026-07-21",
+        "has_target_date": true,
+        "rows": 1466
+      }
+    ]
+  }
+}

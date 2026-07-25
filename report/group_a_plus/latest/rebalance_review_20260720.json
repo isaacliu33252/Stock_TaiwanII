@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_rebalance_review",
+  "status": "available",
+  "generated_at": "2026-07-17T18:06:34",
+  "policy": "manual_review_only_no_weight_change",
+  "active_allocation_impact": "none",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2606.30997.pdf",
+    "imported_concepts": [
+      "active_cash_buffer",
+      "allocation_driven_rebalance_threshold",
+      "redeployment_aware_turnover_review",
+      "objective_conditioned_review",
+      "preview_before_apply"
+    ]
+  },
+  "dates": {
+    "requested_as_of_date": "2026-07-20",
+    "actual_data_date": "2026-07-17",
+    "execution_plan_actual_data_date": "2026-07-15",
+    "execution_plan_stale_vs_live": true
+  },
+  "strategy": {
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "strategy_status": "active",
+    "execution_regime": "golden1",
+    "base_regime": "golden1",
+    "market_state": {
+      "state": "bull_pullback_deep",
+      "bucket": "bull_pullback",
+      "label_zh": "多頭深回檔",
+      "allocation_bias": "0050 core, keep cash buffer",
+      "risk_level": "medium_high",
+      "inputs": {
+        "execution_regime": "golden1",
+        "ma_gap": 0.09195184809533363,
+        "drawdown": -0.09896536076465001,
+        "exit_momentum_5d": -0.053402659384753526,
+        "total_risk_score": 8,
+        "tail_risk_score": 1,
+        "signal_alignment": "wide_divergence",
+        "dominant_direction": "bullish"
+      },
+      "reason": "execution_regime=golden1; ma_gap=0.0920; drawdown=-0.0990; exit_momentum_5d=-0.0534; total_risk_score=8; tail_risk_score=1; signal_alignment=wide_divergence; dominant_direction=bullish"
+    }
+  },
+  "objective": {
+    "primary": "capital_preservation_with_core_0050_exposure",
+    "secondary": "avoid_00631l_auto_add",
+    "rationale": "Medium-high risk pullback, stale required source, NCF date mismatch, and high heterogeneous volatility advisory."
+  },
+  "weights": {
+    "target_weights": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.2,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.30000000000000004
+    },
+    "golden1_reference_weights": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.2,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.30000000000000004
+    },
+    "last_known_current_weights_from_execution_plan": {
+      "0050.TW": 0.5161079156488719,
+      "00631L.TW": 0.0,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.48389208435112807,
+      "cash": 0.0
+    },
+    "current_weights_reliable_for_20260720": false,
+    "cash_buffer_policy": "active_risk_buffer",
+    "cash_buffer_target": 0.30000000000000004,
+    "cash_buffer_actual_reference": 0.0,
+    "cash_buffer_gap_reference": 0.30000000000000004
+  },
+  "rebalance_review": {
+    "rebalance_threshold": 0.05,
+    "max_weight_drift_reference": 0.48389208435112807,
+    "rebalance_needed_by_drift_reference": true,
+    "rebalance_allowed_by_freshness": false,
+    "allow_00631l_add": false,
+    "manual_review_required": true,
+    "auto_rebalance_allowed": false,
+    "preview_before_apply": true,
+    "apply_disabled_until_data_fresh_and_user_confirmed": true
+  },
+  "risk_and_freshness": {
+    "execution_allowed_from_live_signal": false,
+    "execution_guard_reasons": [
+      "required strategy sources are stale or missing: ['institutional_0050']"
+    ],
+    "execution_warning_reasons": [
+      "soft strategy sources are stale or missing: ['securities_lending_0050']",
+      "NCF live overlay skipped: date mismatch {'00631L.TW': '2026-07-16', '00632R.TW': '2026-07-16'}, actual 2026-07-17"
+    ],
+    "heterogeneous_vol_advisory": {
+      "status": "available",
+      "level": "high",
+      "suggested_review": "avoid_adding_00631l_until_manual_review",
+      "allow_auto_weight_change": false,
+      "param_sweep_best": {
+        "signal": "sparse_crisis_active",
+        "vol_window": 20,
+        "percentile_window": 252,
+        "hetero_source_min_count": 3,
+        "crisis_source_min_count": 3,
+        "active_days": 61,
+        "latest_active": true,
+        "h10_precision": 0.5901639344262295,
+        "h10_recall": 0.26277372262773724,
+        "h10_fpr": 0.10638297872340426,
+        "score": 0.5728247993953863
+      }
+    }
+  },
+  "blocking_reasons": [
+    "required strategy sources are stale or missing: ['institutional_0050']",
+    "execution_plan actual_data_date 2026-07-15 does not match live actual_data_date 2026-07-17",
+    "heterogeneous_vol_regime_advisory recommends avoiding 00631L add until manual review"
+  ],
+  "warning_reasons": [
+    "soft strategy sources are stale or missing: ['securities_lending_0050']",
+    "NCF live overlay skipped: date mismatch {'00631L.TW': '2026-07-16', '00632R.TW': '2026-07-16'}, actual 2026-07-17"
+  ],
+  "decision": {
+    "summary": "Do not auto-rebalance for 2026-07-20. Keep target weights as reference only; require manual review before any execution.",
+    "auto_rebalance_allowed": false,
+    "manual_review_required": true,
+    "allow_00631l_add": false,
+    "target_weight_change_allowed": false
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal_20260720_estimate.json",
+    "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+    "heterogeneous_vol_regime_advisory": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/heterogeneous_vol_regime_advisory.json",
+    "golden1_release": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_release_Golden1_0531.json"
+  }
+}

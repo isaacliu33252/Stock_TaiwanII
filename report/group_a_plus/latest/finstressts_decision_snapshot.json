@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_finstressts_decision_snapshot",
+  "generated_at": "2026-07-21T22:38:20",
+  "policy": "research_only_summary_no_weight_change",
+  "status": "blocked",
+  "source_paper": "C:/Users/isaac/Downloads/2606.03184.pdf",
+  "summary": {
+    "readiness_status": "blocked",
+    "blocked_mechanisms": [
+      "heavy_tailed_shocks",
+      "self_exciting_jumps",
+      "zero_inflated_sparse_jumps",
+      "execution_under_stress"
+    ],
+    "reference_loses_to_no_00631l_scenarios": 5,
+    "reference_tail_failure_scenarios": 4,
+    "baseline_best_shadow_candidate": "combined_vol_trend_gate",
+    "baseline_wins_vs_no_00631l": {
+      "reference_20260720": 0,
+      "reduced_leverage": 0,
+      "rolling_vol_gate": 0,
+      "trend_gate": 0,
+      "combined_vol_trend_gate": 0
+    },
+    "baseline_tail_failures": {
+      "reference_20260720": 4,
+      "reduced_leverage": 4,
+      "rolling_vol_gate": 2,
+      "trend_gate": 1,
+      "combined_vol_trend_gate": 1
+    }
+  },
+  "blocking_reasons": [
+    "readiness_review_blocked",
+    "reference_loses_to_no_00631l_under_counterfactuals",
+    "reference_tail_failures_under_counterfactuals",
+    "no_baseline_beats_no_00631l"
+  ],
+  "warning_reasons": [
+    "best_shadow_candidate:combined_vol_trend_gate"
+  ],
+  "decision": {
+    "summary": "FinStressTS consolidated snapshot blocks promotion: readiness is blocked, the 7/20 reference loses to no-00631L under stress, and no tested baseline beats no-00631L on the strict ES95 + max-drawdown rule.",
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_readiness_review.json",
+    "counterfactual": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_counterfactual_shadow.json",
+    "baseline": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_baseline_compare_shadow.json"
+  },
+  "upstream_decisions": {
+    "readiness": {
+      "summary": "Import FinStressTS as model-validation governance only. Current GroupA+ gates are blocked, and the paper is a diagnostic benchmark rather than a Taiwan ETF trading signal.",
+      "promote_to_live": false,
+      "target_weight_change_allowed": false,
+      "auto_rebalance_allowed": false,
+      "allow_00631l_add": false,
+      "keep_golden1_0531_unchanged": true,
+      "next_research_step": "Build a small Taiwan ETF counterfactual stress harness before any model promotion claim."
+    },
+    "counterfactual": {
+      "summary": "Reference 7/20 weights do not pass the FinStressTS-style counterfactual stress review against the no-00631L reference.",
+      "promote_to_live": false,
+      "target_weight_change_allowed": false,
+      "auto_rebalance_allowed": false,
+      "allow_00631l_add": false,
+      "keep_golden1_0531_unchanged": true,
+      "reference_loses_to_no_00631l_scenarios": 5,
+      "reference_tail_failure_scenarios": 4
+    },
+    "baseline": {
+      "summary": "No tested baseline is promoted. The comparison is useful for research, but no rule beats no-00631L cleanly enough to unlock 00631L add or rebalance.",
+      "promote_to_live": false,
+      "target_weight_change_allowed": false,
+      "auto_rebalance_allowed": false,
+      "allow_00631l_add": false,
+      "keep_golden1_0531_unchanged": true
+    }
+  }
+}

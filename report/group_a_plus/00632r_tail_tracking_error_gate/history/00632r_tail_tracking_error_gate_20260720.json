@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_00632r_tail_tracking_error_gate_review",
+  "generated_at": "2026-07-20T08:10:03",
+  "as_of": "2026-07-20",
+  "status": "blocked",
+  "policy": "tail_tracking_error_gate_review_only_no_hedge_open_no_weight_change",
+  "inputs": {
+    "letf_tracking_error_effective_fee_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+    "manual_hedge_eligibility": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_manual_hedge_eligibility_review.json"
+  },
+  "thresholds": {
+    "full_sample_30d_p05_floor_for_auto_gate": -0.03,
+    "manual_recent_60_30d_p05_floor": -0.02,
+    "manual_latest_30d_tracking_error_floor": -0.02
+  },
+  "metrics": {
+    "full_sample_30d": {
+      "count": 1557,
+      "mean": 0.02914141424224918,
+      "p05": -0.04194782042073657,
+      "p50": -0.00796021378460221,
+      "p95": 0.028106654664674977,
+      "latest": 0.0081190680562589,
+      "effective_drag_p05": -0.03489806631983506,
+      "effective_drag_latest": 0.022331972682866474,
+      "realized_variance_latest": 0.014212904626607573
+    },
+    "recent_60_observations": {
+      "mean_tracking_error": 0.002729050366663041,
+      "p05_tracking_error": -0.010876108225421257,
+      "mean_effective_drag_proxy": 0.015604426639579056
+    },
+    "source_threshold_check": {
+      "value": -0.04194782042073657,
+      "threshold": -0.03,
+      "passed": false
+    }
+  },
+  "assessment": {
+    "full_sample_tail_gate_passed": false,
+    "manual_recent_tail_gate_passed": true,
+    "gate_split_recommended": true,
+    "full_sample_failure_magnitude": -0.011947820420736568,
+    "recent_p05_margin_to_manual_floor": 0.009123891774578743,
+    "latest_margin_to_manual_floor": 0.0281190680562589
+  },
+  "blocking_reasons": [
+    "full_sample_00632r_tail_tracking_error_gate_failed",
+    "letf_readiness_still_blocks_00632r_open",
+    "manual_hedge_eligibility_still_blocked"
+  ],
+  "warning_reasons": [
+    "recent_tail_tracking_error_is_better_than_full_sample_auto_gate"
+  ],
+  "interpretation": [
+    "The original full-sample p05 gate remains a valid conservative blocker for automatic 00632R trading.",
+    "Recent 60-observation tail tracking error is less severe than the full-sample p05, so a manual-discussion tier can be tracked separately.",
+    "This review does not override effective-fee, live hedge policy, market-impact, or research-shadow blockers."
+  ],
+  "decision": {
+    "tail_gate_review_complete": true,
+    "gate_split_recommended": true,
+    "full_sample_auto_trade_tail_gate_passed": false,
+    "manual_discussion_tail_gate_passed": true,
+    "manual_hedge_discussion_allowed": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-14T16:01:38Z",
-  "signal_date": "2026-07-14",
+  "generated_at": "2026-07-22T23:59:43Z",
+  "signal_date": "2026-07-09",
   "lookback_days": 7,
   "source": "finmind_stock_news",
   "news_glob": "news/finmind_stock_news_rolling.jsonl",
@@ -27,157 +27,41 @@
       "matched_count": 3
     },
     {
+      "symbol": "00713.TW",
+      "matched_count": 1
+    },
+    {
       "symbol": "00878.TW",
-      "matched_count": 6
+      "matched_count": 8
     }
   ],
   "article_count": 20,
   "articles": [
     {
-      "date": "2026-07-14",
-      "source": "news.cnyes.com",
-      "title": "無懼股災！「第四法人」逆勢加碼 0050、00631L成交再破百億 - news.cnyes.com",
-      "url": "https://news.cnyes.com/news/id/6534328",
+      "date": "2026-07-09",
+      "source": "玩股網",
+      "title": "重摔時資金搶進0050狂加碼！大盤噴22%沒人敢買，當心越跌越買慣性下的風險！ - 玩股網",
+      "url": "https://www.wantgoo.com/blog/407988/post/688",
       "category": "finmind_stock_news",
       "snippet": "",
       "matched_keywords": [],
       "match_scope": "0050.TW"
     },
     {
-      "date": "2026-07-14",
-      "source": "CMoney投資網誌",
-      "title": "【即時新聞】00878配0056重疊飆破6成！專家揭露「致命盲點」，小心白忙一場！ - CMoney投資網誌",
-      "url": "https://cmnews.com.tw/article/newsyoudeservetoknow-78529271-7f30-11f1-9c64-add844caea82",
+      "date": "2026-07-09",
+      "source": "聯合新聞網",
+      "title": "手握800張0056、38歲財富自由！超馬芭樂戳破四大投資誤區：「高點隨便買」套牢2、30年 | 存股族愛ETF | 股市 - 聯合新聞網",
+      "url": "https://udn.com/news/story/123006/9616941",
       "category": "finmind_stock_news",
       "snippet": "",
       "matched_keywords": [],
       "match_scope": "0056.TW"
-    },
-    {
-      "date": "2026-07-14",
-      "source": "UDN",
-      "title": "四貸同堂炒股...00631L規模衝破2200億！懶錢包示警「股災恐跌8成」：盲目長抱大失血| 存股族愛ETF | 股市 - UDN",
-      "url": "https://udn.com/news/story/123006/9626022",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "00631L.TW"
-    },
-    {
-      "date": "2026-07-13",
-      "source": "CMoney",
-      "title": "00632R 元大台灣50反1 - 加空並且全力買進 - 股市爆料同學會 - CMoney",
-      "url": "https://www.cmoney.tw/forum/article/180724489",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "00632R.TW"
-    },
-    {
-      "date": "2026-07-11",
-      "source": "CMoney",
-      "title": "元大美債20年(00679B) 個股概覽 | 個股 - 股市 - CMoney",
-      "url": "https://www.cmoney.tw/finance/00679B/f00025",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "00679B.TWO"
-    },
-    {
-      "date": "2026-07-14",
-      "source": "今周刊",
-      "title": "每月買1張00878，3年半能賺多少錢？為何不買0056、00919配息更香？最新月領1萬、3萬成本曝光 - 今周刊",
-      "url": "https://www.businesstoday.com.tw/article/category/183013/post/202607130022/",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "00878.TW"
-    },
-    {
-      "date": "2026-07-14",
-      "source": "UDN",
-      "title": "月投1.5萬存股⋯只買0050、台積電（2330）太少？網反勸別分散 - UDN",
-      "url": "https://udn.com/news/story/123006/9625387",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "0050.TW"
-    },
-    {
-      "date": "2026-07-14",
-      "source": "CMoney",
-      "title": "0056 元大高股息- 今天砸了200萬在00927，有人跟我一樣按照紀律加碼的嗎？ - 股市爆料同學會 - CMoney",
-      "url": "https://www.cmoney.tw/forum/article/180745044",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "0056.TW"
-    },
-    {
-      "date": "2026-07-14",
-      "source": "FTNN 新聞網",
-      "title": "台指期正價差逼近400點！他憂00631L、00685L轉倉成本 網提醒：想續抱就必須換倉 - FTNN 新聞網",
-      "url": "https://www.ftnn.com.tw/news/560921",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "00631L.TW"
-    },
-    {
-      "date": "2026-07-13",
-      "source": "CMoney",
-      "title": "00632R 元大台灣50反1 - 個股難抓，大趨勢比較容易點- 股市爆料同學會 - CMoney",
-      "url": "https://www.cmoney.tw/forum/article/180724746",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "00632R.TW"
     },
     {
       "date": "2026-07-08",
-      "source": "聯合新聞網",
-      "title": "美長債、非投等債搶鏡 00953B、00687B、00679B發功躋身日均量前三強 - 聯合新聞網",
-      "url": "https://udn.com/news/story/123006/9615960",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "00679B.TWO"
-    },
-    {
-      "date": "2026-07-13",
-      "source": "今周刊",
-      "title": "每月買1張00878，3年半能賺多少錢？為何不買0056、00919配息更香？最新月領1萬、3萬成本曝光 - 今周刊",
-      "url": "https://www.businesstoday.com.tw/article/category/183013/post/202607130022/?utm_source=businesstoday&utm_medium=search&utm_campaign=article",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "00878.TW"
-    },
-    {
-      "date": "2026-07-14",
-      "source": "UDN",
-      "title": "戳破網紅3大錯誤理由！009816績效贏0050真相：拿009804一比關鍵在「台積電多寡」 | 存股族愛ETF | 股市 - UDN",
-      "url": "https://udn.com/news/story/123006/9626936?from=udn-catelistnews_ch2",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "0050.TW"
-    },
-    {
-      "date": "2026-07-14",
-      "source": "PChome Online新聞",
-      "title": "0050、0056、00878⋯ETF該怎麼選？投資忽略「這1點」恐陷入風險- 健康新聞- PChome Online 新聞 - PChome Online新聞",
-      "url": "https://news.pchome.com.tw/healthcare/uho/20260714/index-17839944008120559012.html",
-      "category": "finmind_stock_news",
-      "snippet": "",
-      "matched_keywords": [],
-      "match_scope": "0056.TW"
-    },
-    {
-      "date": "2026-07-14",
-      "source": "聯合新聞網",
-      "title": "台指期正價差衝400點！他憂00631L、00685L轉倉成本：一年恐多出逾一成 - 聯合新聞網",
-      "url": "https://udn.com/news/story/12806/9625372",
+      "source": "CMoney",
+      "title": "00631L 元大台灣50正2 - 下去吧 🤣 - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180561857",
       "category": "finmind_stock_news",
       "snippet": "",
       "matched_keywords": [],
@@ -195,6 +79,76 @@
     },
     {
       "date": "2026-07-08",
+      "source": "聯合新聞網",
+      "title": "美長債、非投等債搶鏡 00953B、00687B、00679B發功躋身日均量前三強 - 聯合新聞網",
+      "url": "https://udn.com/news/story/123006/9615960",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00679B.TWO"
+    },
+    {
+      "date": "2026-07-04",
+      "source": "FTNN 新聞網",
+      "title": "6月大咖ETF秀換股！投信大力買超「這2超強新兵」22.5張、20萬張00713、00919、00929都挑「它」 - FTNN 新聞網",
+      "url": "https://www.ftnn.com.tw/news/558425",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00713.TW"
+    },
+    {
+      "date": "2026-07-09",
+      "source": "三立新聞",
+      "title": "高股息ETF配息出爐！00878擬配0.25元現金股利 - 三立新聞",
+      "url": "https://www.setn.com/news/934732",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00878.TW"
+    },
+    {
+      "date": "2026-07-09",
+      "source": "LINE TODAY",
+      "title": "第四法人對台股深具信心! 0050定期定額戶數衝破120萬人創高 | 太報 - LINE TODAY",
+      "url": "https://today.line.me/tw/v3/article/WBK200L",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
+    },
+    {
+      "date": "2026-07-09",
+      "source": "聯合新聞網",
+      "title": "0056從25抱到現在52.75元！今年前3季配3.216元懸緝思維：時間證明複利的威力| 存股族愛ETF | 股市 - 聯合新聞網",
+      "url": "https://udn.com/news/story/123006/9616949",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0056.TW"
+    },
+    {
+      "date": "2026-07-07",
+      "source": "自由財經",
+      "title": "焦點股》00631L︰台股高檔震盪 正2ETF爆量吸金 - 自由財經",
+      "url": "https://ec.ltn.com.tw/article/breakingnews/5496360",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-07-09",
+      "source": "CMoney",
+      "title": "00632R 元大台灣50反1 - 上市自營商買超一週以來排行- 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180661339",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    },
+    {
+      "date": "2026-07-08",
       "source": "經濟日報",
       "title": "美長債、非投等債搶鏡 00953B、00687B、00679B發功躋身日均量前三強 - 經濟日報",
       "url": "https://money.udn.com/money/story/5618/9615960",
@@ -204,34 +158,84 @@
       "match_scope": "00679B.TWO"
     },
     {
-      "date": "2026-07-12",
+      "date": "2026-07-09",
       "source": "經濟日報",
-      "title": "台股高息 ETF 績效猛 0056、00878、00929等同步攀新高價 - 經濟日報",
-      "url": "https://money.udn.com/money/story/5618/9486651",
+      "title": "00878規模突破六千億元 00878、00922換股名單一次看 - 經濟日報",
+      "url": "https://money.udn.com/money/story/5607/9541037",
       "category": "finmind_stock_news",
       "snippet": "",
       "matched_keywords": [],
       "match_scope": "00878.TW"
     },
     {
-      "date": "2026-07-14",
-      "source": "UDN",
-      "title": "大一生想買0050父母反對！投資前輩：求學階段有些事更重要| 存股族愛ETF | 股市 - UDN",
-      "url": "https://udn.com/news/story/123006/9626220",
+      "date": "2026-07-09",
+      "source": "TVBS新聞網",
+      "title": "擊敗00878、0056！0050霸榜存股首選 驚人含息報酬曝光 - TVBS新聞網",
+      "url": "https://news.tvbs.com.tw/money/3253205",
       "category": "finmind_stock_news",
       "snippet": "",
       "matched_keywords": [],
       "match_scope": "0050.TW"
     },
     {
-      "date": "2026-07-13",
-      "source": "自由財經",
-      "title": "高股息ETF除息行情增溫 7月以來0056吸金破百億 - 自由財經",
-      "url": "https://ec.ltn.com.tw/amp/article/breakingnews/5503684",
+      "date": "2026-07-09",
+      "source": "CMoney",
+      "title": "0056 元大高股息- 大家就選擇適合自己的ETF，持續長期投入。 - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180656186",
       "category": "finmind_stock_news",
       "snippet": "",
       "matched_keywords": [],
       "match_scope": "0056.TW"
+    },
+    {
+      "date": "2026-07-07",
+      "source": "自由時報",
+      "title": "焦點股》00631L︰台股高檔震盪 正2ETF爆量吸金 - 自由時報",
+      "url": "https://stock.ltn.com.tw/article/ytxsa9zwavpl",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00631L.TW"
+    },
+    {
+      "date": "2026-07-08",
+      "source": "CMoney",
+      "title": "00632R 元大台灣50反1 - 台G電今年Eps約100元，明後年約120至130，你真的還... - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180627675",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00632R.TW"
+    },
+    {
+      "date": "2026-07-03",
+      "source": "CMoney",
+      "title": "00679B 元大美債20年 - 現在大概只剩美債能無腦買 因為夠爛😂😂 - 股市爆料同學會 - CMoney",
+      "url": "https://www.cmoney.tw/forum/article/180382171",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00679B.TWO"
+    },
+    {
+      "date": "2026-07-07",
+      "source": "三立新聞",
+      "title": "沒讓股民失望！00878宣布配息0.55元　年化配息率衝9.7% - 三立新聞",
+      "url": "https://www.setn.com/news/1557170",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "00878.TW"
+    },
+    {
+      "date": "2026-07-09",
+      "source": "LINE TODAY",
+      "title": "打趴0050！阮慕驊點名「這1檔黑馬」：報酬達75％ | 民視新聞網 - LINE TODAY",
+      "url": "https://today.line.me/tw/v3/article/5yP6zBy",
+      "category": "finmind_stock_news",
+      "snippet": "",
+      "matched_keywords": [],
+      "match_scope": "0050.TW"
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "a2119_a2120_combined_policy_shadow",
-  "generated_at": "2026-07-16T09:57:54",
+  "generated_at": "2026-07-16T16:50:32",
   "research_only": true,
   "production_effect": "none",
   "inputs": {
@@ -33,11 +33,12 @@
     "window_label": "live_2024_2026"
   },
   "a2120_daily_state": {
-    "date": "2026-07-15",
+    "date": "2026-07-16",
     "compounding_regime": "TREND_PERSISTENT",
     "raw_action": "FAST_REENTER_CANDIDATE",
     "recommended_action": "BLOCKED_BY_HARD_GUARD",
     "hard_blockers": [
+      "compounding regime date does not align with execution_plan actual_data_date: 2026-07-16 != 2026-07-15",
       "turnover ratio 59.16% exceeds automatic limit 50.00%"
     ],
     "shadow_target_00631l_before_hard_guards": 942,
@@ -52,6 +53,7 @@
     "a2120_regime": "TREND_PERSISTENT",
     "a2120_raw_action": "FAST_REENTER_CANDIDATE",
     "hard_blockers": [
+      "compounding regime date does not align with execution_plan actual_data_date: 2026-07-16 != 2026-07-15",
       "turnover ratio 59.16% exceeds automatic limit 50.00%"
     ],
     "shadow_target_00631l": 942,

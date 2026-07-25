@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "report_type": "density_head_tail_risk_advisory",
+  "status": "available",
+  "generated_at": "2026-07-17T18:27:35",
+  "policy": "research_advisory_only_no_weight_change",
+  "active_allocation_impact": "none",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2606.30037.pdf",
+    "title": "Heads, Not Backbones: Output Heads Dominate Architectures on Fat-Tailed Returns",
+    "implementation_note": "Post-hoc residual density-head shadow on existing NCF panel; no new backbone and no live trading rule."
+  },
+  "live_signal_context": {
+    "requested_as_of_date": "2026-07-20",
+    "actual_data_date": "2026-07-17",
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "execution_regime": "golden1",
+    "execution_allowed": false,
+    "target_weights": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.2,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.30000000000000004
+    }
+  },
+  "best_heads": {
+    "best_by_crps": "gaussian",
+    "best_by_pinball_q05": "gaussian",
+    "recommended_research_baseline": "gaussian_residual_head",
+    "gmm_status": "unstable_across_windows_research_only",
+    "param_sweep": {
+      "available": true,
+      "win_counts": {
+        "rows": 30,
+        "gaussian_wins_crps": 30,
+        "gaussian_wins_pinball_q05": 30,
+        "gmm_wins_crps": 0,
+        "gmm_wins_pinball_q05": 0
+      },
+      "best_gmm_candidate": {
+        "gmm_components": 2,
+        "alert_quantile": 0.1,
+        "seed": 42,
+        "best_by_crps": "gaussian",
+        "best_by_pinball_q05": "gaussian",
+        "point_crps": 0.17351887722880757,
+        "gaussian_crps": 0.12322027847131652,
+        "gmm_crps": 0.13413558311578175,
+        "point_pinball_q05": 0.03546567685900784,
+        "gaussian_pinball_q05": 0.027841527479079094,
+        "gmm_pinball_q05": 0.02939624676278917,
+        "point_var05_breach_rate": 0.19642857142857142,
+        "gaussian_var05_breach_rate": 0.07857142857142857,
+        "gmm_var05_breach_rate": 0.08928571428571429,
+        "point_central90_coverage": 0.0,
+        "gaussian_central90_coverage": 0.7285714285714285,
+        "gmm_central90_coverage": 0.5821428571428572,
+        "gmm_tail_alert_precision": 0.7142857142857143,
+        "gmm_tail_alert_recall": 0.24691358024691357,
+        "gmm_tail_alert_fpr": 0.04020100502512563,
+        "gmm_tail_alert_active_days": 28,
+        "gmm_score": -0.10685845785950995,
+        "gmm_beats_gaussian_crps": false,
+        "gmm_beats_gaussian_pinball_q05": false
+      }
+    },
+    "crash_window_param_sweeps": [
+      {
+        "window": "2018_correction",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/density_head_tail_risk_param_sweep_00631l_2018_correction.json",
+        "win_counts": {
+          "rows": 30,
+          "gaussian_wins_crps": 30,
+          "gaussian_wins_pinball_q05": 30,
+          "gmm_wins_crps": 0,
+          "gmm_wins_pinball_q05": 0
+        },
+        "best_gmm_candidate": {
+          "gmm_components": 2,
+          "alert_quantile": 0.1,
+          "seed": 137,
+          "best_by_crps": "gaussian",
+          "best_by_pinball_q05": "gaussian",
+          "point_crps": 0.18066430808571407,
+          "gaussian_crps": 0.14165386743529546,
+          "gmm_crps": 0.2551158766455044,
+          "point_pinball_q05": 0.1500977297861349,
+          "gaussian_pinball_q05": 0.027921082135050422,
+          "gmm_pinball_q05": 0.05736299825167233,
+          "point_var05_breach_rate": 0.5737704918032787,
+          "gaussian_var05_breach_rate": 0.07103825136612021,
+          "gmm_var05_breach_rate": 0.25136612021857924,
+          "point_central90_coverage": 0.0,
+          "gaussian_central90_coverage": 0.9289617486338798,
+          "gmm_central90_coverage": 0.39344262295081966,
+          "gmm_tail_alert_precision": 0.3684210526315789,
+          "gmm_tail_alert_recall": 0.09722222222222222,
+          "gmm_tail_alert_fpr": 0.10810810810810811,
+          "gmm_tail_alert_active_days": 19,
+          "gmm_score": -0.2128716997036836,
+          "gmm_beats_gaussian_crps": false,
+          "gmm_beats_gaussian_pinball_q05": false
+        }
+      },
+      {
+        "window": "2020_covid",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/density_head_tail_risk_param_sweep_00631l_2020_covid.json",
+        "win_counts": {
+          "rows": 30,
+          "gaussian_wins_crps": 30,
+          "gaussian_wins_pinball_q05": 30,
+          "gmm_wins_crps": 0,
+          "gmm_wins_pinball_q05": 0
+        },
+        "best_gmm_candidate": {
+          "gmm_components": 2,
+          "alert_quantile": 0.1,
+          "seed": 137,
+          "best_by_crps": "gaussian",
+          "best_by_pinball_q05": "gaussian",
+          "point_crps": 0.16177252379829296,
+          "gaussian_crps": 0.12503276539483094,
+          "gmm_crps": 0.19137895269081256,
+          "point_pinball_q05": 0.10680141613060883,
+          "gaussian_pinball_q05": 0.05220767402339189,
+          "gmm_pinball_q05": 0.05294632606593985,
+          "point_var05_breach_rate": 0.5632183908045977,
+          "gaussian_var05_breach_rate": 0.2413793103448276,
+          "gmm_var05_breach_rate": 0.19540229885057472,
+          "point_central90_coverage": 0.0,
+          "gaussian_central90_coverage": 0.735632183908046,
+          "gmm_central90_coverage": 0.40229885057471265,
+          "gmm_tail_alert_precision": 0.0,
+          "gmm_tail_alert_recall": 0.0,
+          "gmm_tail_alert_fpr": 0.14516129032258066,
+          "gmm_tail_alert_active_days": 9,
+          "gmm_score": -0.17358488630076258,
+          "gmm_beats_gaussian_crps": false,
+          "gmm_beats_gaussian_pinball_q05": false
+        }
+      },
+      {
+        "window": "2026_recent",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/density_head_tail_risk_param_sweep_00631l_2026_recent.json",
+        "win_counts": {
+          "rows": 30,
+          "gaussian_wins_crps": 0,
+          "gaussian_wins_pinball_q05": 0,
+          "gmm_wins_crps": 30,
+          "gmm_wins_pinball_q05": 6
+        },
+        "best_gmm_candidate": {
+          "gmm_components": 2,
+          "alert_quantile": 0.1,
+          "seed": 42,
+          "best_by_crps": "gmm",
+          "best_by_pinball_q05": "gmm",
+          "point_crps": 0.22747426428700415,
+          "gaussian_crps": 0.18921341653722942,
+          "gmm_crps": 0.08931431730019777,
+          "point_pinball_q05": 0.011707050130114964,
+          "gaussian_pinball_q05": 0.017237108711751922,
+          "gmm_pinball_q05": 0.008849029564272252,
+          "point_var05_breach_rate": 0.012345679012345678,
+          "gaussian_var05_breach_rate": 0.0,
+          "gmm_var05_breach_rate": 0.0,
+          "point_central90_coverage": 0.0,
+          "gaussian_central90_coverage": 0.16049382716049382,
+          "gmm_central90_coverage": 0.5308641975308642,
+          "gmm_tail_alert_precision": 1.0,
+          "gmm_tail_alert_recall": 0.23076923076923078,
+          "gmm_tail_alert_fpr": 0.0,
+          "gmm_tail_alert_active_days": 9,
+          "gmm_score": -0.08725973190128425,
+          "gmm_beats_gaussian_crps": true,
+          "gmm_beats_gaussian_pinball_q05": true
+        }
+      }
+    ]
+  },
+  "head_metrics": {
+    "point": {
+      "crps_sample": 0.17351887722880757,
+      "pinball_q05": 0.03546567685900784,
+      "var_05_breach_rate": 0.19642857142857142,
+      "central_90_coverage": 0.0,
+      "mae_mean": 0.17351887722880757,
+      "mse_mean": 0.040728158900989964
+    },
+    "gaussian": {
+      "crps_sample": 0.12322027847131652,
+      "pinball_q05": 0.027841527479079094,
+      "var_05_breach_rate": 0.07857142857142857,
+      "central_90_coverage": 0.7285714285714285,
+      "mae_mean": 0.17384822521076004,
+      "mse_mean": 0.040788470356242175
+    },
+    "gmm": {
+      "crps_sample": 0.1664356314610814,
+      "pinball_q05": 0.036183237990056606,
+      "var_05_breach_rate": 0.15357142857142858,
+      "central_90_coverage": 0.26785714285714285,
+      "mae_mean": 0.1940048183085436,
+      "mse_mean": 0.055437480133455536
+    }
+  },
+  "advisory": {
+    "level": "research_only",
+    "active": false,
+    "recommended_action": "keep_density_head_as_tail_calibration_diagnostic",
+    "allow_auto_weight_change": false,
+    "allow_execution_block": false,
+    "allow_00631l_auto_reduce": false,
+    "allow_00631l_auto_add": false
+  },
+  "decision": {
+    "summary": "Gaussian residual density head improves 00631L H20 tail calibration. Crash-window sweeps support Gaussian in 2018/2020; 2026 recent GMM strength is not enough for live promotion.",
+    "promote_to_live": false,
+    "promote_to_no_add_guard": false,
+    "target_weight_change_allowed": false
+  },
+  "inputs": {
+    "density_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/density_head_tail_risk_shadow_00631l_20250102_20260716.json",
+    "param_sweep": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/density_head_tail_risk_param_sweep_00631l_20250102_20260716.json",
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal_20260720_estimate.json"
+  }
+}

@@ -1,11 +1,11 @@
 {
   "report_type": "daily_status",
   "profile": "a2118_a2111_ncf_late_bull_deleverage",
-  "check_date": "2026-07-14",
-  "generated_at": "2026-07-15T00:00:36",
-  "overall_status": "block",
-  "html": "report/group_a_plus/daily/html/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260714_20260715_000036.html",
-  "json": "report/group_a_plus/daily/json/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260714_20260715_000036.json",
-  "markdown": "report/group_a_plus/daily/md/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260714_20260715_000036.md",
-  "metadata": "report/group_a_plus/daily/meta/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260714_20260715_000036.meta.json"
+  "check_date": "2026-07-22",
+  "generated_at": "2026-07-22T23:04:30",
+  "overall_status": "warn",
+  "html": "report/group_a_plus/daily/html/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260722_20260722_230430.html",
+  "json": "report/group_a_plus/daily/json/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260722_20260722_230430.json",
+  "markdown": "report/group_a_plus/daily/md/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260722_20260722_230430.md",
+  "metadata": "report/group_a_plus/daily/meta/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260722_20260722_230430.meta.json"
 }

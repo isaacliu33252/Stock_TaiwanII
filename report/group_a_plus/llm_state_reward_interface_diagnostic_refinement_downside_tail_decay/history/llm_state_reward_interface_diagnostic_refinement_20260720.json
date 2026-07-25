@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_diagnostic_refinement_review",
+  "generated_at": "2026-07-20T12:03:42",
+  "as_of": "2026-07-20",
+  "status": "available_for_manual_offline_review",
+  "policy": "diagnostic_refinement_review_only_no_model_training_no_live_action",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2606.08450.pdf",
+    "arxiv": "2606.08450v1",
+    "imported_component": "Diagnostic-guided Refinement proxy diagnostics"
+  },
+  "inputs": {
+    "validation_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_proposal_validation_review.json",
+    "feature_stability_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_feature_stability_downside_tail_decay_review.json",
+    "windowed_stability_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_windowed_stability_downside_tail_decay_review.json",
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "start": "2016-01-01",
+    "forward_horizon": 5,
+    "min_rows": 120,
+    "min_reward_finite_ratio": 0.95,
+    "min_abs_alignment_warning": 0.02,
+    "accepted_proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+    "accepted_proposal_found": true
+  },
+  "summary": {
+    "ticker_count": 3,
+    "available_ticker_count": 3,
+    "missing_tickers": [],
+    "finite_reward_min_ratio": 1.0,
+    "mean_reward_snr": 2.493108604189232,
+    "mean_reward_autocorrelation_lag1": 0.9885771333668757,
+    "mean_reward_future_return_alignment": -0.026158414830628304,
+    "mean_reward_future_downside_alignment": -0.05787673008883611,
+    "reward_alignment_grade": "green",
+    "reward_alignment_objective": "future_downside_alignment",
+    "reward_alignment_abs": 0.05787673008883611,
+    "return_alignment_grade": "yellow",
+    "return_alignment_abs": 0.026158414830628304,
+    "downside_alignment_grade": "green",
+    "downside_alignment_abs": 0.05787673008883611,
+    "downside_alignment_direction": "negative_reward_vs_positive_downside",
+    "downside_alignment_risk_sensitive_useful": true,
+    "ppo_training_queue_allowed_by_alignment": true,
+    "inherited_warning_count": 14
+  },
+  "ticker_diagnostics": [
+    {
+      "ticker": "0050.TW",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-17",
+        "rows": 2560
+      },
+      "forward_horizon_days": 5,
+      "feature_ic": {
+        "downside_deviation_to_future_downside": 0.058472087084940665,
+        "realized_volatility_to_future_abs_return": 0.2275059424548005,
+        "drawdown_depth_to_future_downside": 0.050809727474179556,
+        "ema_cross_strength_to_future_return": 0.025901557019015812
+      },
+      "reward_diagnostics": {
+        "finite_count": 2560,
+        "finite_ratio": 1.0,
+        "snr_abs_mean_over_std": 1.2026023748975259,
+        "autocorrelation_lag1": 0.9907523754743036,
+        "cumulative_reward_trend": -0.0013279501547438226,
+        "alignment_to_future_return": -0.017287920099652403,
+        "alignment_to_future_downside": -0.05413702593056615
+      },
+      "market_context": {
+        "mean_daily_return": 0.0008233189822344509,
+        "daily_volatility": 0.012492613764115321,
+        "latest_drawdown_penalty": 0.09896536076465001,
+        "latest_reward_proxy": -0.07046279028075833
+      }
+    },
+    {
+      "ticker": "00631L.TW",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-17",
+        "rows": 2564
+      },
+      "forward_horizon_days": 5,
+      "feature_ic": {
+        "downside_deviation_to_future_downside": 0.053890116007891814,
+        "realized_volatility_to_future_abs_return": 0.2597982505303994,
+        "drawdown_depth_to_future_downside": 0.06750574371321567,
+        "ema_cross_strength_to_future_return": -0.02091643156571571
+      },
+      "reward_diagnostics": {
+        "finite_count": 2564,
+        "finite_ratio": 1.0,
+        "snr_abs_mean_over_std": 1.3028720953684318,
+        "autocorrelation_lag1": 0.9838646486703886,
+        "cumulative_reward_trend": -0.0013319820718381912,
+        "alignment_to_future_return": -0.05441977295292893,
+        "alignment_to_future_downside": -0.07280115802098314
+      },
+      "market_context": {
+        "mean_daily_return": 0.0017435806695182204,
+        "daily_volatility": 0.024036850309949412,
+        "latest_drawdown_penalty": 0.22144243933828112,
+        "latest_reward_proxy": -0.1596299131174785
+      }
+    },
+    {
+      "ticker": "00632R.TW",
+      "data_range": {
+        "start": "2016-01-04",
+        "end": "2026-07-17",
+        "rows": 2564
+      },
+      "forward_horizon_days": 5,
+      "feature_ic": {
+        "downside_deviation_to_future_downside": 0.27070061272492524,
+        "realized_volatility_to_future_abs_return": -0.006397233395590945,
+        "drawdown_depth_to_future_downside": 0.03592112261395267,
+        "ema_cross_strength_to_future_return": 0.012773934322722764
+      },
+      "reward_diagnostics": {
+        "finite_count": 2564,
+        "finite_ratio": 1.0,
+        "snr_abs_mean_over_std": 4.973851342301738,
+        "autocorrelation_lag1": 0.991114375955935,
+        "cumulative_reward_trend": -0.00135064705108106,
+        "alignment_to_future_return": -0.006767551439303572,
+        "alignment_to_future_downside": -0.04669200631495905
+      },
+      "market_context": {
+        "mean_daily_return": 0.001358648879987054,
+        "daily_volatility": 0.11626094152505448,
+        "latest_drawdown_penalty": 0.25,
+        "latest_reward_proxy": -0.1508362381014274
+      }
+    }
+  ],
+  "aggregate_diagnostics": {
+    "feature_ic_mean": {
+      "downside_deviation_to_future_downside": 0.1276876052725859,
+      "drawdown_depth_to_future_downside": 0.051412197933782634,
+      "ema_cross_strength_to_future_return": 0.005919686592007621,
+      "realized_volatility_to_future_abs_return": 0.16030231986320298
+    },
+    "feature_columns": [
+      "downside_deviation",
+      "realized_volatility",
+      "drawdown_depth",
+      "ema_cross_strength"
+    ],
+    "reward_diagnostics_mean": {
+      "snr_abs_mean_over_std": 2.493108604189232,
+      "autocorrelation_lag1": 0.9885771333668757,
+      "cumulative_reward_trend": -0.0013368597592210245,
+      "alignment_to_future_return": -0.026158414830628304,
+      "alignment_to_future_downside": -0.05787673008883611
+    },
+    "finite_reward_min_ratio": 1.0
+  },
+  "diagnostic_gates": {
+    "reward_future_return_alignment": {
+      "grade": "yellow",
+      "abs_alignment": 0.026158414830628304,
+      "ppo_training_queue_allowed": false,
+      "reason": "alignment_requires_manual_review"
+    },
+    "reward_future_downside_alignment": {
+      "grade": "green",
+      "abs_alignment": 0.05787673008883611,
+      "ppo_training_queue_allowed": true,
+      "reason": "alignment_clears_research_threshold",
+      "semantic": {
+        "direction": "negative_reward_vs_positive_downside",
+        "risk_sensitive_useful": true,
+        "dangerous_direction": false,
+        "explanation": "Reward gets worse when future downside risk is larger."
+      }
+    },
+    "overall_reward_alignment": {
+      "objective": "future_downside_alignment",
+      "grade": "green",
+      "ppo_training_queue_allowed": true,
+      "reason": "downside_objective_clears_threshold"
+    },
+    "thresholds": {
+      "green_min_abs_alignment": 0.05,
+      "yellow_min_abs_alignment": 0.02,
+      "red_below_abs_alignment": 0.02
+    }
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "feature_stability:0050.TW:latest_zscore_extreme:drawdown_depth:3.1250",
+    "feature_stability:0050.TW:latest_zscore_extreme:drawdown_penalty:3.1250",
+    "feature_stability:0050.TW:latest_zscore_extreme:letf_tail_decay_cost:3.5179",
+    "feature_stability:0050.TW:latest_zscore_extreme:reward_proxy:-3.0243",
+    "feature_stability:00631L.TW:high_positive_benchmark_correlation",
+    "feature_stability:00631L.TW:latest_zscore_extreme:letf_tail_decay_cost:3.7380",
+    "windowed_stability:recent_0050_drawdown_zscore_extreme_days_present",
+    "windowed_stability:recent_0050_reward_zscore_extreme_days_present",
+    "windowed_stability:taiwan_2015_china_crash:00632r_not_stable_high_negative_hedge",
+    "windowed_stability:taiwan_2018_trade_war_correction:00631l_amplified_benchmark_exposure",
+    "windowed_stability:taiwan_2020_covid_crash:00631l_amplified_benchmark_exposure",
+    "windowed_stability:taiwan_2022_rate_hike_stress:00631l_amplified_benchmark_exposure",
+    "windowed_stability:taiwan_2026_q1q2_stress:00631l_amplified_benchmark_exposure",
+    "windowed_stability:taiwan_2026_recent:00631l_amplified_benchmark_exposure"
+  ],
+  "interpretation": [
+    "These diagnostics approximate GIFT DGR feedback without training PPO or modifying the live strategy.",
+    "Weak reward alignment is a research warning, not a live trading signal.",
+    "Any future PPO experiment must freeze this interface before out-of-sample evaluation."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "diagnostic_refinement_ready_for_research_review": true,
+    "diagnostic_refinement_grade": "green",
+    "ppo_training_queue_allowed_by_dgr": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

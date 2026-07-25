@@ -59,6 +59,8 @@ from scripts.evaluate.evaluate_group_a_plus_00631l_downside_race_classifier impo
 )
 
 DEFAULT_OUTPUT = PROJECT_ROOT / "results" / "00631l_multisource_crash_risk_latest.json"
+MIN_REASONABLE_SOXX_IV = 0.05
+MAX_REASONABLE_SOXX_IV = 2.0
 
 OPTIONS_COLS = [
     "txo_pcr_volume_z20",
@@ -261,6 +263,7 @@ def _load_external_options_iv(db_path: Path, index: pd.DatetimeIndex) -> pd.Data
     if aligned.empty or "atm_iv" not in aligned:
         return out
     atm_iv = pd.to_numeric(aligned["atm_iv"], errors="coerce")
+    atm_iv = atm_iv.where((atm_iv >= MIN_REASONABLE_SOXX_IV) & (atm_iv <= MAX_REASONABLE_SOXX_IV))
     skew = pd.to_numeric(aligned["put_call_iv_skew"], errors="coerce")
     put_call_volume = pd.to_numeric(aligned["put_call_volume_ratio"], errors="coerce")
     put_call_oi = pd.to_numeric(aligned["put_call_oi_ratio"], errors="coerce")

@@ -58,6 +58,40 @@ def test_build_soxx_iv_snapshot_uses_nearest_30d_expiry() -> None:
     assert snapshot["put_call_volume_ratio"] == 2.5
 
 
+class FakeTickerWithBadNearZeroIV(FakeTicker):
+    def option_chain(self, expiry: str) -> FakeOptionChain:
+        calls = pd.DataFrame(
+            {
+                "strike": [95.0, 100.0, 105.0],
+                "impliedVolatility": [0.28, 0.001, 0.33],
+                "volume": [10, 20, 30],
+                "openInterest": [100, 200, 300],
+            }
+        )
+        puts = pd.DataFrame(
+            {
+                "strike": [95.0, 100.0, 105.0],
+                "impliedVolatility": [0.36, 0.002, 0.31],
+                "volume": [40, 50, 60],
+                "openInterest": [400, 500, 600],
+            }
+        )
+        return FakeOptionChain(calls=calls, puts=puts)
+
+
+def test_build_soxx_iv_snapshot_ignores_near_zero_placeholder_iv() -> None:
+    snapshot = build_soxx_iv_snapshot(
+        ticker_obj=FakeTickerWithBadNearZeroIV(),
+        snapshot_date="2026-07-12",
+        target_dte=30,
+    )
+
+    assert snapshot["atm_call_iv"] == 0.28
+    assert snapshot["atm_put_iv"] == 0.36
+    assert snapshot["atm_iv"] == 0.32
+    assert snapshot["atm_iv"] >= 0.05
+
+
 def test_external_options_iv_features_feed_cross_market_alert(tmp_path: Path) -> None:
     db_path = tmp_path / "stock_data.db"
     con = duckdb.connect(str(db_path))

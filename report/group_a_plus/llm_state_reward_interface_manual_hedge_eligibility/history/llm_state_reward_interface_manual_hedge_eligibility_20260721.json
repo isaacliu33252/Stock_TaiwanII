@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_manual_hedge_eligibility_review",
+  "generated_at": "2026-07-21T12:22:39",
+  "as_of": "2026-07-21",
+  "status": "blocked",
+  "policy": "manual_hedge_eligibility_only_no_order_no_target_weight_no_rebalance",
+  "target_ticker": "00632R.TW",
+  "benchmark_ticker": "0050.TW",
+  "inputs": {
+    "windowed_stability_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_windowed_stability_review.json",
+    "letf_tracking_error_effective_fee_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+    "market_impact_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+    "research_shadow_decision_snapshot": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/research_shadow_decision_snapshot.json"
+  },
+  "summary": {
+    "hedge_evidence_available": true,
+    "manual_hedge_discussion_allowed": false,
+    "failed_manual_gate_count": 6,
+    "latest_rolling_correlations": {
+      "63": -0.9779370370774443,
+      "126": -0.9785023640596672,
+      "252": -0.975772171326609
+    },
+    "latest_rolling_betas": {
+      "63": -0.9951325582163222,
+      "126": -1.0141874201460217,
+      "252": -0.9832319101817458
+    },
+    "recent_stress_relationship": {
+      "correlation": -0.9803311350577403,
+      "beta": -1.0230849199964227,
+      "relationship": "high_negative_benchmark_correlation"
+    },
+    "recent_0050_extreme_days": {
+      "drawdown": 1,
+      "reward_proxy": 1
+    }
+  },
+  "hedge_evidence_checks": [
+    {
+      "name": "windowed_stability_available",
+      "passed": true,
+      "value": "available_for_manual_offline_review",
+      "threshold": "available_for_manual_offline_review",
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_windowed_stability_review.json",
+      "blocking_reason_if_failed": "windowed_stability_unavailable"
+    },
+    {
+      "name": "rolling_63_126_252_correlations_are_hedge_like",
+      "passed": true,
+      "value": [
+        -0.9779370370774443,
+        -0.9785023640596672,
+        -0.975772171326609
+      ],
+      "threshold": "all <= -0.95",
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_windowed_stability_review.json",
+      "blocking_reason_if_failed": "rolling_hedge_correlation_not_persistent"
+    },
+    {
+      "name": "rolling_63_126_252_betas_are_near_inverse",
+      "passed": true,
+      "value": [
+        -0.9951325582163222,
+        -1.0141874201460217,
+        -0.9832319101817458
+      ],
+      "threshold": "abs(beta + 1.0) <= 0.10",
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_windowed_stability_review.json",
+      "blocking_reason_if_failed": "rolling_inverse_beta_not_persistent"
+    },
+    {
+      "name": "recent_stress_window_is_hedge_like",
+      "passed": true,
+      "value": {
+        "correlation": -0.9803311350577403,
+        "beta": -1.0230849199964227
+      },
+      "threshold": {
+        "correlation": "<= -0.95",
+        "beta": "abs(beta + 1.0) <= 0.10"
+      },
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_windowed_stability_review.json",
+      "blocking_reason_if_failed": "recent_stress_window_not_hedge_like"
+    }
+  ],
+  "manual_gate_checks": [
+    {
+      "name": "recent_0050_extreme_days_within_manual_review_limit",
+      "passed": true,
+      "value": {
+        "drawdown_extreme_days": 1,
+        "reward_extreme_days": 1
+      },
+      "threshold": "each <= 1",
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_windowed_stability_review.json",
+      "blocking_reason_if_failed": "recent_0050_warning_too_persistent"
+    },
+    {
+      "name": "letf_tracking_review_available",
+      "passed": true,
+      "value": "blocked",
+      "threshold": "file_exists",
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+      "blocking_reason_if_failed": "missing_letf_tracking_review"
+    },
+    {
+      "name": "00632r_60d_beta_error_passes_tracking_gate",
+      "passed": true,
+      "value": 0.005676328110440387,
+      "threshold": 0.1,
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+      "blocking_reason_if_failed": "00632r_beta_error_gate_failed"
+    },
+    {
+      "name": "00632r_60d_correlation_passes_tracking_gate",
+      "passed": true,
+      "value": -0.9779260056912819,
+      "threshold": -0.95,
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+      "blocking_reason_if_failed": "00632r_tracking_correlation_gate_failed"
+    },
+    {
+      "name": "00632r_30d_tail_tracking_error_passes",
+      "passed": false,
+      "value": -0.04194782042073657,
+      "threshold": -0.03,
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+      "blocking_reason_if_failed": "00632r_tail_tracking_error_gate_failed"
+    },
+    {
+      "name": "effective_fee_proxy_independently_validated",
+      "passed": false,
+      "value": false,
+      "threshold": true,
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+      "blocking_reason_if_failed": "effective_fee_proxy_not_validated"
+    },
+    {
+      "name": "live_hedge_policy_validated",
+      "passed": false,
+      "value": false,
+      "threshold": true,
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+      "blocking_reason_if_failed": "live_hedge_policy_not_validated"
+    },
+    {
+      "name": "letf_readiness_allows_00632r_open",
+      "passed": false,
+      "value": false,
+      "threshold": true,
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+      "blocking_reason_if_failed": "letf_readiness_blocks_00632r_open"
+    },
+    {
+      "name": "market_impact_allows_trade_or_manual_review",
+      "passed": false,
+      "value": {
+        "status": "blocked",
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false
+      },
+      "threshold": "market impact ready and target weight changes allowed",
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+      "blocking_reason_if_failed": "market_impact_blocks_trade_or_weight_change"
+    },
+    {
+      "name": "research_shadow_allows_00632r_open",
+      "passed": false,
+      "value": null,
+      "threshold": true,
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/research_shadow_decision_snapshot.json",
+      "blocking_reason_if_failed": "research_shadow_blocks_00632r_open"
+    },
+    {
+      "name": "windowed_review_does_not_output_actions",
+      "passed": true,
+      "value": {
+        "outputs_actions": false,
+        "outputs_target_weights": false
+      },
+      "threshold": {
+        "outputs_actions": false,
+        "outputs_target_weights": false
+      },
+      "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_windowed_stability_review.json",
+      "blocking_reason_if_failed": "windowed_review_outputs_live_actions"
+    }
+  ],
+  "blocking_reasons": [
+    "00632r_tail_tracking_error_gate_failed",
+    "effective_fee_proxy_not_validated",
+    "letf_readiness_blocks_00632r_open",
+    "live_hedge_policy_not_validated",
+    "market_impact_blocks_trade_or_weight_change",
+    "research_shadow_blocks_00632r_open"
+  ],
+  "warning_reasons": [
+    "hedge_like_evidence_is_not_live_authorization",
+    "manual_review_can_only_continue_after_live_gates_change"
+  ],
+  "interpretation": [
+    "00632R hedge-like rolling evidence exists, but it is insufficient without tracking-error, effective-fee, market-impact, and live policy gates.",
+    "This checklist can at most permit manual discussion; it cannot output target weights or an order.",
+    "00631L add remains separate and blocked because it increases benchmark beta."
+  ],
+  "decision": {
+    "hedge_evidence_available": true,
+    "manual_hedge_discussion_allowed": false,
+    "manual_hedge_discussion_blocked": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

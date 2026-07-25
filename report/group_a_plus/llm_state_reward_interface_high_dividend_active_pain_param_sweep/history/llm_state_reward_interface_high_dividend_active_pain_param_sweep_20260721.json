@@ -1,0 +1,981 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_high_dividend_active_pain_param_sweep",
+  "generated_at": "2026-07-21T16:02:14",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "v3_active_pain_param_sweep_shadow_only_no_model_training_no_live_action",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "baseline_shadow_backtest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_baseline_shadow_backtest.json",
+    "dgr_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_high_dividend_active_pain_dgr_review.json",
+    "active_penalty_scales": [
+      10.0,
+      15.0,
+      20.0,
+      25.0,
+      30.0
+    ],
+    "return_pain_scales": [
+      2.0,
+      4.0,
+      6.0
+    ],
+    "concentration_scales": [
+      0.05,
+      0.1,
+      0.2
+    ],
+    "drawdown_scale": 1.0,
+    "min_positive_final_folds": 4,
+    "min_positive_sharpe_folds": 4,
+    "min_non_worse_drawdown_folds": 3,
+    "min_passed_candidates": 3,
+    "execution_mode": "cached_fold_fast_sweep"
+  },
+  "summary": {
+    "evaluated_count": 45,
+    "passed_count": 0,
+    "robustness_passed": false,
+    "best_candidate": {
+      "active_penalty_scale": 10.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    "recommended_candidate": null,
+    "passed_candidates": []
+  },
+  "results": [
+    {
+      "active_penalty_scale": 10.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 10.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 10.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 10.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 10.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 10.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 10.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 10.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 10.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 15.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 15.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 15.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 15.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 15.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 15.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 15.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 15.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 15.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 20.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 20.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 20.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 20.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 20.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 20.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 20.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 20.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 20.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 25.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 25.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 25.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 25.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 25.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 25.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 25.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 25.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 25.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 30.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 30.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 30.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 2.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 30.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 30.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 30.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 4.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 30.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.05,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 30.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.1,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    },
+    {
+      "active_penalty_scale": 30.0,
+      "drawdown_scale": 1.0,
+      "return_pain_scale": 6.0,
+      "concentration_scale": 0.2,
+      "status": "blocked",
+      "passed": false,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null,
+      "event_probe_active_drag_improved": false,
+      "event_active_return_improvement": null,
+      "warning_reasons": [],
+      "blocking_reasons": [
+        "high_dividend_active_pain_dgr_not_green"
+      ]
+    }
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "v3_active_pain_param_robustness_passed": false,
+    "next_shadow_scorecard_allowed": false,
+    "next_shadow_model_design_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

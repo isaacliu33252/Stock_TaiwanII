@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_shadow_model_design_review",
+  "generated_at": "2026-07-21T22:49:01",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "shadow_model_design_review_only_no_training_no_live_action",
+  "sources": {
+    "promotion_gate": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_promotion_gate_snapshot.json",
+      "sha256": "05a453b2ede6c063d92c138767e8992ed785e2ed249ee9208bfb047bd4dbfd7e",
+      "exists": true
+    },
+    "frozen_manifest": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_manifest.json",
+      "sha256": "b5f0dde86acfe5c646986ba099df058c975343a5d4d0d937c3b63caa96dde352",
+      "exists": true
+    },
+    "cost_aware_micro_tilt_guard": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_cost_aware_micro_tilt_guard_shadow_backtest.json",
+      "sha256": "d8ab2bf1374ba9441ae292e99abfe379f55f898204aaa5d72e19386f298ddbe2",
+      "exists": true
+    }
+  },
+  "design": {
+    "design_id": "group_a_plus_gift_downside_tail_decay_v2_tuned_20260721_shadow_model_design",
+    "freeze_id": "group_a_plus_gift_downside_tail_decay_v2_tuned_20260721",
+    "frozen_manifest_sha256": "a1813b27cfea9ef23df3fb4a7789cbc8855eb416e1f98c89fef88dceb2a833ac",
+    "proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+    "selected_label": "v2_tuned_downside_tail_decay",
+    "state_columns": [
+      "downside_deviation",
+      "realized_volatility",
+      "drawdown_depth",
+      "ema_cross_strength"
+    ],
+    "reward_columns": [
+      "drawdown_penalty",
+      "volatility_scaling_penalty",
+      "letf_tail_decay_cost",
+      "reward_proxy"
+    ],
+    "reward_params": {
+      "drawdown_weight": 0.3,
+      "volatility_weight": 0.5,
+      "tail_decay_weight": 0.1,
+      "volatility_scale": 4.0,
+      "tail_decay_scale": 4.0
+    },
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "blocked_live_tickers_present": [],
+    "allowed_shadow_model_family": "tabular_or_sequence_shadow_model_design_only",
+    "allowed_training_label": "future_return_or_downside_proxy_for_offline_design",
+    "validation_plan": {
+      "walk_forward_required": true,
+      "purge_required": true,
+      "cost_scenarios_required_bps": [
+        0.0,
+        2.0
+      ],
+      "cost_scenarios_warning_bps": [
+        5.0
+      ],
+      "required_cost_results": [
+        {
+          "cost_bps": 0.0,
+          "required_for_gate": true,
+          "passed": true,
+          "params": {
+            "low_quantile": 0.3,
+            "high_quantile": 0.7,
+            "low_score": 1.0,
+            "mid_score": 1.0,
+            "high_score": 1.03,
+            "cost_bps": 0.0
+          },
+          "aggregate": {
+            "fold_count": 6,
+            "available_fold_count": 6,
+            "positive_final_value_folds": 4,
+            "positive_sharpe_folds": 4,
+            "non_worse_drawdown_folds": 4,
+            "mean_delta_final_value": 0.00039297879422783843,
+            "mean_delta_sharpe_ratio": 0.007119719883366515,
+            "mean_delta_max_drawdown": 1.4202407314774698e-05
+          },
+          "rank_score": 96.05553158727452
+        },
+        {
+          "cost_bps": 2.0,
+          "required_for_gate": true,
+          "passed": true,
+          "params": {
+            "low_quantile": 0.3,
+            "high_quantile": 0.7,
+            "low_score": 1.0,
+            "mid_score": 1.0,
+            "high_score": 1.03,
+            "cost_bps": 2.0
+          },
+          "aggregate": {
+            "fold_count": 6,
+            "available_fold_count": 6,
+            "positive_final_value_folds": 4,
+            "positive_sharpe_folds": 4,
+            "non_worse_drawdown_folds": 3,
+            "mean_delta_final_value": 0.0003581231999669939,
+            "mean_delta_sharpe_ratio": 0.006384459832766735,
+            "mean_delta_max_drawdown": 6.173750110860521e-06
+          },
+          "rank_score": 90.0499519341644
+        }
+      ],
+      "warning_cost_results": [
+        {
+          "cost_bps": 5.0,
+          "required_for_gate": false,
+          "passed": false,
+          "params": {
+            "low_quantile": 0.3,
+            "high_quantile": 0.7,
+            "low_score": 1.0,
+            "mid_score": 1.0,
+            "high_score": 1.03,
+            "cost_bps": 5.0
+          },
+          "aggregate": {
+            "fold_count": 6,
+            "available_fold_count": 6,
+            "positive_final_value_folds": 4,
+            "positive_sharpe_folds": 3,
+            "non_worse_drawdown_folds": 3,
+            "mean_delta_final_value": 0.00030584228049549783,
+            "mean_delta_sharpe_ratio": 0.0052816484734498625,
+            "mean_delta_max_drawdown": -5.868927980397694e-06
+          },
+          "rank_score": 82.04158297783242
+        }
+      ]
+    },
+    "hard_constraints": {
+      "no_model_training_in_this_step": true,
+      "no_ppo_training": true,
+      "no_live_signal_output": true,
+      "no_target_weight_output": true,
+      "no_auto_rebalance": true,
+      "no_00631l_add": true,
+      "no_00632r_open": true
+    }
+  },
+  "summary": {
+    "promotion_gate_passed": true,
+    "micro_tilt_guard_passed": true,
+    "required_cost_scenarios_passed": 2,
+    "warning_cost_scenarios_passed": 0,
+    "shadow_model_design_allowed": true
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "warning_cost_scenario_failed:5bps"
+  ],
+  "interpretation": [
+    "This artifact permits only designing a future shadow experiment around the frozen state/reward interface.",
+    "The 5 bps cost scenario is a warning-level failure and must be considered before any later training proposal.",
+    "A separate approval artifact is required before any model training or PPO training can occur."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "shadow_model_design_allowed": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_trigate_vol_memory_shadow",
+  "generated_at": "2026-07-21T22:38:28",
+  "policy": "research_only_vol_memory_decomposition_no_weight_change",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2512.02166.pdf",
+    "title": "The Three-Dimensional Decomposition of Volatility Memory",
+    "imported_concepts": [
+      "volatility_memory_level_gate",
+      "volatility_memory_shape_or_long_memory_proxy",
+      "volatility_memory_tempo_or_business_time_proxy",
+      "equity_volatility_memory_can_be_regime_and_tempo_dominated"
+    ],
+    "not_imported": [
+      "full_TG_Vol_QMLE_estimator",
+      "G_FIGARCH_fractional_order_estimation",
+      "SPY_EURUSD_empirical_parameters",
+      "automatic_target_weight_change"
+    ]
+  },
+  "input_window": {
+    "start": "2015-01-06",
+    "end": "2026-07-17",
+    "rows": 2804
+  },
+  "latest": {
+    "date": "2026-07-17",
+    "vol_level_20d_ann": 0.7395145955984148,
+    "vol_level_percentile_252d": 0.9325396825396826,
+    "memory_shape_score": 0.8211102762806298,
+    "memory_shape_percentile_252d": 0.9761904761904762,
+    "tempo_score": 7.458049376627731,
+    "tempo_percentile_252d": 1.0,
+    "vol20_vs_vol60_ratio": 1.127032566628849,
+    "0050_00631l_return_corr_60d": 0.9806113566378623
+  },
+  "tri_gate_state": {
+    "level_gate_active": true,
+    "shape_gate_active": true,
+    "tempo_gate_active": true,
+    "stress_gate_count": 3,
+    "state": "blocked_for_leverage_add"
+  },
+  "decision": {
+    "summary": "Import level/shape/tempo volatility-memory decomposition as a shadow diagnostic only. It does not overcome existing GroupA+ execution, rebalance, option-state, and FinStressTS blockers.",
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

@@ -1,0 +1,673 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_cost_warning_failure_attribution",
+  "generated_at": "2026-07-21T18:13:21",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "cost_warning_failure_attribution_only_no_training_no_live_action",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "panel_sha256": "66aa5e59dbe67b896a8b1b9846091596ad64aa766a5607eecf9e169b998ee0b8",
+    "walk_forward_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_walk_forward_audit.json",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "high_scores": [
+      1.01,
+      1.02,
+      1.03
+    ],
+    "cost_bps": 5.0,
+    "low_quantile": 0.3,
+    "high_quantile": 0.7,
+    "low_score": 1.0,
+    "thresholds": {
+      "min_positive_final_folds": 4,
+      "min_positive_sharpe_folds": 4,
+      "min_non_worse_drawdown_folds": 3
+    }
+  },
+  "summary": {
+    "evaluated_count": 3,
+    "candidate_passing_required_thresholds_count": 0,
+    "best_high_score": 1.02,
+    "best_aggregate": {
+      "fold_count": 6,
+      "available_fold_count": 6,
+      "positive_final_value_folds": 4,
+      "positive_sharpe_folds": 3,
+      "non_worse_drawdown_folds": 4,
+      "mean_delta_final_value": 0.0002042853478419667,
+      "mean_delta_sharpe_ratio": 0.00353582975895006,
+      "mean_delta_max_drawdown": -3.974231642796718e-06
+    },
+    "dominant_failure_metric_for_best": "sharpe_delta_not_positive",
+    "cost_warning_failure_explained": true
+  },
+  "candidate_results": [
+    {
+      "high_score": 1.01,
+      "cost_bps": 5.0,
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 3,
+        "non_worse_drawdown_folds": 3,
+        "mean_delta_final_value": 0.00010233922397049715,
+        "mean_delta_sharpe_ratio": 0.0017753529434439974,
+        "mean_delta_max_drawdown": -2.0182668421705094e-06
+      },
+      "fold_results": [
+        {
+          "fold": 1,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2023-05-30",
+          "test_start": "2023-06-07",
+          "test_end": "2023-12-07",
+          "delta_vs_equal_weight": {
+            "final_value": 9.451622114098335e-05,
+            "sharpe_ratio": 0.001783715777410988,
+            "max_drawdown": 3.730501036192102e-05
+          },
+          "failed_metrics": [],
+          "passed_all_delta_checks": true
+        },
+        {
+          "fold": 2,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "delta_vs_equal_weight": {
+            "final_value": 2.5201028833743422e-05,
+            "sharpe_ratio": -0.00045632276216878154,
+            "max_drawdown": 9.854144483290028e-06
+          },
+          "failed_metrics": [
+            "sharpe_delta_not_positive"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 3,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "delta_vs_equal_weight": {
+            "final_value": -4.90152129590804e-05,
+            "sharpe_ratio": -0.0008798288903436591,
+            "max_drawdown": -3.9004717703794434e-05
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive",
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 4,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "delta_vs_equal_weight": {
+            "final_value": -1.4923513003695099e-05,
+            "sharpe_ratio": -0.0001411124477687098,
+            "max_drawdown": -3.3306690738754696e-16
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive",
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 5,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2025-06-27",
+          "test_start": "2025-07-07",
+          "test_end": "2026-01-06",
+          "delta_vs_equal_weight": {
+            "final_value": 0.0003547512057024971,
+            "sharpe_ratio": 0.008040270656946014,
+            "max_drawdown": 1.9345057884478933e-06
+          },
+          "failed_metrics": [],
+          "passed_all_delta_checks": true
+        },
+        {
+          "fold": 6,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "delta_vs_equal_weight": {
+            "final_value": 0.00020350561410853452,
+            "sharpe_ratio": 0.0023053953265881333,
+            "max_drawdown": -2.2198543982554497e-05
+          },
+          "failed_metrics": [
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        }
+      ],
+      "failed_folds": [
+        {
+          "fold": 2,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "delta_vs_equal_weight": {
+            "final_value": 2.5201028833743422e-05,
+            "sharpe_ratio": -0.00045632276216878154,
+            "max_drawdown": 9.854144483290028e-06
+          },
+          "failed_metrics": [
+            "sharpe_delta_not_positive"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 3,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "delta_vs_equal_weight": {
+            "final_value": -4.90152129590804e-05,
+            "sharpe_ratio": -0.0008798288903436591,
+            "max_drawdown": -3.9004717703794434e-05
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive",
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 4,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "delta_vs_equal_weight": {
+            "final_value": -1.4923513003695099e-05,
+            "sharpe_ratio": -0.0001411124477687098,
+            "max_drawdown": -3.3306690738754696e-16
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive",
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 6,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "delta_vs_equal_weight": {
+            "final_value": 0.00020350561410853452,
+            "sharpe_ratio": 0.0023053953265881333,
+            "max_drawdown": -2.2198543982554497e-05
+          },
+          "failed_metrics": [
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        }
+      ],
+      "failure_metric_counts": {
+        "final_value_delta_not_positive": 2,
+        "sharpe_delta_not_positive": 3,
+        "max_drawdown_delta_worse": 3
+      },
+      "passes_required_thresholds": false
+    },
+    {
+      "high_score": 1.02,
+      "cost_bps": 5.0,
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 3,
+        "non_worse_drawdown_folds": 4,
+        "mean_delta_final_value": 0.0002042853478419667,
+        "mean_delta_sharpe_ratio": 0.00353582975895006,
+        "mean_delta_max_drawdown": -3.974231642796718e-06
+      },
+      "fold_results": [
+        {
+          "fold": 1,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2023-05-30",
+          "test_start": "2023-06-07",
+          "test_end": "2023-12-07",
+          "delta_vs_equal_weight": {
+            "final_value": 0.0001886720383634799,
+            "sharpe_ratio": 0.003559640081878257,
+            "max_drawdown": 7.454344912705135e-05
+          },
+          "failed_metrics": [],
+          "passed_all_delta_checks": true
+        },
+        {
+          "fold": 2,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "delta_vs_equal_weight": {
+            "final_value": 4.988979057074516e-05,
+            "sharpe_ratio": -0.0009313244540796184,
+            "max_drawdown": 1.9737133420516528e-05
+          },
+          "failed_metrics": [
+            "sharpe_delta_not_positive"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 3,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "delta_vs_equal_weight": {
+            "final_value": -9.799237706364927e-05,
+            "sharpe_ratio": -0.0017580448698533147,
+            "max_drawdown": -7.769945810176537e-05
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive",
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 4,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "delta_vs_equal_weight": {
+            "final_value": -2.9797937939779473e-05,
+            "sharpe_ratio": -0.00028172863900977063,
+            "max_drawdown": 1.1102230246251565e-16
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 5,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2025-06-27",
+          "test_start": "2025-07-07",
+          "test_end": "2026-01-06",
+          "delta_vs_equal_weight": {
+            "final_value": 0.0007084173165103902,
+            "sharpe_ratio": 0.016024018995895783,
+            "max_drawdown": 3.8623377064395115e-06
+          },
+          "failed_metrics": [],
+          "passed_all_delta_checks": true
+        },
+        {
+          "fold": 6,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "delta_vs_equal_weight": {
+            "final_value": 0.0004065232566106136,
+            "sharpe_ratio": 0.004602417438869022,
+            "max_drawdown": -4.428885200913335e-05
+          },
+          "failed_metrics": [
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        }
+      ],
+      "failed_folds": [
+        {
+          "fold": 2,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "delta_vs_equal_weight": {
+            "final_value": 4.988979057074516e-05,
+            "sharpe_ratio": -0.0009313244540796184,
+            "max_drawdown": 1.9737133420516528e-05
+          },
+          "failed_metrics": [
+            "sharpe_delta_not_positive"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 3,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "delta_vs_equal_weight": {
+            "final_value": -9.799237706364927e-05,
+            "sharpe_ratio": -0.0017580448698533147,
+            "max_drawdown": -7.769945810176537e-05
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive",
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 4,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "delta_vs_equal_weight": {
+            "final_value": -2.9797937939779473e-05,
+            "sharpe_ratio": -0.00028172863900977063,
+            "max_drawdown": 1.1102230246251565e-16
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 6,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "delta_vs_equal_weight": {
+            "final_value": 0.0004065232566106136,
+            "sharpe_ratio": 0.004602417438869022,
+            "max_drawdown": -4.428885200913335e-05
+          },
+          "failed_metrics": [
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        }
+      ],
+      "failure_metric_counts": {
+        "final_value_delta_not_positive": 2,
+        "sharpe_delta_not_positive": 3,
+        "max_drawdown_delta_worse": 2
+      },
+      "passes_required_thresholds": false
+    },
+    {
+      "high_score": 1.03,
+      "cost_bps": 5.0,
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 3,
+        "non_worse_drawdown_folds": 3,
+        "mean_delta_final_value": 0.00030584228049549783,
+        "mean_delta_sharpe_ratio": 0.0052816484734498625,
+        "mean_delta_max_drawdown": -5.868927980397694e-06
+      },
+      "fold_results": [
+        {
+          "fold": 1,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2023-05-30",
+          "test_start": "2023-06-07",
+          "test_end": "2023-12-07",
+          "delta_vs_equal_weight": {
+            "final_value": 0.0002824697855616787,
+            "sharpe_ratio": 0.005327829088620284,
+            "max_drawdown": 0.00011171509395146995
+          },
+          "failed_metrics": [],
+          "passed_all_delta_checks": true
+        },
+        {
+          "fold": 2,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "delta_vs_equal_weight": {
+            "final_value": 7.407963157124442e-05,
+            "sharpe_ratio": -0.0014242569057492105,
+            "max_drawdown": 2.9647897955675795e-05
+          },
+          "failed_metrics": [
+            "sharpe_delta_not_positive"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 3,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "delta_vs_equal_weight": {
+            "final_value": -0.00014692922295012067,
+            "sharpe_ratio": -0.002634625983342076,
+            "max_drawdown": -0.00011608828656073378
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive",
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 4,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "delta_vs_equal_weight": {
+            "final_value": -4.462351656497887e-05,
+            "sharpe_ratio": -0.00042185116194592975,
+            "max_drawdown": -4.440892098500626e-16
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive",
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 5,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2025-06-27",
+          "test_start": "2025-07-07",
+          "test_end": "2026-01-06",
+          "delta_vs_equal_weight": {
+            "final_value": 0.001061003284799522,
+            "sharpe_ratio": 0.023951686112604342,
+            "max_drawdown": 5.783530181657781e-06
+          },
+          "failed_metrics": [],
+          "passed_all_delta_checks": true
+        },
+        {
+          "fold": 6,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "delta_vs_equal_weight": {
+            "final_value": 0.0006090537205556412,
+            "sharpe_ratio": 0.006891109690511765,
+            "max_drawdown": -6.627180341001182e-05
+          },
+          "failed_metrics": [
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        }
+      ],
+      "failed_folds": [
+        {
+          "fold": 2,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2023-11-30",
+          "test_start": "2023-12-08",
+          "test_end": "2024-06-19",
+          "delta_vs_equal_weight": {
+            "final_value": 7.407963157124442e-05,
+            "sharpe_ratio": -0.0014242569057492105,
+            "max_drawdown": 2.9647897955675795e-05
+          },
+          "failed_metrics": [
+            "sharpe_delta_not_positive"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 3,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-06-12",
+          "test_start": "2024-06-20",
+          "test_end": "2024-12-23",
+          "delta_vs_equal_weight": {
+            "final_value": -0.00014692922295012067,
+            "sharpe_ratio": -0.002634625983342076,
+            "max_drawdown": -0.00011608828656073378
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive",
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 4,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2024-12-16",
+          "test_start": "2024-12-24",
+          "test_end": "2025-07-04",
+          "delta_vs_equal_weight": {
+            "final_value": -4.462351656497887e-05,
+            "sharpe_ratio": -0.00042185116194592975,
+            "max_drawdown": -4.440892098500626e-16
+          },
+          "failed_metrics": [
+            "final_value_delta_not_positive",
+            "sharpe_delta_not_positive",
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        },
+        {
+          "fold": 6,
+          "status": "available_for_manual_offline_review",
+          "train_start": "2016-01-04",
+          "train_end": "2025-12-29",
+          "test_start": "2026-01-07",
+          "test_end": "2026-07-17",
+          "delta_vs_equal_weight": {
+            "final_value": 0.0006090537205556412,
+            "sharpe_ratio": 0.006891109690511765,
+            "max_drawdown": -6.627180341001182e-05
+          },
+          "failed_metrics": [
+            "max_drawdown_delta_worse"
+          ],
+          "passed_all_delta_checks": false
+        }
+      ],
+      "failure_metric_counts": {
+        "final_value_delta_not_positive": 2,
+        "sharpe_delta_not_positive": 3,
+        "max_drawdown_delta_worse": 3
+      },
+      "passes_required_thresholds": false
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "interpretation": [
+    "The warning-cost failure is evaluated fold by fold against equal weight.",
+    "A negative Sharpe delta is enough to fail the positive Sharpe fold-count gate even when final value improves.",
+    "This report is diagnostic only and does not authorize training or live changes."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "cost_warning_failure_explained": true,
+    "shadow_training_ready": false,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

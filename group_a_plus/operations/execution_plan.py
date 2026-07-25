@@ -87,7 +87,25 @@ def load_group_a_plus_holdings(path: Path, row_label: str = "即時庫存") -> d
     return _parse_group_a_plus_holdings(pd.read_excel(path, sheet_name=0, header=None), row_label)
 
 
+def load_group_a_plus_holdings_json(path: Path) -> dict[str, int]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    raw_holdings = payload.get("holdings") if isinstance(payload, dict) else None
+    if not isinstance(raw_holdings, dict):
+        raise ValueError("Holdings JSON must contain a holdings object")
+    holdings: dict[str, int] = {}
+    for ticker, shares in raw_holdings.items():
+        normalized = str(ticker).upper().strip()
+        if normalized not in GROUP_A_PLUS_TICKERS:
+            continue
+        holdings[normalized] = int(round(float(shares)))
+    if not holdings:
+        raise ValueError("No Group A++ holdings parsed from holdings JSON")
+    return holdings
+
+
 def _latest_prices(db_path: Path, tickers: list[str], as_of: str) -> dict[str, float]:
+    if not tickers:
+        return {}
     placeholders = ", ".join(["?"] * len(tickers))
     con = duckdb.connect(str(db_path), read_only=True)
     try:
@@ -570,10 +588,16 @@ def build_execution_plan(
     max_initial_buy_fraction: float = 0.4,
     min_staged_buy_notional: float = 20_000.0,
     compounding_regime_path: Path | None = None,
+    holdings_json_path: Path | None = None,
+    enforce_advisory_pre_trade_guards: bool = True,
 ) -> dict[str, Any]:
     if not 0.0 <= commission_discount <= 1.0:
         raise ValueError("commission_discount must be between 0 and 1")
-    holdings = load_group_a_plus_holdings(workbook)
+    holdings = (
+        load_group_a_plus_holdings_json(holdings_json_path)
+        if holdings_json_path is not None
+        else load_group_a_plus_holdings(workbook)
+    )
     held_tickers = sorted(ticker for ticker, shares in holdings.items() if shares != 0)
     held_prices = _latest_prices(db_path, held_tickers, requested_as_of)
     unknown_prices = sorted(set(held_tickers) - set(held_prices))
@@ -632,6 +656,31 @@ def build_execution_plan(
         staged_target_shares,
         compounding_regime,
     )
+    if not enforce_advisory_pre_trade_guards:
+        # All orders are placed manually (no automated execution exists yet), so
+        # these two guards were designed to be a human-review prompt, not an
+        # automatic block -- see 2026-07-23 audit. Downgrading them here keeps
+        # apply_volatility_gate_pre_trade_guard / apply_compounding_regime_pre_trade_guard
+        # (and their unit tests) unchanged; only the enforcement decision made in
+        # this function changes. The full recommended target is kept in
+        # target_shares for manual review; what the guard would have blocked is
+        # preserved under advisory_trades instead of being silently zeroed out.
+        for guard in (pre_trade_guard, compounding_regime_pre_trade_guard):
+            guard["enforced"] = False
+            if guard.get("status") == "blocked":
+                guard["advisory_trades"] = guard.get("blocked_trades", [])
+                guard["blocked_trades"] = []
+                guard["status"] = "flagged_advisory_only"
+                guard["guarded_target_shares"] = guard.get("requested_target_shares")
+                guard["review_note"] = (
+                    "Advisory only: full target kept for manual review instead of being auto-blocked."
+                )
+        volatility_guarded_targets = dict(staged_target_shares)
+        compounding_guarded_targets = dict(staged_target_shares)
+    else:
+        for guard in (pre_trade_guard, compounding_regime_pre_trade_guard):
+            guard["enforced"] = True
+
     target_shares = _combine_guarded_targets(
         staged_target_shares,
         [volatility_guarded_targets, risk_guarded_targets, compounding_guarded_targets],
@@ -706,6 +755,7 @@ def build_execution_plan(
         "requested_as_of_date": requested_as_of,
         "actual_data_date": signal["actual_data_date"],
         "workbook": str(workbook),
+        "holdings_source": str(holdings_json_path or workbook),
         "holdings_row": "即時庫存",
         "current_holdings": holdings,
         "current_cash_input": cash_balance,
@@ -720,6 +770,7 @@ def build_execution_plan(
         "suppressed_trades": suppressed_trades,
         "staged_buys": staged_buys,
         "staged_target_shares_before_guards": staged_target_shares,
+        "advisory_pre_trade_guards_enforced": enforce_advisory_pre_trade_guards,
         "pre_trade_guard": pre_trade_guard,
         "risk_add_pre_trade_guard": risk_add_pre_trade_guard,
         "compounding_regime_pre_trade_guard": compounding_regime_pre_trade_guard,
@@ -780,12 +831,27 @@ def main() -> None:
     parser.add_argument("--max-initial-buy-fraction", type=float, default=0.4)
     parser.add_argument("--min-staged-buy-notional", type=float, default=20_000.0)
     parser.add_argument(
+        "--holdings-json",
+        default=None,
+        help="Optional holdings JSON with a holdings object. When set, this replaces workbook holdings parsing.",
+    )
+    parser.add_argument(
         "--compounding-regime",
         default=None,
         help="Optional 00631L leveraged compounding regime JSON. Use 'latest' for the newest matching result.",
     )
     parser.add_argument("--output", default="results/group_a_plus_execution_plan_v2.json")
     parser.add_argument("--latest-pointer", default=str(DEFAULT_EXECUTION_PLAN))
+    parser.add_argument(
+        "--enforce-advisory-pre-trade-guards",
+        action="store_true",
+        default=False,
+        help=(
+            "Let the volatility-gate and compounding-regime guards auto-zero the 00631L target "
+            "(pre-2026-07-23 behavior). Default is off: all orders are placed manually, so these "
+            "two guards only flag a warning and the full recommended target is kept for review."
+        ),
+    )
     args = parser.parse_args()
     std = OutputStandardizer("group_a_plus.operations.execution_plan")
     try:
@@ -807,6 +873,8 @@ def main() -> None:
             args.max_initial_buy_fraction,
             args.min_staged_buy_notional,
             Path(args.compounding_regime) if args.compounding_regime else None,
+            Path(args.holdings_json) if args.holdings_json else None,
+            args.enforce_advisory_pre_trade_guards,
         )
         payload = std.success(plan)
     except Exception as exc:

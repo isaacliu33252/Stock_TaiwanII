@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_sin_lite_proxy",
+  "generated_at": "2026-07-19T15:59:25",
+  "as_of": "2026-07-20",
+  "actual_data_end": "2026-07-17",
+  "policy": "research_only_sin_lite_proxy_no_weight_change",
+  "status": "blocked",
+  "method": {
+    "paper_equivalent": false,
+    "proxy_type": "daily_ohlcv_correlation_lag_downside_comovement",
+    "lookback": 120,
+    "min_history": 80,
+    "edge_threshold": 0.35
+  },
+  "coverage": {
+    "metadata_included_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "00646.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW",
+      "2308.TW",
+      "2317.TW",
+      "2330.TW",
+      "2382.TW",
+      "2454.TW"
+    ],
+    "usable_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "00646.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW",
+      "2308.TW",
+      "2317.TW",
+      "2330.TW",
+      "2382.TW",
+      "2454.TW"
+    ],
+    "usable_ticker_count": 14,
+    "lookback_observations": 120,
+    "latest_dt": "2026-07-17"
+  },
+  "latest": {
+    "sin_lite_score": 0.380094,
+    "state": "normal",
+    "manual_review_required": false,
+    "state_reasons": [
+      "sin_lite_score=0.3801"
+    ],
+    "components": {
+      "correlation_density": 0.676815,
+      "edge_density": 0.0,
+      "downside_comovement": 0.670426,
+      "influence_concentration": null,
+      "tsmc_lead_risk": 0.173136
+    },
+    "avg_abs_corr": 0.507611,
+    "max_abs_corr": 0.983464,
+    "edge_count": 0,
+    "edge_density": 0.0,
+    "downside_density": 0.670426,
+    "lead_2330_to_0050_corr": 0.023136,
+    "lead_2330_to_00631l_corr": 0.01215,
+    "recent_2330_ret5": -0.05176,
+    "top_edges": []
+  },
+  "blocking_reasons": [
+    "sin_lite_proxy_not_validated_for_live_weight_change"
+  ],
+  "warning_reasons": [
+    "daily_ohlcv_proxy_not_full_sin_no_hmm_no_transfer_entropy"
+  ],
+  "decision": {
+    "sin_lite_available_for_shadow_review": true,
+    "paper_equivalent": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

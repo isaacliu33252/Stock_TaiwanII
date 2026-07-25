@@ -11,7 +11,7 @@
     "promoted_from": "a2111_tight_entry_bond30c30",
     "ncf_version": "v5_tabnet",
     "runner_params": {
-      "ncf_panel_631l_path": "results/ncf_00631l_panel_latest_20260707.csv",
+      "ncf_panel_631l_path": "results/ncf_00631l_panel_latest_20260716.csv",
       "h20_max": 0.33,
       "conf_min": 0.55,
       "h5_reentry_min": 0.55,
@@ -23,9 +23,12 @@
     },
     "improvements": {
       "sharpe_delta": 0.029,
+      "sharpe_delta_status": "STALE as of 2026-07-23 -- see ncf_late_bull_hedge_dormancy_audit_20260723 below. This original a2111->a2118 promotion evidence (trigger_count_short=3) does not reproduce with any current panel; do not cite this figure as a live NCF late-bull-hedge edge.",
+      "citation_rule_20260724": "Added per GROUP_A_PLUS_SIGNAL_VALIDATION_CHECKLIST_20260723.md item 5 (from arXiv:2603.21330 FinRL-X review): before citing ANY of this block's headline Sharpe/annual-return numbers (this field or run_a2118()'s own output) in a promotion/revert/keep-as-is decision, also run scripts/evaluate/evaluate_a2118_live_overlay_backtest_gap.py and report the overlay-inclusive numbers alongside. run_a2118()'s backtest does not call the same live NCF-overlay function daily_signal.py's live path calls (see ncf_late_bull_hedge_dormancy_audit_20260723 and the sibling Fable-audit handoff's Finding 2); a2118.py itself was NOT refactored to fix this (scoped as a separate, larger task), so this citation-rule is the interim safeguard.",
       "sortino_delta": 0.033,
       "annual_return_delta": -5.04,
       "trigger_accuracy": "3/3 (100%)",
+      "trigger_accuracy_status": "CONTRADICTED as of 2026-07-25 -- see original_promotion_evidence_reconstruction_20260725 below. The exact original panel/threshold reconstructs to trigger_count_short=3 (2025-10-30, 2026-02-23, 2026-05-04), but GROUP_A_PLUS_A2118_HANDOFF_20260628.md's own historical table already lists 2026-05-04 as a false trigger (00631L +21.9% over the next 20 trading days). This '3/3 (100%)' figure is inconsistent with its own cited source document; do not cite it as a validated accuracy rate.",
       "trigger_count_short": 3,
       "h20_threshold": "0.35 (tightened from 0.45 to eliminate May-2026 false positives)",
       "bug_fix": "h20_prob_up now uses raw H=20 probability (not ensemble calibrated_prob_up)",
@@ -101,6 +104,29 @@
         },
         "runner_change": "ncf_panel_631l_path updated from results/ncf_00631l_panel_latest_20260630.csv to results/ncf_00631l_panel_latest_20260707.csv (regenerated with --expanding-model-weights, now default).",
         "decision": "Implemented in ncf_00631l.py by explicit user instruction after empirical verification (multiple shrinkage-parameter iterations) and a2118 trigger-stability check. ncf_2330.py and ncf_00632r.py have the identical duplicated global-weight pattern but were NOT changed in this session -- deferred as a separate decision."
+      },
+      "ncf_late_bull_hedge_dormancy_audit_20260723": {
+        "reason": "Fable direction-6 audit (2026-07-23 session) asked whether h20_max=0.33/conf_min=0.55 -- chosen by the original 06-29 grid search -- are still well-calibrated cut-points against the current panel's probability/confidence distribution.",
+        "finding": "Across every current panel snapshot checked (20260707, 20260708, 20260716, 20260720, 20260721, 20260722 -- 6/6), zero days in the full 2025-01-02..latest history satisfy h20_prob_up<0.33 AND confidence>=0.55 simultaneously. Confirmed this is NOT caused by the 2026-07-07 expanding-model-weights fix: re-checked against the pre-fix 'OFF' (global-weight) verification panel for the same window (results/ncf_00631l_panel_verify_off_20260703.csv) -- also 0/0 trigger-eligible days. The dormancy predates that fix and is a property of the 2025-2026 panel/regime itself, not a methodology regression.",
+        "byte_identical_confirmation": "Ran run_a2111 vs run_a2118 (current production params, ncf_panel_631l_path=results/ncf_00631l_panel_latest_20260722.csv) over 2024-01-02..2026-07-22: pure a2111 gives final_value=2,854,319 sharpe=1.8690 sortino=1.8527 max_drawdown=-0.2103; full current a2118 config gives final_value=2,854,319 sharpe=1.9035 sortino=1.8800 max_drawdown=-0.2103 (late_bull_trigger_days=0); run_a2118 with ncf_panel_631l_path=None (i.e. a2111 base + only the 2020 COVID switch-rule fix params, no NCF hedge at all) gives the exact same final_value=2,854,319 sharpe=1.9035 sortino=1.8800 max_drawdown=-0.2103 as the full a2118 config -- numerically identical to every reported decimal. The entire current Sharpe 1.8690->1.9035 improvement over pure a2111 is attributable to switch_rule_2020_covid_fix_20260706 above; the NCF late-bull-hedge overlay contributes exactly zero to today's numbers.",
+        "implication": "The original sharpe_delta=0.029/trigger_count_short=3 evidence that justified promoting a2111->a2118 (see sharpe_delta_status above) was earned on a since-superseded panel snapshot and does not reproduce under any panel-generation method verified so far. It should not be cited as an ongoing, currently-demonstrated edge.",
+        "decision": "Keep a2118 active as-is -- reverting to plain a2111 would also discard the independently-validated, gate-passed switch_rule_2020_covid_fix_20260706, which is the actual (and only currently measurable) source of a2118's edge over pure a2111. The NCF late-bull-hedge mechanism is retained for optionality (harmless while dormant) but is downgraded from 'demonstrated production edge' to 'unproven/dormant, evidence not currently reproducible' -- should not be re-cited in future promotion/decision records without a fresh out-of-sample validation.",
+        "open_follow_up": "Resolved 2026-07-25 -- see original_promotion_evidence_reconstruction_20260725 below."
+      },
+      "original_promotion_evidence_reconstruction_20260725": {
+        "reason": "Closed the open_follow_up above: located and reconstructed the exact pre-2026-06-29 panel/threshold that produced this block's original trigger_count_short=3 evidence.",
+        "reconstructed_config": {
+          "panel": "results/ncf_00631l_panel_2025_v4_tail.csv (v4/pre-TabNet, cited by name in GROUP_A_PLUS_A2118_HANDOFF_20260628.md, this record's decision_record)",
+          "h20_max": 0.45,
+          "conf_min": 0.55,
+          "h5_reentry_min": 0.55,
+          "window": "2025-01-02..2026-06-26"
+        },
+        "finding": "Re-running run_a2118() with this exact config reproduces late_bull_trigger_days=3 exactly, matching trigger_count_short above -- almost certainly the original configuration, not a guess. The three trigger_events are 2025-10-30, 2026-02-23, and 2026-05-04.",
+        "accuracy_contradiction": "2026-05-04 is listed as a false trigger (00631L +21.9% over the next 20 trading days, the outcome the hedge exists to prevent) in the same GROUP_A_PLUS_A2118_HANDOFF_20260628.md's own historical table -- see trigger_accuracy_status above. The recorded trigger_accuracy: '3/3 (100%)' is inconsistent with its own source document.",
+        "secondary_open_item": "The magnitude figures (sharpe_delta/sortino_delta/annual_return_delta) do not reproduce exactly with this config (reconstruction gives +0.109/+0.135/-7.10pp vs the +0.029/+0.033/-5.04pp recorded above) -- same direction and shape, 3-4x larger magnitude. The comparison baseline used for the original figures was not fully identified; not chased further.",
+        "raw_results": "results/a2118_original_promotion_evidence_reconstruction_20260725.json",
+        "decision": "No production change -- this block's evidence was already marked STALE (sharpe_delta_status above) and not citable since 2026-07-23; this reconstruction adds historical-audit detail (the accuracy contradiction) but does not change the standing 'do not cite' guidance or a2118's active status."
       },
       "external_research_review_20260630": {
         "stock_prediction_models_master": {

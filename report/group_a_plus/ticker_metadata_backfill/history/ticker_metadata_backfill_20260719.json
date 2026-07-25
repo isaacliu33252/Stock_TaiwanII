@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_ticker_metadata_backfill",
+  "generated_at": "2026-07-19T15:53:26",
+  "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+  "policy": "static_metadata_only_no_price_download_no_weight_change",
+  "table": "ticker_metadata",
+  "seed_source": "manual_group_a_plus_seed_20260719",
+  "inserted_or_replaced_rows": 16,
+  "metadata_total_rows_after_backfill": 16,
+  "sin_lite_included_rows": 14,
+  "sin_lite_excluded_rows": 2,
+  "ohlcv_ticker_count": 15,
+  "ohlcv_tickers_missing_metadata": [],
+  "metadata_tickers_without_ohlcv": [
+    "2330.TW"
+  ],
+  "external_market_tickers_with_metadata": [
+    "2330.TW"
+  ],
+  "metadata_rows": [
+    {
+      "ticker": "0050",
+      "canonical_ticker": "0050.TW",
+      "asset_type": "legacy_alias",
+      "sector": "broad_market",
+      "industry": "large_cap_equity",
+      "included_in_sin_lite": false,
+      "exclusion_reason": "legacy_duplicate_of_0050.TW"
+    },
+    {
+      "ticker": "0050.TW",
+      "canonical_ticker": "0050.TW",
+      "asset_type": "equity_etf",
+      "sector": "broad_market",
+      "industry": "large_cap_equity",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "0056.TW",
+      "canonical_ticker": "0056.TW",
+      "asset_type": "equity_etf",
+      "sector": "dividend_equity",
+      "industry": "high_dividend_equity",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "00631L.TW",
+      "canonical_ticker": "00631L.TW",
+      "asset_type": "leveraged_equity_etf",
+      "sector": "leveraged_broad_market",
+      "industry": "leveraged_large_cap_equity",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "00632R.TW",
+      "canonical_ticker": "00632R.TW",
+      "asset_type": "inverse_equity_etf",
+      "sector": "inverse_broad_market",
+      "industry": "inverse_large_cap_equity",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "00646.TW",
+      "canonical_ticker": "00646.TW",
+      "asset_type": "equity_etf",
+      "sector": "global_equity",
+      "industry": "us_large_cap_equity",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "00679B.TWO",
+      "canonical_ticker": "00679B.TWO",
+      "asset_type": "bond_etf",
+      "sector": "duration_bond",
+      "industry": "us_treasury_long_duration",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "00713.TW",
+      "canonical_ticker": "00713.TW",
+      "asset_type": "equity_etf",
+      "sector": "defensive_equity",
+      "industry": "high_dividend_low_volatility_equity",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "00751B.TWO",
+      "canonical_ticker": "00751B.TWO",
+      "asset_type": "bond_etf",
+      "sector": "credit_bond",
+      "industry": "investment_grade_credit",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "00878.TW",
+      "canonical_ticker": "00878.TW",
+      "asset_type": "equity_etf",
+      "sector": "dividend_equity",
+      "industry": "esg_high_dividend_equity",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "2308.TW",
+      "canonical_ticker": "2308.TW",
+      "asset_type": "stock",
+      "sector": "electronics",
+      "industry": "electronic_components_power",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "2317.TW",
+      "canonical_ticker": "2317.TW",
+      "asset_type": "stock",
+      "sector": "electronics",
+      "industry": "electronics_manufacturing_services",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "2330.TW",
+      "canonical_ticker": "2330.TW",
+      "asset_type": "stock",
+      "sector": "semiconductors",
+      "industry": "semiconductor_foundry",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "2382.TW",
+      "canonical_ticker": "2382.TW",
+      "asset_type": "stock",
+      "sector": "electronics",
+      "industry": "computer_hardware",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "2454.TW",
+      "canonical_ticker": "2454.TW",
+      "asset_type": "stock",
+      "sector": "semiconductors",
+      "industry": "ic_design",
+      "included_in_sin_lite": true,
+      "exclusion_reason": null
+    },
+    {
+      "ticker": "wf",
+      "canonical_ticker": "wf",
+      "asset_type": "test_artifact",
+      "sector": "excluded",
+      "industry": "excluded",
+      "included_in_sin_lite": false,
+      "exclusion_reason": "non_ticker_walk_forward_artifact"
+    }
+  ],
+  "next_data_gaps": [
+    "broad_taiwan_stock_ohlcv_universe_min_50_tickers",
+    "sector_index_ohlcv",
+    "hmm_bubble_state_probabilities",
+    "transfer_entropy_network",
+    "crash_window_maxloss_labels"
+  ],
+  "decision": {
+    "metadata_backfilled": true,
+    "price_data_changed": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false
+  }
+}

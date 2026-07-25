@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_intervention_fatigue_risk_budget_readiness_review",
+  "generated_at": "2026-07-21T22:38:54",
+  "policy": "research_only_intervention_fatigue_risk_budget_pacing_no_weight_change",
+  "status": "blocked",
+  "as_of": "2026-07-20",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2605.12462.pdf",
+    "title": "Towards Affordable Energy: A Gymnasium Environment for Electric Utility Demand-Response Programs",
+    "imported_concepts": [
+      "modular_gym_style_environment",
+      "multi_objective_reward_with_cvar_penalty",
+      "intervention_fatigue",
+      "finite_risk_budget_pacing",
+      "baseline_policy_comparison_before_promotion"
+    ],
+    "not_imported": [
+      "electricity_market_data",
+      "ercot_caiso_calibration",
+      "ppo_live_policy",
+      "automatic_target_weight_change"
+    ]
+  },
+  "component_readiness": {
+    "rebalance": {
+      "status": "available",
+      "auto_rebalance_allowed": false,
+      "target_weight_change_allowed": false,
+      "allow_00631l_add": false,
+      "cash_buffer_gap_reference": 0.30000000000000004
+    },
+    "market_impact": {
+      "status": "blocked",
+      "turnover": 0.5006477801878955,
+      "auto_rebalance_allowed": false,
+      "allow_00631l_add": false
+    },
+    "dynamic_cvar_tail_cost": {
+      "status": "blocked",
+      "tail_cost_readiness_ready": false,
+      "allow_00631l_add": false
+    },
+    "research_shadow": {
+      "status": "blocked",
+      "allow_00631l_add": false
+    }
+  },
+  "intervention_fatigue": {
+    "trade_count_nonzero": 1,
+    "leverage_change_count": 0,
+    "hedge_change_count": 0,
+    "has_00631l_add_attempt": false,
+    "has_00632r_open_attempt": false,
+    "cooldown_policy_implemented": false,
+    "recent_intervention_window_days": null,
+    "normalized_history_available": true,
+    "history_entry_count": 76,
+    "history_blocked_entry_count": 55,
+    "history_leverage_intervention_count": 67,
+    "history_hedge_intervention_count": 0
+  },
+  "intervention_history": {
+    "status": "available",
+    "history_type": "system_observed_daily_status_not_broker_fills",
+    "entry_count": 76,
+    "blocked_entry_count": 55,
+    "leverage_intervention_count": 67,
+    "hedge_intervention_count": 0,
+    "first_check_date": "2026-07-06",
+    "last_check_date": "2026-07-20",
+    "source_file_count": 41
+  },
+  "broker_holdings_time_series": {
+    "status": "sample_available",
+    "history_type": "transaction_derived_incomplete_not_authoritative_broker_positions",
+    "authoritative_broker_export": false,
+    "transaction_count": 146,
+    "snapshot_count": 116,
+    "first_transaction_date": "2022-09-14",
+    "last_transaction_date": "2026-07-17",
+    "latest_position_count": 13,
+    "negative_position_count": 4
+  },
+  "broker_holdings_reconciliation": {
+    "status": "blocked",
+    "broker_holdings_reconciled": false,
+    "can_generate_live_orders": false,
+    "matched_confirmed_count": 1,
+    "mismatched_confirmed_count": 1,
+    "missing_confirmed_count": 0,
+    "negative_position_count": 4,
+    "authoritative_broker_export": false
+  },
+  "risk_budget_pacing": {
+    "leverage_budget_target_weight": 0.2,
+    "cash_budget_target_weight": 0.30000000000000004,
+    "risk_budget_policy_promoted": false,
+    "turnover_pacing_limit": 0.5,
+    "turnover": 0.5006477801878955
+  },
+  "blocking_reasons": [
+    "risk_budget_policy_not_promoted",
+    "rl_environment_not_validated",
+    "broker_holdings_time_series_sample_only",
+    "broker_holdings_time_series_has_negative_positions",
+    "broker_holdings_reconciliation_blocked",
+    "broker_holdings_not_order_authoritative",
+    "market_impact_readiness_blocked",
+    "dynamic_cvar_tail_cost_readiness_blocked",
+    "research_shadow_decision_snapshot_blocked",
+    "rebalance_review_disallows_auto_rebalance",
+    "rebalance_review_disallows_target_weight_change",
+    "market_impact_disallows_00631l_add",
+    "tail_cost_readiness_not_ready",
+    "research_shadow_disallows_00631l_add",
+    "turnover_at_or_above_pacing_limit"
+  ],
+  "warning_reasons": [
+    "pending_intervention_count:1",
+    "cash_buffer_gap_reference:0.30000000000000004"
+  ],
+  "decision": {
+    "summary": "Intervention fatigue and risk-budget pacing are governance-only. Current input gates and missing intervention history prevent any automatic rebalance or leverage add.",
+    "intervention_fatigue_ready": false,
+    "risk_budget_pacing_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+    "rebalance": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rebalance_review_20260720.json",
+    "market_impact": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+    "dynamic_cvar_tail_cost": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json",
+    "research_shadow": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/research_shadow_decision_snapshot.json",
+    "intervention_history": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/intervention_history.json",
+    "broker_holdings_time_series": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/broker_holdings_time_series_sample.json",
+    "broker_holdings_reconciliation": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/broker_holdings_reconciliation_review.json"
+  }
+}

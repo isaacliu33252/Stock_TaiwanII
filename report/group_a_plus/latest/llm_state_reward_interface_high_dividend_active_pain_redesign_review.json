@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_high_dividend_active_pain_redesign_review",
+  "generated_at": "2026-07-21T16:01:31",
+  "as_of": "2026-07-21",
+  "status": "available_for_offline_dgr_design",
+  "policy": "redesign_review_only_no_model_training_no_live_action",
+  "proposal_id": "gift_research_high_dividend_active_pain_v1",
+  "inputs": {
+    "event_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_drawdown_failure_event_audit.json",
+    "proposal_validation": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_proposal_validation_review.json",
+    "promotion_gate_snapshot": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_promotion_gate_snapshot.json",
+    "min_high_dividend_active_weight": 0.05,
+    "max_high_dividend_active_contribution": -0.005
+  },
+  "evidence": {
+    "dominant_negative_event_bucket": "high_dividend",
+    "high_dividend_event_mean_active_weight": 0.10480580266294555,
+    "high_dividend_event_sum_active_contribution": -0.024992572602861318,
+    "worst_fold": 3,
+    "worst_fold_trough_date": "2024-08-05",
+    "accepted_proposal": {
+      "proposal_id": "gift_research_high_dividend_active_pain_v1",
+      "status": "accepted_for_offline_review",
+      "accepted_for_offline_review": true,
+      "rejection_reasons": [],
+      "warning_reasons": [],
+      "feature_families": [
+        "bucket_active_pain",
+        "downside_risk",
+        "volatility"
+      ],
+      "feature_primitives": [
+        "active_bucket_weight",
+        "active_bucket_return_contribution",
+        "active_bucket_drawdown_depth",
+        "reward_signal_concentration_hhi",
+        "high_dividend_active_pain",
+        "drawdown_depth",
+        "realized_volatility"
+      ],
+      "reward_terms": [
+        "active_bucket_drawdown_penalty",
+        "drawdown_penalty",
+        "concentration_penalty"
+      ],
+      "decision": {
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "promotion_gate_passed": true
+  },
+  "recommended_offline_interface_changes": {
+    "feature_family": "bucket_active_pain",
+    "feature_primitives": [
+      "active_bucket_weight",
+      "active_bucket_return_contribution",
+      "active_bucket_drawdown_depth",
+      "reward_signal_concentration_hhi",
+      "high_dividend_active_pain"
+    ],
+    "reward_terms": [
+      "active_bucket_drawdown_penalty",
+      "drawdown_penalty",
+      "concentration_penalty"
+    ],
+    "must_use_lagged_features_only": true,
+    "must_freeze_before_oos": true
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "promotion_gate_passed_unexpected_for_redesign_review"
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "offline_dgr_design_allowed": true,
+    "offline_smoke_allowed_after_dgr_green": true,
+    "next_shadow_model_design_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

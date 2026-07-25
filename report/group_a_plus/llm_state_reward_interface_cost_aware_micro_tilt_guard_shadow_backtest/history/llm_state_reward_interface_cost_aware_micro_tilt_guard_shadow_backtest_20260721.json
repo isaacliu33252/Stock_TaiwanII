@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_cost_aware_micro_tilt_guard_shadow_backtest",
+  "generated_at": "2026-07-21T17:02:28",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "cost_aware_micro_tilt_guard_shadow_only_no_model_training_no_live_action",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "panel_sha256": "66aa5e59dbe67b896a8b1b9846091596ad64aa766a5607eecf9e169b998ee0b8",
+    "walk_forward_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_walk_forward_audit.json",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "low_quantile": 0.3,
+    "high_quantile": 0.7,
+    "low_score": 1.0,
+    "high_score": 1.03,
+    "max_high_score": 1.03,
+    "required_cost_bps": [
+      0.0,
+      2.0
+    ],
+    "warning_cost_bps": [
+      5.0
+    ],
+    "thresholds": {
+      "min_positive_final_folds": 4,
+      "min_positive_sharpe_folds": 4,
+      "min_non_worse_drawdown_folds": 3
+    }
+  },
+  "summary": {
+    "required_cost_scenarios": 2,
+    "required_cost_scenarios_passed": 2,
+    "warning_cost_scenarios": 1,
+    "warning_cost_scenarios_passed": 0,
+    "micro_tilt_guard_passed": true,
+    "required_results": [
+      {
+        "cost_bps": 0.0,
+        "required_for_gate": true,
+        "passed": true,
+        "params": {
+          "low_quantile": 0.3,
+          "high_quantile": 0.7,
+          "low_score": 1.0,
+          "mid_score": 1.0,
+          "high_score": 1.03,
+          "cost_bps": 0.0
+        },
+        "aggregate": {
+          "fold_count": 6,
+          "available_fold_count": 6,
+          "positive_final_value_folds": 4,
+          "positive_sharpe_folds": 4,
+          "non_worse_drawdown_folds": 4,
+          "mean_delta_final_value": 0.00039297879422783843,
+          "mean_delta_sharpe_ratio": 0.007119719883366515,
+          "mean_delta_max_drawdown": 1.4202407314774698e-05
+        },
+        "rank_score": 96.05553158727452
+      },
+      {
+        "cost_bps": 2.0,
+        "required_for_gate": true,
+        "passed": true,
+        "params": {
+          "low_quantile": 0.3,
+          "high_quantile": 0.7,
+          "low_score": 1.0,
+          "mid_score": 1.0,
+          "high_score": 1.03,
+          "cost_bps": 2.0
+        },
+        "aggregate": {
+          "fold_count": 6,
+          "available_fold_count": 6,
+          "positive_final_value_folds": 4,
+          "positive_sharpe_folds": 4,
+          "non_worse_drawdown_folds": 3,
+          "mean_delta_final_value": 0.0003581231999669939,
+          "mean_delta_sharpe_ratio": 0.006384459832766735,
+          "mean_delta_max_drawdown": 6.173750110860521e-06
+        },
+        "rank_score": 90.0499519341644
+      }
+    ],
+    "warning_results": [
+      {
+        "cost_bps": 5.0,
+        "required_for_gate": false,
+        "passed": false,
+        "params": {
+          "low_quantile": 0.3,
+          "high_quantile": 0.7,
+          "low_score": 1.0,
+          "mid_score": 1.0,
+          "high_score": 1.03,
+          "cost_bps": 5.0
+        },
+        "aggregate": {
+          "fold_count": 6,
+          "available_fold_count": 6,
+          "positive_final_value_folds": 4,
+          "positive_sharpe_folds": 3,
+          "non_worse_drawdown_folds": 3,
+          "mean_delta_final_value": 0.00030584228049549783,
+          "mean_delta_sharpe_ratio": 0.0052816484734498625,
+          "mean_delta_max_drawdown": -5.868927980397694e-06
+        },
+        "rank_score": 82.04158297783242
+      }
+    ]
+  },
+  "scenario_results": [
+    {
+      "cost_bps": 0.0,
+      "required_for_gate": true,
+      "passed": true,
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 1.0,
+        "mid_score": 1.0,
+        "high_score": 1.03,
+        "cost_bps": 0.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 4,
+        "mean_delta_final_value": 0.00039297879422783843,
+        "mean_delta_sharpe_ratio": 0.007119719883366515,
+        "mean_delta_max_drawdown": 1.4202407314774698e-05
+      },
+      "rank_score": 96.05553158727452
+    },
+    {
+      "cost_bps": 2.0,
+      "required_for_gate": true,
+      "passed": true,
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 1.0,
+        "mid_score": 1.0,
+        "high_score": 1.03,
+        "cost_bps": 2.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 3,
+        "mean_delta_final_value": 0.0003581231999669939,
+        "mean_delta_sharpe_ratio": 0.006384459832766735,
+        "mean_delta_max_drawdown": 6.173750110860521e-06
+      },
+      "rank_score": 90.0499519341644
+    },
+    {
+      "cost_bps": 5.0,
+      "required_for_gate": false,
+      "passed": false,
+      "params": {
+        "low_quantile": 0.3,
+        "high_quantile": 0.7,
+        "low_score": 1.0,
+        "mid_score": 1.0,
+        "high_score": 1.03,
+        "cost_bps": 5.0
+      },
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 3,
+        "non_worse_drawdown_folds": 3,
+        "mean_delta_final_value": 0.00030584228049549783,
+        "mean_delta_sharpe_ratio": 0.0052816484734498625,
+        "mean_delta_max_drawdown": -5.868927980397694e-06
+      },
+      "rank_score": 82.04158297783242
+    }
+  ],
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "warning_cost_scenario_failed:5bps"
+  ],
+  "interpretation": [
+    "The guard permits only a neutral downside bucket and a very small high-reward tilt.",
+    "Required cost scenarios must pass all fold-count thresholds before this can count as a shadow risk-control gate.",
+    "This report is research-only and does not emit target weights or live rebalance instructions."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "cost_aware_micro_tilt_guard_ready_for_review": true,
+    "cost_aware_micro_tilt_guard_passed_shadow_gate": true,
+    "next_shadow_model_design_allowed": true,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

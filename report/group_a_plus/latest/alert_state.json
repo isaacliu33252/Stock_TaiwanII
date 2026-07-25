@@ -1,52 +1,43 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-14T16:06:14Z",
+  "generated_at": "2026-07-22T15:57:19Z",
   "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
-  "signal_date": "2026-07-14",
+  "signal_date": "2026-07-22",
   "source_signal_version": 2,
   "summary": {
-    "current_alert_count": 9,
+    "current_alert_count": 7,
     "emitted_count": 0,
-    "suppressed_count": 9,
-    "resolved_count": 1,
-    "active_state_count": 9
+    "suppressed_count": 7,
+    "resolved_count": 0,
+    "active_state_count": 7
   },
   "emitted_alerts": [],
   "suppressed_alerts": [
     {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:execution_blocked",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:execution_blocked",
-      "type": "execution_blocked",
-      "level": "high",
-      "title": "Execution blocked",
-      "reason": "Execution guard is not satisfied.",
-      "status": "suppressed"
-    },
-    {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:execution_risk",
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:execution_risk",
       "condition_key": "a2118_a2111_ncf_late_bull_deleverage:execution_risk",
       "type": "execution_risk",
-      "level": "high",
+      "level": "medium",
       "title": "Execution risk elevated",
-      "reason": "Daily execution risk score is 0.5427.",
+      "reason": "Daily execution risk score is 0.3346.",
       "status": "suppressed"
     },
     {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:total_risk_score",
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:total_risk_score",
       "condition_key": "a2118_a2111_ncf_late_bull_deleverage:total_risk_score",
       "type": "total_risk_score",
-      "level": "high",
-      "title": "Total risk score high",
-      "reason": "Composite market risk score is high.",
+      "level": "medium",
+      "title": "Total risk score elevated",
+      "reason": "Composite market risk score is elevated.",
       "status": "suppressed"
     },
     {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:volatility_gate_high_vol",
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:volatility_gate_high_vol",
       "condition_key": "a2118_a2111_ncf_late_bull_deleverage:volatility_gate_high_vol",
       "type": "volatility_gate_high_vol",
       "level": "medium",
       "title": "Volatility gate high-vol manual review",
-      "reason": "High-volatility gate is active; advisory-only review of 00631L exposure. Reference scale=0.5, vol_ratio=1.1578, vol_percentile=0.6111, 0050_5d=-0.0169.",
+      "reason": "High-volatility gate is active; advisory-only review of 00631L exposure. Reference scale=0.5, vol_ratio=1.5945, vol_percentile=0.9683, 0050_5d=-0.023.",
       "status": "suppressed",
       "metadata": {
         "allow_00631l_add": false,
@@ -55,185 +46,147 @@
         "volatility_gate": "high_vol_defensive",
         "signal_reliability": "suppress_return_prediction",
         "inputs": {
-          "garch_proxy_vol_ratio": 1.1578,
-          "garch_proxy_vol_percentile": 0.6111,
-          "return_0050_5d": -0.0169
+          "garch_proxy_vol_ratio": 1.5945,
+          "garch_proxy_vol_percentile": 0.9683,
+          "return_0050_5d": -0.023
         }
       }
     },
     {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:specialist_router_crash_deleverage",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:specialist_router_crash_deleverage",
-      "type": "specialist_router_crash_deleverage",
-      "level": "high",
-      "title": "Specialist router: crash deleverage",
-      "reason": "Crash-risk conditions override return forecasts; priority is leverage reduction.",
-      "status": "suppressed",
-      "metadata": {
-        "route": "crash_deleverage",
-        "trusted_specialists": [
-          "risk_control",
-          "drawdown_control"
-        ],
-        "recommended_action": "reduce_leverage",
-        "allow_00631l_add": false
-      }
-    },
-    {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:signal_wide_divergence",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:signal_wide_divergence",
-      "type": "signal_wide_divergence",
-      "level": "medium",
-      "title": "Signal alignment diverged",
-      "reason": "Cross-source signals show wide divergence; dominant direction is bullish.",
-      "status": "suppressed"
-    },
-    {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:market_trough_nowcast",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:market_trough_nowcast",
-      "type": "market_trough_nowcast",
-      "level": "medium",
-      "title": "Market trough nowcast: CAPITULATION_WARNING",
-      "reason": "Post-warning trough nowcast is active. This is a re-entry timing diagnostic, not an independent buy signal.",
-      "status": "suppressed",
-      "metadata": {
-        "state": "CAPITULATION_WARNING",
-        "policy": "diagnostic_reentry_timing_only_no_target_weight_change",
-        "recommended_execution_staging_fraction": null,
-        "capitulation_score": 2,
-        "reentry_confirmation_score": 1,
-        "context_reasons": [
-          "market_state=crash_risk",
-          "market_risk_level=severe",
-          "high_total_risk_with_drawdown"
-        ],
-        "capitulation_reasons": [
-          "0050_strategy_drawdown_le_6pct",
-          "0050_volume_z60_ge_1"
-        ],
-        "reentry_confirmation_reasons": [
-          "soxx_rebound_from_5d_low_ge_3pct"
-        ]
-      }
-    },
-    {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:ncf_panel_stale",
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:ncf_panel_stale",
       "condition_key": "a2118_a2111_ncf_late_bull_deleverage:ncf_panel_stale",
       "type": "ncf_panel_stale",
       "level": "medium",
       "title": "NCF panel stale",
-      "reason": "ncf_panel_631l last covers 2026-07-06, 6 trading day(s) behind signal date 2026-07-14. If this panel is pinned in strategy.json runner_params, the reproducibility guard that invalidates stale holds on panel regeneration is not firing -- confirm whether to refresh the panel.",
+      "reason": "ncf_panel_631l last covers 2026-07-16, 4 trading day(s) behind signal date 2026-07-22. If this panel is pinned in strategy.json runner_params, the reproducibility guard that invalidates stale holds on panel regeneration is not firing -- confirm whether to refresh the panel.",
       "status": "suppressed"
     },
     {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:network_spillover_snapshot_stale",
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:factor_lens_stale",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:factor_lens_stale",
+      "type": "factor_lens_stale",
+      "level": "medium",
+      "title": "Factor lens report stale",
+      "reason": "Factor lens report is dated 2026-07-21, older than signal date 2026-07-22.",
+      "status": "suppressed"
+    },
+    {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:network_spillover_snapshot_stale",
       "condition_key": "a2118_a2111_ncf_late_bull_deleverage:network_spillover_snapshot_stale",
       "type": "network_spillover_snapshot_stale",
       "level": "medium",
       "title": "Network spillover snapshot stale",
-      "reason": "Network volatility-spillover snapshot date does not match the live signal; snapshot_date=2026-07-09, signal_date=2026-07-14. Refresh the shadow snapshot before using its recovery-boost advisory.",
+      "reason": "Network volatility-spillover snapshot date does not match the live signal; snapshot_date=2026-07-09, signal_date=2026-07-22. Refresh the shadow snapshot before using its recovery-boost advisory.",
       "status": "suppressed",
       "metadata": {
         "trade_policy": "advisory_no_auto_weight_change",
         "snapshot_date": "2026-07-09",
-        "signal_date": "2026-07-14",
+        "signal_date": "2026-07-22",
         "model_family": "rolling_lagged_vol_spillover_shadow",
         "stale_snapshot": true
       }
-    }
-  ],
-  "resolved_alerts": [
-    {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:00631l_crash_risk_snapshot_stale",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:00631l_crash_risk_snapshot_stale",
-      "type": "00631l_crash_risk_snapshot_stale",
-      "level": "medium",
-      "title": "00631L crash-risk alert snapshot stale",
-      "status": "resolved"
-    }
-  ],
-  "alerts": {
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:execution_blocked": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:execution_blocked",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:execution_blocked",
-      "status": "suppressed",
-      "active": true,
-      "resolved": false,
-      "first_seen_at": "2026-07-14T16:01:39Z",
-      "last_seen_at": "2026-07-14T16:06:14Z",
-      "last_emitted_at": "2026-07-14T16:01:39Z",
-      "seen_count": 2,
-      "suppressed_count": 1,
-      "cooldown_minutes": 1200,
-      "alert": {
-        "type": "execution_blocked",
-        "level": "high",
-        "title": "Execution blocked",
-        "reason": "Execution guard is not satisfied.",
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:execution_blocked",
-        "cooldown_minutes": 1200
-      }
     },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:execution_risk": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:execution_risk",
+    {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:00631l_crash_risk_family_degraded",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:00631l_crash_risk_family_degraded",
+      "type": "00631l_crash_risk_family_degraded",
+      "level": "watch",
+      "title": "00631L crash-risk source data stale",
+      "reason": "One or more crash-risk source families have not updated recently, reducing confidence in the current watch level: liquidity_forced_selling.",
+      "status": "suppressed",
+      "metadata": {
+        "trade_policy": "advisory_no_auto_weight_change",
+        "auto_deleverage": false,
+        "snapshot_date": "2026-07-21",
+        "stale_families": [
+          "liquidity_forced_selling"
+        ],
+        "freshness": {
+          "status": "degraded",
+          "stale_family_count": 1,
+          "families": {
+            "options_tail": {
+              "latest_date_at_or_before_as_of": "2026-07-21",
+              "lag_days_vs_as_of": 0,
+              "stale": false
+            },
+            "liquidity_forced_selling": {
+              "latest_date_at_or_before_as_of": "2026-07-17",
+              "lag_days_vs_as_of": 4,
+              "stale": true
+            },
+            "cross_market_shock": {
+              "latest_date_at_or_before_as_of": "2026-07-21",
+              "lag_days_vs_as_of": 0,
+              "stale": false
+            }
+          }
+        }
+      }
+    }
+  ],
+  "resolved_alerts": [],
+  "alerts": {
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:execution_risk": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:execution_risk",
       "condition_key": "a2118_a2111_ncf_late_bull_deleverage:execution_risk",
       "status": "suppressed",
       "active": true,
       "resolved": false,
-      "first_seen_at": "2026-07-14T16:01:39Z",
-      "last_seen_at": "2026-07-14T16:06:14Z",
-      "last_emitted_at": "2026-07-14T16:01:39Z",
-      "seen_count": 2,
-      "suppressed_count": 1,
+      "first_seen_at": "2026-07-22T13:08:30Z",
+      "last_seen_at": "2026-07-22T15:57:19Z",
+      "last_emitted_at": "2026-07-22T13:08:30Z",
+      "seen_count": 32,
+      "suppressed_count": 31,
       "cooldown_minutes": 1200,
       "alert": {
         "type": "execution_risk",
-        "level": "high",
+        "level": "medium",
         "title": "Execution risk elevated",
-        "reason": "Daily execution risk score is 0.5427.",
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:execution_risk",
+        "reason": "Daily execution risk score is 0.3346.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:execution_risk",
         "cooldown_minutes": 1200
       }
     },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:total_risk_score": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:total_risk_score",
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:total_risk_score": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:total_risk_score",
       "condition_key": "a2118_a2111_ncf_late_bull_deleverage:total_risk_score",
       "status": "suppressed",
       "active": true,
       "resolved": false,
-      "first_seen_at": "2026-07-14T16:01:39Z",
-      "last_seen_at": "2026-07-14T16:06:14Z",
-      "last_emitted_at": "2026-07-14T16:01:39Z",
-      "seen_count": 2,
-      "suppressed_count": 1,
+      "first_seen_at": "2026-07-22T13:08:30Z",
+      "last_seen_at": "2026-07-22T15:57:19Z",
+      "last_emitted_at": "2026-07-22T13:08:30Z",
+      "seen_count": 32,
+      "suppressed_count": 31,
       "cooldown_minutes": 1200,
       "alert": {
         "type": "total_risk_score",
-        "level": "high",
-        "title": "Total risk score high",
-        "reason": "Composite market risk score is high.",
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:total_risk_score",
+        "level": "medium",
+        "title": "Total risk score elevated",
+        "reason": "Composite market risk score is elevated.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:total_risk_score",
         "cooldown_minutes": 1200
       }
     },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:volatility_gate_high_vol": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:volatility_gate_high_vol",
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:volatility_gate_high_vol": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:volatility_gate_high_vol",
       "condition_key": "a2118_a2111_ncf_late_bull_deleverage:volatility_gate_high_vol",
       "status": "suppressed",
       "active": true,
       "resolved": false,
-      "first_seen_at": "2026-07-14T16:01:39Z",
-      "last_seen_at": "2026-07-14T16:06:14Z",
-      "last_emitted_at": "2026-07-14T16:01:39Z",
-      "seen_count": 2,
-      "suppressed_count": 1,
+      "first_seen_at": "2026-07-22T13:08:30Z",
+      "last_seen_at": "2026-07-22T15:57:19Z",
+      "last_emitted_at": "2026-07-22T13:08:30Z",
+      "seen_count": 32,
+      "suppressed_count": 31,
       "cooldown_minutes": 1200,
       "alert": {
         "type": "volatility_gate_high_vol",
         "level": "medium",
         "title": "Volatility gate high-vol manual review",
-        "reason": "High-volatility gate is active; advisory-only review of 00631L exposure. Reference scale=0.5, vol_ratio=1.1578, vol_percentile=0.6111, 0050_5d=-0.0169.",
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:volatility_gate_high_vol",
+        "reason": "High-volatility gate is active; advisory-only review of 00631L exposure. Reference scale=0.5, vol_ratio=1.5945, vol_percentile=0.9683, 0050_5d=-0.023.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:volatility_gate_high_vol",
         "cooldown_minutes": 1200,
         "metadata": {
           "allow_00631l_add": false,
@@ -242,31 +195,245 @@
           "volatility_gate": "high_vol_defensive",
           "signal_reliability": "suppress_return_prediction",
           "inputs": {
-            "garch_proxy_vol_ratio": 1.1578,
-            "garch_proxy_vol_percentile": 0.6111,
-            "return_0050_5d": -0.0169
+            "garch_proxy_vol_ratio": 1.5945,
+            "garch_proxy_vol_percentile": 0.9683,
+            "return_0050_5d": -0.023
           }
         }
       }
     },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:specialist_router_crash_deleverage": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:specialist_router_crash_deleverage",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:specialist_router_crash_deleverage",
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:ncf_panel_stale": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:ncf_panel_stale",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:ncf_panel_stale",
       "status": "suppressed",
       "active": true,
       "resolved": false,
-      "first_seen_at": "2026-07-14T16:01:39Z",
-      "last_seen_at": "2026-07-14T16:06:14Z",
-      "last_emitted_at": "2026-07-14T16:01:39Z",
-      "seen_count": 2,
-      "suppressed_count": 1,
+      "first_seen_at": "2026-07-22T13:08:30Z",
+      "last_seen_at": "2026-07-22T15:57:19Z",
+      "last_emitted_at": "2026-07-22T13:08:30Z",
+      "seen_count": 32,
+      "suppressed_count": 31,
+      "cooldown_minutes": 1200,
+      "alert": {
+        "type": "ncf_panel_stale",
+        "level": "medium",
+        "title": "NCF panel stale",
+        "reason": "ncf_panel_631l last covers 2026-07-16, 4 trading day(s) behind signal date 2026-07-22. If this panel is pinned in strategy.json runner_params, the reproducibility guard that invalidates stale holds on panel regeneration is not firing -- confirm whether to refresh the panel.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:ncf_panel_stale",
+        "cooldown_minutes": 1200
+      }
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:factor_lens_stale": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:factor_lens_stale",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:factor_lens_stale",
+      "status": "suppressed",
+      "active": true,
+      "resolved": false,
+      "first_seen_at": "2026-07-22T13:08:30Z",
+      "last_seen_at": "2026-07-22T15:57:19Z",
+      "last_emitted_at": "2026-07-22T13:08:30Z",
+      "seen_count": 32,
+      "suppressed_count": 31,
+      "cooldown_minutes": 1200,
+      "alert": {
+        "type": "factor_lens_stale",
+        "level": "medium",
+        "title": "Factor lens report stale",
+        "reason": "Factor lens report is dated 2026-07-21, older than signal date 2026-07-22.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:factor_lens_stale",
+        "cooldown_minutes": 1200
+      }
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:network_spillover_snapshot_stale": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:network_spillover_snapshot_stale",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:network_spillover_snapshot_stale",
+      "status": "suppressed",
+      "active": true,
+      "resolved": false,
+      "first_seen_at": "2026-07-22T13:08:30Z",
+      "last_seen_at": "2026-07-22T15:57:19Z",
+      "last_emitted_at": "2026-07-22T13:08:30Z",
+      "seen_count": 32,
+      "suppressed_count": 31,
+      "cooldown_minutes": 1200,
+      "alert": {
+        "type": "network_spillover_snapshot_stale",
+        "level": "medium",
+        "title": "Network spillover snapshot stale",
+        "reason": "Network volatility-spillover snapshot date does not match the live signal; snapshot_date=2026-07-09, signal_date=2026-07-22. Refresh the shadow snapshot before using its recovery-boost advisory.",
+        "metadata": {
+          "trade_policy": "advisory_no_auto_weight_change",
+          "snapshot_date": "2026-07-09",
+          "signal_date": "2026-07-22",
+          "model_family": "rolling_lagged_vol_spillover_shadow",
+          "stale_snapshot": true
+        },
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:network_spillover_snapshot_stale",
+        "cooldown_minutes": 1200
+      }
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:00631l_crash_risk_family_degraded": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:00631l_crash_risk_family_degraded",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:00631l_crash_risk_family_degraded",
+      "status": "suppressed",
+      "active": true,
+      "resolved": false,
+      "first_seen_at": "2026-07-22T13:08:30Z",
+      "last_seen_at": "2026-07-22T15:57:19Z",
+      "last_emitted_at": "2026-07-22T13:08:30Z",
+      "seen_count": 32,
+      "suppressed_count": 31,
+      "cooldown_minutes": 1200,
+      "alert": {
+        "type": "00631l_crash_risk_family_degraded",
+        "level": "watch",
+        "title": "00631L crash-risk source data stale",
+        "reason": "One or more crash-risk source families have not updated recently, reducing confidence in the current watch level: liquidity_forced_selling.",
+        "metadata": {
+          "trade_policy": "advisory_no_auto_weight_change",
+          "auto_deleverage": false,
+          "snapshot_date": "2026-07-21",
+          "stale_families": [
+            "liquidity_forced_selling"
+          ],
+          "freshness": {
+            "status": "degraded",
+            "stale_family_count": 1,
+            "families": {
+              "options_tail": {
+                "latest_date_at_or_before_as_of": "2026-07-21",
+                "lag_days_vs_as_of": 0,
+                "stale": false
+              },
+              "liquidity_forced_selling": {
+                "latest_date_at_or_before_as_of": "2026-07-17",
+                "lag_days_vs_as_of": 4,
+                "stale": true
+              },
+              "cross_market_shock": {
+                "latest_date_at_or_before_as_of": "2026-07-21",
+                "lag_days_vs_as_of": 0,
+                "stale": false
+              }
+            }
+          }
+        },
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:00631l_crash_risk_family_degraded",
+        "cooldown_minutes": 1200
+      }
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:ops_health_pipeline": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:ops_health_pipeline",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:ops_health_pipeline",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-22T13:41:03Z",
+      "last_seen_at": "2026-07-22T13:41:03Z",
+      "last_emitted_at": "2026-07-22T13:41:03Z",
+      "seen_count": 1,
+      "suppressed_count": 0,
+      "cooldown_minutes": 1200,
+      "alert": {
+        "type": "ops_health_pipeline",
+        "level": "high",
+        "title": "Ops health: pipeline manifest error",
+        "reason": "Pipeline manifest error(s): daily_status_final_missing_from_manifest.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-22:ops_health_pipeline",
+        "cooldown_minutes": 1200
+      },
+      "resolved_at": "2026-07-22T13:43:00Z"
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-21:execution_blocked": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-21:execution_blocked",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:execution_blocked",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-21T14:40:11Z",
+      "last_seen_at": "2026-07-21T14:40:11Z",
+      "last_emitted_at": "2026-07-21T14:40:11Z",
+      "seen_count": 1,
+      "suppressed_count": 0,
+      "cooldown_minutes": 1200,
+      "alert": {
+        "type": "execution_blocked",
+        "level": "high",
+        "title": "Execution blocked",
+        "reason": "Execution guard is not satisfied.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-21:execution_blocked",
+        "cooldown_minutes": 1200
+      },
+      "resolved_at": "2026-07-22T13:08:30Z"
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-21:ops_health_execution_plan_stale": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-21:ops_health_execution_plan_stale",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:ops_health_execution_plan_stale",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-21T14:40:11Z",
+      "last_seen_at": "2026-07-21T14:40:11Z",
+      "last_emitted_at": "2026-07-21T14:40:11Z",
+      "seen_count": 1,
+      "suppressed_count": 0,
+      "cooldown_minutes": 1200,
+      "alert": {
+        "type": "ops_health_execution_plan_stale",
+        "level": "medium",
+        "title": "Ops health: execution plan stale",
+        "reason": "execution_plan.json is 3.59 days behind live_signal.json (max 3); regenerate it manually.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-21:ops_health_execution_plan_stale",
+        "cooldown_minutes": 1200
+      },
+      "resolved_at": "2026-07-22T13:08:30Z"
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-21:00631l_crash_risk_snapshot_stale": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-21:00631l_crash_risk_snapshot_stale",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:00631l_crash_risk_snapshot_stale",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-21T14:40:11Z",
+      "last_seen_at": "2026-07-21T14:40:11Z",
+      "last_emitted_at": "2026-07-21T14:40:11Z",
+      "seen_count": 1,
+      "suppressed_count": 0,
+      "cooldown_minutes": 1200,
+      "alert": {
+        "type": "00631l_crash_risk_snapshot_stale",
+        "level": "medium",
+        "title": "00631L crash-risk alert snapshot stale",
+        "reason": "00631L crash-risk alert snapshot date does not match the live signal; snapshot_date=2026-07-17, signal_date=2026-07-21.",
+        "metadata": {
+          "trade_policy": "advisory_no_auto_weight_change",
+          "snapshot_date": "2026-07-17",
+          "signal_date": "2026-07-21",
+          "stale_snapshot": true
+        },
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-21:00631l_crash_risk_snapshot_stale",
+        "cooldown_minutes": 1200
+      },
+      "resolved_at": "2026-07-22T13:08:30Z"
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:specialist_router_crash_deleverage": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:specialist_router_crash_deleverage",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:specialist_router_crash_deleverage",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-17T23:39:42Z",
+      "last_seen_at": "2026-07-18T07:16:48Z",
+      "last_emitted_at": "2026-07-17T23:39:42Z",
+      "seen_count": 3,
+      "suppressed_count": 2,
       "cooldown_minutes": 1200,
       "alert": {
         "type": "specialist_router_crash_deleverage",
         "level": "high",
         "title": "Specialist router: crash deleverage",
         "reason": "Crash-risk conditions override return forecasts; priority is leverage reduction.",
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:specialist_router_crash_deleverage",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:specialist_router_crash_deleverage",
         "cooldown_minutes": 1200,
         "metadata": {
           "route": "crash_deleverage",
@@ -277,54 +444,100 @@
           "recommended_action": "reduce_leverage",
           "allow_00631l_add": false
         }
-      }
+      },
+      "resolved_at": "2026-07-21T14:40:11Z"
     },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:signal_wide_divergence": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:signal_wide_divergence",
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:signal_wide_divergence": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:signal_wide_divergence",
       "condition_key": "a2118_a2111_ncf_late_bull_deleverage:signal_wide_divergence",
-      "status": "suppressed",
-      "active": true,
-      "resolved": false,
-      "first_seen_at": "2026-07-14T16:01:39Z",
-      "last_seen_at": "2026-07-14T16:06:14Z",
-      "last_emitted_at": "2026-07-14T16:01:39Z",
-      "seen_count": 2,
-      "suppressed_count": 1,
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-17T23:39:42Z",
+      "last_seen_at": "2026-07-18T07:16:48Z",
+      "last_emitted_at": "2026-07-17T23:39:42Z",
+      "seen_count": 3,
+      "suppressed_count": 2,
       "cooldown_minutes": 1200,
       "alert": {
         "type": "signal_wide_divergence",
         "level": "medium",
         "title": "Signal alignment diverged",
         "reason": "Cross-source signals show wide divergence; dominant direction is bullish.",
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:signal_wide_divergence",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:signal_wide_divergence",
         "cooldown_minutes": 1200
-      }
+      },
+      "resolved_at": "2026-07-21T14:40:11Z"
     },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:market_trough_nowcast": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:market_trough_nowcast",
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:leverage_suitability_tier0": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:leverage_suitability_tier0",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:leverage_suitability_tier0",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-18T07:16:48Z",
+      "last_seen_at": "2026-07-18T07:16:48Z",
+      "last_emitted_at": "2026-07-18T07:16:48Z",
+      "seen_count": 1,
+      "suppressed_count": 0,
+      "cooldown_minutes": 1200,
+      "alert": {
+        "type": "leverage_suitability_tier0",
+        "level": "medium",
+        "title": "00631L leverage unsuitable",
+        "reason": "不利 00631L; advisory-only manual review.",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:leverage_suitability_tier0",
+        "cooldown_minutes": 1200
+      },
+      "resolved_at": "2026-07-21T14:40:11Z"
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:tsmc_weak_manual_review": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:tsmc_weak_manual_review",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:tsmc_weak_manual_review",
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-17T23:39:42Z",
+      "last_seen_at": "2026-07-18T07:16:48Z",
+      "last_emitted_at": "2026-07-17T23:39:42Z",
+      "seen_count": 3,
+      "suppressed_count": 2,
+      "cooldown_minutes": 1200,
+      "alert": {
+        "type": "tsmc_weak_manual_review",
+        "level": "medium",
+        "title": "TSMC weakness manual review",
+        "reason": "台積轉弱，檢查 00631L 權重、total_risk_score 與 signal_alignment",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:tsmc_weak_manual_review",
+        "cooldown_minutes": 1200
+      },
+      "resolved_at": "2026-07-21T14:40:11Z"
+    },
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:market_trough_nowcast": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:market_trough_nowcast",
       "condition_key": "a2118_a2111_ncf_late_bull_deleverage:market_trough_nowcast",
-      "status": "suppressed",
-      "active": true,
-      "resolved": false,
-      "first_seen_at": "2026-07-14T16:01:39Z",
-      "last_seen_at": "2026-07-14T16:06:14Z",
-      "last_emitted_at": "2026-07-14T16:01:39Z",
-      "seen_count": 2,
-      "suppressed_count": 1,
+      "status": "resolved",
+      "active": false,
+      "resolved": true,
+      "first_seen_at": "2026-07-17T23:39:42Z",
+      "last_seen_at": "2026-07-18T07:16:48Z",
+      "last_emitted_at": "2026-07-17T23:39:42Z",
+      "seen_count": 3,
+      "suppressed_count": 2,
       "cooldown_minutes": 1200,
       "alert": {
         "type": "market_trough_nowcast",
         "level": "medium",
         "title": "Market trough nowcast: CAPITULATION_WARNING",
         "reason": "Post-warning trough nowcast is active. This is a re-entry timing diagnostic, not an independent buy signal.",
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:market_trough_nowcast",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-17:market_trough_nowcast",
         "cooldown_minutes": 1200,
         "metadata": {
           "state": "CAPITULATION_WARNING",
           "policy": "diagnostic_reentry_timing_only_no_target_weight_change",
           "recommended_execution_staging_fraction": null,
           "capitulation_score": 2,
-          "reentry_confirmation_score": 1,
+          "reentry_confirmation_score": 2,
           "context_reasons": [
             "market_state=crash_risk",
             "market_risk_level=severe",
@@ -335,153 +548,34 @@
             "0050_volume_z60_ge_1"
           ],
           "reentry_confirmation_reasons": [
-            "soxx_rebound_from_5d_low_ge_3pct"
+            "groupa_breadth_up_fraction_ge_50pct",
+            "usdtwd_riskoff_z_falling"
           ]
         }
-      }
-    },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:ncf_panel_stale": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:ncf_panel_stale",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:ncf_panel_stale",
-      "status": "suppressed",
-      "active": true,
-      "resolved": false,
-      "first_seen_at": "2026-07-14T16:01:39Z",
-      "last_seen_at": "2026-07-14T16:06:14Z",
-      "last_emitted_at": "2026-07-14T16:01:39Z",
-      "seen_count": 2,
-      "suppressed_count": 1,
-      "cooldown_minutes": 1200,
-      "alert": {
-        "type": "ncf_panel_stale",
-        "level": "medium",
-        "title": "NCF panel stale",
-        "reason": "ncf_panel_631l last covers 2026-07-06, 6 trading day(s) behind signal date 2026-07-14. If this panel is pinned in strategy.json runner_params, the reproducibility guard that invalidates stale holds on panel regeneration is not firing -- confirm whether to refresh the panel.",
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:ncf_panel_stale",
-        "cooldown_minutes": 1200
-      }
-    },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:network_spillover_snapshot_stale": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:network_spillover_snapshot_stale",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:network_spillover_snapshot_stale",
-      "status": "suppressed",
-      "active": true,
-      "resolved": false,
-      "first_seen_at": "2026-07-14T16:01:39Z",
-      "last_seen_at": "2026-07-14T16:06:14Z",
-      "last_emitted_at": "2026-07-14T16:01:39Z",
-      "seen_count": 2,
-      "suppressed_count": 1,
-      "cooldown_minutes": 1200,
-      "alert": {
-        "type": "network_spillover_snapshot_stale",
-        "level": "medium",
-        "title": "Network spillover snapshot stale",
-        "reason": "Network volatility-spillover snapshot date does not match the live signal; snapshot_date=2026-07-09, signal_date=2026-07-14. Refresh the shadow snapshot before using its recovery-boost advisory.",
-        "metadata": {
-          "trade_policy": "advisory_no_auto_weight_change",
-          "snapshot_date": "2026-07-09",
-          "signal_date": "2026-07-14",
-          "model_family": "rolling_lagged_vol_spillover_shadow",
-          "stale_snapshot": true
-        },
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:network_spillover_snapshot_stale",
-        "cooldown_minutes": 1200
-      }
-    },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:00631l_crash_risk_snapshot_stale": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:00631l_crash_risk_snapshot_stale",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:00631l_crash_risk_snapshot_stale",
-      "status": "resolved",
-      "active": false,
-      "resolved": true,
-      "first_seen_at": "2026-07-14T16:01:39Z",
-      "last_seen_at": "2026-07-14T16:01:39Z",
-      "last_emitted_at": "2026-07-14T16:01:39Z",
-      "seen_count": 1,
-      "suppressed_count": 0,
-      "cooldown_minutes": 1200,
-      "alert": {
-        "type": "00631l_crash_risk_snapshot_stale",
-        "level": "medium",
-        "title": "00631L crash-risk alert snapshot stale",
-        "reason": "00631L crash-risk alert snapshot date does not match the live signal; snapshot_date=2026-07-09, signal_date=2026-07-14.",
-        "metadata": {
-          "trade_policy": "advisory_no_auto_weight_change",
-          "snapshot_date": "2026-07-09",
-          "signal_date": "2026-07-14",
-          "stale_snapshot": true
-        },
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-14:00631l_crash_risk_snapshot_stale",
-        "cooldown_minutes": 1200
       },
-      "resolved_at": "2026-07-14T16:06:14Z"
+      "resolved_at": "2026-07-21T14:40:11Z"
     },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-09:ops_health_execution_plan_stale": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-09:ops_health_execution_plan_stale",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:ops_health_execution_plan_stale",
+    "a2118_a2111_ncf_late_bull_deleverage:2026-07-16:ops_health_external_data": {
+      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-16:ops_health_external_data",
+      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:ops_health_external_data",
       "status": "resolved",
       "active": false,
       "resolved": true,
-      "first_seen_at": "2026-07-10T02:35:50Z",
-      "last_seen_at": "2026-07-10T02:35:50Z",
-      "last_emitted_at": "2026-07-10T02:35:50Z",
+      "first_seen_at": "2026-07-16T08:51:57Z",
+      "last_seen_at": "2026-07-16T08:51:57Z",
+      "last_emitted_at": null,
       "seen_count": 1,
-      "suppressed_count": 0,
+      "suppressed_count": 1,
       "cooldown_minutes": 1200,
       "alert": {
-        "type": "ops_health_execution_plan_stale",
+        "type": "ops_health_external_data",
         "level": "high",
-        "title": "Ops health: execution plan stale",
-        "reason": "execution_plan.json is 11.70 days behind live_signal.json (max 3); regenerate it manually.",
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-09:ops_health_execution_plan_stale",
+        "title": "Ops health: external data freshness error",
+        "reason": "External data freshness error(s): .",
+        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-16:ops_health_external_data",
         "cooldown_minutes": 1200
       },
-      "resolved_at": "2026-07-11T15:28:24Z"
-    },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-08:tsmc_weak_manual_review": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-08:tsmc_weak_manual_review",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:tsmc_weak_manual_review",
-      "status": "resolved",
-      "active": false,
-      "resolved": true,
-      "first_seen_at": "2026-07-08T13:07:45Z",
-      "last_seen_at": "2026-07-08T13:14:08Z",
-      "last_emitted_at": "2026-07-08T13:14:08Z",
-      "seen_count": 2,
-      "suppressed_count": 0,
-      "cooldown_minutes": 5,
-      "alert": {
-        "type": "tsmc_weak_manual_review",
-        "level": "medium",
-        "title": "TSMC weakness manual review",
-        "reason": "台積轉弱，檢查 00631L 權重、total_risk_score 與 signal_alignment",
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-08:tsmc_weak_manual_review",
-        "cooldown_minutes": 5
-      },
-      "resolved_at": "2026-07-10T02:35:50Z"
-    },
-    "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:factor_lens_stale": {
-      "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:factor_lens_stale",
-      "condition_key": "a2118_a2111_ncf_late_bull_deleverage:factor_lens_stale",
-      "status": "resolved",
-      "active": false,
-      "resolved": true,
-      "first_seen_at": "2026-07-02T05:55:21Z",
-      "last_seen_at": "2026-07-02T05:55:21Z",
-      "last_emitted_at": "2026-07-02T05:55:21Z",
-      "seen_count": 1,
-      "suppressed_count": 0,
-      "cooldown_minutes": 5,
-      "alert": {
-        "type": "factor_lens_stale",
-        "level": "medium",
-        "title": "Factor lens report stale",
-        "reason": "Factor lens report is dated 2026-06-29, older than signal date 2026-07-01.",
-        "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-07-01:factor_lens_stale",
-        "cooldown_minutes": 5
-      },
-      "resolved_at": "2026-07-02T07:29:57Z"
+      "resolved_at": "2026-07-17T23:39:42Z"
     },
     "a2118_a2111_ncf_late_bull_deleverage:2026-06-30:bearish_high_risk_trim": {
       "state_key": "a2118_a2111_ncf_late_bull_deleverage:2026-06-30:bearish_high_risk_trim",

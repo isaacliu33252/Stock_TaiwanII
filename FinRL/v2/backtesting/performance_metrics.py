@@ -225,60 +225,70 @@ def calculate_sortino_ratio(
 ) -> float:
     """
     計算索提諾比率 (Sortino Ratio)
-    
+
     索提諾比率只計算下行風險（負報酬的標準差），
     對於不對稱報酬分佈的策略更為合適。
-    
+
     公式:
         Sortino = (年化超額報酬 - 年化目標報酬) / 年化下行標準差
-        
+
     參數:
-        returns: 報酬率序列
+        returns: 報酬率序列（日報酬率）
         risk_free_rate: 年化無風險利率
         periods_per_year: 每年交易日數
-        target_return: 年化目標報酬（通常為 0）
-        
+        target_return: 年化目標報酬（通常為 0，表示要求報酬不低於無風險利率）
+
     返回:
         年化索提諾比率（正值=優於目標，負值=低於目標）
         - > 2.0: 優秀
         - 1.0 ~ 2.0: 良好
         - < 1.0: 一般
         - 負值: 策略表現不如目標
+
+    備註:
+        - target_return 為年化目標報酬，內部會轉換為日報酬用於下行判斷
+        - 下行標準差只計算「低於目標」的報酬，而非所有負報酬
+        - 當無負報酬時，返回 +inf（無下行風險的正報酬）
     """
     returns = np.array(returns)
-    
+
     if len(returns) < 2:
         return 0.0
-    
+
     # 日無風險利率
     daily_rf = risk_free_rate / periods_per_year
-    
+
     # 計算超額報酬（超過無風險利率的部分）
     excess_returns = returns - daily_rf
-    
-    # 年化下行標準差
-    negative_returns = excess_returns[excess_returns < 0]
+
+    # BUG FIX (2026-07-25): target_return 是年化值，但之前被當作日值使用
+    # 正確：將年化 target_return 轉換為日值，再用於下行判斷
+    daily_target = target_return / periods_per_year
+
+    # 年化下行標準差（只計算低於目標的報酬）
+    downside_mask = excess_returns < daily_target
+    negative_returns = excess_returns[downside_mask]
+
     if len(negative_returns) == 0:
         # 無負報酬：說明策略從未虧損，視為極優秀
-        # 使用全部超額報酬計算（無下行風險）
         ann_return = np.mean(excess_returns) * periods_per_year
         ann_target = target_return
         if ann_return - ann_target > 0:
             return float('inf')  # 無下行風險的正報酬 = 無限大 Sortino
         return (ann_return - ann_target) / 0.001  # 除以極小值避免除零
-    
+
     downside_std = np.std(negative_returns, ddof=1)
     if downside_std == 0:
         # 負報酬標準差為0（全為相同負報酬或樣本不足）
         return 0.0
-    
+
     ann_downside_std = downside_std * np.sqrt(periods_per_year)
-    
-    # 年化超額報酬 - 年化目標報酬（修正：正確使用 target_return）
+
+    # 年化超額報酬 - 年化目標報酬
     ann_return = np.mean(excess_returns) * periods_per_year
     ann_target = target_return
     sortino = (ann_return - ann_target) / ann_downside_std
-    
+
     return sortino
 
 

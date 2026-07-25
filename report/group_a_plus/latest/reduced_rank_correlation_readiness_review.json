@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_reduced_rank_correlation_readiness_review",
+  "generated_at": "2026-07-19T23:56:56",
+  "as_of": "2026-07-20",
+  "actual_data_end": "2026-07-17",
+  "status": "blocked",
+  "policy": "research_only_reduced_rank_correlation_no_crash_predictor_no_weight_change",
+  "source_paper": {
+    "path": "C:/Users/isaac/Downloads/2107.09048.pdf",
+    "title": "A New Attempt to Identify Long-term Precursors for Endogenous Financial Crises in the Market Correlation Structures",
+    "arxiv": "2107.09048v2",
+    "imported_concepts": [
+      "largest_eigenvalue_market_mode_subtraction",
+      "reduced_rank_correlation_matrix",
+      "averaged_distance_transition_monitor",
+      "kmeans_market_state_snapshots",
+      "systemic_fragility_manual_review_warning"
+    ],
+    "not_imported": [
+      "automatic_crash_prediction",
+      "execution_gate",
+      "target_weight_change",
+      "automatic_rebalance"
+    ]
+  },
+  "data_readiness": {
+    "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "db_exists": true,
+    "price_universe": {
+      "ohlcv": {
+        "distinct_tickers": 15,
+        "min_dt": "2009-01-02",
+        "max_dt": "2026-07-17",
+        "rows": 29641
+      },
+      "external_market_ohlcv": {
+        "distinct_tickers": 22,
+        "min_dt": "2008-06-02",
+        "max_dt": "2026-07-17",
+        "rows": 59122
+      }
+    },
+    "sector_table_candidates": [
+      "ticker_metadata",
+      "stock_sector_style",
+      "stock_industry_mapping"
+    ],
+    "matched_sector_tables": [
+      "ticker_metadata"
+    ],
+    "populated_sector_tables": [
+      "ticker_metadata"
+    ],
+    "minimum_broad_stock_tickers": 100,
+    "local_ticker_count": 15,
+    "external_ticker_count": 22,
+    "broad_sector_universe_ready": false,
+    "weak_cross_market_proxy_ready": true,
+    "rolling_window_length_trading_days": 42,
+    "rolling_window_ready": true
+  },
+  "related_group_a_plus_artifacts": {
+    "reduced_rank_correlation_proxy": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/reduced_rank_correlation_proxy.json",
+      "exists": true,
+      "status": "available_for_manual_review",
+      "policy": "weak_cross_market_reduced_rank_proxy_no_crash_predictor_no_weight_change"
+    },
+    "reduced_rank_correlation_proxy_param_sweep": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/reduced_rank_correlation_proxy_param_sweep.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_only_parameter_sweep_no_live_weight_change"
+    },
+    "reduced_rank_correlation_crash_window_backtest": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/reduced_rank_correlation_crash_window_backtest.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_only_reduced_rank_proxy_backtest_no_weight_change"
+    },
+    "reduced_rank_confirmation_overlap_backtest": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/reduced_rank_confirmation_overlap_backtest.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_only_confirmation_overlap_no_weight_change"
+    },
+    "cross_market_graph_shadow": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/cross_market_graph_shadow.json",
+      "exists": false,
+      "status": null,
+      "policy": null
+    },
+    "trigate_vol_memory_shadow": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/trigate_vol_memory_shadow.json",
+      "exists": true,
+      "status": null,
+      "policy": "research_only_vol_memory_decomposition_no_weight_change"
+    },
+    "systemic_bubble_time_at_risk_review": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/systemic_bubble_time_at_risk_review.json",
+      "exists": true,
+      "status": null,
+      "policy": "research_only_systemic_bubble_time_at_risk_no_weight_change"
+    },
+    "illiquidity_network_readiness_review": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/illiquidity_network_readiness_review.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_only_illiquidity_network_readiness_no_crash_guard_no_weight_change"
+    },
+    "speculative_influence_network_readiness_review": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/speculative_influence_network_readiness_review.json",
+      "exists": true,
+      "status": "blocked",
+      "policy": "research_only_speculative_influence_network_readiness_no_weight_change"
+    }
+  },
+  "validation_readiness": {
+    "reduced_rank_correlation_matrix_implemented": false,
+    "averaged_distance_monitor_implemented": false,
+    "kmeans_market_state_snapshots_implemented": false,
+    "taiwan_crash_window_walkforward_validated": false,
+    "false_positive_audit_completed": false,
+    "paper_equivalent_sector_breadth": false
+  },
+  "candidate_next_work": [
+    "Build a weak cross-market reduced-rank correlation proxy as shadow-only.",
+    "Add sector metadata and broad Taiwan stock universe before paper-equivalent implementation.",
+    "Validate on Taiwan 2015, 2018, 2020, 2022, and 2026 stress windows.",
+    "Compare incremental warning value against systemic bubble, SIN-lite, and tri-gate volatility memory."
+  ],
+  "blocking_reasons": [
+    "averaged_distance_transition_monitor_not_implemented",
+    "broad_stock_universe_below_reduced_rank_requirement",
+    "crash_predictor_not_allowed_for_live_execution",
+    "kmeans_market_state_snapshot_not_implemented",
+    "reduced_rank_correlation_matrix_not_implemented",
+    "taiwan_crash_window_walkforward_validation_missing"
+  ],
+  "warning_reasons": [
+    "weak_cross_market_proxy_possible_but_not_paper_equivalent"
+  ],
+  "decision": {
+    "reduced_rank_correlation_ready": false,
+    "weak_proxy_ready_for_research": true,
+    "paper_equivalent_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

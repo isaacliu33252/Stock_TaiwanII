@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_finstressts_counterfactual_shadow",
+  "generated_at": "2026-07-21T22:38:16",
+  "policy": "research_only_counterfactual_stress_no_weight_change",
+  "source_paper": "C:/Users/isaac/Downloads/2606.03184.pdf",
+  "input_window": {
+    "start": "2015-01-06",
+    "end": "2026-07-17",
+    "rows": 2804
+  },
+  "portfolios": {
+    "reference_20260720": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.2,
+      "cash": 0.3
+    },
+    "no_00631l_reference_cash": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.0,
+      "cash": 0.5
+    },
+    "0050_only_full": {
+      "0050.TW": 1.0,
+      "00631L.TW": 0.0,
+      "cash": 0.0
+    },
+    "reduced_leverage": {
+      "0050.TW": 0.7,
+      "00631L.TW": 0.1,
+      "cash": 0.2
+    },
+    "cash": {
+      "0050.TW": 0.0,
+      "00631L.TW": 0.0,
+      "cash": 1.0
+    }
+  },
+  "scenarios": {
+    "historical_baseline": {
+      "portfolios": {
+        "reference_20260720": {
+          "rows": 2804,
+          "cumulative_return": 4.667146194380825,
+          "annualized_return": 0.16870815507689985,
+          "annualized_volatility": 0.17161930687708746,
+          "max_drawdown": -0.30319986345737404,
+          "var_loss_95": 0.015526162947810524,
+          "expected_shortfall_loss_95": 0.0251655369511983,
+          "starr_95": 6.703936236451594,
+          "days_loss_gt_2pct": 71,
+          "days_loss_gt_3pct": 29
+        },
+        "no_00631l_reference_cash": {
+          "rows": 2804,
+          "cumulative_return": 1.5886169055448982,
+          "annualized_return": 0.08923871093609459,
+          "annualized_volatility": 0.09796162196597893,
+          "max_drawdown": -0.19860127299745856,
+          "var_loss_95": 0.009063311583459133,
+          "expected_shortfall_loss_95": 0.014026375829768872,
+          "starr_95": 6.362207317067525,
+          "days_loss_gt_2pct": 18,
+          "days_loss_gt_3pct": 3
+        },
+        "0050_only_full": {
+          "rows": 2804,
+          "cumulative_return": 5.0195340005011975,
+          "annualized_return": 0.17506143171986577,
+          "annualized_volatility": 0.19592324393195787,
+          "max_drawdown": -0.36381580955103887,
+          "var_loss_95": 0.018126623166918265,
+          "expected_shortfall_loss_95": 0.028052751659537745,
+          "starr_95": 6.240437082411702,
+          "days_loss_gt_2pct": 109,
+          "days_loss_gt_3pct": 39
+        },
+        "reduced_leverage": {
+          "rows": 2804,
+          "cumulative_return": 4.3995420658927245,
+          "annualized_return": 0.16363854267054334,
+          "annualized_volatility": 0.17321110108773916,
+          "max_drawdown": -0.31834834378795995,
+          "var_loss_95": 0.015528867706756475,
+          "expected_shortfall_loss_95": 0.02502282585583621,
+          "starr_95": 6.539570854759277,
+          "days_loss_gt_2pct": 76,
+          "days_loss_gt_3pct": 28
+        },
+        "cash": {
+          "rows": 2804,
+          "cumulative_return": 0.0,
+          "annualized_return": 0.0,
+          "annualized_volatility": 0.0,
+          "max_drawdown": 0.0,
+          "var_loss_95": -0.0,
+          "expected_shortfall_loss_95": 0.0,
+          "starr_95": null,
+          "days_loss_gt_2pct": 0,
+          "days_loss_gt_3pct": 0
+        }
+      },
+      "reference_vs_no_00631l": {
+        "reference_has_higher_tail_risk_or_drawdown": true,
+        "reference_es95_minus_no_add_es95": 0.011139161121429427,
+        "reference_mdd_abs_minus_no_add_mdd_abs": 0.10459859045991549
+      },
+      "reference_tail_failure": true
+    },
+    "heavy_tailed_shocks": {
+      "portfolios": {
+        "reference_20260720": {
+          "rows": 2804,
+          "cumulative_return": -0.5501251906001805,
+          "annualized_return": -0.06927197799756757,
+          "annualized_volatility": 0.2145440512781237,
+          "max_drawdown": -0.7289539144524383,
+          "var_loss_95": 0.023158859195209144,
+          "expected_shortfall_loss_95": 0.042270640320778756,
+          "starr_95": -1.6387728568075632,
+          "days_loss_gt_2pct": 141,
+          "days_loss_gt_3pct": 111
+        },
+        "no_00631l_reference_cash": {
+          "rows": 2804,
+          "cumulative_return": -0.35232339287770464,
+          "annualized_return": -0.03828484825759615,
+          "annualized_volatility": 0.12147968157564698,
+          "max_drawdown": -0.5325937078290297,
+          "var_loss_95": 0.012374541979009253,
+          "expected_shortfall_loss_95": 0.023212002814708935,
+          "starr_95": -1.64935566151732,
+          "days_loss_gt_2pct": 71,
+          "days_loss_gt_3pct": 27
+        },
+        "0050_only_full": {
+          "rows": 2804,
+          "cumulative_return": -0.6457584918702877,
+          "annualized_return": -0.08904942379504477,
+          "annualized_volatility": 0.24295936315129396,
+          "max_drawdown": -0.8093144152260646,
+          "var_loss_95": 0.024749083958018506,
+          "expected_shortfall_loss_95": 0.04642400562941787,
+          "starr_95": -1.918176223436784,
+          "days_loss_gt_2pct": 154,
+          "days_loss_gt_3pct": 124
+        },
+        "reduced_leverage": {
+          "rows": 2804,
+          "cumulative_return": -0.5724004030193082,
+          "annualized_return": -0.07351002115333793,
+          "annualized_volatility": 0.21601481845271064,
+          "max_drawdown": -0.7419925964918398,
+          "var_loss_95": 0.021906664332887876,
+          "expected_shortfall_loss_95": 0.04191272252588164,
+          "starr_95": -1.7538832297984115,
+          "days_loss_gt_2pct": 143,
+          "days_loss_gt_3pct": 108
+        },
+        "cash": {
+          "rows": 2804,
+          "cumulative_return": 0.0,
+          "annualized_return": 0.0,
+          "annualized_volatility": 0.0,
+          "max_drawdown": 0.0,
+          "var_loss_95": -0.0,
+          "expected_shortfall_loss_95": 0.0,
+          "starr_95": null,
+          "days_loss_gt_2pct": 0,
+          "days_loss_gt_3pct": 0
+        }
+      },
+      "reference_vs_no_00631l": {
+        "reference_has_higher_tail_risk_or_drawdown": true,
+        "reference_es95_minus_no_add_es95": 0.01905863750606982,
+        "reference_mdd_abs_minus_no_add_mdd_abs": 0.19636020662340858
+      },
+      "reference_tail_failure": true
+    },
+    "regime_switch_down": {
+      "portfolios": {
+        "reference_20260720": {
+          "rows": 2804,
+          "cumulative_return": 0.1814033041430556,
+          "annualized_return": 0.015094655583369532,
+          "annualized_volatility": 0.17396602188470053,
+          "max_drawdown": -0.5511353237311787,
+          "var_loss_95": 0.015942507797799654,
+          "expected_shortfall_loss_95": 0.02489329518153548,
+          "starr_95": 0.6063743459148768,
+          "days_loss_gt_2pct": 69,
+          "days_loss_gt_3pct": 29
+        },
+        "no_00631l_reference_cash": {
+          "rows": 2804,
+          "cumulative_return": 0.07162688381343307,
+          "annualized_return": 0.006236500001830514,
+          "annualized_volatility": 0.09975923943629804,
+          "max_drawdown": -0.43456397692304827,
+          "var_loss_95": 0.00907631288137421,
+          "expected_shortfall_loss_95": 0.013973234502590873,
+          "starr_95": 0.4463175652476284,
+          "days_loss_gt_2pct": 18,
+          "days_loss_gt_3pct": 3
+        },
+        "0050_only_full": {
+          "rows": 2804,
+          "cumulative_return": 0.027768624602977132,
+          "annualized_return": 0.002464621794711297,
+          "annualized_volatility": 0.19951847887259608,
+          "max_drawdown": -0.7008842381433436,
+          "var_loss_95": 0.01815262576274842,
+          "expected_shortfall_loss_95": 0.027946469005181745,
+          "starr_95": 0.08819081202188064,
+          "days_loss_gt_2pct": 106,
+          "days_loss_gt_3pct": 39
+        },
+        "reduced_leverage": {
+          "rows": 2804,
+          "cumulative_return": 0.112848312836068,
+          "annualized_return": 0.009655640037945279,
+          "annualized_volatility": 0.17616015714533081,
+          "max_drawdown": -0.6081437233517757,
+          "var_loss_95": 0.0160500947168392,
+          "expected_shortfall_loss_95": 0.02484378625360768,
+          "starr_95": 0.3886541262020051,
+          "days_loss_gt_2pct": 75,
+          "days_loss_gt_3pct": 28
+        },
+        "cash": {
+          "rows": 2804,
+          "cumulative_return": 0.0,
+          "annualized_return": 0.0,
+          "annualized_volatility": 0.0,
+          "max_drawdown": 0.0,
+          "var_loss_95": -0.0,
+          "expected_shortfall_loss_95": 0.0,
+          "starr_95": null,
+          "days_loss_gt_2pct": 0,
+          "days_loss_gt_3pct": 0
+        }
+      },
+      "reference_vs_no_00631l": {
+        "reference_has_higher_tail_risk_or_drawdown": true,
+        "reference_es95_minus_no_add_es95": 0.010920060678944608,
+        "reference_mdd_abs_minus_no_add_mdd_abs": 0.11657134680813042
+      },
+      "reference_tail_failure": true
+    },
+    "self_exciting_jumps": {
+      "portfolios": {
+        "reference_20260720": {
+          "rows": 2804,
+          "cumulative_return": 2.6256888582199855,
+          "annualized_return": 0.1227248333583344,
+          "annualized_volatility": 0.1737972261113472,
+          "max_drawdown": -0.365569680733002,
+          "var_loss_95": 0.016184425700054978,
+          "expected_shortfall_loss_95": 0.026192577457867558,
+          "starr_95": 4.68548135653107,
+          "days_loss_gt_2pct": 84,
+          "days_loss_gt_3pct": 34
+        },
+        "no_00631l_reference_cash": {
+          "rows": 2804,
+          "cumulative_return": 1.0178653535196922,
+          "annualized_return": 0.06512640704434136,
+          "annualized_volatility": 0.09945630642747832,
+          "max_drawdown": -0.23760812379747798,
+          "var_loss_95": 0.009481455942617196,
+          "expected_shortfall_loss_95": 0.01459729710903612,
+          "starr_95": 4.461538773779315,
+          "days_loss_gt_2pct": 20,
+          "days_loss_gt_3pct": 3
+        },
+        "0050_only_full": {
+          "rows": 2804,
+          "cumulative_return": 2.645862029400595,
+          "annualized_return": 0.12328482607997504,
+          "annualized_volatility": 0.19891261285495665,
+          "max_drawdown": -0.42470900056864813,
+          "var_loss_95": 0.01896291188523439,
+          "expected_shortfall_loss_95": 0.02919459421807224,
+          "starr_95": 4.2228648618674205,
+          "days_loss_gt_2pct": 121,
+          "days_loss_gt_3pct": 45
+        },
+        "reduced_leverage": {
+          "rows": 2804,
+          "cumulative_return": 2.4467054732245934,
+          "annualized_return": 0.11762827211008564,
+          "annualized_volatility": 0.1757630324163228,
+          "max_drawdown": -0.3783158649332443,
+          "var_loss_95": 0.016446440975773104,
+          "expected_shortfall_loss_95": 0.026065977033921228,
+          "starr_95": 4.512712949796928,
+          "days_loss_gt_2pct": 89,
+          "days_loss_gt_3pct": 33
+        },
+        "cash": {
+          "rows": 2804,
+          "cumulative_return": 0.0,
+          "annualized_return": 0.0,
+          "annualized_volatility": 0.0,
+          "max_drawdown": 0.0,
+          "var_loss_95": -0.0,
+          "expected_shortfall_loss_95": 0.0,
+          "starr_95": null,
+          "days_loss_gt_2pct": 0,
+          "days_loss_gt_3pct": 0
+        }
+      },
+      "reference_vs_no_00631l": {
+        "reference_has_higher_tail_risk_or_drawdown": true,
+        "reference_es95_minus_no_add_es95": 0.011595280348831437,
+        "reference_mdd_abs_minus_no_add_mdd_abs": 0.12796155693552402
+      },
+      "reference_tail_failure": true
+    },
+    "zero_inflated_sparse_jumps": {
+      "portfolios": {
+        "reference_20260720": {
+          "rows": 2804,
+          "cumulative_return": 0.2642433164979492,
+          "annualized_return": 0.02129612976413764,
+          "annualized_volatility": 0.07427745961135664,
+          "max_drawdown": -0.16323727918902076,
+          "var_loss_95": 0.005542169175833072,
+          "expected_shortfall_loss_95": 0.011265791894490064,
+          "starr_95": 1.8903358027191384,
+          "days_loss_gt_2pct": 11,
+          "days_loss_gt_3pct": 9
+        },
+        "no_00631l_reference_cash": {
+          "rows": 2804,
+          "cumulative_return": 0.13052296330467827,
+          "annualized_return": 0.011086483155147375,
+          "annualized_volatility": 0.04175011186805341,
+          "max_drawdown": -0.1008868921442233,
+          "var_loss_95": 0.00321536515103348,
+          "expected_shortfall_loss_95": 0.0062400638887452455,
+          "starr_95": 1.776661802316362,
+          "days_loss_gt_2pct": 7,
+          "days_loss_gt_3pct": 7
+        },
+        "0050_only_full": {
+          "rows": 2804,
+          "cumulative_return": 0.25303091339085704,
+          "annualized_return": 0.020478792275655078,
+          "annualized_volatility": 0.08350022373610683,
+          "max_drawdown": -0.19329988567208845,
+          "var_loss_95": 0.00643073030206696,
+          "expected_shortfall_loss_95": 0.012480127777490491,
+          "starr_95": 1.6409120676305256,
+          "days_loss_gt_2pct": 12,
+          "days_loss_gt_3pct": 9
+        },
+        "reduced_leverage": {
+          "rows": 2804,
+          "cumulative_return": 0.24697474682134768,
+          "annualized_return": 0.020034550258317463,
+          "annualized_volatility": 0.07449206150352537,
+          "max_drawdown": -0.16936960928610356,
+          "var_loss_95": 0.00561909653890291,
+          "expected_shortfall_loss_95": 0.011187807484053864,
+          "starr_95": 1.7907485704301744,
+          "days_loss_gt_2pct": 11,
+          "days_loss_gt_3pct": 8
+        },
+        "cash": {
+          "rows": 2804,
+          "cumulative_return": 0.0,
+          "annualized_return": 0.0,
+          "annualized_volatility": 0.0,
+          "max_drawdown": 0.0,
+          "var_loss_95": -0.0,
+          "expected_shortfall_loss_95": 0.0,
+          "starr_95": null,
+          "days_loss_gt_2pct": 0,
+          "days_loss_gt_3pct": 0
+        }
+      },
+      "reference_vs_no_00631l": {
+        "reference_has_higher_tail_risk_or_drawdown": true,
+        "reference_es95_minus_no_add_es95": 0.005025728005744819,
+        "reference_mdd_abs_minus_no_add_mdd_abs": 0.06235038704479745
+      },
+      "reference_tail_failure": false
+    }
+  },
+  "decision": {
+    "summary": "Reference 7/20 weights do not pass the FinStressTS-style counterfactual stress review against the no-00631L reference.",
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true,
+    "reference_loses_to_no_00631l_scenarios": 5,
+    "reference_tail_failure_scenarios": 4
+  }
+}

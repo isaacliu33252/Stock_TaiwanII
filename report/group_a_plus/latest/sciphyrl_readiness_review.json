@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_sciphyrl_readiness_review",
+  "status": "blocked",
+  "generated_at": "2026-07-21T22:38:08",
+  "policy": "research_readiness_only_no_weight_change",
+  "as_of": "2026-07-20",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2607.15195.pdf",
+    "title": "SciPhy Reinforcement Learning for Portfolio Optimization",
+    "imported_concepts": [
+      "target_holding_control_instead_of_slow_trading_rate",
+      "explicit_cumulative_cost_state",
+      "quadratic_transaction_cost_and_price_impact_awareness",
+      "turnover_and_capacity_as_first_class_constraints",
+      "offline_single_sweep_shadow_training_governance",
+      "signal_quality_must_be_measured_before_optimizer_claims"
+    ],
+    "not_imported": [
+      "PINN_HJB_optimizer",
+      "engineered_oracle_signal_results",
+      "Gibbs_policy_live_execution",
+      "automatic_target_weight_change"
+    ]
+  },
+  "paper_limitations_for_group_a_plus": {
+    "uses_engineered_oracle_signal": true,
+    "uses_us_etf_universe_not_taiwan_group_a_plus": true,
+    "uses_illustrative_uncalibrated_control_parameters": true,
+    "overlapping_test_windows_reduce_statistical_independence": true,
+    "reported_returns_are_mechanism_demo_not_track_record": true
+  },
+  "group_a_plus_mapping": {
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "requested_as_of_date": "2026-07-20",
+    "actual_data_date": "2026-07-17",
+    "execution_allowed": true,
+    "target_weights": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.19954000000000002,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.30046000000000006
+    },
+    "latest_features": {
+      "ma_gap": 0.09195184809533363,
+      "drawdown": -0.09896536076465001,
+      "exit_momentum_5d": -0.053402659384753526,
+      "chip_score": 8,
+      "derivative_score": 1,
+      "total_risk_score": 9,
+      "tail_risk_score": 1,
+      "chip_data_core_days_since_source_update": 0,
+      "finbert_sentiment_risk": 0.1113
+    },
+    "signal_alignment": {
+      "alignment": "wide_divergence",
+      "dominant_direction": "bullish",
+      "leverage_suitability_action": "avoid_00631l"
+    },
+    "rebalance_decision": {
+      "auto_rebalance_allowed": false,
+      "target_weight_change_allowed": false,
+      "allow_00631l_add": false
+    },
+    "option_state_gate_passed": false,
+    "adversarial_market_integrity_status": "blocked"
+  },
+  "readiness_checklist": {
+    "real_signal_quality_oos_required": true,
+    "turnover_cap_required": true,
+    "quadratic_cost_or_slippage_calibration_required": true,
+    "capacity_and_notional_constraint_required": true,
+    "stress_window_validation_required": true,
+    "manual_approval_required_before_live": true
+  },
+  "blocking_reasons": [
+    "rebalance_review_disallows_target_weight_change",
+    "option_state_gate_not_passed",
+    "adversarial_market_integrity_not_passed",
+    "leverage_suitability_disallows_00631l_add"
+  ],
+  "warning_reasons": [
+    "high_total_risk_score_for_optimizer",
+    "signal_alignment_wide_divergence"
+  ],
+  "decision": {
+    "summary": "Import target-holding and explicit-cost governance only. The SciPhyRL optimizer and reported Sharpe ratios rely on an engineered oracle signal and uncalibrated illustrative parameters, while current GroupA+ governance gates remain blocked.",
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal_20260720_estimate.json",
+    "rebalance_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rebalance_review_20260720.json",
+    "option_coverage": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/option_state_coverage_review.json",
+    "adversarial_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/adversarial_market_integrity_review.json"
+  }
+}

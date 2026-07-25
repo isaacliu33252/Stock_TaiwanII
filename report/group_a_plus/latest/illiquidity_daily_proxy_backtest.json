@@ -1,0 +1,390 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_illiquidity_daily_proxy_backtest",
+  "generated_at": "2026-07-19T15:03:58",
+  "as_of": "2026-07-20",
+  "actual_data_start": "2009-01-02",
+  "actual_data_end": "2026-07-17",
+  "policy": "research_only_daily_ohlcv_proxy_backtest_no_weight_change",
+  "status": "blocked",
+  "state_thresholds": {
+    "normal_lt": 0.1,
+    "watch_gte": 0.1,
+    "elevated_gte": 0.2,
+    "stress_gte": 0.35
+  },
+  "windows": [
+    {
+      "name": "taiwan_2015_china_devaluation_stress",
+      "start": "2015-08-17",
+      "end": "2015-09-30",
+      "type": "stress_window",
+      "status": "available",
+      "available_days": 32,
+      "coverage_tickers_min": 4,
+      "coverage_tickers_median": 4.0,
+      "stress_score_mean": 0.1453125,
+      "stress_score_max": 0.4875,
+      "state_counts": {
+        "normal": 15,
+        "elevated": 11,
+        "watch": 5,
+        "stress": 1
+      },
+      "watch_or_worse_days": 17,
+      "elevated_or_worse_days": 12,
+      "watch_or_worse_rate": 0.53125,
+      "elevated_or_worse_rate": 0.375,
+      "top_days": [
+        {
+          "dt": "2015-08-24",
+          "stress_score": 0.4875,
+          "stress_state": "stress",
+          "coverage_tickers": 4
+        },
+        {
+          "dt": "2015-08-25",
+          "stress_score": 0.3125,
+          "stress_state": "elevated",
+          "coverage_tickers": 4
+        },
+        {
+          "dt": "2015-09-29",
+          "stress_score": 0.3,
+          "stress_state": "elevated",
+          "coverage_tickers": 4
+        },
+        {
+          "dt": "2015-09-03",
+          "stress_score": 0.2875,
+          "stress_state": "elevated",
+          "coverage_tickers": 4
+        },
+        {
+          "dt": "2015-09-09",
+          "stress_score": 0.25,
+          "stress_state": "elevated",
+          "coverage_tickers": 4
+        },
+        {
+          "dt": "2015-08-19",
+          "stress_score": 0.25,
+          "stress_state": "elevated",
+          "coverage_tickers": 4
+        },
+        {
+          "dt": "2015-09-11",
+          "stress_score": 0.22499999999999998,
+          "stress_state": "elevated",
+          "coverage_tickers": 4
+        },
+        {
+          "dt": "2015-09-15",
+          "stress_score": 0.22499999999999998,
+          "stress_state": "elevated",
+          "coverage_tickers": 4
+        },
+        {
+          "dt": "2015-09-22",
+          "stress_score": 0.22499999999999998,
+          "stress_state": "elevated",
+          "coverage_tickers": 4
+        },
+        {
+          "dt": "2015-09-14",
+          "stress_score": 0.22499999999999998,
+          "stress_state": "elevated",
+          "coverage_tickers": 4
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2020_covid_crash",
+      "start": "2020-02-17",
+      "end": "2020-04-30",
+      "type": "crash_window",
+      "status": "available",
+      "available_days": 51,
+      "coverage_tickers_min": 13,
+      "coverage_tickers_median": 13.0,
+      "stress_score_mean": 0.11184012066365008,
+      "stress_score_max": 0.4346153846153846,
+      "state_counts": {
+        "normal": 29,
+        "watch": 13,
+        "elevated": 7,
+        "stress": 2
+      },
+      "watch_or_worse_days": 22,
+      "elevated_or_worse_days": 9,
+      "watch_or_worse_rate": 0.43137254901960786,
+      "elevated_or_worse_rate": 0.17647058823529413,
+      "top_days": [
+        {
+          "dt": "2020-03-19",
+          "stress_score": 0.4346153846153846,
+          "stress_state": "stress",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2020-03-12",
+          "stress_score": 0.3807692307692308,
+          "stress_state": "stress",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2020-03-16",
+          "stress_score": 0.3269230769230769,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2020-03-23",
+          "stress_score": 0.3230769230769231,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2020-03-13",
+          "stress_score": 0.28846153846153844,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2020-03-17",
+          "stress_score": 0.2692307692307692,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2020-04-13",
+          "stress_score": 0.23076923076923078,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2020-03-20",
+          "stress_score": 0.21538461538461537,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2020-04-10",
+          "stress_score": 0.20769230769230768,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2020-03-18",
+          "stress_score": 0.17307692307692307,
+          "stress_state": "watch",
+          "coverage_tickers": 13
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2022_inflation_rate_stress",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "type": "stress_window",
+      "status": "available",
+      "available_days": 202,
+      "coverage_tickers_min": 14,
+      "coverage_tickers_median": 14.0,
+      "stress_score_mean": 0.04771923620933521,
+      "stress_score_max": 0.26785714285714285,
+      "state_counts": {
+        "normal": 173,
+        "watch": 26,
+        "elevated": 3
+      },
+      "watch_or_worse_days": 29,
+      "elevated_or_worse_days": 3,
+      "watch_or_worse_rate": 0.14356435643564355,
+      "elevated_or_worse_rate": 0.01485148514851485,
+      "top_days": [
+        {
+          "dt": "2022-07-01",
+          "stress_score": 0.26785714285714285,
+          "stress_state": "elevated",
+          "coverage_tickers": 14
+        },
+        {
+          "dt": "2022-09-28",
+          "stress_score": 0.25,
+          "stress_state": "elevated",
+          "coverage_tickers": 14
+        },
+        {
+          "dt": "2022-07-06",
+          "stress_score": 0.23214285714285715,
+          "stress_state": "elevated",
+          "coverage_tickers": 14
+        },
+        {
+          "dt": "2022-07-07",
+          "stress_score": 0.19642857142857142,
+          "stress_state": "watch",
+          "coverage_tickers": 14
+        },
+        {
+          "dt": "2022-06-22",
+          "stress_score": 0.17857142857142858,
+          "stress_state": "watch",
+          "coverage_tickers": 14
+        },
+        {
+          "dt": "2022-03-07",
+          "stress_score": 0.16071428571428573,
+          "stress_state": "watch",
+          "coverage_tickers": 14
+        },
+        {
+          "dt": "2022-06-16",
+          "stress_score": 0.1464285714285714,
+          "stress_state": "watch",
+          "coverage_tickers": 14
+        },
+        {
+          "dt": "2022-07-04",
+          "stress_score": 0.1464285714285714,
+          "stress_state": "watch",
+          "coverage_tickers": 14
+        },
+        {
+          "dt": "2022-06-30",
+          "stress_score": 0.14285714285714285,
+          "stress_state": "watch",
+          "coverage_tickers": 14
+        },
+        {
+          "dt": "2022-10-11",
+          "stress_score": 0.14285714285714285,
+          "stress_state": "watch",
+          "coverage_tickers": 14
+        }
+      ]
+    },
+    {
+      "name": "taiwan_2026_recent_groupa_plus_stress",
+      "start": "2026-04-01",
+      "end": "2026-07-20",
+      "type": "recent_stress_window",
+      "status": "available",
+      "available_days": 74,
+      "coverage_tickers_min": 9,
+      "coverage_tickers_median": 13.0,
+      "stress_score_mean": 0.07893525393525393,
+      "stress_score_max": 0.3423076923076923,
+      "state_counts": {
+        "normal": 54,
+        "watch": 13,
+        "elevated": 7
+      },
+      "watch_or_worse_days": 20,
+      "elevated_or_worse_days": 7,
+      "watch_or_worse_rate": 0.2702702702702703,
+      "elevated_or_worse_rate": 0.0945945945945946,
+      "top_days": [
+        {
+          "dt": "2026-06-08",
+          "stress_score": 0.3423076923076923,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2026-06-26",
+          "stress_score": 0.3423076923076923,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2026-07-10",
+          "stress_score": 0.3,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2026-04-23",
+          "stress_score": 0.25,
+          "stress_state": "elevated",
+          "coverage_tickers": 14
+        },
+        {
+          "dt": "2026-05-15",
+          "stress_score": 0.23461538461538461,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2026-06-10",
+          "stress_score": 0.23076923076923078,
+          "stress_state": "elevated",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2026-07-17",
+          "stress_score": 0.21666666666666667,
+          "stress_state": "elevated",
+          "coverage_tickers": 9
+        },
+        {
+          "dt": "2026-05-28",
+          "stress_score": 0.19230769230769232,
+          "stress_state": "watch",
+          "coverage_tickers": 13
+        },
+        {
+          "dt": "2026-04-02",
+          "stress_score": 0.18214285714285713,
+          "stress_state": "watch",
+          "coverage_tickers": 14
+        },
+        {
+          "dt": "2026-07-14",
+          "stress_score": 0.17307692307692307,
+          "stress_state": "watch",
+          "coverage_tickers": 13
+        }
+      ]
+    }
+  ],
+  "aggregate": {
+    "total_days": 3474,
+    "stress_window_days": 359,
+    "non_window_days": 3115,
+    "stress_window_elevated_or_worse_rate": 0.08635097493036212,
+    "non_window_elevated_or_worse_rate": 0.06645264847512039,
+    "non_window_stress_rate": 0.006099518459069021,
+    "state_counts_all": {
+      "normal": 2927,
+      "watch": 309,
+      "elevated": 216,
+      "stress": 22
+    },
+    "coverage_tickers_min": 1,
+    "coverage_tickers_median": 9.0,
+    "stress_score_max": 0.5392857142857143
+  },
+  "limitations": [
+    "Daily OHLCV proxy cannot validate bid/ask-spread illiquidity networks.",
+    "Stress windows are calendar labels, not tick-level liquidity-failure ground truth.",
+    "ETF-only or small-universe history can understate market-wide contagion.",
+    "This backtest is for manual research review only."
+  ],
+  "blocking_reasons": [
+    "daily_ohlcv_proxy_not_paper_equivalent",
+    "full_market_failure_events_not_validated",
+    "high_frequency_bid_ask_not_validated",
+    "low_elevated_or_worse_recall_in_stress_windows",
+    "no_live_weight_change_allowed"
+  ],
+  "decision": {
+    "promotion_allowed": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

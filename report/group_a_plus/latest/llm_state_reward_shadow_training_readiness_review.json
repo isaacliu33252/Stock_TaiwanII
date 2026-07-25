@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_shadow_training_readiness_review",
+  "generated_at": "2026-07-21T22:49:08",
+  "as_of": "2026-07-21",
+  "status": "available_for_manual_offline_review",
+  "policy": "shadow_training_readiness_review_only_no_training_no_live_action",
+  "inputs": {
+    "design_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_shadow_model_design_review.json",
+    "design_review_sha256": "c709421ee2c6bcfa9a947f8c531c89e9a114f44d922466badfbcc2a5a30e9175",
+    "cost_warning_remediation": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_cost_warning_remediation_review.json",
+    "cost_warning_remediation_sha256": "2a5a500a652e378362d1f9d77cdee1fbb6e97252f55399b819ae5b08257b0960",
+    "cost_warning_attribution": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_cost_warning_failure_attribution.json",
+    "cost_warning_attribution_sha256": "7bc7eaf03b97e4020ab9d2fd37315c47304d0193d0a77b2efc8bd1a0a9ea3687",
+    "cost_warning_turnover_attribution": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_cost_warning_turnover_attribution.json",
+    "cost_warning_turnover_attribution_sha256": "1883207f669de6526382640dcda4322887ff79a88f7954334b455df4d01cc46e",
+    "regime_filtered_micro_tilt": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_regime_filtered_micro_tilt_shadow_backtest.json",
+    "regime_filtered_micro_tilt_sha256": "9ef92167cee7a2b7475755922fc44f0e28e0182c21ececcbc285556cc3fbbe13",
+    "require_warning_cost_pass": true
+  },
+  "training_design_boundary": {
+    "design_id": "group_a_plus_gift_downside_tail_decay_v2_tuned_20260721_shadow_model_design",
+    "freeze_id": "group_a_plus_gift_downside_tail_decay_v2_tuned_20260721",
+    "frozen_manifest_sha256": "a1813b27cfea9ef23df3fb4a7789cbc8855eb416e1f98c89fef88dceb2a833ac",
+    "proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+    "selected_label": "v2_tuned_downside_tail_decay",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "state_columns": [
+      "downside_deviation",
+      "realized_volatility",
+      "drawdown_depth",
+      "ema_cross_strength"
+    ],
+    "reward_columns": [
+      "drawdown_penalty",
+      "volatility_scaling_penalty",
+      "letf_tail_decay_cost",
+      "reward_proxy"
+    ],
+    "allowed_shadow_model_family": "tabular_or_sequence_shadow_model_design_only",
+    "allowed_training_label": "future_return_or_downside_proxy_for_offline_design",
+    "validation_plan": {
+      "walk_forward_required": true,
+      "purge_required": true,
+      "cost_scenarios_required_bps": [
+        0.0,
+        2.0
+      ],
+      "cost_scenarios_warning_bps": [
+        5.0
+      ],
+      "required_cost_results": [
+        {
+          "cost_bps": 0.0,
+          "required_for_gate": true,
+          "passed": true,
+          "params": {
+            "low_quantile": 0.3,
+            "high_quantile": 0.7,
+            "low_score": 1.0,
+            "mid_score": 1.0,
+            "high_score": 1.03,
+            "cost_bps": 0.0
+          },
+          "aggregate": {
+            "fold_count": 6,
+            "available_fold_count": 6,
+            "positive_final_value_folds": 4,
+            "positive_sharpe_folds": 4,
+            "non_worse_drawdown_folds": 4,
+            "mean_delta_final_value": 0.00039297879422783843,
+            "mean_delta_sharpe_ratio": 0.007119719883366515,
+            "mean_delta_max_drawdown": 1.4202407314774698e-05
+          },
+          "rank_score": 96.05553158727452
+        },
+        {
+          "cost_bps": 2.0,
+          "required_for_gate": true,
+          "passed": true,
+          "params": {
+            "low_quantile": 0.3,
+            "high_quantile": 0.7,
+            "low_score": 1.0,
+            "mid_score": 1.0,
+            "high_score": 1.03,
+            "cost_bps": 2.0
+          },
+          "aggregate": {
+            "fold_count": 6,
+            "available_fold_count": 6,
+            "positive_final_value_folds": 4,
+            "positive_sharpe_folds": 4,
+            "non_worse_drawdown_folds": 3,
+            "mean_delta_final_value": 0.0003581231999669939,
+            "mean_delta_sharpe_ratio": 0.006384459832766735,
+            "mean_delta_max_drawdown": 6.173750110860521e-06
+          },
+          "rank_score": 90.0499519341644
+        }
+      ],
+      "warning_cost_results": [
+        {
+          "cost_bps": 5.0,
+          "required_for_gate": false,
+          "passed": false,
+          "params": {
+            "low_quantile": 0.3,
+            "high_quantile": 0.7,
+            "low_score": 1.0,
+            "mid_score": 1.0,
+            "high_score": 1.03,
+            "cost_bps": 5.0
+          },
+          "aggregate": {
+            "fold_count": 6,
+            "available_fold_count": 6,
+            "positive_final_value_folds": 4,
+            "positive_sharpe_folds": 3,
+            "non_worse_drawdown_folds": 3,
+            "mean_delta_final_value": 0.00030584228049549783,
+            "mean_delta_sharpe_ratio": 0.0052816484734498625,
+            "mean_delta_max_drawdown": -5.868927980397694e-06
+          },
+          "rank_score": 82.04158297783242
+        }
+      ]
+    },
+    "hard_constraints": {
+      "no_model_training_in_this_step": true,
+      "no_ppo_training": true,
+      "no_live_signal_output": true,
+      "no_target_weight_output": true,
+      "no_auto_rebalance": true,
+      "no_00631l_add": true,
+      "no_00632r_open": true
+    }
+  },
+  "summary": {
+    "shadow_model_design_allowed": true,
+    "cost_warning_count": 1,
+    "cost_warning_remediation_status": "blocked",
+    "cost_warning_resolved": false,
+    "cost_warning_remediation_evaluated_count": 3,
+    "cost_warning_failure_explained": true,
+    "cost_warning_dominant_failure_metric": "sharpe_delta_not_positive",
+    "cost_warning_best_high_score": 1.02,
+    "cost_warning_turnover_failure_cause": "turnover_cost_and_raw_signal",
+    "cost_warning_turnover_cost_caused_failure_fold_count": 1,
+    "cost_warning_raw_signal_failure_fold_count": 3,
+    "regime_filter_resolves_5bps_warning": true,
+    "regime_filter_recommended_candidate": {
+      "regime_rule": "trend_above_train_median",
+      "high_score": 1.03,
+      "cost_bps": 5.0,
+      "aggregate": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 5,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 4,
+        "mean_delta_final_value": 0.00030346868071762234,
+        "mean_delta_sharpe_ratio": 0.004525255442848708,
+        "mean_delta_max_drawdown": -1.4211215278521946e-05
+      },
+      "rank_score": 106.03751548694456,
+      "mean_active_day_ratio": 0.5132275132275133
+    },
+    "training_readiness_blocked_by_cost_warning": false,
+    "state_column_count": 4,
+    "reward_column_count": 4,
+    "eligible_ticker_count": 6,
+    "shadow_training_ready": true
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "cost_warning_resolved_by_regime_filtered_micro_tilt"
+  ],
+  "interpretation": [
+    "This is a pre-training readiness artifact only; it does not permit training.",
+    "The warning cost scenario must be resolved before any future shadow training request is considered ready.",
+    "A separate explicit training approval artifact would still be required after readiness passes."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "shadow_training_ready": true,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

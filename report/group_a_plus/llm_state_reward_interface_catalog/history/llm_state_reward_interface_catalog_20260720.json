@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_catalog",
+  "generated_at": "2026-07-20T23:49:22",
+  "as_of": "2026-07-20",
+  "status": "research_catalog_available_live_blocked",
+  "policy": "allowlisted_research_proposals_only_no_live_action",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2606.08450.pdf",
+    "arxiv": "2606.08450v1",
+    "concept": "GIFT constrained LLM state/reward interface design"
+  },
+  "readiness_input": {
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_readiness_review.json",
+    "exists": true,
+    "status": "blocked",
+    "blocked": true,
+    "blocking_reasons": [
+      "deployment_not_broker_actionable",
+      "dynamic_cvar_tail_cost_blocked",
+      "market_impact_blocked",
+      "market_impact_not_ready_for_reward_shaping",
+      "research_shadow_decision_snapshot_blocked",
+      "research_shadow_snapshot_blocked",
+      "rl_component_not_promotable_for_llm_interface",
+      "rl_governance_blocked",
+      "synthetic_augmentation_validation_blocked",
+      "synthetic_validation_not_ready_for_interface_search",
+      "tail_cost_not_ready_for_reward_shaping"
+    ]
+  },
+  "feature_allowlist": {
+    "momentum": {
+      "allowed_primitives": [
+        "relative_momentum",
+        "multi_horizon_momentum",
+        "rate_of_change",
+        "moving_average_slope"
+      ],
+      "required_guards": [
+        "lookback_in_allowed_range",
+        "finite_output",
+        "no_future_data"
+      ]
+    },
+    "volatility": {
+      "allowed_primitives": [
+        "realized_volatility",
+        "atr_proxy",
+        "bollinger_band_width",
+        "rolling_range"
+      ],
+      "required_guards": [
+        "lookback_in_allowed_range",
+        "finite_output",
+        "winsorized_or_clipped"
+      ]
+    },
+    "downside_risk": {
+      "allowed_primitives": [
+        "downside_deviation",
+        "rolling_skewness",
+        "rolling_kurtosis",
+        "drawdown_depth"
+      ],
+      "required_guards": [
+        "finite_output",
+        "bounded_scale",
+        "minimum_observation_count"
+      ]
+    },
+    "liquidity": {
+      "allowed_primitives": [
+        "volume_ratio",
+        "turnover_ratio",
+        "dollar_volume_proxy",
+        "amihud_daily_proxy"
+      ],
+      "required_guards": [
+        "finite_output",
+        "zero_volume_guard",
+        "no_high_frequency_assumption"
+      ]
+    },
+    "mean_reversion": {
+      "allowed_primitives": [
+        "zscore_price",
+        "rolling_deviation_from_ma",
+        "rsi_proxy",
+        "stochastic_position"
+      ],
+      "required_guards": [
+        "lookback_in_allowed_range",
+        "finite_output",
+        "bounded_scale"
+      ]
+    },
+    "trend_strength": {
+      "allowed_primitives": [
+        "adx_proxy",
+        "ema_cross_strength",
+        "sma_cross_strength",
+        "macd_histogram_proxy"
+      ],
+      "required_guards": [
+        "finite_output",
+        "bounded_scale",
+        "no_action_output"
+      ]
+    },
+    "bucket_active_pain": {
+      "allowed_primitives": [
+        "active_bucket_weight",
+        "active_bucket_return_contribution",
+        "active_bucket_drawdown_depth",
+        "reward_signal_concentration_hhi",
+        "high_dividend_active_pain"
+      ],
+      "required_guards": [
+        "computed_against_equal_weight_baseline",
+        "lagged_features_only",
+        "finite_output",
+        "bounded_scale",
+        "no_action_output"
+      ]
+    }
+  },
+  "reward_allowlist": {
+    "drawdown_penalty": {
+      "maps_to_group_a_plus_artifact": "dynamic_cvar_tail_cost_readiness_review.json",
+      "allowed_parameters": {
+        "threshold": [
+          0.03,
+          0.25
+        ],
+        "penalty_scale": [
+          0.0,
+          2.0
+        ]
+      },
+      "promotion_blocker_if_missing": "tail_cost_readiness_ready"
+    },
+    "turnover_penalty": {
+      "maps_to_group_a_plus_artifact": "market_impact_readiness_review.json",
+      "allowed_parameters": {
+        "turnover_threshold": [
+          0.0,
+          0.35
+        ],
+        "penalty_scale": [
+          0.0,
+          2.0
+        ]
+      },
+      "promotion_blocker_if_missing": "market_impact_ready"
+    },
+    "concentration_penalty": {
+      "maps_to_group_a_plus_artifact": "research_shadow_decision_snapshot.json",
+      "allowed_parameters": {
+        "max_weight_soft_cap": [
+          0.2,
+          0.8
+        ],
+        "penalty_scale": [
+          0.0,
+          1.5
+        ]
+      },
+      "promotion_blocker_if_missing": "research_shadow_snapshot_available"
+    },
+    "volatility_scaling": {
+      "maps_to_group_a_plus_artifact": "dynamic_cvar_tail_cost_readiness_review.json",
+      "allowed_parameters": {
+        "vol_threshold": [
+          0.01,
+          0.08
+        ],
+        "scale_floor": [
+          0.2,
+          1.0
+        ]
+      },
+      "promotion_blocker_if_missing": "tail_cost_readiness_ready"
+    },
+    "cash_defense_bonus": {
+      "maps_to_group_a_plus_artifact": "intervention_fatigue_risk_budget_readiness_review.json",
+      "allowed_parameters": {
+        "stress_threshold": [
+          0.0,
+          1.0
+        ],
+        "bonus_scale": [
+          0.0,
+          1.0
+        ]
+      },
+      "promotion_blocker_if_missing": "risk_budget_pacing_ready"
+    },
+    "letf_tail_decay_cost": {
+      "maps_to_group_a_plus_artifact": "letf_tracking_error_effective_fee_readiness_review.json",
+      "allowed_parameters": {
+        "decay_scale": [
+          0.0,
+          2.0
+        ],
+        "tail_scale": [
+          0.0,
+          2.0
+        ]
+      },
+      "promotion_blocker_if_missing": "tracking_error_readiness_ready"
+    },
+    "active_bucket_drawdown_penalty": {
+      "maps_to_group_a_plus_artifact": "llm_state_reward_interface_drawdown_failure_event_audit.json",
+      "allowed_parameters": {
+        "active_weight_threshold": [
+          0.0,
+          0.25
+        ],
+        "penalty_scale": [
+          0.0,
+          2.0
+        ]
+      },
+      "promotion_blocker_if_missing": "state_redesign_diagnostic_ready"
+    }
+  },
+  "proposal_validation_rules": {
+    "must_preserve_raw_market_input": true,
+    "must_append_features_only": true,
+    "must_not_output_actions": true,
+    "must_not_output_target_weights": true,
+    "must_not_reference_future_data": true,
+    "must_return_finite_numeric_values": true,
+    "must_clip_parameters_to_allowed_ranges": true,
+    "must_include_human_review_note": true,
+    "must_include_walk_forward_plan": true,
+    "must_freeze_interface_before_oos": true,
+    "test_time_llm_queries_allowed": false,
+    "generated_code_live_execution_allowed": false
+  },
+  "explicit_rejections": [
+    "llm_direct_trade_signal",
+    "llm_target_weight_output",
+    "ppo_live_allocator",
+    "test_time_prompt_update",
+    "high_frequency_order_book_dependency",
+    "unbounded_reward_term",
+    "synthetic_alpha_without_validation",
+    "market_impact_blind_turnover_reward"
+  ],
+  "decision": {
+    "catalog_available_for_research_review": true,
+    "readiness_required_before_any_promotion": true,
+    "llm_state_reward_interface_ready": false,
+    "live_llm_trading_allowed": false,
+    "live_ppo_allocator_allowed": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

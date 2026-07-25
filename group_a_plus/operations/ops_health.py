@@ -443,14 +443,15 @@ def collect_artifact_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
     dfl_active_date_audit = _dfl_active_date_audit_health(root)
     errors = [item["label"] for item in required if item["status"] != "ok"]
     warnings = [item["label"] for item in scheduler if item["status"] != "ok"]
+    legacy_frozen_warnings: list[str] = []
     if daily_log["status"] != "ok":
         warnings.append("daily_log")
     if execution_plan_freshness["status"] == "stale":
         warnings.append("execution_plan_stale")
     if golden_signal_freshness["status"] == "stale":
-        warnings.append("golden_signal_stale")
+        legacy_frozen_warnings.append("golden_signal_stale")
     if group_a_plus_decision_signal_freshness["status"] == "stale":
-        warnings.append("group_a_plus_decision_signal_stale")
+        legacy_frozen_warnings.append("group_a_plus_decision_signal_stale")
     warnings.extend(volatility_gate_execution_guard.get("warnings", []))
     warnings.extend(dfl_advisory.get("warnings", []))
     warnings.extend(dfl_active_date_audit.get("warnings", []))
@@ -458,6 +459,7 @@ def collect_artifact_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
         "status": _status_from_warnings(errors, warnings),
         "missing_required": errors,
         "missing_optional": warnings,
+        "legacy_frozen_artifact_warnings": legacy_frozen_warnings,
         "execution_plan_freshness": execution_plan_freshness,
         "golden_signal_freshness": golden_signal_freshness,
         "group_a_plus_decision_signal_freshness": group_a_plus_decision_signal_freshness,
@@ -471,6 +473,76 @@ def collect_artifact_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
 
 
 MAX_PIPELINE_MANIFEST_STALE_DAYS = 1
+
+
+def _resolve_report_path(root: Path, raw: str | Path) -> Path:
+    path = Path(raw)
+    return path if path.is_absolute() else root / path
+
+
+def _load_daily_status_pointer(root: Path) -> tuple[Path, dict[str, Any] | None]:
+    pointer = root / "report/group_a_plus/latest/daily_status.json"
+    payload = _read_json(pointer)
+    if not isinstance(payload, dict):
+        return pointer, None
+    if isinstance(payload.get("json"), str):
+        managed = _resolve_report_path(root, payload["json"])
+        return managed, _read_json(managed)
+    return pointer, payload
+
+
+def _final_daily_status_health(root: Path, outputs: dict[str, Any]) -> dict[str, Any]:
+    required = "promotion_gate" in outputs or "daily_status_final" in outputs
+    if not required:
+        return {
+            "status": "not_required",
+            "required": False,
+            "errors": [],
+            "warnings": [],
+        }
+
+    errors: list[str] = []
+    warnings: list[str] = []
+    final_output_raw = outputs.get("daily_status_final")
+    final_output_path = _resolve_report_path(root, final_output_raw) if isinstance(final_output_raw, str) else None
+    final_output_payload = _read_json(final_output_path) if final_output_path is not None and final_output_path.exists() else None
+
+    if final_output_path is None:
+        warnings.append("daily_status_final_missing_from_manifest")
+    elif not final_output_path.exists():
+        warnings.append("daily_status_final_output_missing")
+    elif final_output_payload is None:
+        errors.append("daily_status_final_output_unreadable")
+    elif final_output_payload.get("status_stage") != "final":
+        errors.append("daily_status_final_output_not_final")
+
+    pointer_path = root / "report/group_a_plus/latest/daily_status.json"
+    latest_payload_path, latest_payload = _load_daily_status_pointer(root)
+    if not pointer_path.exists():
+        errors.append("daily_status_latest_pointer_missing")
+    elif latest_payload is None:
+        errors.append("daily_status_latest_pointer_unreadable")
+    elif latest_payload.get("status_stage") != "final":
+        errors.append("daily_status_latest_pointer_not_final")
+
+    if errors and "daily_status_final_missing_from_manifest" in warnings:
+        warnings.remove("daily_status_final_missing_from_manifest")
+        errors.append("daily_status_final_missing_from_manifest")
+    if errors and "daily_status_final_output_missing" in warnings:
+        warnings.remove("daily_status_final_output_missing")
+        errors.append("daily_status_final_output_missing")
+
+    return {
+        "status": _status_from_warnings(errors, warnings),
+        "required": True,
+        "errors": errors,
+        "warnings": warnings,
+        "final_output": str(final_output_path) if final_output_path is not None else None,
+        "final_output_status_stage": final_output_payload.get("status_stage") if isinstance(final_output_payload, dict) else None,
+        "latest_pointer": str(pointer_path),
+        "latest_payload": str(latest_payload_path),
+        "latest_payload_status_stage": latest_payload.get("status_stage") if isinstance(latest_payload, dict) else None,
+    }
 
 
 def collect_pipeline_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
@@ -526,6 +598,9 @@ def collect_pipeline_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
     }
     missing_outputs = [name for name, item in output_checks.items() if item["status"] != "ok"]
     warnings = list(missing_outputs)
+    final_daily_status = _final_daily_status_health(root, outputs)
+    errors.extend(final_daily_status.get("errors", []))
+    warnings.extend(final_daily_status.get("warnings", []))
     return {
         "status": _status_from_warnings(errors, warnings),
         "latest_manifest": str(manifest),
@@ -535,6 +610,7 @@ def collect_pipeline_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
         "errors": errors,
         "missing_outputs": missing_outputs,
         "outputs": output_checks,
+        "final_daily_status": final_daily_status,
         "signals": payload.get("signals") or {},
     }
 

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_high_dividend_active_pain_offline_smoke",
+  "generated_at": "2026-07-21T16:02:03",
+  "as_of": "2026-07-21",
+  "status": "blocked",
+  "policy": "offline_smoke_only_no_model_training_no_live_action",
+  "proposal_id": "gift_research_high_dividend_active_pain_v1",
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel.parquet",
+    "panel_sha256": "66aa5e59dbe67b896a8b1b9846091596ad64aa766a5607eecf9e169b998ee0b8",
+    "baseline_shadow_backtest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_baseline_shadow_backtest.json",
+    "dgr_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_high_dividend_active_pain_dgr_review.json",
+    "eligible_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "active_penalty_scale": 1.0,
+    "drawdown_scale": 1.0,
+    "return_pain_scale": 2.0,
+    "concentration_scale": 0.05,
+    "min_positive_final_folds": 4,
+    "min_positive_sharpe_folds": 4,
+    "min_non_worse_drawdown_folds": 3
+  },
+  "summary": {
+    "baseline_positive_final_value_folds": 4,
+    "baseline_positive_sharpe_folds": 4,
+    "baseline_non_worse_drawdown_folds": 1,
+    "high_dividend_active_pain_offline_smoke": {
+      "fold_count": 0,
+      "available_fold_count": 0,
+      "positive_final_value_folds": 0,
+      "positive_sharpe_folds": 0,
+      "non_worse_drawdown_folds": 0,
+      "mean_delta_final_value": null,
+      "mean_delta_sharpe_ratio": null,
+      "mean_delta_max_drawdown": null
+    },
+    "event_probe_2024_08_05": {
+      "available": false
+    },
+    "event_probe_active_drag_improved": false,
+    "pass_high_dividend_active_pain_offline_smoke": false
+  },
+  "fold_results": [],
+  "blocking_reasons": [
+    "high_dividend_active_pain_dgr_not_green"
+  ],
+  "warning_reasons": [
+    "event_probe_2024_08_05_active_drag_not_improved"
+  ],
+  "decision": {
+    "available_for_manual_offline_review": false,
+    "high_dividend_active_pain_offline_smoke_passed": false,
+    "next_frozen_manifest_design_allowed": false,
+    "next_shadow_model_design_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

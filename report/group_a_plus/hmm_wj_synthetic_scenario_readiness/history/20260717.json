@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_hmm_wj_synthetic_scenario_readiness_review",
+  "generated_at": "2026-07-18T15:15:12",
+  "policy": "research_only_hmm_wj_readiness_no_synthetic_alpha_no_weight_change",
+  "status": "blocked",
+  "as_of": "2026-07-17",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2603.10202.pdf",
+    "title": "Hybrid Hidden Markov Model for Modeling Equity Excess Growth Rate Dynamics: A Discrete-State Approach with Jump-Diffusion",
+    "imported_concepts": [
+      "synthetic_scenario_quality_gate",
+      "jump_duration_tail_state_dwell_times",
+      "direct_counting_quantile_state_transitions",
+      "student_t_copula_dependence_concept"
+    ],
+    "not_imported": [
+      "HMM_WJ_live_trading_signal",
+      "synthetic_paths_as_alpha",
+      "SPY_or_SP500_hyperparameters_for_Taiwan_ETFs",
+      "automatic_target_weight_change"
+    ]
+  },
+  "readiness_thresholds": {
+    "min_return_rows_per_ticker": 1000,
+    "min_low_tail_obs_per_ticker": 50,
+    "min_high_tail_obs_per_ticker": 50,
+    "tail_definition": "empirical 5pct / 95pct returns per ticker"
+  },
+  "data_readiness": {
+    "tickers": {
+      "0050.TW": {
+        "rows": 2806,
+        "return_rows": 2805,
+        "first_date": "2015-01-05",
+        "last_date": "2026-07-17",
+        "tail_obs_low_5pct": 141,
+        "tail_obs_high_95pct": 141,
+        "tail_transition_count": 64,
+        "ann_vol": 0.19588842219036645,
+        "excess_kurtosis": 7.1326365909438945,
+        "abs_return_acf_1d": 0.1892832346501436,
+        "data_ready": true
+      },
+      "00631L.TW": {
+        "rows": 2810,
+        "return_rows": 2809,
+        "first_date": "2015-01-05",
+        "last_date": "2026-07-17",
+        "tail_obs_low_5pct": 141,
+        "tail_obs_high_95pct": 141,
+        "tail_transition_count": 60,
+        "ann_vol": 0.3874499137471748,
+        "excess_kurtosis": 21.021555654460244,
+        "abs_return_acf_1d": 0.2398034015262159,
+        "data_ready": true
+      },
+      "00632R.TW": {
+        "rows": 2810,
+        "return_rows": 2809,
+        "first_date": "2015-01-05",
+        "last_date": "2026-07-17",
+        "tail_obs_low_5pct": 141,
+        "tail_obs_high_95pct": 141,
+        "tail_transition_count": 62,
+        "ann_vol": 1.7697096400166417,
+        "excess_kurtosis": 2710.1760640292405,
+        "abs_return_acf_1d": 0.0012862528116003745,
+        "data_ready": true
+      },
+      "2330.TW": {
+        "rows": 2805,
+        "return_rows": 2804,
+        "first_date": "2015-01-05",
+        "last_date": "2026-07-17",
+        "tail_obs_low_5pct": 141,
+        "tail_obs_high_95pct": 142,
+        "tail_transition_count": 56,
+        "ann_vol": 0.2722830454317871,
+        "excess_kurtosis": 3.3709105064547393,
+        "abs_return_acf_1d": 0.14683249030134404,
+        "data_ready": true
+      }
+    },
+    "all_required_tickers_ready": true
+  },
+  "validation_readiness": {
+    "generator_implemented": false,
+    "synthetic_paths_generated": false,
+    "ks_ad_wasserstein_hellinger_acf_mae_available": false,
+    "taiwan_etf_walkforward_validated": false,
+    "student_t_copula_validated": false
+  },
+  "existing_research_blockers": {
+    "finstressts_status": "blocked",
+    "finstressts_allow_00631l_add": false,
+    "trigate_state": "blocked_for_leverage_add",
+    "trigate_stress_gate_count": 3,
+    "systemic_bubble_state": "blocked_for_leverage_add",
+    "systemic_bubble_score": 2
+  },
+  "blocking_reasons": [
+    "finstressts_snapshot_blocked",
+    "trigate_vol_memory_blocks_leverage_add",
+    "systemic_bubble_time_at_risk_blocks_leverage_add",
+    "hmm_wj_generator_not_implemented",
+    "taiwan_etf_walkforward_validation_missing"
+  ],
+  "warning_reasons": [
+    "readiness_only_no_synthetic_paths_generated"
+  ],
+  "decision": {
+    "summary": "HMM-WJ scenario readiness is diagnostic only. Local data may be sufficient for future research, but no synthetic generator or Taiwan ETF walk-forward validation is available, so it cannot affect execution.",
+    "can_generate_scenarios_for_decision": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "finstressts": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_decision_snapshot.json",
+    "trigate_vol_memory": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/trigate_vol_memory_shadow.json",
+    "systemic_bubble_time_at_risk": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/systemic_bubble_time_at_risk_review.json"
+  }
+}

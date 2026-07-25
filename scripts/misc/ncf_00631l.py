@@ -2277,6 +2277,8 @@ def train_classifier(
 
 
 def main() -> None:
+    global _HAS_TABNET
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", default=str(DB_PATH))
     parser.add_argument("--ticker", default=TICKER)
@@ -2349,7 +2351,14 @@ def main() -> None:
         "--optuna-params", default=None,
         help="Path to ncf_optuna_best_params.json; overrides default LGB/XGB/HGB/RF hyperparameters.",
     )
+    parser.add_argument(
+        "--no-tabnet",
+        action="store_true",
+        help="Disable optional TabNet classifier training for faster daily panel generation.",
+    )
     args = parser.parse_args()
+    if args.no_tabnet:
+        _HAS_TABNET = False
     use_tbrain_features = bool(args.tbrain_features and not args.no_tbrain_features)
     if use_tbrain_features:
         FEATURES[:] = FEATURES + [feature for feature in TBRAIN_FEATURES if feature not in FEATURES]
@@ -2772,6 +2781,9 @@ def main() -> None:
         if 20 in avail_h:
             panel_df["h20_prob_up"] = val_panels[20]["proba"].reindex(common_idx)
             panel_df["h20_direction"] = panel_df["h20_prob_up"].apply(lambda p: "UP" if p > 0.5 else "DOWN")
+        for _h in avail_h:
+            if "label" in val_panels[_h]:
+                panel_df[f"actual_up_h{_h}"] = val_panels[_h]["label"].reindex(common_idx)
         if drawdown_risk.get("available"):
             panel_df["prob_fwd_mdd_gt5_h20"] = drawdown_risk["val_proba"].reindex(common_idx)
             panel_df["actual_fwd_mdd_gt5_h20"] = drawdown_risk["val_label"].reindex(common_idx)

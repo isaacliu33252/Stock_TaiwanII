@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_deployment_consistency_review",
+  "status": "blocked",
+  "generated_at": "2026-07-22T11:36:54",
+  "policy": "diagnostic_only_no_weight_change",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2603.21330.pdf",
+    "title": "FinRL-X: An AI-Native Modular Infrastructure for Quantitative Trading",
+    "imported_concepts": [
+      "weight_centric_interface",
+      "research_to_execution_consistency",
+      "execution_guard_monitoring",
+      "target_vs_realized_allocation_tracking",
+      "broker_actionability_gate"
+    ],
+    "not_imported": [
+      "FinRL_X_engine",
+      "DRL_allocator",
+      "US_equity_paper_trading_performance",
+      "automatic_weight_change"
+    ]
+  },
+  "as_of": "2026-07-22",
+  "computed": {
+    "live_actual_data_date": "2026-07-21",
+    "execution_plan_actual_data_date": "2026-07-17",
+    "dates_aligned": false,
+    "live_strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "execution_plan_strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "strategy_ids_aligned": true,
+    "daily_status_overall": "block",
+    "daily_status_checks": {
+      "live_signal_success": "ok",
+      "execution_allowed": "block",
+      "data_freshness": "ok",
+      "strategy_status": "ok",
+      "source_freshness": "block",
+      "cash_constraint": "ok",
+      "execution_plan_pre_trade_guard": "warn",
+      "dfl_advisory_frozen_input_staleness": "ok"
+    },
+    "ops_health_status": "warning",
+    "ops_health_errors": [],
+    "ops_health_warnings": [
+      "system_resources",
+      "artifact_health",
+      "module_health"
+    ],
+    "cash_source_explicit": true,
+    "cash_balance": 0.0,
+    "nonzero_trade_count": 1,
+    "execution_plan_allowed": false,
+    "manual_confirmation_required": true,
+    "broker_actionable": false,
+    "guard_summary": {
+      "guard_count": 3,
+      "active_guard_names": [
+        "volatility_gate_no_00631l_add",
+        "compounding_regime_no_00631l_add"
+      ],
+      "blocked_guard_names": [
+        "volatility_gate_no_00631l_add",
+        "compounding_regime_no_00631l_add"
+      ],
+      "blocked_trade_count": 1,
+      "blocked_buy_notional": 21489.55877685547,
+      "combined_blocked_buys": [
+        {
+          "ticker": "00631L.TW",
+          "current_shares": 0,
+          "staged_target_shares": 668,
+          "final_target_shares": 0,
+          "blocked_delta_shares": 668,
+          "blocked_notional": 21489.55877685547,
+          "price": 32.16999816894531
+        }
+      ]
+    },
+    "target_weights": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.19994,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.30006000000000005
+    },
+    "execution_target_shares": {
+      "0050.TW": 1342,
+      "00631L.TW": 0,
+      "00632R.TW": 0,
+      "00679B.TWO": 0
+    },
+    "gift_signed_approval_governance": {
+      "source": "research_shadow_decision_snapshot",
+      "validation_status": "blocked",
+      "signed_approval_record_valid": false,
+      "human_exception_approved": false,
+      "non_ppo_shadow_queue_review_allowed": false,
+      "training_queue_allowed": false,
+      "model_training_allowed": false,
+      "ppo_training_allowed": false,
+      "promote_to_live": false,
+      "manual_approval_to_queue_training_allowed": false,
+      "training_queue_blocking_reasons": [
+        "signed_human_exception_approval_record_missing_or_invalid"
+      ],
+      "signed_approval_warnings": [
+        "llm_state_reward_signed_approval_validation_blocked",
+        "llm_state_reward_signed_approval_validation_status:blocked",
+        "llm_state_reward_signed_approval_validation:missing_signed_human_exception_approval_record"
+      ]
+    }
+  },
+  "blocking_reasons": [
+    "execution_plan_date_mismatch",
+    "source_freshness_not_ok"
+  ],
+  "warning_reasons": [
+    "gift_signed_approval_record_missing_or_invalid",
+    "gift_human_exception_not_approved",
+    "cash_balance_zero_with_nonzero_trades",
+    "execution_plan_not_allowed",
+    "manual_confirmation_required",
+    "daily_status_pre_trade_guard_not_ok"
+  ],
+  "decision": {
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "broker_actionable": false,
+    "manual_review_required": true,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true,
+    "summary": "Deployment-consistency review is diagnostic only. It may block or force manual review, but it never changes GroupA+ target weights."
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260722.json",
+    "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+    "daily_status": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_daily_status_20260722.json",
+    "ops_health": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/ops_health.json"
+  }
+}

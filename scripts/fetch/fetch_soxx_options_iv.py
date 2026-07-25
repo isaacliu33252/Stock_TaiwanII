@@ -25,6 +25,9 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from backtest_group_a_plus_switch_policy import DB_PATH
 
+MIN_REASONABLE_IV = 0.05
+MAX_REASONABLE_IV = 2.0
+
 CREATE_EXTERNAL_OPTIONS_IV_SQL = """
 CREATE TABLE IF NOT EXISTS external_options_iv (
     provider              TEXT      NOT NULL,
@@ -66,7 +69,13 @@ def _nearest_iv(chain: pd.DataFrame, target_strike: float, option_type: str) -> 
     frame["strike"] = pd.to_numeric(frame["strike"], errors="coerce")
     frame["impliedVolatility"] = pd.to_numeric(frame["impliedVolatility"], errors="coerce")
     frame = frame.dropna()
-    frame = frame[frame["impliedVolatility"] > 0]
+    # Yahoo occasionally returns placeholder IV values near zero for otherwise
+    # liquid contracts. Those poison the downstream SOXX option-state gate, so
+    # reject implausible IVs before selecting the nearest strike.
+    frame = frame[
+        (frame["impliedVolatility"] >= MIN_REASONABLE_IV)
+        & (frame["impliedVolatility"] <= MAX_REASONABLE_IV)
+    ]
     if frame.empty:
         return None
     idx = (frame["strike"] - target_strike).abs().idxmin()

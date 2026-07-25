@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_broker_holdings_reconciliation_review",
+  "generated_at": "2026-07-21T22:38:53",
+  "status": "blocked",
+  "policy": "reconciliation_governance_only_no_order_generation",
+  "as_of": "2026-07-17",
+  "confirmed_holdings_source": "user_confirmed_in_chat",
+  "comparison": [
+    {
+      "ticker": "0050.TW",
+      "confirmed_shares": 2794,
+      "sample_shares": -2304,
+      "sample_minus_confirmed": -5098,
+      "matches_confirmed": false,
+      "source": "manual_user_confirmation"
+    },
+    {
+      "ticker": "00631L.TW",
+      "confirmed_shares": 500,
+      "sample_shares": 500,
+      "sample_minus_confirmed": 0,
+      "matches_confirmed": true,
+      "source": "manual_user_confirmation"
+    }
+  ],
+  "summary": {
+    "confirmed_ticker_count": 2,
+    "matched_confirmed_count": 1,
+    "mismatched_confirmed_count": 1,
+    "missing_confirmed_count": 0,
+    "negative_position_count": 4,
+    "authoritative_broker_export": false
+  },
+  "blocking_reasons": [
+    "authoritative_broker_export_missing",
+    "transaction_sample_has_negative_positions",
+    "confirmed_holdings_mismatch_transaction_sample"
+  ],
+  "decision": {
+    "broker_holdings_reconciled": false,
+    "can_generate_live_orders": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "auto_rebalance_allowed": false,
+    "target_weight_change_allowed": false,
+    "keep_golden1_0531_unchanged": true,
+    "summary": "Confirmed 00631L matches transaction-derived sample, but 0050 and other negative sample positions show the ledger is incomplete. Require an authoritative broker holdings/cash export before any order generation."
+  },
+  "inputs": {
+    "sample": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/broker_holdings_time_series_sample.json",
+    "confirmed_holdings": {
+      "0050.TW": 2794,
+      "00631L.TW": 500
+    }
+  }
+}

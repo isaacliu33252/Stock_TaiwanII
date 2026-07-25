@@ -1,0 +1,394 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_interface_promotion_gate_snapshot",
+  "generated_at": "2026-07-20T23:14:19",
+  "as_of": "2026-07-20",
+  "status": "blocked",
+  "policy": "hard_promotion_gate_shadow_only_no_live_action",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2606.08450.pdf",
+    "title": "GIFT: LLM-Guided State-Reward Interface for Financial Reinforcement Learning",
+    "arxiv": "2606.08450v1",
+    "date_in_pdf": "2026-06-07"
+  },
+  "gate_thresholds": {
+    "min_positive_final_folds": 4,
+    "min_positive_sharpe_folds": 4,
+    "min_non_worse_drawdown_folds": 3,
+    "requires_at_least_one_shadow_risk_control_gate_pass": true,
+    "requires_baseline_param_recommended_candidate": true
+  },
+  "component_results": {
+    "proposal_comparison": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_proposal_comparison_review.json",
+      "exists": true,
+      "status": "available_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [],
+      "key_metrics": {
+        "best_candidate": null,
+        "best_objective_alignment": -0.0900610103839697,
+        "best_reward_snr": 2.713603844684947
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": null,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "frozen_manifest": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_manifest.json",
+      "exists": true,
+      "status": "frozen_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [],
+      "key_metrics": {
+        "freeze_id": null,
+        "proposal_id": null,
+        "frozen_manifest_sha256": null
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": null,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "frozen_panel_review": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_review.json",
+      "exists": true,
+      "status": "available_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [],
+      "key_metrics": {
+        "rows": null,
+        "ticker_count": 8,
+        "panel_sha256": null
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": null,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "walk_forward_audit": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_walk_forward_audit.json",
+      "exists": true,
+      "status": "available_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [],
+      "key_metrics": {
+        "fold_count": 6,
+        "warnings": 0,
+        "duplicate_date_ticker_rows": 0
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": null,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "baseline_shadow": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_baseline_shadow_backtest.json",
+      "exists": true,
+      "status": "available_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [],
+      "key_metrics": {
+        "fold_count": 6,
+        "available_fold_count": 6,
+        "positive_final_value_folds": 4,
+        "positive_sharpe_folds": 4,
+        "non_worse_drawdown_folds": 1,
+        "mean_delta_final_value": 0.013863402815589213,
+        "mean_delta_sharpe_ratio": 0.0684790496693679,
+        "mean_delta_max_drawdown": -0.00919663436563182,
+        "candidate_rule": "train_quantile_reward_tilt_prior_day_signal",
+        "baseline_rule": "equal_weight_eligible_tickers",
+        "pass_min_positive_final_folds": true,
+        "pass_min_positive_sharpe_folds": true
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": true,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "baseline_param_sweep": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_frozen_panel_baseline_param_sweep.json",
+      "exists": true,
+      "status": "available_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [],
+      "key_metrics": {
+        "evaluated_count": 9,
+        "recommended_count": 0,
+        "has_recommended_candidate": null
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": null,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "drawdown_attribution": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_baseline_drawdown_attribution.json",
+      "exists": true,
+      "status": "available_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [],
+      "key_metrics": {
+        "failing_drawdown_folds": null,
+        "worst_fold": 3,
+        "worst_delta_max_drawdown": -0.022937559989707035
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": null,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "risk_control_overlay": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_risk_control_overlay_shadow_backtest.json",
+      "exists": true,
+      "status": "available_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "non_worse_drawdown_folds_below_threshold:1<3"
+      ],
+      "key_metrics": {
+        "overlay": {
+          "fold_count": 6,
+          "available_fold_count": 6,
+          "positive_final_value_folds": 4,
+          "positive_sharpe_folds": 4,
+          "non_worse_drawdown_folds": 1,
+          "mean_delta_final_value": 0.009530672404405915,
+          "mean_delta_sharpe_ratio": 0.04691269867500499,
+          "mean_delta_max_drawdown": -0.005791851782983211
+        },
+        "pass_risk_control_overlay_gate": false
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": false,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "stress_regime_gate": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_stress_regime_gate_shadow_backtest.json",
+      "exists": true,
+      "status": "available_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "non_worse_drawdown_folds_below_threshold:0<3",
+        "positive_sharpe_folds_below_threshold:3<4"
+      ],
+      "key_metrics": {
+        "stress_gate": {
+          "fold_count": 6,
+          "available_fold_count": 6,
+          "positive_final_value_folds": 4,
+          "positive_sharpe_folds": 3,
+          "non_worse_drawdown_folds": 0,
+          "mean_delta_final_value": 0.005385718883544832,
+          "mean_delta_sharpe_ratio": 0.011436188393969723,
+          "mean_delta_max_drawdown": -0.0040651979854072024
+        },
+        "pass_stress_regime_gate": false,
+        "mean_stress_gate_rate": 0.45634920634920634
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": false,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "bucket_guard": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_bucket_guard_shadow_backtest.json",
+      "exists": true,
+      "status": "available_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "non_worse_drawdown_folds_below_threshold:1<3",
+        "positive_sharpe_folds_below_threshold:3<4"
+      ],
+      "key_metrics": {
+        "bucket_guard": {
+          "fold_count": 6,
+          "available_fold_count": 6,
+          "positive_final_value_folds": 4,
+          "positive_sharpe_folds": 3,
+          "non_worse_drawdown_folds": 1,
+          "mean_delta_final_value": 0.008061873609758075,
+          "mean_delta_sharpe_ratio": -0.011580613823224265,
+          "mean_delta_max_drawdown": -0.007875632138739116
+        },
+        "pass_bucket_guard_gate": false,
+        "mean_bucket_guard_rates": {
+          "high_dividend": 0.35714285714285715,
+          "bond": 0.943121693121693
+        }
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": false,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "relative_drawdown_circuit": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_relative_drawdown_circuit_shadow_backtest.json",
+      "exists": true,
+      "status": "available_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [
+        "non_worse_drawdown_folds_below_threshold:1<3"
+      ],
+      "key_metrics": {
+        "relative_drawdown_circuit": {
+          "fold_count": 6,
+          "available_fold_count": 6,
+          "positive_final_value_folds": 4,
+          "positive_sharpe_folds": 4,
+          "non_worse_drawdown_folds": 1,
+          "mean_delta_final_value": 0.017510962909675614,
+          "mean_delta_sharpe_ratio": 0.09242145224556349,
+          "mean_delta_max_drawdown": -0.004678571614157079
+        },
+        "pass_relative_drawdown_circuit_gate": false,
+        "mean_circuit_rate": 0.2698412698412698
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": false,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    },
+    "relative_drawdown_circuit_sweep": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_relative_drawdown_circuit_param_sweep.json",
+      "exists": true,
+      "status": "available_for_manual_offline_review",
+      "blocking_reasons": [],
+      "warning_reasons": [],
+      "key_metrics": {
+        "evaluated_count": 45,
+        "passed_count": 0,
+        "has_recommended_candidate": false,
+        "best_by_drawdown_then_return": {
+          "relative_drawdown_trigger": 0.0005,
+          "relative_recovery_threshold": 0.001,
+          "min_circuit_days": 5,
+          "status": "available_for_manual_offline_review",
+          "passed": false,
+          "positive_final_value_folds": 0,
+          "positive_sharpe_folds": 0,
+          "non_worse_drawdown_folds": 3,
+          "mean_delta_final_value": -0.001599227761900431,
+          "mean_delta_sharpe_ratio": -0.03617361875268558,
+          "mean_delta_max_drawdown": -0.0013292964254369988,
+          "mean_circuit_rate": 0.9259259259259259,
+          "warning_reasons": [
+            "positive_final_value_folds_below_threshold:0<4",
+            "positive_sharpe_folds_below_threshold:0<4"
+          ],
+          "blocking_reasons": []
+        }
+      },
+      "decision": {
+        "next_shadow_model_design_allowed": false,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false
+      }
+    }
+  },
+  "summary": {
+    "baseline_shadow": {
+      "positive_final_value_folds": 4,
+      "positive_sharpe_folds": 4,
+      "non_worse_drawdown_folds": 1
+    },
+    "risk_control_gate_passes": {
+      "risk_control_overlay": false,
+      "stress_regime_gate": false,
+      "bucket_guard": false,
+      "relative_drawdown_circuit": false,
+      "relative_drawdown_circuit_sweep_recommended": false
+    },
+    "baseline_param_sweep_has_recommended_candidate": null,
+    "promotion_gate_passed": false
+  },
+  "blocking_reasons": [
+    "baseline_non_worse_drawdown_folds_below_threshold:1<3",
+    "baseline_param_sweep_has_no_recommended_candidate",
+    "no_shadow_risk_control_passed_promotion_gate"
+  ],
+  "warning_reasons": [],
+  "interpretation": [
+    "The GIFT-style frozen state/reward interface has useful offline signal but fails the drawdown promotion gate.",
+    "No tested guard preserves return, Sharpe, and drawdown requirements at the same time.",
+    "The next valid step is research redesign or additional non-live diagnostics, not PPO/model training or live allocation."
+  ],
+  "decision": {
+    "available_for_manual_offline_review": true,
+    "promotion_gate_passed": false,
+    "llm_state_reward_interface_research_catalog_allowed": true,
+    "next_shadow_model_design_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

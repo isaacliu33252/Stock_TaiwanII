@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "report_type": "heterogeneous_vol_regime_advisory",
+  "status": "available",
+  "policy": "manual_review_only_no_weight_change",
+  "active_allocation_impact": "none",
+  "generated_at": "2026-07-17T17:55:15",
+  "source_paper": "C:/Users/isaac/Downloads/2603.16035.pdf",
+  "as_of": "2026-07-17",
+  "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal_20260720_estimate.json",
+  "live_signal_context": {
+    "requested_as_of_date": "2026-07-20",
+    "actual_data_date": "2026-07-17",
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "execution_regime": "golden1",
+    "execution_allowed": false,
+    "target_weights": {
+      "0050.TW": 0.5,
+      "00631L.TW": 0.2,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.30000000000000004
+    },
+    "market_state": {
+      "state": "bull_pullback_deep",
+      "label_zh": "多頭深回檔",
+      "risk_level": "medium_high"
+    }
+  },
+  "advisory": {
+    "level": "high",
+    "active": true,
+    "suggested_review": "avoid_adding_00631l_until_manual_review",
+    "recommended_action": "manual_review",
+    "allow_auto_weight_change": false,
+    "allow_execution_block": false,
+    "allow_00631l_auto_reduce": false,
+    "allow_00631l_auto_add": false
+  },
+  "latest_snapshot": {
+    "heterogeneous_stress_count": 7,
+    "heterogeneous_crisis_count": 5,
+    "heteroskedastic_source_count": 6,
+    "verified_stress_count": 7,
+    "verified_crisis_count": 5,
+    "heterogeneous_stress_active": true,
+    "sparse_crisis_active": true
+  },
+  "top_stress_sources": [
+    {
+      "source": "tsm_adr",
+      "regime": "Crisis",
+      "vol_percentile": 0.9444444444444444,
+      "variance_ratio": 1.9795441311351827,
+      "passes_shadow_verification": true
+    },
+    {
+      "source": "00631l_levered",
+      "regime": "Crisis",
+      "vol_percentile": 0.9325396825396826,
+      "variance_ratio": 2.06294544597449,
+      "passes_shadow_verification": true
+    },
+    {
+      "source": "00632r_inverse",
+      "regime": "Crisis",
+      "vol_percentile": 0.9206349206349206,
+      "variance_ratio": 2.096938751207207,
+      "passes_shadow_verification": true
+    },
+    {
+      "source": "soxx_semiconductor",
+      "regime": "Crisis",
+      "vol_percentile": 0.9126984126984127,
+      "variance_ratio": 2.4822982662148747,
+      "passes_shadow_verification": true
+    },
+    {
+      "source": "qqq_growth",
+      "regime": "Crisis",
+      "vol_percentile": 0.9047619047619048,
+      "variance_ratio": 1.761032177477582,
+      "passes_shadow_verification": true
+    },
+    {
+      "source": "0050_local",
+      "regime": "Elevated",
+      "vol_percentile": 0.873015873015873,
+      "variance_ratio": 1.7718417157717559,
+      "passes_shadow_verification": true
+    }
+  ],
+  "evidence": {
+    "shadow_metrics": {
+      "sparse_crisis_active": {
+        "active_days": 64,
+        "h10_precision": 0.578125,
+        "h10_recall": 0.27007299270072993,
+        "h10_fpr": 0.1148936170212766
+      },
+      "heterogeneous_stress_active": {
+        "active_days": 106,
+        "h10_precision": 0.46226415094339623,
+        "h10_recall": 0.35766423357664234,
+        "h10_fpr": 0.2425531914893617
+      }
+    },
+    "conditional_metrics": {
+      "hetero_sparse_or_qgms_endpoint": {
+        "active_days": 72,
+        "h10_precision": 0.6111111111111112,
+        "h10_recall": 0.32116788321167883,
+        "h10_fpr": 0.11914893617021277
+      },
+      "verified_crisis_count_ge_3": {
+        "signal": "verified_crisis_count_ge_3",
+        "threshold": 3,
+        "active_days": 61,
+        "precision": 0.5901639344262295,
+        "recall": 0.26277372262773724,
+        "false_positive_rate": 0.10638297872340426
+      }
+    },
+    "walkforward_h10_best": {
+      "feature_set": "local_sources",
+      "auc": 0.5891830065359477,
+      "average_precision": 0.44763750255770973,
+      "brier_delta_vs_base_rate": 0.0025514158795423014,
+      "alert_precision": 0.4716981132075472,
+      "alert_recall": 0.36764705882352944,
+      "alert_fpr": 0.28
+    },
+    "param_sweep_best": {
+      "signal": "sparse_crisis_active",
+      "vol_window": 20,
+      "percentile_window": 252,
+      "hetero_source_min_count": 3,
+      "crisis_source_min_count": 3,
+      "active_days": 61,
+      "latest_active": true,
+      "h10_precision": 0.5901639344262295,
+      "h10_recall": 0.26277372262773724,
+      "h10_fpr": 0.10638297872340426,
+      "score": 0.5728247993953863
+    }
+  },
+  "inputs": {
+    "shadow_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/heterogeneous_vol_regime_shadow_20250102_20260717.json",
+    "conditional_overlap": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/heterogeneous_vol_regime_conditional_overlap_20250102_20260717.json",
+    "walkforward_h10": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/heterogeneous_vol_regime_walkforward_ablation_20180102_20260717_h10.json",
+    "param_sweep": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/heterogeneous_vol_regime_param_sweep_20250102_20260717.json"
+  },
+  "interpretation": "Heterogeneous volatility regime is a source-level risk dashboard. Walk-forward validation did not support live promotion; this advisory must not modify target weights or execution guards."
+}

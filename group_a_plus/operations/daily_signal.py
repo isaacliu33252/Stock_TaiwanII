@@ -32,6 +32,7 @@ from group_a_plus.integrations.signal_alignment import (
     build_signal_alignment,
 )
 from group_a_plus.integrations.specialist_router import append_specialist_routing_shadow_log, route_specialist
+from group_a_plus.integrations.srr_lite_shadow import compute_srr_lite_shadow
 from group_a_plus.integrations.tail_conformal import compute_tail_conformal_diagnostic
 from group_a_plus.integrations.trough_nowcast import compute_trough_nowcast
 from group_a_plus.utils.symbols import build_symbol_metadata
@@ -1049,6 +1050,7 @@ def _build_signal_alerts(
     trough_nowcast: dict[str, Any] | None = None,
     tail_conformal: dict[str, Any] | None = None,
     cross_market_graph_shadow: dict[str, Any] | None = None,
+    srr_lite_shadow: dict[str, Any] | None = None,
     cooldown_minutes: int = DEFAULT_COOLDOWN_MINUTES,
 ) -> list[dict[str, Any]]:
     """Build stable alert payloads for downstream notification/cooldown layers."""
@@ -1260,6 +1262,59 @@ def _build_signal_alerts(
                 "thresholds": (cross_market_graph_shadow or {}).get("thresholds"),
                 "selected_features": (cross_market_graph_shadow or {}).get("selected_features"),
                 "report_path": (cross_market_graph_shadow or {}).get("report_path"),
+            },
+        )
+    if (srr_lite_shadow or {}).get("no_add_active") is True:
+        add(
+            "srr_lite_systemic_fragility_shadow",
+            "medium",
+            "SRR-lite systemic fragility shadow",
+            (
+                "SRR-lite correlation-network fragility is elevated. This is a "
+                "manual-review no-add reference for 00631L only; it does not "
+                "change target weights."
+            ),
+            {
+                "policy": (srr_lite_shadow or {}).get("policy"),
+                "recommended_action": (srr_lite_shadow or {}).get("recommended_action"),
+                "allow_auto_weight_change": (srr_lite_shadow or {}).get("allow_auto_weight_change"),
+                "allow_00631l_add_reference": (srr_lite_shadow or {}).get(
+                    "allow_00631l_add_reference"
+                ),
+                "systemic_fragility_score": (srr_lite_shadow or {}).get("systemic_fragility_score"),
+                "fragility_level": (srr_lite_shadow or {}).get("fragility_level"),
+                "metrics": (srr_lite_shadow or {}).get("metrics"),
+                "thresholds": (srr_lite_shadow or {}).get("thresholds"),
+                "available_symbols": (srr_lite_shadow or {}).get("available_symbols"),
+            },
+        )
+    if (
+        (srr_lite_shadow or {}).get("crash_watch_active") is True
+        and (srr_lite_shadow or {}).get("no_add_active") is not True
+    ):
+        add(
+            "srr_lite_crash_watch_shadow",
+            "low",
+            "SRR-lite crash watch shadow",
+            (
+                "SRR-lite high-score/high-density crash-watch condition is active. "
+                "This is an early manual-review hint only; it does not block "
+                "00631L adds or change target weights."
+            ),
+            {
+                "policy": (srr_lite_shadow or {}).get("policy"),
+                "recommended_action": (srr_lite_shadow or {}).get("crash_watch_recommended_action"),
+                "allow_auto_weight_change": (srr_lite_shadow or {}).get(
+                    "allow_crash_watch_auto_weight_change"
+                ),
+                "allow_00631l_add_reference": (srr_lite_shadow or {}).get(
+                    "allow_00631l_add_reference"
+                ),
+                "systemic_fragility_score": (srr_lite_shadow or {}).get("systemic_fragility_score"),
+                "fragility_level": (srr_lite_shadow or {}).get("fragility_level"),
+                "metrics": (srr_lite_shadow or {}).get("metrics"),
+                "thresholds": (srr_lite_shadow or {}).get("thresholds"),
+                "available_symbols": (srr_lite_shadow or {}).get("available_symbols"),
             },
         )
     trough_state = str((trough_nowcast or {}).get("state") or "NO_TROUGH")
@@ -1576,6 +1631,7 @@ def build_daily_signal(
         ncf_live_overlay=ncf_live_overlay,
     )
     cross_market_graph_shadow = load_cross_market_graph_shadow()
+    srr_lite_shadow = compute_srr_lite_shadow(db_path=db_path, actual_date=actual)
     garch_regime_shadow = compute_garch_regime_shadow(db_path, actual)
     append_garch_regime_shadow_log(
         GARCH_REGIME_SHADOW_LOG,
@@ -1624,6 +1680,7 @@ def build_daily_signal(
         trough_nowcast=trough_nowcast,
         tail_conformal=tail_conformal,
         cross_market_graph_shadow=cross_market_graph_shadow,
+        srr_lite_shadow=srr_lite_shadow,
     )
     target_shares = {
         ticker: (
@@ -1686,6 +1743,7 @@ def build_daily_signal(
         "trough_nowcast": trough_nowcast,
         "tail_conformal": tail_conformal,
         "cross_market_graph_shadow": cross_market_graph_shadow,
+        "srr_lite_shadow": srr_lite_shadow,
         "garch_regime_shadow": garch_regime_shadow,
         "specialist_routing": specialist_routing,
         "execution_risk": execution_risk,

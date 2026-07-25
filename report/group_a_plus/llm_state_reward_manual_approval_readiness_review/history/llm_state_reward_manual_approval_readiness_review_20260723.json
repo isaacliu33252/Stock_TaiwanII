@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_manual_approval_readiness_review",
+  "generated_at": "2026-07-22T20:12:05",
+  "as_of": "2026-07-23",
+  "status": "available_for_manual_approval_review",
+  "policy": "manual_approval_readiness_only_no_training_no_live_action",
+  "sources": {
+    "request_package": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_shadow_training_request_package.json",
+      "sha256": "2ceac67ded3dbd86800ca9bf1d98b80257901f3242d030e4b35228fe0a94b9ce",
+      "exists": true
+    },
+    "training_readiness": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_shadow_training_readiness_review.json",
+      "sha256": "b1ae1ebeb8157ccd0fc373c4a9ba9d77637650c8c59ab56cb43c7e73d93dc557",
+      "exists": true
+    },
+    "diagnostic_refinement": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_diagnostic_refinement_review.json",
+      "sha256": "f1d23ff787b8d73cb5fb3d6aeaa500661525a6042f2509b0d3aa66105e780669",
+      "exists": true
+    },
+    "alignment_remediation": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_alignment_remediation_review.json",
+      "sha256": "5c16fae47bab764a9a7c8e5d6111819f8e12560230d1b9ab4f2f37d5ccbbbdb3",
+      "exists": true
+    },
+    "research_shadow_decision_snapshot": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/research_shadow_decision_snapshot.json",
+      "sha256": "735e9ec9ab57e3a004f8b412d28d34668a38a804e7f0a97146045f04d808d8d8",
+      "exists": true
+    },
+    "research_shadow_blocker_triage": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_research_shadow_blocker_triage.json",
+      "sha256": "f93085c56ed992e7016349407466391a62f0025a0573ac9ce49d2fd769466301",
+      "exists": true
+    },
+    "human_exception_record_draft": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_record_draft.json",
+      "sha256": "18a14c88536675fe28129e6145122643872899feff4f3734c3b8a340af3aa87e",
+      "exists": true
+    },
+    "signed_approval_validation": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_validation.json",
+      "sha256": "367b4165748ebb634ddc6c3ac53512f9a86e420b5310e7f109804be0ba6e0222",
+      "exists": true
+    }
+  },
+  "summary": {
+    "package_ready_for_manual_review": true,
+    "shadow_training_ready": true,
+    "research_shadow_status": "blocked",
+    "research_shadow_blocking_reasons_count": 14,
+    "diagnostic_return_alignment_grade": "red",
+    "diagnostic_mean_reward_future_return_alignment": -0.014168007561183181,
+    "diagnostic_ppo_training_queue_allowed_by_alignment": false,
+    "alignment_remediation_status": "available_for_manual_offline_review",
+    "alignment_remediation_resolves_return_red": true,
+    "alignment_remediation_best_return_alignment_grade": "yellow",
+    "alignment_remediation_allows_ppo_queue_by_alignment": false,
+    "research_shadow_triage_status": "available_for_manual_exception_review",
+    "research_shadow_triage_manual_exception_review_ready": true,
+    "research_shadow_triage_live_allocation_blocker_count": 12,
+    "research_shadow_triage_training_governance_blocker_count": 2,
+    "human_exception_record_draft_status": "draft_ready_for_human_review",
+    "human_exception_record_draft_ready": true,
+    "human_exception_approved": false,
+    "human_exception_training_queue_allowed": false,
+    "signed_approval_validation_status": "blocked",
+    "signed_approval_record_valid": false,
+    "signed_approval_human_exception_approved": false,
+    "signed_approval_non_ppo_shadow_queue_review_allowed": false,
+    "signed_approval_training_queue_allowed": false,
+    "regime_filter_resolves_5bps_warning": true,
+    "recommended_regime_rule": "trend_above_train_median",
+    "recommended_high_score": 1.03,
+    "recommended_cost_bps": 5.0,
+    "manual_approval_review_ready": true,
+    "manual_approval_to_queue_training_allowed": false
+  },
+  "approval_scope": {
+    "may_review_package": true,
+    "may_approve_training_queue": false,
+    "may_run_model_training": false,
+    "may_run_ppo_training": false,
+    "may_emit_actions": false,
+    "may_emit_target_weights": false,
+    "may_change_live_strategy": false,
+    "may_add_00631l": false,
+    "may_open_00632r": false
+  },
+  "required_manual_decisions": [
+    "Confirm whether trend_above_train_median is acceptable as a mandatory regime filter.",
+    "Confirm that the red reward-return alignment is acceptable only for offline research, not PPO queueing.",
+    "Confirm that global research_shadow blocked status prevents queue approval.",
+    "Confirm that Golden1_0531 and A21.18 active allocation remain unchanged."
+  ],
+  "minimum_remediation_before_training_queue": [
+    "Resolve or explicitly waive research_shadow_decision_snapshot_blocked in a separate human approval record.",
+    "Improve diagnostic reward-return alignment out of red grade, or record a human waiver for non-PPO shadow training only.",
+    "Keep 00631L.TW and 00632R.TW excluded from the first GIFT shadow training universe.",
+    "Preserve no-action/no-target-weight/no-auto-rebalance constraints in the training runner."
+  ],
+  "blocking_reasons": [],
+  "training_queue_blocking_reasons": [
+    "signed_human_exception_approval_record_missing_or_invalid"
+  ],
+  "warning_reasons": [
+    "diagnostic_alignment_queue_blocker_reduced_by_remediation",
+    "diagnostic_alignment_red_remediated_for_manual_review",
+    "diagnostic_return_alignment_red"
+  ],
+  "decision": {
+    "manual_approval_review_ready": true,
+    "manual_approval_to_queue_training_allowed": false,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

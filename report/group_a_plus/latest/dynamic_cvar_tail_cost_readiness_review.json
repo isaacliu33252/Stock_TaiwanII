@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_dynamic_cvar_tail_cost_readiness_review",
+  "generated_at": "2026-07-21T22:38:45",
+  "policy": "research_only_dynamic_cvar_tail_cost_readiness_no_optimizer_no_weight_change",
+  "status": "blocked",
+  "as_of": "2026-07-20",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2606.26625.pdf",
+    "title": "Portfolio Optimization for Commodity ETFs under Heavy-Tailed Returns",
+    "imported_concepts": [
+      "cvar_before_return_seeking_tangency",
+      "evt_hill_tail_diagnostics_after_optimization",
+      "turnover_and_transaction_cost_robustness",
+      "dynamic_arma_garch_student_t_copula_scenario_concept"
+    ],
+    "not_imported": [
+      "commodity_etf_allocation",
+      "arma_garch_student_t_copula_live_optimizer",
+      "dynamic_tangent_portfolio_weights",
+      "automatic_target_weight_change"
+    ]
+  },
+  "component_readiness": {
+    "cvar_tail_risk": {
+      "status": "research_only",
+      "promotion_decision": "research_only",
+      "00631l_expected_shortfall_loss_95": 0.0811159172627952,
+      "00631l_expected_shortfall_loss_99": 0.13958238180763255,
+      "00631l_max_drawdown": -0.5022632537851175,
+      "00631l_hill_xi_95": 0.365186858046869,
+      "00631l_pot_gpd_shape_xi_95": -0.07162970315917858,
+      "golden1_starr_95": 15.208210413984315,
+      "golden1_expected_shortfall_loss_95": 0.03457081702818987
+    },
+    "density_head_tail_risk": {
+      "status": "available",
+      "recommended_research_baseline": "gaussian_residual_head",
+      "gmm_status": "unstable_across_windows_research_only"
+    },
+    "market_impact": {
+      "status": "blocked",
+      "turnover": 0.5006477801878955,
+      "auto_rebalance_allowed": false,
+      "allow_00631l_add": false
+    },
+    "rebalance": {
+      "status": "available",
+      "auto_rebalance_allowed": false,
+      "target_weight_change_allowed": false,
+      "allow_00631l_add": false
+    },
+    "systemic_bubble": {
+      "overall_state": "research_watch",
+      "systemic_score": 1,
+      "allow_00631l_add": false
+    },
+    "hmm_wj_scenario_readiness": {
+      "status": "blocked",
+      "all_required_tickers_ready": true,
+      "can_generate_scenarios_for_decision": false
+    }
+  },
+  "validation_readiness": {
+    "dynamic_optimizer_implemented": false,
+    "arma_garch_student_t_copula_validated": false,
+    "turnover_cost_walkforward_validated": false,
+    "tail_thickness_improvement_validated": false,
+    "taiwan_etf_walkforward_validated": false
+  },
+  "blocking_reasons": [
+    "cvar_tail_risk_diagnostic_research_only",
+    "00631l_hill_tail_index_positive_heavy_tail",
+    "density_tail_model_unstable_research_only",
+    "market_impact_readiness_blocked",
+    "market_impact_disallows_auto_rebalance",
+    "rebalance_review_disallows_auto_rebalance",
+    "rebalance_review_disallows_target_weight_change",
+    "systemic_bubble_disallows_00631l_add",
+    "hmm_wj_scenario_readiness_blocked",
+    "scenario_generator_not_decision_ready",
+    "dynamic_cvar_optimizer_not_implemented",
+    "taiwan_etf_walkforward_validation_missing"
+  ],
+  "warning_reasons": [],
+  "decision": {
+    "summary": "Dynamic CVaR/tail/cost readiness is diagnostic only. Existing tail, turnover, scenario-readiness, and rebalance blockers prevent any optimizer-driven execution.",
+    "dynamic_optimizer_ready": false,
+    "tail_cost_readiness_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "cvar_tail_risk": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/cvar_tail_risk_diagnostic.json",
+    "density_head_tail_risk": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/density_head_tail_risk_advisory.json",
+    "market_impact": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+    "rebalance": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rebalance_review_20260720.json",
+    "systemic_bubble": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/systemic_bubble_time_at_risk_review.json",
+    "hmm_wj": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/hmm_wj_synthetic_scenario_readiness_review.json"
+  }
+}
