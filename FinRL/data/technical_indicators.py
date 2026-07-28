@@ -788,7 +788,9 @@ class TechnicalIndicators:
         obv = (np.sign(self.df['close'].diff()) * self.df['volume']).fillna(0).cumsum()
         self.df['obv'] = obv
         self.df['obv_ma10'] = obv.rolling(window=10).mean()
-        self.df['obv_slope'] = obv.diff() / (obv.diff().abs().rolling(window=5).sum() + 1e-10)
+        # OBV Slope：使用標準的 pct_change（5日動量），而非怪異的 diff/abs_sum 比值
+        # 原始實作 obv.diff() / (obv.diff().abs().rolling(5).sum()) 是非標準計算
+        self.df['obv_slope'] = obv.pct_change(periods=5).replace([np.inf, -np.inf], 0.0).fillna(0.0)
 
         # VWAP（成交量加權平均價）- 日內滾動版本
         # typical_price = (high + low + close) / 3

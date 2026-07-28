@@ -26,8 +26,12 @@ from backtest_group_a_plus_switch_policy import DB_PATH, _load_prices
 from scripts.evaluate.evaluate_a2118_decision_focused_action_shadow import _resolve
 
 
-DEFAULT_INPUT = PROJECT_ROOT / "results" / "a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json"
-DEFAULT_OVERLAP = PROJECT_ROOT / "results" / "a2118_decision_focused_action_overlap_fixed_7win_20260714_rerun.json"
+# 2026-07-26: repointed to STABLE filenames regenerated every daily-pipeline
+# run by "dfl_shadow_refresh_*" (see
+# GROUP_A_PLUS_DFL_ADVISORY_STALE_INPUT_FIX_20260726.md) instead of a
+# one-off dated snapshot that would otherwise go stale again.
+DEFAULT_INPUT = PROJECT_ROOT / "results" / "a2118_decision_focused_action_shadow_dfl_main_latest.json"
+DEFAULT_OVERLAP = PROJECT_ROOT / "results" / "a2118_decision_focused_action_overlap_dfl_latest.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "results" / "a2118_dfl_active_date_audit_latest.json"
 DEFAULT_INITIAL_VALUE = 1_000_000.0
 

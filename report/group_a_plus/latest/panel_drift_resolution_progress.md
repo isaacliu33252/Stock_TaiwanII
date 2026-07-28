@@ -2,11 +2,12 @@
 
 - Status: `blocked`
 - Remediation status: `blocked`
-- Unresolved actions: `['quantify_external_feature_sensitivity']`
-- Remaining observation sessions: `2`
+- Unresolved actions: `['refresh_stale_candidate_sources', 'quantify_external_feature_sensitivity']`
+- Remaining observation sessions: `1`
 
 ## Next Actions
 
+- Refresh stale candidate sources, then rebuild NCF panel, drift audit, diagnosis, and promotion gate.
 - Keep promotion blocked until external feature freshness and sensitivity are stable across a same-method panel rebuild.
 - complete 3 additional stable same-method external-sensitivity observation session(s)
 

@@ -1,11 +1,17 @@
 # 2026-07-25 Session Handoff Index
 
-**Read this file first** if picking up work from today. It indexes four
-separate threads across three existing handoff documents plus one new
-paper review, in the order they happened, with pointers to the detailed
+**Read this file first** if picking up work from today. It indexes five
+separate threads across three existing handoff documents plus two new
+documents, in the order they happened, with pointers to the detailed
 section in each. Each underlying document already has its own detailed
 addenda; this file exists because today's work sprawled across multiple
 documents and none of them alone tells the whole story.
+
+**Updated later the same day**: Thread 1 (A21.19) grew substantially past
+its original addendum #12 stopping point -- addenda #13-15 tested and
+diagnosed a new interaction-term component in detail (see Thread 1's
+update below). Thread 5 is entirely new, added after the rest of this
+index was first written.
 
 ## How the session unfolded
 
@@ -22,11 +28,18 @@ documents and none of them alone tells the whole story.
    的方向" (try them all, find a good one) -- Threads 3 and 4 below are
    the result: two independent, unrelated historical-evidence audits,
    both of which turned up real, previously-undetected problems.
+4. User then pushed back on Thread 2's "no direct import" framing with
+   three specific mechanisms from the paper that might still transfer.
+   Testing the first (a VIX-credit confirmation gate) reopened Thread 1
+   with three more addenda (#13-15); the third (correlation
+   de-duplication) became the new Thread 5. The second (fixed signal
+   universe + walk-forward-only-reweights-lambdas) was discussed but not
+   implemented today.
 
 ## Thread 1 -- A21.19 continuous defensive-tilt shadow candidate
 
 **Full detail**: `GROUP_A_PLUS_A2119_CONTINUOUS_DEFENSIVE_TILT_SHADOW_HANDOFF_20260724.md`,
-addenda #5 through #12 (its own top section has a self-contained "2026-07-25
+addenda #5 through #15 (its own top section has a self-contained "2026-07-25
 session summary" -- read that first if you only read one section from this
 thread).
 
@@ -54,16 +67,36 @@ Re-testing `credit_stress`'s full checklist under the same correction
 a specific, concerning pattern: it helps in calm periods and hurts in both
 real crisis episodes actually tested (2018, 2020).
 
+**Update (addenda #13-15)**: user pushed back on Thread 2's "no direct
+import" framing and asked to test RGRR's actual interaction-term
+mechanism (a product of oriented signals) rather than the additive blend
+`credit_stress` used. Built `vix_credit_confirm` (a VIX-credit
+confirmation gate) -- initial results looked like this candidate's best
+lead yet (addendum #13-14: 4-7 of 8 windows/folds improved, including the
+2020 COVID crisis that `credit_stress` had failed). Diagnosing the one
+weak point (2017/2018) at the user's request (addendum #15) instead
+uncovered that the 2020 "win" was itself an artifact of the same
+`_zscore` rolling-baseline-adapts-to-sustained-stress bug -- fixing the
+bug properly (clip the z-score at 0, since "not confirmed" should mean
+zero contribution, not a negative one) made the 2020 improvement vanish
+entirely (byte-identical to `vix_only`), leaving only a small, genuinely
+clean gain in 2019. **Net effect: another humbling self-correction, not
+a promotion lead** -- `w7_vix_credit_gate`/`w8_vix_credit_gate_v2` both
+stay at 0.0.
+
 **Final state**: A21.19 remains **do not promote**. Its default
 configuration is unchanged (VIX-only, regime floor on, `no_trade_band=
-0.005`, `tilt_update_freq_days=1`, `w6_credit=0.0`, `warmup_days=0`). Two
-real bugs fixed (floating-point boundary in `_apply_no_trade_band`,
-Python late-binding-default in `evaluate()`'s missing `weights` parameter).
-One significant, retroactive methodological finding (the `warmup_days`
-cold-start bias) that applies to this candidate's entire history, not
-just today's new components -- **anyone doing further serious evaluation
-of this candidate should use `warmup_days=756`, not the historical
-default of 0.**
+0.005`, `tilt_update_freq_days=1`, `w6_credit=0.0`, `w7_vix_credit_gate=
+0.0`, `w8_vix_credit_gate_v2=0.0`, `warmup_days=0`). Two real bugs fixed
+(floating-point boundary in `_apply_no_trade_band`, Python late-binding-
+default in `evaluate()`'s missing `weights` parameter). One significant,
+retroactive methodological finding (the `warmup_days` cold-start bias)
+that applies to this candidate's entire history, not just today's new
+components -- **anyone doing further serious evaluation of this
+candidate should use `warmup_days=756`, not the historical default of
+0** -- and, per addendum #15, should be skeptical of any headline
+improvement in a fast-moving crisis window (2020) until checked for the
+same rolling-baseline erosion artifact, not just windows that look weak.
 
 ## Thread 2 -- arXiv:2607.06117v1 paper review ("Relief-Gated Relative Rotation for QQQ-DIA Allocation")
 
@@ -71,8 +104,9 @@ default of 0.**
 
 Same author/methodology lineage as the paper A21.19 itself originated
 from. No direct strategy import (same asset-universe mismatch as every
-non-RL paper reviewed this project). Two real takeaways, both acted on:
-(1) its incremental-OOS-admission discipline for higher-order interaction
+non-RL paper reviewed this project). Three real takeaways, all acted on
+(a third was added later the same day -- see Thread 5): (1) its
+incremental-OOS-admission discipline for higher-order interaction
 terms was formalized as **item 6** in
 `GROUP_A_PLUS_SIGNAL_VALIDATION_CHECKLIST_20260723.md` (a standing
 process document -- affects how future shadow candidates should be
@@ -138,7 +172,27 @@ fixed the document's stale "Open follow-ups" list, which still said the
 had already been fixed 2026-07-24 -- just a documentation sync issue, no
 code change needed there.
 
-## Complete file list, all four threads
+## Thread 5 -- NCF feature-selection correlation de-duplication
+
+**Full detail**: `GROUP_A_PLUS_NCF_CORRELATION_DEDUP_HANDOFF_20260725.md`.
+
+The third of the three mechanisms the user pushed back with re: Thread
+2's "no direct import" framing. Confirmed Group A+'s NCF feature pipeline
+has no correlation-based redundancy screen (RGRR's own 0.95-threshold
+de-dup step has no equivalent here). Found the layer that actually
+matters for production (`identify_stable_features`, which runs
+unconditionally for the H=20 horizon, unlike `_feature_selection`/
+`apply_feature_selection` which are gated behind a flag the daily
+pipeline never sets). Added `_deduplicate_correlated_features` and a new
+opt-in `dedupe_correlated` parameter (default `False`, no existing
+behavior changed). Verified on real 00631L data (not synthetic): finds
+and drops a genuinely redundant pair, `close_ma200_ratio`/
+`close_ma200_dist`, correlation exactly 1.000. 5 new regression tests,
+13/13 total pass in `tests/test_ncf_00631l_paths.py`. Full ensemble AUC
+impact not measured (would need the expensive full `train_classifier`
+run) -- flagged as the next step if this is pursued toward a default flip.
+
+## Complete file list, all five threads
 
 **Production files modified (one, deliberately minimal)**:
 - `report/group_a_plus/latest/strategy.json` (Thread 3 only)
@@ -150,10 +204,17 @@ code change needed there.
 **Scripts modified**:
 - `scripts/evaluate/evaluate_a2119_continuous_defensive_tilt_shadow.py`
   (extensive -- see Thread 1's own document for the itemized diff list
-  across addenda #5-#10)
+  across addenda #5-#15, including the `warmup_days` parameter and the
+  `vix_credit_confirm`/`vix_credit_confirm_v2` components)
 - `scripts/evaluate/evaluate_a2118_live_overlay_backtest_gap.py`
   (one fix: the same floating-point boundary bug as above, in its own
   independent copy of `_apply_no_trade_band`)
+- `scripts/misc/ncf_00631l.py` (Thread 5: `_deduplicate_correlated_features`
+  new function; `identify_stable_features` gains `dedupe_correlated`/
+  `corr_threshold` params, default off)
+
+**Tests modified**:
+- `tests/test_ncf_00631l_paths.py` (Thread 5: 5 new tests)
 
 **Standing process documents modified**:
 - `GROUP_A_PLUS_SIGNAL_VALIDATION_CHECKLIST_20260723.md` (new item 6)
@@ -163,9 +224,12 @@ otherwise untouched):
 - `GROUP_A_PLUS_A2119_CONTINUOUS_DEFENSIVE_TILT_SHADOW_HANDOFF_20260724.md`
 - `GROUP_A_PLUS_FABLE_10_DIRECTIONS_AUDIT_HANDOFF_20260723.md`
 - `GROUP_A_GOLDEN1_0531_STALENESS_AND_PREDICTION_HANDOFF_20260723.md`
+- `docs/2607_06117_RGRR_QQQ_DIA_GROUPA_PLUS_REVIEW_20260725.md` (Verdict
+  section updated for Thread 5 and the addendum #13-15 update)
 
 **New documents**:
 - `docs/2607_06117_RGRR_QQQ_DIA_GROUPA_PLUS_REVIEW_20260725.md`
+- `GROUP_A_PLUS_NCF_CORRELATION_DEDUP_HANDOFF_20260725.md`
 - This file.
 
 **New result JSON files** (all in `results/`, all research-only):
@@ -180,16 +244,25 @@ otherwise untouched):
 `a2119_credit_stress_warmup_main_windows_20260725.json`,
 `a2119_vix_only_baseline_warmup_recheck_20260725.json`,
 `a2119_credit_stress_warmup756_full_checklist_20260725.json`,
-`a2118_original_promotion_evidence_reconstruction_20260725.json`.
+`a2118_original_promotion_evidence_reconstruction_20260725.json`,
+`a2119_vix_credit_confirmation_gate_20260725.json`,
+`a2119_vix_credit_gate_warmup756_full_checklist_20260725.json`,
+`a2119_vix_credit_gate_v2_fix_20260725.json`.
+(Thread 5's correlation-dedup check was ad hoc `python3 -c`, not saved to
+a result file -- reproducible from the command in its own handoff doc.)
 
-## What's still open, across all four threads
+## What's still open, across all five threads
 
 1. **A21.19**: the 2019-2023 structural conservatism drag (a real design
    cost of the regime floor, not a bug) and a natively lower-frequency
    signal construction both remain open, unchanged from before today. Any
    future evaluation of this candidate should default to `warmup_days=
-   756`.
-2. **RGRR review**: nothing further -- fully closed out today.
+   756`, and should be skeptical of headline wins in fast-moving windows
+   until checked for the same rolling-baseline-erosion artifact addendum
+   #15 found (a win there isn't automatically more trustworthy than a
+   loss elsewhere).
+2. **RGRR review**: nothing further -- fully closed out today (all three
+   mechanisms the user proposed were tested or implemented).
 3. **a2118 promotion evidence**: the metric-magnitude discrepancy
    (reconstruction gives 3-4x the recorded Sharpe/Sortino/return deltas,
    same direction) was not chased to full resolution -- the comparison
@@ -202,6 +275,9 @@ otherwise untouched):
    whether the frozen-trial framing still means anything) remain open,
    unchanged from 07-23, and are explicitly Group A (not Group A+)
    governance questions outside this session's scope.
+5. **NCF correlation de-dup**: full ensemble AUC impact (`train_classifier`
+   with vs. without `dedupe_correlated`) not measured -- needed before
+   considering a default flip or wiring into `run_ncf_daily_pipeline.py`.
 
 ## Memory saved today (Claude's persistent memory, not part of the repo)
 
@@ -215,4 +291,9 @@ In roughly chronological order: `project_a2119_no_trade_band_sweep_fp_bug_202607
 `project_a2119_regime_floor_survives_warmup_recheck_20260725`,
 `project_a2119_credit_stress_final_verdict_20260725`,
 `project_a2118_original_promotion_evidence_reconstructed_20260725`,
-`project_golden1_0531_payload_overwrite_discovery_20260725`.
+`project_golden1_0531_payload_overwrite_discovery_20260725`,
+`reference_20260725_session_handoff_index`,
+`project_a2119_vix_credit_gate_promising_20260725`,
+`project_a2119_vix_credit_gate_full_checklist_20260725`,
+`project_a2119_gate_v2_fix_reveals_2020_win_was_bug_20260725`,
+`project_ncf_correlation_dedup_added_20260725`.

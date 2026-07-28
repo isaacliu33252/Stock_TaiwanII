@@ -116,6 +116,8 @@ DEFAULT_WEIGHTS = {
     "w4_tsmc": 0.0,
     "w5_crowding": 0.0,
     "w6_credit": 0.0,
+    "w7_vix_credit_gate": 0.0,
+    "w8_vix_credit_gate_v2": 0.0,
 }
 MIN_00631L_FLOOR = 0.10  # deliberate deviation from bond30_cash30's 0.0 floor, per user request
 RISK_ON_TICKERS = ("0050.TW", "00631L.TW")  # higher weight = more risk-on
@@ -125,6 +127,28 @@ DEFENSIVE_TICKERS = ("00632R.TW", "00679B.TWO", "cash")  # higher weight = more 
 def _zscore(s: pd.Series, window: int = 756) -> pd.Series:
     mean = s.rolling(window, min_periods=60).mean()
     std = s.rolling(window, min_periods=60).std()
+    return ((s - mean) / std.replace(0.0, np.nan)).fillna(0.0)
+
+
+def _zscore_expanding(s: pd.Series, min_periods: int = 60) -> pd.Series:
+    """2026-07-25 (addendum #16): the rolling-window `_zscore` above is the
+    root cause addendum #15 found -- during a sustained, moderate-stress
+    period (2018 trade war, 2020's multi-month recovery), the 756-day
+    rolling mean/std adapts upward to match the persistent elevation, so
+    days that are still objectively stressed in absolute terms score as
+    "below the recently-elevated average" and go negative, eroding the
+    signal exactly when it should stay elevated. An expanding window
+    (all history since a fixed start, never "forgetting" earlier calm
+    periods) changes far more slowly -- a multi-month stress episode can
+    only nudge an ever-growing history's mean/std a little, not
+    dominate it the way it can dominate a fixed 756-day trailing window
+    once enough of that window falls inside the stress period. This is
+    an absolute/slow-adapting baseline, not the fast-adapting relative
+    one -- deliberately a different normalization, not a parameter tweak
+    of the existing one.
+    """
+    mean = s.expanding(min_periods=min_periods).mean()
+    std = s.expanding(min_periods=min_periods).std()
     return ((s - mean) / std.replace(0.0, np.nan)).fillna(0.0)
 
 
@@ -326,6 +350,40 @@ def build_defensive_tilt(
     credit_relief_raw = hyg.pct_change(21) - shy.pct_change(21)
     credit_stress = _zscore((-credit_relief_raw).fillna(0.0)).reindex(idx)
 
+    # 2026-07-25: VIX-credit confirmation gate, testing arXiv:2607.06117v1's
+    # actual interaction-term mechanism (second-order terms are PRODUCTS of
+    # oriented signals, e.g. `rel_reversal * rate_relief`) rather than a
+    # linear/additive blend. Addendum #8-12's `credit_stress` test blended
+    # it additively with `vix_stress` (`w3*vix_stress + w6*credit_stress`)
+    # and found a concerning pattern: helps in calm periods, hurts in both
+    # real crisis windows tested. An additive blend lets EITHER signal alone
+    # push the tilt more defensive, which is noisier than requiring
+    # confirmation from both. This component instead only fires when BOTH
+    # vix_stress AND credit_stress are simultaneously elevated (each
+    # relu'd first, so two calm/negative readings can't multiply into a
+    # false-positive confirmation -- unclipped z-scores are frequently
+    # negative in calm periods, and two negatives would otherwise multiply
+    # to a spuriously positive "confirmed" signal).
+    vix_credit_confirm = _zscore(
+        (vix_stress.clip(lower=0.0) * credit_stress.clip(lower=0.0)).fillna(0.0)
+    )
+    # 2026-07-25 v2 (addendum #15): the raw relu'd product above is always
+    # >=0 by construction, but z-scoring it against a rolling window can
+    # still push the result negative -- during a sustained, moderate-stress
+    # year (2018 trade war: relu-product negative-after-zscore on 130/245
+    # days, median -0.186), the rolling mean/std used for standardization
+    # itself adapts upward to match the persistent elevation, so days that
+    # are still objectively stressed in absolute terms score as
+    # "below-average confirmation" and go negative -- actively subtracting
+    # from risk_score. A confirmation gate's semantics should never be
+    # negative: "not confirmed" should mean "contributes zero," not
+    # "actively cancel the base VIX signal." This fast, acute 2020-COVID-
+    # style spikes don't suffer this (too short-lived to shift a 756-day
+    # rolling baseline), which is exactly why v1 helped in 2020 but hurt in
+    # 2017/2018's slower grind (addendum #14). Fix: clip the z-scored
+    # result at 0 too, not just the pre-z-score product.
+    vix_credit_confirm_v2 = vix_credit_confirm.clip(lower=0.0)
+
     risk_score = (
         weights["w1_drawdown"] * drawdown_severity
         + weights["w2_rate"] * rate_stress
@@ -333,6 +391,8 @@ def build_defensive_tilt(
         + weights["w4_tsmc"] * tsmc_crowding
         + weights.get("w5_crowding", 0.0) * growth_crowding
         + weights.get("w6_credit", 0.0) * credit_stress
+        + weights.get("w7_vix_credit_gate", 0.0) * vix_credit_confirm
+        + weights.get("w8_vix_credit_gate_v2", 0.0) * vix_credit_confirm_v2
     )
     # 2026-07-23 design fix: NOT 0.5*(1+tanh(risk_score)). Z-scored inputs are
     # mean-zero over their own rolling history by construction, so a score
@@ -378,6 +438,8 @@ def build_defensive_tilt(
             "tsmc_crowding": tsmc_crowding,
             "growth_crowding": growth_crowding,
             "credit_stress": credit_stress,
+            "vix_credit_confirm": vix_credit_confirm,
+            "vix_credit_confirm_v2": vix_credit_confirm_v2,
             "risk_score": risk_score,
             "fast_recovery_active": fast_recovery_active,
             "defensive_tilt": defensive_tilt,

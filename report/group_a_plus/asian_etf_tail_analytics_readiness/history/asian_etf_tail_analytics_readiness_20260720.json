@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_asian_etf_tail_analytics_readiness_review",
-  "generated_at": "2026-07-21T22:38:58",
+  "generated_at": "2026-07-28T07:15:21",
   "as_of": "2026-07-20",
   "status": "blocked",
   "policy": "research_only_asian_etf_tail_analytics_no_optimizer_no_weight_change",
@@ -24,7 +24,7 @@
     ]
   },
   "data_readiness": {
-    "available_ticker_count": 37,
+    "available_ticker_count": 39,
     "paper_etf_coverage": {
       "paper_etf_count": 29,
       "available_paper_etf_count": 1,
@@ -68,11 +68,11 @@
     "cvar_tail_risk": {
       "status": "research_only",
       "promotion_decision": "research_only",
-      "golden1_starr_95": 15.208210413984315,
+      "golden1_starr_95": 14.727766403153364,
       "golden1_rachev_95_95": 1.042372888137112,
       "00631l_expected_shortfall_loss_95": 0.0811159172627952,
       "00631l_rachev_95_95": 0.9604260807450556,
-      "00631l_hill_xi_95": 0.365186858046869
+      "00631l_hill_xi_95": 0.32640882039719776
     },
     "market_impact": {
       "status": "blocked",

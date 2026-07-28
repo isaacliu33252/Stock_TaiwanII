@@ -36,6 +36,8 @@ from group_a_plus.integrations.srr_lite_shadow import compute_srr_lite_shadow
 from group_a_plus.integrations.tail_conformal import compute_tail_conformal_diagnostic
 from group_a_plus.integrations.trough_nowcast import compute_trough_nowcast
 from group_a_plus.utils.symbols import build_symbol_metadata
+from group_a_plus.core.signal_contract import from_daily_signal
+from group_a_plus.core.point_in_time_store import write_snapshot
 from group_a_plus.integrations.ncf import load_ncf_2330_checklist, load_ncf_signal, ncf_overlay_summary
 from group_a_plus.integrations.tbrain_features import (
     kdj_j_quantile_snapshot,
@@ -1781,6 +1783,15 @@ def main() -> None:
             Path(args.manifest),
         )
         payload = std.success(signal)
+        try:
+            # Point-in-time snapshot (2026-07-26, additive -- see
+            # group_a_plus/core/signal_contract.py's module docstring).
+            # Best-effort: a snapshot-write failure must never turn a
+            # successful signal build into a reported failure.
+            snapshot_path = write_snapshot(from_daily_signal(signal))
+            print(f"Point-in-time snapshot: {snapshot_path}")
+        except Exception as snapshot_exc:
+            print(f"Point-in-time snapshot failed (non-fatal): {snapshot_exc}", file=sys.stderr)
     except Exception as exc:
         payload = std.error(exc)
     write_standard_output(payload, args.output)

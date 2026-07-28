@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_synthetic_augmentation_validation_readiness_review",
-  "generated_at": "2026-07-21T22:38:49",
+  "generated_at": "2026-07-28T07:15:07",
   "policy": "research_only_synthetic_augmentation_validation_no_synthetic_alpha_no_weight_change",
   "status": "blocked",
   "as_of": "2026-07-20",
@@ -48,26 +48,28 @@
       "promotion_decision": null
     },
     "validation_audit": {
-      "status": "passed",
-      "validation_passed": true,
-      "passed_task_count": 3,
+      "status": "failed",
+      "validation_passed": false,
+      "passed_task_count": 2,
       "task_count": 3,
       "directional_synthetic_alpha_tested": true,
-      "directional_validation_passed": true,
+      "directional_validation_passed": false,
       "rare_validation_passed": true
     }
   },
   "validation_readiness": {
     "size_matched_null_augmentation_implemented": true,
     "block_permutation_test_implemented": true,
-    "walk_forward_oos_synthetic_validation_passed": true,
+    "walk_forward_oos_synthetic_validation_passed": false,
     "directional_audit_tested": true,
-    "directional_audit_passed": true,
+    "directional_audit_passed": false,
     "rare_regime_audit_passed": true,
     "rare_regime_metric_alignment_documented": true,
     "directional_synthetic_alpha_allowed": false
   },
   "blocking_reasons": [
+    "synthetic_augmentation_validation_audit_failed",
+    "directional_synthetic_alpha_default_blocked",
     "finstressts_snapshot_blocked",
     "hmm_wj_scenario_readiness_blocked",
     "scenario_generator_not_decision_ready",

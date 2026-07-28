@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_panel_drift_triage",
+  "generated_at": "2026-07-26T01:50:19",
+  "status": "blocked",
+  "policy": "diagnostic_only_no_strategy_change_no_weight_change",
+  "active_allocation_impact": "none",
+  "source_diagnosis": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_diagnosis_20260725.json",
+  "overlap": {
+    "start": "2025-01-02",
+    "end": "2026-07-16",
+    "rows": 371
+  },
+  "summary": {
+    "exceeded_columns": [
+      "h20_prob_up"
+    ],
+    "trigger_critical_exceeded": [
+      "h20_prob_up"
+    ],
+    "source_hypotheses": [
+      "model_set_changed"
+    ],
+    "top_exceed_months": [
+      {
+        "month": "2026-04",
+        "exceed_count": 8
+      },
+      {
+        "month": "2026-02",
+        "exceed_count": 6
+      },
+      {
+        "month": "2026-06",
+        "exceed_count": 6
+      }
+    ],
+    "next_checks": [
+      "compare baseline/candidate horizon model sets and best-model selections"
+    ]
+  },
+  "columns": [
+    {
+      "column": "h20_prob_up",
+      "tier": "trigger_critical",
+      "limit": 0.15,
+      "max_abs_delta": 0.1963733280860215,
+      "max_abs_delta_date": "2026-02-10",
+      "signed_delta_at_max": -0.1963733280860215,
+      "direction": "negative",
+      "baseline_value_at_max": 0.3437902376487496,
+      "candidate_value_at_max": 0.1474169095627281,
+      "top_months": [
+        {
+          "month": "2026-04",
+          "exceed_count": 8,
+          "row_count": 20,
+          "mean_abs_delta": 0.11315906281520793,
+          "max_abs_delta": 0.1777787237464027
+        },
+        {
+          "month": "2026-02",
+          "exceed_count": 6,
+          "row_count": 12,
+          "mean_abs_delta": 0.13377535926065343,
+          "max_abs_delta": 0.1963733280860215
+        },
+        {
+          "month": "2026-06",
+          "exceed_count": 6,
+          "row_count": 21,
+          "mean_abs_delta": 0.08585726557913984,
+          "max_abs_delta": 0.17363799986063888
+        }
+      ]
+    }
+  ],
+  "decision": {
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

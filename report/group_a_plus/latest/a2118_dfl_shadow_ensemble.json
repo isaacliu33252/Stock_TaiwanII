@@ -4,8 +4,8 @@
   "status": "available",
   "policy": "shadow_only_no_auto_weight_change",
   "active_allocation_impact": "none",
-  "generated_at": "2026-07-22T23:04:10",
-  "as_of": "2026-07-22",
+  "generated_at": "2026-07-28T07:19:18",
+  "as_of": "2026-07-27",
   "ensemble_level": "none",
   "manual_review_required": false,
   "signals": {

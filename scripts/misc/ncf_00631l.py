@@ -1585,23 +1585,76 @@ def train_regressor(
     return results
 
 
+def _deduplicate_correlated_features(
+    X: pd.DataFrame,
+    features: list,
+    corr_threshold: float = 0.95,
+    priority: list | None = None,
+) -> list:
+    """Drop features whose absolute pairwise correlation with an already-kept,
+    higher-priority feature exceeds `corr_threshold`.
+
+    Mirrors arXiv:2607.06117v1's ("Relief-Gated Relative Rotation for
+    QQQ-DIA Allocation") correlation de-duplication step (same 0.95
+    threshold), applied here to NCF's feature-selection pipeline -- which,
+    confirmed by grep 2026-07-25, has no such layer today:
+    `_feature_selection`/`apply_feature_selection` filter candidates by RF-
+    importance median threshold only, and `identify_stable_features` (see
+    below) filters by top-K-across-folds membership only; neither considers
+    pairwise redundancy among the survivors, so two near-duplicate
+    indicators (e.g. two highly correlated momentum variants) can both
+    clear the bar and both get kept.
+
+    `priority` orders which feature wins when two are highly correlated
+    (earlier in `priority` wins, so pass features ranked by importance/
+    stability, highest first). Features in `features` but not in
+    `priority` are appended in their original order, lowest priority.
+    Returns the survivors in their original relative order from `features`
+    (not `priority` order), so callers that depend on `features`' ordering
+    elsewhere are unaffected.
+    """
+    if len(features) <= 1:
+        return list(features)
+    order = priority if priority is not None else features
+    ordered = [f for f in order if f in features] + [f for f in features if f not in order]
+    corr = X[features].corr().abs()
+    kept: list = []
+    for feat in ordered:
+        if all(corr.loc[feat, k] <= corr_threshold for k in kept):
+            kept.append(feat)
+    kept_set = set(kept)
+    return [f for f in features if f in kept_set]
+
+
 def identify_stable_features(
     X: pd.DataFrame,
     y_dir: np.ndarray,
     n_folds: int = 3,
     top_k: int = 20,
     min_folds: int = None,
+    dedupe_correlated: bool = False,
+    corr_threshold: float = 0.95,
 ) -> list:
     """Return features that land in the top-k importances on >= min_folds TimeSeriesSplit folds.
 
     Uses a fast 200-tree RF.  Default min_folds = n_folds (require ALL folds).
     Falls back to the top-20 single-fold features if fewer than 5 stable features are found.
+
+    dedupe_correlated (2026-07-25): when True, applies
+    `_deduplicate_correlated_features` to the stable set after selection,
+    ranked by mean importance across folds (highest first, so the more
+    important of two highly-correlated survivors is the one kept). Default
+    False preserves the exact original behavior -- this is a new, opt-in
+    layer, not yet validated for a default-on flip; see
+    GROUP_A_PLUS_20260725_SESSION_HANDOFF_INDEX.md for the empirical check
+    run before this flag existed.
     """
     if min_folds is None:
         min_folds = n_folds
     feature_names = list(X.columns)
     tss = TimeSeriesSplit(n_splits=n_folds)
     top_k_sets: list = []
+    fold_importances: list = []
     for tr_idx, _ in tss.split(X):
         if len(tr_idx) < 80:
             continue
@@ -1617,6 +1670,7 @@ def identify_stable_features(
         )
         rf.fit(X_tr_clean, y_tr_clean)
         top_k_sets.append(set(np.argsort(-rf.feature_importances_)[:top_k]))
+        fold_importances.append(rf.feature_importances_)
     if len(top_k_sets) < 2:
         return feature_names
     stable_idx = [i for i in range(len(feature_names))
@@ -1628,6 +1682,12 @@ def identify_stable_features(
             idx for s in top_k_sets for idx in sorted(s)
         ))[:top_k]
         stable = [feature_names[i] for i in fallback_idx]
+    if dedupe_correlated and len(stable) > 1:
+        mean_imp = np.mean(np.array(fold_importances), axis=0)
+        priority = sorted(stable, key=lambda f: -mean_imp[feature_names.index(f)])
+        stable = _deduplicate_correlated_features(
+            X, stable, corr_threshold=corr_threshold, priority=priority
+        )
     return stable
 
 

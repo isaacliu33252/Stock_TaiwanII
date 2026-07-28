@@ -114,6 +114,77 @@ backtest window:
    to an existing shadow candidate's signal mix, not just brand-new
    candidates from scratch.
 
+7. **A worst-case-perturbation robustness check for any hard threshold gate**,
+   added 2026-07-26 from arXiv:2601.04062v3 ("Smart Predict-then-Optimize
+   Paradigm for Portfolio Optimization in Real Markets"). That paper's
+   RobustSPO variant trains decisions to survive worst-case perturbations of
+   the predicted signal rather than trusting a point estimate, and shows this
+   materially improves crisis-period decision quality -- its literal
+   SPO+/PyEPO gradient method does not transfer here (this project has no
+   differentiable optimization layer), but the diagnostic idea does: any gate
+   built on a hard integer threshold against a composite score assembled from
+   independent sub-indicators (e.g. `total_risk_score` = 12 chip + 2
+   derivative binary sub-indicators, see `_regime_features` in
+   `backtest_group_a_plus_switch_policy.py`) has a natural discrete
+   perturbation set -- one sub-indicator flipping moves the score by exactly
+   1. Before trusting a new/changed threshold's historical trigger count as
+   evidence of a working gate, run
+   `scripts/evaluate/evaluate_total_risk_score_gate_robustness.py` (or the
+   same margin-to-boundary / Monte-Carlo-flip-rate / forward-return-regret-
+   proxy pattern applied to the relevant score) and report: what fraction of
+   historical fires sat at the exact threshold (one flip from not firing),
+   the resulting decision-flip probability under plausible sub-indicator
+   noise, and whether marginal fires actually carry a different forward-
+   return signal than non-fires. **Also check the sub-indicators' own data-
+   coverage history first** (the script's `_yearly_score_ceiling_report`) --
+   `total_risk_score`'s 14 sub-indicators were onboarded in phases as their
+   source tables came online (several, including dealer_futures_data/
+   dealer_options_data/day_trading_data/securities_lending_data/foreign_
+   shareholding_data, only exist from 2025-01 onward), so the score's
+   practical ceiling rose over time; a naive "N years of history, M fires"
+   framing can badly overstate the usable sample if the threshold was
+   structurally unreachable before some sub-indicators existed. First run
+   (2026-07-26) on the existing `total_risk_score >= 9` gate in
+   `_apply_bearish_high_risk_trim`, corrected after this exact mistake was
+   caught mid-session: with 0050.TW price data extended back to its full
+   2009-01-02 history, the yearly max/mean table shows the score never
+   exceeded 2 before 2020 and only reached 7-8 by 2021-2022 -- all 21
+   historical fires (13 episodes) of the >=9 threshold fall in 2025-2026,
+   the only window with all 14 sub-indicators live, not spread over "10
+   years" as first (incorrectly) reported. Within that genuinely-usable
+   ~1.5-year window, 81% of the 13 episodes sat exactly at the threshold
+   with a 51% simulated decision-flip rate, and no clear forward-return
+   separation between marginal fires and non-fires -- flagged as a red flag
+   worth tracking, not acted on, since only 17 marginal-fire days exist
+   (too few to distinguish a real effect from noise either way, and now
+   an even shorter usable window than first thought makes that more true,
+   not less). A follow-up test of requiring 2-3 consecutive days above
+   threshold before firing reduced the flip rate away from the boundary but
+   cut the already-rare episode count further (13 -> 5 -> 3) without
+   resolving the forward-return ambiguity -- concluded not worth adopting on
+   this evidence; recorded as a finding, not a threshold change.
+
+   2026-07-26 follow-up: ran the same check against the other three
+   production `total_risk_score` thresholds (6, 7, 8) for a complete
+   picture. All four show substantial same-day decision-flip risk at the
+   boundary (27-51%), so fragility at margin=0 is not unique to the >=9
+   gate. But the forward-return regret proxy splits cleanly by direction:
+   `trough_nowcast`'s >=8 threshold (a bottom-detection/bullish-reversal
+   gate) shows a real, large signal even at its marginal fires (fwd_20d
+   +6.0% vs. +1.3% baseline) -- this one looks genuinely validated, not
+   fragile in the way that matters. The three defensive/bearish-oriented
+   thresholds (6, 7, 9) all show the opposite pattern: marginal fires carry
+   no meaningfully worse forward return than non-fires. This is one pattern
+   confirmed three independent times, not three isolated findings -- still
+   not acted on (small samples, and this diagnostic tests `total_risk_score`
+   in isolation without the other co-conditions -- drawdown, ma_gap,
+   signal_alignment direction -- production actually combines it with), but
+   raises the flag from "one gate's marginal fires look weak" to "the
+   defensive-direction gates on this score generally do, while the
+   reversal-direction one doesn't." Worth revisiting once more real crisis
+   events accumulate data, not worth further code-side investigation right
+   now.
+
 ## What this checklist does NOT require
 
 - It does not require adopting continuous-score/smooth-signal designs
@@ -134,15 +205,18 @@ backtest window:
 ## How to apply going forward
 
 Before writing a `production_ready` / `promotion_ready` / "do not
-promote" verdict for any new Group A+ shadow candidate, confirm all six
-checklist items were actually run and reported -- not just the single
-aligned comparison window most existing `evaluate_*.py` scripts default
-to today. If a candidate only clears the bar on the aligned window and
-fails or is untested on any of the others, treat it the same way this
+promote" verdict for any new Group A+ shadow candidate, confirm all
+applicable checklist items were actually run and reported -- not just the
+single aligned comparison window most existing `evaluate_*.py` scripts
+default to today. If a candidate only clears the bar on the aligned window
+and fails or is untested on any of the others, treat it the same way this
 project already treats single-window evidence: a candidate for further
 work, not a promotion-ready result. Item 5 applies specifically whenever
 the comparison baseline is a2118 itself (not every candidate needs it --
 only ones being compared against a2118's plain `run_a2118()` numbers).
 Item 6 applies specifically whenever a *new* signal/interaction term is
 being added to an *existing* candidate's mix (not the initial screen of a
-brand-new candidate's first component).
+brand-new candidate's first component). Item 7 applies specifically
+whenever the candidate is (or introduces) a hard threshold gate on a
+composite score built from independent sub-indicators -- not every
+candidate has one.

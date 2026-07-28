@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "report_type": "a2119_a2120_combined_policy_shadow",
+  "generated_at": "2026-07-28T07:13:27",
+  "research_only": true,
+  "production_effect": "none",
+  "inputs": {
+    "a2119_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2119_reentry_regret_gate_7win_20260715.json",
+    "a2120_latest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/a2120_letf_compounding_shadow.json"
+  },
+  "policy_order": [
+    "hard_guard",
+    "A21.19 action-regret gate",
+    "A21.20 LETF compounding reentry-speed advisory"
+  ],
+  "a2119_latest_decision": {
+    "date": "2026-07-15",
+    "action": "KEEP",
+    "predicted_regret": 0.0,
+    "predicted_regrets": {
+      "KEEP": 0.0,
+      "NO_ADD": 0.0002585046876885823,
+      "REENTER": 0.0
+    },
+    "candidate_action_before_reliability": "KEEP",
+    "candidate_predicted_regret_before_reliability": 0.0,
+    "reliability_error_percentile": null,
+    "reliability_gate_pass": true,
+    "base_00631l_weight": 0.12626135212102893,
+    "final_00631l_weight": 0.12626135212102893,
+    "below_a2118_before_action": false,
+    "action_allowed": true,
+    "window_label": "live_2024_2026"
+  },
+  "a2120_daily_state": {
+    "date": "2026-07-27",
+    "compounding_regime": "TREND_PERSISTENT",
+    "raw_action": "FAST_REENTER_CANDIDATE",
+    "recommended_action": "BLOCKED_BY_HARD_GUARD",
+    "hard_blockers": [
+      "compounding regime date does not align with execution_plan actual_data_date: 2026-07-27 != 2026-07-24"
+    ],
+    "shadow_target_00631l_before_hard_guards": 8571,
+    "turnover50_target_00631l": 8571,
+    "turnover50_ratio": 0.34698896388935824,
+    "combined_action": null
+  },
+  "combined": {
+    "combined_action": "BLOCKED_BY_HARD_GUARD",
+    "production_effect": "none",
+    "a2119_action": "KEEP",
+    "a2120_regime": "TREND_PERSISTENT",
+    "a2120_raw_action": "FAST_REENTER_CANDIDATE",
+    "hard_blockers": [
+      "compounding regime date does not align with execution_plan actual_data_date: 2026-07-27 != 2026-07-24"
+    ],
+    "shadow_target_00631l": 8571,
+    "turnover50_target_00631l": 8571,
+    "reason": "Hard guards have precedence over A21.19 and A21.20 shadow advisories."
+  }
+}

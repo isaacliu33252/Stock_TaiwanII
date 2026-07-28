@@ -226,6 +226,37 @@ BEST_EFFORT_STEP_NAMES = frozenset(
         # diagnostic only and never changes target weights.
         "deployment_consistency_review",
         "deployment_summary",
+        # DFL advisory stale-input fix (2026-07-26): regenerates the four
+        # shadow artifacts (main + p50 + p70 + overlap) that
+        # scripts/run/build_a2118_dfl_advisory.py and
+        # evaluate_a2118_dfl_active_date_audit.py read, to STABLE
+        # filenames, every pipeline run -- see
+        # GROUP_A_PLUS_DFL_ADVISORY_STALE_INPUT_FIX_20260726.md. Each of
+        # these three is a ~1-2 minute walk-forward backtest, not a data
+        # refresh; a failure here must never block daily_status/
+        # promotion_gate below it, and the advisory step already handles a
+        # missing/stale input file gracefully (reports status=unavailable).
+        "dfl_shadow_refresh_main",
+        "dfl_shadow_refresh_p50",
+        "dfl_shadow_refresh_p70",
+        "dfl_shadow_refresh_overlap",
+        # 2026-07-28 fix: the whole TabNet/no-TabNet model-set-isolation /
+        # same-method-baseline / external-feature-sensitivity governance
+        # chain tracks a *different* candidate model's promotion-gate
+        # status (see the manifest's own "promote_to_live": false /
+        # "training_allowed": false permissions block) -- it never changes
+        # a2118's live target weights. Discovered as a real, previously-
+        # unwired dependency gap on 2026-07-27: a missing same-day file
+        # here crashed the entire remaining pipeline (daily_signal/
+        # execution_plan/alert_state included), which is exactly the
+        # failure mode every other best-effort step in this set already
+        # guards against. Best-effort here too, for the same reason.
+        "ncf_panel_drift_no_tabnet_baseline_vs_today",
+        "ncf_panel_drift_model_set_isolation_report",
+        "ncf_panel_same_method_baseline_manifest",
+        "ncf_panel_external_feature_sensitivity_governance",
+        "ncf_panel_drift_remediation_plan",
+        "panel_drift_resolution_progress",
     }
 )
 
@@ -735,6 +766,63 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--output",
         str(_result_path(f"ncf_panel_drift_remediation_plan_initial_{stamp}.json")),
     ]
+    # 2026-07-28 fix: the three commands below were never wired into the
+    # automated pipeline at all, even though ncf_panel_external_feature_
+    # sensitivity_governance / ncf_panel_drift_remediation_plan below
+    # require same-day-dated versions of their outputs. Every prior day's
+    # copy of these files (e.g. ncf_panel_same_method_baseline_manifest_
+    # 20260722.json, ..._20260725.json) was produced by someone manually
+    # re-running these commands by hand that same day (see
+    # docs/HANDOFF_GROUPA_PLUS_EXTERNAL_SENSITIVITY_OBSERVATION_20260722.md).
+    # On any day nobody does that, the automated run crashes with
+    # FileNotFoundError at ncf_panel_external_feature_sensitivity_governance
+    # and (pre-2026-07-28) that crash aborted the entire remaining pipeline,
+    # including daily_signal/execution_plan/alert_state for that day --
+    # discovered when this happened for real on 2026-07-27's manually
+    # triggered run. All three compare the fixed 2026-06-30 TabNet/no-TabNet
+    # baseline panels against today's real panel; none of it changes a2118's
+    # live target weights (see the manifest's own
+    # "promote_to_live": false / "training_allowed": false permissions
+    # block) -- it exists to track a *different* candidate model's
+    # promotion-gate status.
+    commands["ncf_panel_drift_no_tabnet_baseline_vs_today"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_ncf_panel_drift.py",
+        "--baseline-panel",
+        str(_result_path("ncf_00631l_panel_latest_20260630_no_tabnet.csv")),
+        "--candidate-panel",
+        str(_result_path(f"ncf_00631l_panel_latest_{stamp}.csv")),
+        "--output",
+        str(_result_path(f"ncf_panel_drift_no_tabnet_baseline_vs_{stamp}.json")),
+    ]
+    commands["ncf_panel_drift_model_set_isolation_report"] = [
+        sys.executable,
+        "scripts/evaluate/build_ncf_panel_drift_model_set_isolation_report.py",
+        "--original-vs-today",
+        str(_result_path(f"ncf_panel_drift_active_vs_{stamp}.json")),
+        "--original-vs-no-tabnet",
+        str(_result_path("ncf_panel_drift_tabnet_vs_no_tabnet_20260630.json")),
+        "--no-tabnet-vs-today",
+        str(_result_path(f"ncf_panel_drift_no_tabnet_baseline_vs_{stamp}.json")),
+        "--output",
+        str(_result_path(f"ncf_panel_drift_model_set_isolation_report_{stamp}.json")),
+    ]
+    commands["ncf_panel_same_method_baseline_manifest"] = [
+        sys.executable,
+        "scripts/evaluate/build_ncf_panel_same_method_baseline_manifest.py",
+        "--original-baseline-panel",
+        str(_result_path("ncf_00631l_panel_latest_20260630.csv")),
+        "--same-method-baseline-panel",
+        str(_result_path("ncf_00631l_panel_latest_20260630_no_tabnet.csv")),
+        "--same-method-baseline-signal",
+        str(_result_path("ncf_00631l_latest_20260630_no_tabnet.json")),
+        "--validation-drift-audit",
+        str(_result_path(f"ncf_panel_drift_no_tabnet_baseline_vs_{stamp}.json")),
+        "--isolation-report",
+        str(_result_path(f"ncf_panel_drift_model_set_isolation_report_{stamp}.json")),
+        "--output",
+        str(_result_path(f"ncf_panel_same_method_baseline_manifest_{stamp}.json")),
+    ]
     commands["external_sensitivity_observation_log"] = [
         sys.executable,
         "scripts/evaluate/build_group_a_plus_external_sensitivity_observation_log.py",
@@ -1182,21 +1270,106 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--output",
         str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "research_shadow_decision_snapshot.json"),
     ]
+    # 2026-07-26: repointed from the pre-2026-07-16 files (which claimed
+    # 7/7 "triple_pass" windows). That claim was disproven on 2026-07-16
+    # (GROUP_A_PLUS_FABLE_COMBINATION_OPPORTUNITIES_HANDOFF_20260716.md
+    # item #9): covid_2020 had been silently panel-blind (zero NCF rows,
+    # defaulting to KEEP), not genuinely tested. After backfilling real
+    # 2020 NCF data, the main config dropped to 6/7 with covid_2020 as the
+    # worst window (4x wrong-signed CAP10 actions during the March/June/
+    # October 2020 V-shaped rally). This default was left pointing at the
+    # disproven file for 10 days -- see
+    # GROUP_A_PLUS_DFL_ADVISORY_STALE_INPUT_FIX_20260726.md. The selective
+    # p50/p70 variants had never been re-run against the real 2020 data at
+    # all until today; both are now regenerated (p50: 6/7, covid_2020's
+    # reliability filter correctly rejects all candidates there rather
+    # than repeating the main config's misfire; p70: 5/7, same covid_2020
+    # rejection).
+    # 2026-07-26: dated snapshot files (e.g. "..._pit2020_20260716.json")
+    # are exactly what caused the stale-input bug this comment block used
+    # to describe -- a one-time rerun's output filename gets hardcoded as
+    # a default and nobody repoints it when the data is next refreshed.
+    # Replaced with a "dfl_shadow_refresh" step (below) that regenerates
+    # these same four artifacts to STABLE, non-dated filenames every
+    # pipeline run, so the defaults below never need to be touched again.
+    # Also fixes a second issue found the same day: reusing an old dated
+    # file for one variant while regenerating others produces internally
+    # inconsistent results if `run_a2118()` itself has changed in the
+    # meantime (see GROUP_A_PLUS_DFL_ADVISORY_STALE_INPUT_FIX_20260726.md)
+    # -- all four are now always regenerated together in one run.
+    DFL_WINDOWS_7WIN_PIT = (
+        "covid_2020:2020-01-02:2020-12-31:results/ncf_00631l_panel_backfill_2020_20260716.csv:out_of_sample,"
+        "inflation_2022:2022-01-03:2022-12-30:results/ncf_00631l_panel_latest_20260707.csv:out_of_sample,"
+        "live_2024_2026:2024-01-02:2026-07-15:results/ncf_00631l_panel_latest_20260707.csv:tuning_window,"
+        "active_2025_2026:2025-01-02:2026-07-15:results/ncf_00631l_panel_latest_20260707.csv:tuning_window,"
+        "2017_bull:2017-01-03:2017-12-29:results/ncf_00631l_panel_backfill_2017_2019_20260710.csv:out_of_sample,"
+        "2018_correction:2018-01-02:2018-12-31:results/ncf_00631l_panel_backfill_2017_2019_20260710.csv:out_of_sample,"
+        "2019_recovery:2019-01-02:2019-12-31:results/ncf_00631l_panel_backfill_2017_2019_20260710.csv:out_of_sample"
+    )
+    DFL_COMMON_FLAGS = [
+        "--stateful-actions",
+        "--require-panel-signal",
+        "--min-train-days",
+        "60",
+        "--edge-threshold",
+        "0.0005",
+        "--reenter-edge-threshold",
+        "-0.0005",
+        "--regret-clip",
+        "0.02",
+        "--adjustment-fraction",
+        "0.75",
+        "--turnover-cap",
+        "0.05",
+        "--windows",
+        DFL_WINDOWS_7WIN_PIT,
+    ]
     dfl_advisory_input = getattr(
         args,
         "dfl_advisory_input",
-        "results/a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json",
+        "results/a2118_decision_focused_action_shadow_dfl_main_latest.json",
     )
     dfl_selective_p50_input = getattr(
         args,
         "dfl_selective_p50_input",
-        "results/a2118_decision_focused_action_shadow_selective_p50_7win_20260714.json",
+        "results/a2118_decision_focused_action_shadow_dfl_selective_p50_latest.json",
     )
     dfl_selective_p70_input = getattr(
         args,
         "dfl_selective_p70_input",
-        "results/a2118_decision_focused_action_shadow_selective_p70_7win_20260714.json",
+        "results/a2118_decision_focused_action_shadow_dfl_selective_p70_latest.json",
     )
+    commands["dfl_shadow_refresh_main"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_a2118_decision_focused_action_shadow.py",
+        *DFL_COMMON_FLAGS,
+        "--output",
+        dfl_advisory_input,
+    ]
+    commands["dfl_shadow_refresh_p50"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_a2118_decision_focused_action_shadow.py",
+        *DFL_COMMON_FLAGS,
+        "--selective-reliability",
+        "--reliability-max-error-percentile",
+        "0.5",
+        "--reliability-min-train-days",
+        "60",
+        "--output",
+        dfl_selective_p50_input,
+    ]
+    commands["dfl_shadow_refresh_p70"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_a2118_decision_focused_action_shadow.py",
+        *DFL_COMMON_FLAGS,
+        "--selective-reliability",
+        "--reliability-max-error-percentile",
+        "0.7",
+        "--reliability-min-train-days",
+        "60",
+        "--output",
+        dfl_selective_p70_input,
+    ]
     commands["dfl_advisory"] = [
         sys.executable,
         "scripts/run/build_a2118_dfl_advisory.py",
@@ -1209,16 +1382,22 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--output",
         str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "a2118_dfl_advisory.json"),
     ]
-    dfl_shadow_result = getattr(
-        args,
-        "dfl_shadow_result",
-        "results/a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json",
-    )
+    # 2026-07-26: same stable-filename fix as dfl_advisory_input above --
+    # these two feed evaluate_a2118_dfl_active_date_audit.py.
+    dfl_shadow_result = getattr(args, "dfl_shadow_result", dfl_advisory_input)
     dfl_overlap_result = getattr(
         args,
         "dfl_overlap_result",
-        "results/a2118_decision_focused_action_overlap_fixed_7win_20260714_rerun.json",
+        "results/a2118_decision_focused_action_overlap_dfl_latest.json",
     )
+    commands["dfl_shadow_refresh_overlap"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_a2118_decision_focused_overlap.py",
+        "--input",
+        dfl_advisory_input,
+        "--output",
+        dfl_overlap_result,
+    ]
     commands["dfl_active_date_audit"] = [
         sys.executable,
         "scripts/evaluate/evaluate_a2118_dfl_active_date_audit.py",
@@ -1514,27 +1693,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--promotion-multi-window-gate", default=DEFAULT_PROMOTION_MULTI_WINDOW_GATE)
     parser.add_argument(
         "--dfl-shadow-result",
-        default="results/a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json",
+        default="results/a2118_decision_focused_action_shadow_dfl_main_latest.json",
         help="Fixed A21.18 DFL shadow result consumed by the active-date audit step.",
     )
     parser.add_argument(
         "--dfl-advisory-input",
-        default="results/a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json",
+        default="results/a2118_decision_focused_action_shadow_dfl_main_latest.json",
         help="Base A21.18 DFL result consumed by the advisory snapshot step.",
     )
     parser.add_argument(
         "--dfl-selective-p50-input",
-        default="results/a2118_decision_focused_action_shadow_selective_p50_7win_20260714.json",
+        default="results/a2118_decision_focused_action_shadow_dfl_selective_p50_latest.json",
         help="Selective p50 A21.18 DFL result consumed by the advisory snapshot step.",
     )
     parser.add_argument(
         "--dfl-selective-p70-input",
-        default="results/a2118_decision_focused_action_shadow_selective_p70_7win_20260714.json",
+        default="results/a2118_decision_focused_action_shadow_dfl_selective_p70_latest.json",
         help="Selective p70 A21.18 DFL result consumed by the advisory snapshot step.",
     )
     parser.add_argument(
         "--dfl-overlap-result",
-        default="results/a2118_decision_focused_action_overlap_fixed_7win_20260714_rerun.json",
+        default="results/a2118_decision_focused_action_overlap_dfl_latest.json",
         help="Existing-guard overlap result consumed by the DFL active-date audit step.",
     )
     parser.add_argument("--dry-run", action="store_true", help="Print commands without executing them.")

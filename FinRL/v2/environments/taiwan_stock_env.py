@@ -795,14 +795,14 @@ class TaiwanStockTradingEnv(gym.Env):
             reward = (self.portfolio.total_value - self.initial_capital) / self.initial_capital
         
         # 檢查停損條件（僅在非 STOP_LOSS 動作時自動停損，避免重複執行）
-        if action != 4 and self.portfolio.position > 0:
+        if action != 4 and self.portfolio.position > 0 and self.portfolio.avg_cost > 0:
             unrealized_return = (price - self.portfolio.avg_cost) / self.portfolio.avg_cost
             if unrealized_return < TaiwanStockConstants.STOP_LOSS_THRESHOLD:
                 # 自動執行停損
                 self._execute_trade(4, price)  # STOP_LOSS action = 4
         
         # 移動停損檢查（Trailing Stop）
-        if TaiwanStockConstants.TRAILING_STOP_ENABLED and self.portfolio.position > 0:
+        if TaiwanStockConstants.TRAILING_STOP_ENABLED and self.portfolio.position > 0 and self.portfolio.avg_cost > 0:
             current_total = self.portfolio.total_value
             cost_basis = self.portfolio.position * self.portfolio.avg_cost
             unrealized_return = (current_total - cost_basis - self.portfolio.cash) / cost_basis if cost_basis > 0 else 0

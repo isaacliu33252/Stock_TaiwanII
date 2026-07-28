@@ -1124,7 +1124,9 @@ def _live_status_report(args: argparse.Namespace) -> dict[str, Any]:
             "gift_signed_approval_validator_smoke": str(
                 Path(getattr(args, "gift_signed_approval_validator_smoke", ""))
             ),
-            "promotion_gate": str(Path(getattr(args, "promotion_gate", ""))),
+            "promotion_gate": str(
+                getattr(args, "promotion_gate", None) or _latest_promotion_gate_path() or ""
+            ),
         },
         "checks": checks,
         "signal": {

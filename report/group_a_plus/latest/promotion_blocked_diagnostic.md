@@ -1,17 +1,15 @@
 # GroupA+ Promotion Blocked Diagnostic
 
-- Promotion decision: `blocked_model_gates_manual_approval_pending`
-- Blocking gates: `['panel_drift', 'multi_window']`
+- Promotion decision: `blocked_deployment_consistency_and_model_gates`
+- Blocking gates: `['panel_drift', 'multi_window', 'deployment_consistency', 'deployment_summary']`
 - Metrics status: `fail`
-- Deployment summary gate: `pass`
+- Deployment summary gate: `fail`
 
 ## Panel Drift
 
 - Status: `fail`
-- Reason: `drift exceeds limits: ensemble_prob_up, h20_prob_up, confidence`
-- `ensemble_prob_up` tier `diagnostic` delta `0.24570435280144232` limit `0.15` date `2025-05-09`
-- `h20_prob_up` tier `trigger_critical` delta `0.26368676066031893` limit `0.15` date `2025-09-18`
-- `confidence` tier `trigger_critical` delta `0.49140870560288463` limit `0.28` date `2025-05-09`
+- Reason: `drift exceeds limits: h20_prob_up`
+- `h20_prob_up` tier `trigger_critical` delta `0.15955034020305625` limit `0.15` date `2026-05-11`
 
 ## Multi-Window
 
@@ -21,7 +19,11 @@
 
 ## Deployment Consistency
 
-- Status: `pass`
+- Status: `fail`
+- `execution_plan_date_mismatch`
+- `ops_health_errors_present`
+- `deployment_consistency_status:blocked`
+- `deployment_consistency_not_broker_actionable`
 
 ## Manual Approval Pending
 

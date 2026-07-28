@@ -224,6 +224,36 @@ def test_live_status_includes_promotion_gate_deployment_summary_status(tmp_path:
     assert "Deployment summary consistency: `ok`" in markdown
 
 
+def test_live_status_promotion_gate_omitted_does_not_crash(tmp_path: Path) -> None:
+    """2026-07-25: --promotion-gate is documented as optional ("Defaults to
+    latest matching result when omitted") and run_ncf_daily_pipeline.py's
+    real `pre_promotion`-stage invocation never passes it at all -- unlike
+    every other test in this file, which always sets `args.promotion_gate`
+    to a real (even if nonexistent-file) string path via `_args()`, so this
+    is the only test that exercises the actual `None` case production hits
+    every day before the promotion gate has run. Previously crashed with
+    `TypeError: argument should be a str or ... not 'NoneType'` from
+    `Path(getattr(args, "promotion_gate", ""))` -- `getattr`'s default only
+    applies when the attribute is missing, not when it exists and is
+    explicitly `None`."""
+    live_signal = tmp_path / "live_signal.json"
+    execution_plan = tmp_path / "execution_plan.json"
+    _write_standard(live_signal, _live_signal_data())
+    _write_standard(
+        execution_plan,
+        {
+            "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+            "actual_data_date": "2026-07-09",
+        },
+    )
+    args = _args(live_signal, execution_plan)
+    args.promotion_gate = None
+
+    report = _live_status_report(args)
+
+    assert isinstance(report["source_paths"]["promotion_gate"], str)
+
+
 def test_live_status_includes_compounding_regime_diagnostic(tmp_path: Path) -> None:
     live_signal = tmp_path / "live_signal.json"
     execution_plan = tmp_path / "execution_plan.json"

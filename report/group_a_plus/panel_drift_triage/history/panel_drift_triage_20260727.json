@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_panel_drift_triage",
+  "generated_at": "2026-07-27T23:48:08",
+  "status": "blocked",
+  "policy": "diagnostic_only_no_strategy_change_no_weight_change",
+  "active_allocation_impact": "none",
+  "source_diagnosis": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_diagnosis_20260727.json",
+  "overlap": {
+    "start": "2025-01-02",
+    "end": "2026-07-16",
+    "rows": 371
+  },
+  "summary": {
+    "exceeded_columns": [
+      "h20_prob_up"
+    ],
+    "trigger_critical_exceeded": [
+      "h20_prob_up"
+    ],
+    "source_hypotheses": [
+      "model_set_changed",
+      "candidate_external_source_stale"
+    ],
+    "top_exceed_months": [
+      {
+        "month": "2026-04",
+        "exceed_count": 7
+      },
+      {
+        "month": "2026-02",
+        "exceed_count": 6
+      },
+      {
+        "month": "2026-06",
+        "exceed_count": 6
+      }
+    ],
+    "next_checks": [
+      "compare baseline/candidate horizon model sets and best-model selections",
+      "rerun or isolate external-feature and no-external panel sensitivity"
+    ]
+  },
+  "columns": [
+    {
+      "column": "h20_prob_up",
+      "tier": "trigger_critical",
+      "limit": 0.15,
+      "max_abs_delta": 0.1997405269328121,
+      "max_abs_delta_date": "2026-02-10",
+      "signed_delta_at_max": -0.1997405269328121,
+      "direction": "negative",
+      "baseline_value_at_max": 0.3437902376487496,
+      "candidate_value_at_max": 0.1440497107159375,
+      "top_months": [
+        {
+          "month": "2026-04",
+          "exceed_count": 7,
+          "row_count": 20,
+          "mean_abs_delta": 0.1134698753427477,
+          "max_abs_delta": 0.17486429340099074
+        },
+        {
+          "month": "2026-02",
+          "exceed_count": 6,
+          "row_count": 12,
+          "mean_abs_delta": 0.13251738666824725,
+          "max_abs_delta": 0.1997405269328121
+        },
+        {
+          "month": "2026-06",
+          "exceed_count": 6,
+          "row_count": 21,
+          "mean_abs_delta": 0.08834457268898452,
+          "max_abs_delta": 0.18236684936864817
+        }
+      ]
+    }
+  ],
+  "decision": {
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

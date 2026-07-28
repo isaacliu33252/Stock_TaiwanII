@@ -148,15 +148,25 @@ split, or cost-sensitivity sweep specific to this term). Full detail:
 ## Verdict
 
 **No direct strategy import** (confirmed asset-universe mismatch, same
-pattern as every non-RL paper reviewed this project to date). **Two real,
-actionable process/data takeaways, both acted on the same day**: (1) the
-incremental-OOS-admission rule for new interaction/signal terms was added
-as item 6 to `GROUP_A_PLUS_SIGNAL_VALIDATION_CHECKLIST_20260723.md`; (2)
-HYG/SHY were fetched and a real `credit_stress` signal was built and
-tested in A21.19 -- unlike every other signal tested in that candidate's
-history, it shows a genuinely positive multi-window pattern (see addendum
-#8) rather than a clean rejection, making it this project's most concrete
-open lead as of 2026-07-25, though not yet promoted (full checklist not
-yet complete for this specific term). No production files touched; the
-only durable side effect outside `scripts/evaluate/*.py` and `docs/*.md`
-is the new HYG/SHY data backfill in `external_market_ohlcv`.
+pattern as every non-RL paper reviewed this project to date). **Three
+real, actionable process/data/mechanism takeaways, all acted on**: (1)
+the incremental-OOS-admission rule for new interaction/signal terms was
+added as item 6 to `GROUP_A_PLUS_SIGNAL_VALIDATION_CHECKLIST_20260723.md`;
+(2) HYG/SHY were fetched and a real `credit_stress` signal was built and
+tested extensively in A21.19 (see
+`GROUP_A_PLUS_A2119_CONTINUOUS_DEFENSIVE_TILT_SHADOW_HANDOFF_20260724.md`'s
+addenda #8-16 for the full arc -- initial results looked strong, but a
+significant methodological correction (a z-score cold-start bias,
+addendum #10) walked the verdict back to genuinely mixed, and a follow-on
+AND-gate interaction-term variant of the same idea (addenda #13-15)
+ultimately traced its own best-looking result to the same class of bias;
+net result: not promoted, but a rich methodological trail for whoever
+continues this candidate); (3) the paper's correlation-de-duplication
+screening step (0.95 threshold) was ported to Group A+'s own NCF feature
+pipeline, which had no equivalent layer -- see
+`GROUP_A_PLUS_NCF_CORRELATION_DEDUP_HANDOFF_20260725.md` (found and fixed
+a real redundant-feature pair, `close_ma200_ratio`/`close_ma200_dist` at
+correlation 1.000, opt-in and off by default pending an AUC-impact check).
+No production pipeline behavior changed by any of the three -- (1) is
+process-only, (2) never left shadow-only A21.19, (3) is opt-in and not
+wired into the daily pipeline's actual invocation.

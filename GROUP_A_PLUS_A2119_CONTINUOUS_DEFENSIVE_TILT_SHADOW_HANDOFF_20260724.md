@@ -1878,3 +1878,313 @@ a2119_credit_stress_warmup756_full_checklist_20260725.json` (38 rows:
 8 rolling folds + 3 crisis-split years + 2 cost-sensitivity windows x 4
 cost levels, all credit vs vix_only at warmup_days=756 -- the source for
 all three tables above). No production files modified.
+
+---
+
+## 2026-07-25 addendum #13: VIX-credit AND-gate confirmation term -- the cleanest positive result this candidate has produced, still not promoted
+
+User pushed back on the "no direct import" framing of the RGRR review
+with three specific mechanisms and asked which to try; this is the first
+one tried. RGRR's actual interaction terms are **products of oriented
+signals** (e.g. `rel_reversal * rate_relief`), not linear/additive blends
+-- addendum #8-12's `credit_stress` test used an additive blend
+(`w3*vix_stress + w6*credit_stress`), where either signal alone can push
+the tilt more defensive. This addendum tests the interaction-term version
+instead: **the tilt only rises when VIX and credit are simultaneously
+elevated**, closer to RGRR's actual mechanism and to a "confirmation
+gate" rather than an "either signal fires" design.
+
+### Construction and IC check
+
+Added `vix_credit_confirm = zscore(relu(vix_stress) * relu(credit_stress))`
+to `build_defensive_tilt()` as `w7_vix_credit_gate` (default 0.0). Both
+components are `.clip(lower=0.0)`'d before multiplying -- unclipped
+z-scores are frequently negative in calm periods, and two negatives would
+otherwise multiply to a spuriously positive "confirmed" reading; relu'ing
+first means the product is only nonzero when both signals are genuinely
+elevated. IC check (warmup_days=756, matching addendum #10's corrected
+methodology throughout -- this is the first new component tested at the
+corrected setting from the start, not retrofitted after the fact):
+
+| Metric | IC | p-value |
+|---|---|---|
+| fwd5d | -0.071 | 0.086 |
+| fwd20d | -0.207 | 0.000 |
+| fwd20d maxDD | -0.286 | 0.000 |
+
+**The strongest IC of any component tested in this candidate's entire
+history, including `vix_stress` itself** (`vix_stress` alone: -0.106 /
+-0.189 / -0.274 at the original warmup=0 setting). 539 of 598 days are
+nonzero (confirmation fires often enough to be a real signal, not a rare
+edge case).
+
+### Backtest: 4 of 5 windows improve, including the crisis window that mattered most
+
+Swept `w7_vix_credit_gate ∈ {0.0, 0.5, 1.0, 2.0}` added on top of full
+`w3_vix=1.0`, plus a gate-only variant, at `warmup_days=756`, across the
+same 5 windows used throughout addenda #10-#12. Raw results: `results/
+a2119_vix_credit_confirmation_gate_20260725.json`.
+
+| Window | vix_only baseline | +1.0 gate | Direction |
+|---|---|---|---|
+| 2024-2026 tuning | ann -8.73%, sharpe +0.390 | ann **-7.87%**, sharpe +0.389 | better (ann), flat (sharpe) |
+| **2020 COVID** | ann -5.63%, sharpe -0.139, maxdd -0.14pp | ann **-3.03%**, sharpe **-0.064**, maxdd -0.14pp | **much better** |
+| Worst rolling fold | ann -2.26%, sharpe +0.028 | ann **-2.11%**, sharpe **+0.043** | better |
+| 2018 trade war | ann +3.59%, sharpe +0.168 | ann +2.76%, sharpe +0.095 | **worse** |
+| 2017-2019 OOS | ann +1.54%, sharpe +0.559 | ann **+2.10%**, sharpe **+0.594** | better |
+
+**4 of 5 windows improve on both metrics; only 2018 trade war worsens.**
+This is the first component tested in this candidate's history where the
+*other* real crisis window (2020 COVID) clearly improves rather than
+worsens -- the specific, most concerning pattern found in `credit_stress`'s
+additive blend (addendum #12: helps outside real crises, hurts inside
+both of them) does not repeat here. At `gate_only` (`w3_vix=0.0`,
+replacing VIX entirely rather than complementing it), 2020 COVID's cost
+nearly vanishes (ann -0.07%, sharpe -0.003) and its `max_drawdown` delta
+returns to exact 0.00pp parity -- closing the small crack addendum #11
+found in the regime floor's own headline claim at that specific window.
+2018 trade war is the one clear weak point, and it degrades further as
+gate weight increases, mirroring `credit_only`'s similarly poor standalone
+showing in 2018 in addendum #12 (ann +0.14%, sharpe -0.040) -- both
+suggest credit conditions specifically were not a strong signal in the
+2018 trade-war episode, a slower/grinding stress environment rather than
+the acute, floor-saturating kind 2020 was.
+
+### Not yet promoted -- same discipline as credit_stress, checklist not yet complete
+
+This is a promising lead, not a validated one. Per checklist item 6 and
+the same standard applied to `credit_stress`, promotion would require
+completing the full six-item checklist for this specific component (the
+8-fold rolling set, a crisis-independence split, cost-sensitivity) before
+any change to `DEFAULT_WEIGHTS` -- none of that has been run yet, only
+the same 5-window screen used as `credit_stress`'s first pass in
+addendum #8. `w7_vix_credit_gate` stays at 0.0. Given `credit_stress`'s
+own case weakened substantially once the full checklist was completed
+(addendum #12), this component's stronger first-pass showing should be
+treated with the same caution, not assumed to survive equally rigorous
+follow-up.
+
+### Files (07-25 addendum #13)
+
+Modified: `scripts/evaluate/evaluate_a2119_continuous_defensive_tilt_shadow.py`
+(added `vix_credit_confirm` component to `build_defensive_tilt()`;
+`w7_vix_credit_gate` key added to `DEFAULT_WEIGHTS` (0.0)). Verified
+default config unchanged (`ann_d=-5.41%` reproduces exactly at
+`warmup_days=0`).
+
+New: `results/a2119_vix_credit_confirmation_gate_20260725.json` (25
+window x blend combinations -- the source for the table above). No
+production files modified.
+
+---
+
+## 2026-07-25 addendum #14: completing the vix-credit gate's checklist -- stronger than credit_stress on three items, but fails crisis-independence in a genuinely different way
+
+Closes the remaining checklist items for addendum #13's confirmation-gate
+component, at the user's request to give it the same full treatment
+`credit_stress` got in addenda #9/#12. `vix1.0_gate1.0` (full VIX weight
+plus the gate added on top) vs `vix_only`, `warmup_days=756` throughout.
+
+### Item 2: 8 rolling folds -- 7 of 8 improve on both metrics, one small MaxDD crack
+
+| Fold | Ann.Δ vix→gate | Sharpe Δ vix→gate | MaxDD Δ vix→gate |
+|---|---|---|---|
+| 2017-06..2019-06 | +2.71%→+2.90% | +0.417→+0.423 | +6.17pp→+6.60pp (better) |
+| 2018-06..2020-06 | +3.35%→+4.74% | +0.399→+0.497 | +0.36pp→+0.09pp (smaller, still +) |
+| 2019-06..2021-06 | -3.03%→-1.86% | +0.115→+0.126 | **+0.36pp→-0.13pp (flips negative)** |
+| 2020-06..2022-06 | -2.26%→-2.11% | +0.028→+0.043 | +2.20pp→+2.05pp (smaller, still +) |
+| 2021-06..2023-06 | +0.41%→+0.68% | +0.027→+0.051 | +1.49pp→+1.56pp (better) |
+| 2022-06..2024-06 | -2.24%→-1.33% | -0.002→+0.053 | 0.00pp→0.00pp (flat) |
+| 2023-06..2025-06 | -1.24%→**-2.14% (worse)** | +0.219→**+0.145 (worse)** | +7.35pp→+6.42pp (smaller, still +) |
+| 2024-06..2026-06 | -11.63%→-10.09% | +0.248→+0.271 | +4.91pp→+4.11pp (smaller, still +) |
+
+**7 of 8 folds improve both annual return and Sharpe simultaneously** --
+substantially stronger than `credit_stress`'s 4-of-8 (addendum #12).
+Only 2023-06..2025-06 worsens on both. MaxDD stays non-negative in 7 of 8
+folds (usually a smaller positive margin than the base regime floor
+alone, not a bigger one -- the gate isn't a free upgrade to the floor's
+own guarantee), but **2019-06..2021-06 flips to a small negative
+(-0.13pp)** -- the same class of small crack addendum #11 found in the
+regime floor's own headline claim for the full-year 2020 window,
+now appearing in one rolling fold with this component added. Small in
+magnitude, but a real, honest exception to "never worse."
+
+### Item 3: crisis-independence -- fails the 2-of-3 bar credit_stress passed
+
+| Sub-window | Ann.Δ vix→gate | Sharpe Δ vix→gate |
+|---|---|---|
+| 2017 only | -0.37%→**-0.68% (worse)** | +0.110→**+0.087 (worse)** |
+| 2018 only | +3.59%→**+2.76% (worse)** | +0.168→**+0.095 (worse)** |
+| 2019 only | +0.31%→**+3.32% (much better)** | +0.813→**+1.004 (much better)** |
+
+**Only 1 of 3 years (2019) is clean positive -- 2017 and 2018 are both
+worse.** This fails the "positive in at least 2 of 3 screen periods" bar
+from arXiv:2607.06117v1's own admission rule (checklist item 6) that
+`credit_stress` cleared in its own crisis-independence check (addendum
+#12: 2/3 positive). This is a genuinely different failure pattern than
+`credit_stress`'s, not the same weakness re-appearing: the gate's edge is
+concentrated specifically in the acute, fast-moving 2020 COVID crash and
+the multi-year folds that contain it, not in the calmer/slower 2017-2018
+grind. `credit_stress` had the opposite shape (helped in calm years,
+hurt in both real crises).
+
+### Item 4: cost-sensitivity -- passes cleanly, more convincingly than credit_stress
+
+| Window | Metric | @1.0 | @0.5 | @0.1 | @0.0 |
+|---|---|---|---|---|---|
+| 2020 COVID | vix_only Ann.Δ | -5.63% | -5.03% | -4.54% | -4.42% |
+| | gate Ann.Δ | **-3.03%** | **-2.61%** | **-2.27%** | **-2.18%** |
+| Worst rolling fold | vix_only Ann.Δ | -2.26% | -1.75% | -1.34% | -1.24% |
+| | gate Ann.Δ | **-2.11%** | **-1.45%** | **-0.92%** | **-0.78%** |
+
+**The gate is better at every cost level in both windows** -- unlike
+`credit_stress`, which flipped to unfavorable in 2020 COVID under cost
+sensitivity (addendum #12). The gate also uses fewer rebalances than
+`vix_only` in both windows (58 vs 82 in 2020 COVID; 105 vs 133 in the
+worst rolling fold) while still winning even at zero cost -- a genuine
+allocation-timing effect, not a turnover artifact either way.
+
+### Consolidated picture: stronger than credit_stress on 3 of 4 items, opposite failure mode on the 4th
+
+Items 1 (5-window screen, addendum #13), 2 (rolling folds), and 4 (cost
+sensitivity) are all cleaner and stronger than `credit_stress`'s
+equivalent results. Item 3 (crisis-independence) is the one item this
+component does *worse* on than `credit_stress` did, and the shape of
+that weakness is informative: **this gate's edge concentrates in the
+single most acute, fast-moving crisis tested (2020 COVID) and is
+neutral-to-negative in the two milder, slower-moving stress years
+(2017, 2018 -- the trade-war grind)** -- the mirror image of
+`credit_stress`, which helped in calm years and failed in real crises.
+Whether "helps specifically in the most severe crash, weaker in milder
+grinds" is an acceptable trade-off for a defensive mechanism is a
+judgment call, not something the data resolves on its own -- unlike
+`credit_stress`'s pattern (fails exactly where a defensive signal must
+not fail), this one at least fails in the direction that matters less.
+
+### Verdict
+
+**Still not promoted -- `w7_vix_credit_gate` stays at 0.0** -- but this
+is now the best-evidenced positive lead this candidate has produced
+across its entire history, ahead of `credit_stress` on 3 of 4 checklist
+items, with a more defensible (though real) weak point. If this
+candidate is ever revisited for promotion, this component is the
+strongest starting point on today's evidence, with the 2017/2018
+weakness as the specific open question to address first (e.g. whether a
+lower gate threshold, or blending in `credit_stress`'s own additive
+contribution specifically for slower-moving stress, recovers those two
+years without giving back the 2020 gain).
+
+### Files (07-25 addendum #14)
+
+No script changes. New: `results/
+a2119_vix_credit_gate_warmup756_full_checklist_20260725.json` (38 rows:
+8 rolling folds + 3 crisis-split years + 2 cost-sensitivity windows x 4
+cost levels, gate vs vix_only at warmup_days=756 -- the source for all
+three tables above). No production files modified.
+
+---
+
+## 2026-07-25 addendum #15: diagnosing and "fixing" the 2017/2018 weakness reveals the 2020 win was never really a confirmation-gate success in the first place
+
+User asked how to fix the 2017/2018 weakness found in addendum #14.
+Diagnosed the actual mechanism before patching anything (same discipline
+as the 2020 COVID root-cause chase in the 07-24 addenda).
+
+### Diagnosis: the z-scored confirmation term goes negative during sustained, moderate stress
+
+Inspected `vix_credit_confirm`'s daily values directly in 2017 and 2018.
+The raw `relu(vix_stress) * relu(credit_stress)` product is always >=0
+by construction, but its **z-score** is frequently negative: in 2018
+(a persistently elevated-stress year -- `vix_stress` mean=0.979 across
+the whole year), the confirmation term is negative on **130 of 245 days
+(53%), median -0.186**. Mechanism: `_zscore`'s rolling mean/std adapts
+upward to match 2018's sustained elevation, so days that are still
+objectively stressed in absolute terms score as "below the recently-
+elevated average" and go negative -- **actively subtracting** from
+`risk_score` rather than contributing zero. A brief, acute spike (2020's
+crash) doesn't suffer this -- it's too short-lived to shift a 756-day
+rolling baseline -- which is exactly why the same mechanism looked like
+a clean win in 2020 and a clean loss in 2017/2018 in addendum #14.
+
+### The "obvious" fix, tested: clip the z-scored gate at 0 too
+
+A confirmation gate's semantics should never be negative -- "not
+confirmed" should mean "contributes zero," not "actively cancels the
+base VIX signal." Added `vix_credit_confirm_v2 = vix_credit_confirm.
+clip(lower=0.0)` and a new `w8_vix_credit_gate_v2` weight (default 0.0).
+Tested `vix_only` vs `gate_v1` (`w7=1.0`, addendum #13/14's version) vs
+`gate_v2` (`w8=1.0`) at `warmup_days=756` across 2017/2018/2019 plus the
+other key windows. Raw results: `results/
+a2119_vix_credit_gate_v2_fix_20260725.json`.
+
+| Window | vix_only | gate_v1 | gate_v2 |
+|---|---|---|---|
+| 2017 only | ann -0.37%, sharpe +0.110 | ann -0.68%, sharpe +0.087 (worse) | ann -0.85%, sharpe +0.068 (**worse than v1**) |
+| 2018 only | ann +3.59%, sharpe +0.168 | ann +2.76%, sharpe +0.095 (worse) | ann **+3.58%**, sharpe **+0.164** (~fixed, back to baseline) |
+| 2019 only | ann +0.31%, sharpe +0.813 | ann +3.32%, sharpe +1.004 (much better) | ann +1.85%, sharpe +1.000 (still better, smaller ann gain) |
+| **2020 COVID** | ann -5.63%, sharpe -0.139 | ann **-3.03%**, sharpe **-0.064** (much better) | ann **-5.63%, sharpe -0.139 (exactly identical to vix_only -- the entire 2020 gain is gone)** |
+| Worst rolling fold | ann -2.26%, sharpe +0.028 | ann -2.11%, sharpe +0.043 (better) | ann -2.26% (same as baseline), sharpe +0.039 (small gain) |
+| 2017-2019 OOS | ann +1.54%, sharpe +0.559 | ann +2.10%, sharpe +0.594 | ann +1.79%, sharpe **+0.616 (best of the three)** |
+
+**The fix technically works on 2018 (returns almost exactly to the
+`vix_only` baseline -- no longer actively hurting) but 2017 gets
+slightly worse, and, critically, 2020 COVID's entire headline
+improvement disappears -- `gate_v2` is byte-identical to `vix_only`
+there.** This is the important finding, not a footnote: **v1's 2020
+"win" was never a case of the confirmation gate correctly firing on
+genuine stress. It was the identical negative-z-score erosion mechanism
+that hurt 2018, this time landing somewhere it happened to help** --
+2020's multi-month recovery is itself a sustained, moderate, post-crisis
+period structurally similar to 2018's grind (the same rolling-baseline-
+adapts-upward effect applies), and the resulting negative confirmation
+values during that recovery period reduced an already-known problem
+(the base `vix_stress`-only tilt staying too defensive for too long
+after a V-shaped recovery starts, the exact issue the 07-24 fast-recovery
+investigation diagnosed for the base signal). Clipping away the negative
+values removes this accidental correction along with the 2018 damage --
+they were the same bug, not two separate phenomena.
+
+### What survives: a real, if modest, Sharpe improvement concentrated in 2019 and the OOS block
+
+`gate_v2`'s only genuine, mechanism-clean win (built entirely from
+non-negative, truly-confirmed-stress contributions, unlike v1's mixed-sign
+story) is 2019 (ann +0.31%->+1.85%, sharpe +0.813->+1.000) and the
+2017-2019 OOS block's Sharpe specifically (+0.559->+0.616, the best of all
+three configs on that one metric). Every other window either returns to
+~`vix_only` baseline or stays mildly worse (2017). This is a much smaller,
+less exciting result than addendum #13/14's headline numbers -- because
+those numbers were partly built on the same mechanism this addendum just
+identified as not a real "confirmation" effect.
+
+### Answer to "how to fix 2017/2018": the honest one
+
+Clipping the z-score (`gate_v2`) is the technically correct fix for the
+gate's stated semantics, and it does stop 2018 from actively hurting.
+But it is not a free improvement -- fixing it costs essentially all of
+what made `gate_v1` look like this candidate's best lead, because that
+apparent strength and the 2017/2018 weakness turned out to be the same
+underlying defect, not independent problems. **Recommendation: do not
+adopt `gate_v1` (`w7_vix_credit_gate`) based on addendum #13/14's
+numbers** -- its headline 2020 result does not represent genuine
+confirmation-gate value and should not be cited that way going forward.
+`gate_v2` is the more honest construction but only clears a modest bar
+(2019, and OOS-block Sharpe) -- not enough on its own to be a promotion
+lead. If this line is pursued further, the real open question is
+`_zscore`'s adaptive-baseline behavior during sustained stress
+generally (the same class of issue as `credit_stress`'s recovery-period
+cost in addendum #9/#10, and `growth_crowding`'s lag problem in
+addendum #7) -- a fixed or much-longer normalization window, or an
+absolute (non-relative) stress threshold instead of a rolling z-score,
+would be the natural next construction to try, not further tuning of
+either gate variant's weight.
+
+### Files (07-25 addendum #15)
+
+Modified: `scripts/evaluate/evaluate_a2119_continuous_defensive_tilt_shadow.py`
+(added `vix_credit_confirm_v2` component to `build_defensive_tilt()`;
+`w8_vix_credit_gate_v2` key added to `DEFAULT_WEIGHTS` (0.0)). Verified
+default config unchanged.
+
+New: `results/a2119_vix_credit_gate_v2_fix_20260725.json` (24 window x
+config combinations -- the source for the table above). No production
+files modified.

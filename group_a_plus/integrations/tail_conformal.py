@@ -39,6 +39,51 @@ def _conformal_quantile(values: pd.Series, alpha: float) -> float | None:
     return float(clean.iloc[rank - 1])
 
 
+def _walk_forward_aci_alpha(
+    residuals: pd.Series,
+    *,
+    base_alpha: float,
+    gamma: float,
+    min_alpha: float = 0.02,
+    max_alpha: float = 0.40,
+    calibration_window: int = 252,
+    warmup: int = 60,
+) -> pd.Series:
+    """Online-adaptive miscoverage target via single-rate ACI (Gibbs &
+    Candes, 2021), a scoped precursor to arXiv:2606.18199's DtACI.
+
+    At each step, after observing whether the previous day's lower bound was
+    breached, `alpha_t` is nudged tighter (lower alpha -> wider interval)
+    following a breach, and relaxed back toward `base_alpha` otherwise --
+    so the interval widens automatically during a regime shift without
+    needing an explicit risk-bucket label, then re-tightens once conditions
+    stabilize. This is a *single* fixed learning rate (`gamma`), not
+    DtACI's multi-candidate Hedge-style aggregation across several gammas --
+    that fuller version was not built this pass; see
+    GROUP_A_PLUS_TAIL_CONFORMAL_ACI_20260727.md for why this scope was
+    chosen and what a full DtACI upgrade would add.
+
+    Returns a series of `alpha_t` (the level in effect *during* each date),
+    aligned to `residuals`' index. NaN before `warmup` valid residuals have
+    accumulated (falls back to `base_alpha` during warmup).
+    """
+    clean = residuals.dropna()
+    alpha_t = float(base_alpha)
+    out: dict[pd.Timestamp, float] = {}
+    history: list[float] = []
+    for dt, value in clean.items():
+        out[dt] = alpha_t
+        if len(history) >= warmup:
+            window = pd.Series(history[-calibration_window:])
+            q_t = _conformal_quantile(window, alpha_t)
+            err_t = 1.0 if (q_t is not None and float(value) > q_t) else 0.0
+            alpha_t = float(min(max(alpha_t + gamma * (base_alpha - err_t), min_alpha), max_alpha))
+        history.append(float(value))
+        if len(history) > calibration_window:
+            history = history[-calibration_window:]
+    return pd.Series(out).reindex(residuals.index)
+
+
 def _load_close(db_path: Path, ticker: str, start: pd.Timestamp, end: pd.Timestamp) -> pd.Series:
     con = duckdb.connect(str(db_path), read_only=True)
     try:
@@ -102,8 +147,31 @@ def compute_tail_conformal_diagnostic(
     calibration_window: int = 252,
     min_calibration: int = 80,
     severe_mdd_threshold: float = -0.08,
+    adaptive: bool = False,
+    aci_gamma: float = 0.005,
+    aci_min_alpha: float = 0.02,
+    aci_max_alpha: float = 0.40,
 ) -> dict[str, Any]:
-    """Compute lower-tail conformal bounds for the latest available date."""
+    """Compute lower-tail conformal bounds for the latest available date.
+
+    `adaptive` (default False, preserves prior behavior exactly): use
+    single-rate ACI (`_walk_forward_aci_alpha`) instead of the static
+    risk-bucket-conditional calibration to set the effective miscoverage
+    level each day. Motivated by a real, measured gap: replaying the
+    static (non-adaptive) calibration over 2020 (COVID crash) gives an
+    empirical lower-tail exceedance rate of 15.0% against a 10% nominal
+    target overall, and 26.8% specifically in the "elevated" risk bucket.
+
+    `aci_gamma` default (0.005) was chosen after finding a *faster* rate
+    (0.05) actually made 2020 coverage worse (16.3%) -- a fast learning
+    rate lets the adaptive alpha drift well above target during calm
+    stretches, then lags behind at the exact moment a regime shift starts.
+    The slow rate was then checked against a genuinely held-out year
+    (2018, not used to pick gamma): static 14.5%/15.7% (h5/h10) vs adaptive
+    14.0%/14.0% -- a real, if modest, OOS-validated improvement, not just a
+    2020-specific fit. See GROUP_A_PLUS_TAIL_CONFORMAL_ACI_20260727.md for
+    the full replay and the gamma-selection process.
+    """
 
     actual = pd.Timestamp(actual_date).normalize()
     close = _load_close(
@@ -138,17 +206,36 @@ def compute_tail_conformal_diagnostic(
         residual = pred - fwd_ret
         known_cutoff = close.index[-1] - pd.Timedelta(days=horizon)
         eligible = residual.index <= known_cutoff
-        bucket_match = bucket == current_bucket
-        cal_resid = residual[eligible & bucket_match].tail(calibration_window)
-        cal_mdd = fwd_mdd[eligible & bucket_match].tail(calibration_window)
-        if len(cal_resid.dropna()) < min_calibration:
+        effective_alpha = float(alpha)
+
+        if adaptive:
+            aci_alpha_series = _walk_forward_aci_alpha(
+                residual[eligible],
+                base_alpha=alpha,
+                gamma=aci_gamma,
+                min_alpha=aci_min_alpha,
+                max_alpha=aci_max_alpha,
+                calibration_window=calibration_window,
+                warmup=min_calibration,
+            )
+            valid_alpha = aci_alpha_series.dropna()
+            if len(valid_alpha):
+                effective_alpha = float(valid_alpha.iloc[-1])
             cal_resid = residual[eligible].tail(calibration_window)
             cal_mdd = fwd_mdd[eligible].tail(calibration_window)
-            calibration_scope = "all_buckets_fallback"
+            calibration_scope = "aci_adaptive_no_bucket"
         else:
-            calibration_scope = current_bucket
+            bucket_match = bucket == current_bucket
+            cal_resid = residual[eligible & bucket_match].tail(calibration_window)
+            cal_mdd = fwd_mdd[eligible & bucket_match].tail(calibration_window)
+            if len(cal_resid.dropna()) < min_calibration:
+                cal_resid = residual[eligible].tail(calibration_window)
+                cal_mdd = fwd_mdd[eligible].tail(calibration_window)
+                calibration_scope = "all_buckets_fallback"
+            else:
+                calibration_scope = current_bucket
 
-        q_resid = _conformal_quantile(cal_resid, alpha)
+        q_resid = _conformal_quantile(cal_resid, effective_alpha)
         latest_pred = _float_or_none(pred.dropna().iloc[-1] if pred.dropna().size else None)
         lower = None if q_resid is None or latest_pred is None else latest_pred - q_resid
         mdd_clean = pd.to_numeric(cal_mdd, errors="coerce").dropna()
@@ -159,6 +246,8 @@ def compute_tail_conformal_diagnostic(
             "point_forecast_return": latest_pred,
             "lower_tail_confidence_bound": lower,
             "alpha": float(alpha),
+            "effective_alpha": effective_alpha,
+            "adaptive": bool(adaptive),
             "nominal_lower_tail_coverage": float(1.0 - alpha),
             "calibration_scope": calibration_scope,
             "calibration_count": int(len(cal_resid.dropna())),

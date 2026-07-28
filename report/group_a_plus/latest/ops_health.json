@@ -1,12 +1,15 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_ops_health",
-  "generated_at": "2026-07-23T11:25:37Z",
+  "generated_at": "2026-07-28T16:57:36Z",
   "root": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main",
-  "status": "warning",
-  "errors": [],
+  "status": "error",
+  "errors": [
+    "external_data_freshness"
+  ],
   "warnings": [
     "system_resources",
+    "artifact_health",
     "module_health"
   ],
   "active_allocation_impact": "none",
@@ -15,75 +18,69 @@
     "disk": {
       "root": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main",
       "total_bytes": 254544252928,
-      "used_bytes": 247677489152,
-      "free_bytes": 6866763776,
-      "free_ratio": 0.027,
+      "used_bytes": 246193225728,
+      "free_bytes": 8351027200,
+      "free_ratio": 0.0328,
       "status_policy": "warn_below_5pct_error_below_2pct"
     },
     "cpu": {
-      "percent": 0.0,
-      "count": 4
+      "status": "unavailable",
+      "reason": "ModuleNotFoundError(\"No module named 'psutil'\")"
     },
     "memory": {
-      "total_bytes": 12544356352,
-      "available_bytes": 10864263168,
-      "used_bytes": 1680093184,
-      "available_ratio": 0.8661
+      "status": "unavailable",
+      "reason": "ModuleNotFoundError(\"No module named 'psutil'\")"
     },
     "warnings": [
-      "disk_free_below_5pct"
+      "disk_free_below_5pct",
+      "psutil_unavailable"
     ],
     "errors": [],
     "status": "warning"
   },
   "artifact_health": {
-    "status": "ok",
+    "status": "warning",
     "missing_required": [],
-    "missing_optional": [],
+    "missing_optional": [
+      "dfl_active_date_audit_hard_checks_not_passing"
+    ],
     "legacy_frozen_artifact_warnings": [
-      "golden_signal_stale",
       "group_a_plus_decision_signal_stale"
     ],
     "execution_plan_freshness": {
       "status": "fresh",
-      "lag_days": -0.5,
+      "lag_days": -0.02,
       "max_lag_days": 3,
-      "execution_plan_modified_at": "2026-07-22T23:56:00Z",
-      "live_signal_modified_at": "2026-07-22T11:53:36Z"
+      "execution_plan_modified_at": "2026-07-27T23:45:26Z",
+      "live_signal_modified_at": "2026-07-27T23:13:10Z"
     },
     "golden_signal_freshness": {
-      "status": "stale",
-      "lag_days": 7.06,
+      "status": "fresh",
+      "lag_days": 0.72,
       "max_lag_days": 3,
-      "golden_signal_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/signal_group_a_20260716_175626.json",
-      "golden_signal_modified_at": "2026-07-16T09:56:26Z"
+      "golden_signal_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/signal_group_a_20260728_074555.json",
+      "golden_signal_modified_at": "2026-07-27T23:45:55Z"
     },
     "group_a_plus_decision_signal_freshness": {
       "status": "stale",
-      "lag_days": 25.93,
+      "lag_days": 31.16,
       "max_lag_days": 14,
       "policy_signal_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_policy_signal_20260627_210621.json",
       "policy_signal_modified_at": "2026-06-27T13:06:21Z"
     },
     "volatility_gate_execution_guard": {
       "status": "ok",
-      "volatility_gate_active": true,
-      "execution_plan_aligned": true,
-      "live_signal_actual_data_date": "2026-07-22",
-      "execution_plan_actual_data_date": "2026-07-22",
-      "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
-      "execution_plan_strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
-      "pre_trade_guard_status": "flagged_advisory_only",
-      "allow_00631l_add": false,
+      "volatility_gate_active": false,
+      "execution_plan_aligned": null,
       "warnings": []
     },
     "dfl_advisory": {
       "status": "ok",
       "exists": true,
       "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/a2118_dfl_advisory.json",
-      "modified_at": "2026-07-22T15:02:03Z",
-      "live_signal_actual_data_date": "2026-07-22",
-      "advisory_as_of": "2026-07-22",
+      "modified_at": "2026-07-27T23:19:02Z",
+      "live_signal_actual_data_date": "2026-07-27",
+      "advisory_as_of": "2026-07-27",
       "aligned": true,
       "advisory_status": "available",
       "action": "KEEP",
@@ -92,19 +89,21 @@
       "warnings": []
     },
     "dfl_active_date_audit": {
-      "status": "ok",
+      "status": "warning",
       "exists": true,
-      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_dfl_active_date_audit_20260722.json",
-      "modified_at": "2026-07-22T15:04:13Z",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_dfl_active_date_audit_20260727.json",
+      "modified_at": "2026-07-27T23:19:18Z",
       "audit_status": "research_only",
-      "conclusion": "passes_replay_audit_with_warnings_shadow_only",
+      "conclusion": "review_required_shadow_only",
       "policy": "shadow_only_no_auto_weight_change",
-      "active_days": 7,
-      "all_checks_pass": true,
-      "warning_days": 3,
-      "existing_guard_overlap_days": 0,
-      "total_estimated_cost_bps": 8.074904151886141,
-      "warnings": []
+      "active_days": 46,
+      "all_checks_pass": false,
+      "warning_days": 44,
+      "existing_guard_overlap_days": 1,
+      "total_estimated_cost_bps": 174.0382502681462,
+      "warnings": [
+        "dfl_active_date_audit_hard_checks_not_passing"
+      ]
     },
     "required": [
       {
@@ -113,8 +112,8 @@
         "relative_path": "report/group_a_plus/latest/strategy.json",
         "required": true,
         "exists": true,
-        "size_bytes": 21347,
-        "modified_at": "2026-07-23T03:20:26Z",
+        "size_bytes": 24545,
+        "modified_at": "2026-07-25T05:41:40Z",
         "status": "ok"
       },
       {
@@ -123,8 +122,8 @@
         "relative_path": "report/group_a_plus/latest/live_signal.json",
         "required": true,
         "exists": true,
-        "size_bytes": 87851,
-        "modified_at": "2026-07-22T11:53:36Z",
+        "size_bytes": 86820,
+        "modified_at": "2026-07-27T23:13:10Z",
         "status": "ok"
       },
       {
@@ -133,8 +132,8 @@
         "relative_path": "report/group_a_plus/latest/execution_plan.json",
         "required": true,
         "exists": true,
-        "size_bytes": 108949,
-        "modified_at": "2026-07-22T23:56:00Z",
+        "size_bytes": 105299,
+        "modified_at": "2026-07-27T23:45:26Z",
         "status": "ok"
       },
       {
@@ -143,8 +142,8 @@
         "relative_path": "report/group_a_plus/latest/strategy_env_health.json",
         "required": true,
         "exists": true,
-        "size_bytes": 2840,
-        "modified_at": "2026-07-23T11:25:33Z",
+        "size_bytes": 2773,
+        "modified_at": "2026-07-28T16:57:35Z",
         "status": "ok"
       },
       {
@@ -196,38 +195,38 @@
       "relative_path": "logs/daily.log",
       "required": false,
       "exists": true,
-      "size_bytes": 1676798,
-      "modified_at": "2026-07-23T11:25:33Z",
+      "size_bytes": 2344147,
+      "modified_at": "2026-07-28T06:47:38Z",
       "status": "ok"
     }
   },
   "pipeline_health": {
     "status": "ok",
-    "latest_manifest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_daily_pipeline_20260723.json",
-    "latest_manifest_modified_at": "2026-07-23T11:25:33Z",
-    "date_stamp": "20260723",
+    "latest_manifest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_daily_pipeline_20260728.json",
+    "latest_manifest_modified_at": "2026-07-28T06:47:38Z",
+    "date_stamp": "20260728",
     "stale_days": 0,
     "errors": [],
     "missing_outputs": [],
     "outputs": {
       "ohlcv_freshness": {
         "label": "ohlcv_freshness",
-        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260723.json",
-        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260723.json",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260728.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260728.json",
         "required": false,
         "exists": true,
-        "size_bytes": 8544,
-        "modified_at": "2026-07-23T11:25:32Z",
+        "size_bytes": 8762,
+        "modified_at": "2026-07-28T06:47:37Z",
         "status": "ok"
       },
       "data_refresh": {
         "label": "data_refresh",
-        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/data_refresh_20260723.json",
-        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/data_refresh_20260723.json",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/data_refresh_20260728.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/data_refresh_20260728.json",
         "required": false,
         "exists": true,
-        "size_bytes": 12562,
-        "modified_at": "2026-07-23T11:22:40Z",
+        "size_bytes": 12542,
+        "modified_at": "2026-07-28T06:43:01Z",
         "status": "ok"
       }
     },
@@ -248,29 +247,29 @@
       "ncf_00631l": {
         "status": "ok",
         "pattern": "results/ncf_00631l_latest_*.json",
-        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260722.json",
-        "modified_at": "2026-07-22T11:53:14Z",
-        "size_bytes": 11401
+        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260727.json",
+        "modified_at": "2026-07-27T22:50:35Z",
+        "size_bytes": 11580
       },
       "ncf_00632r": {
         "status": "ok",
         "pattern": "results/ncf_00632r_latest_*.json",
-        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260722.json",
-        "modified_at": "2026-07-22T11:01:05Z",
-        "size_bytes": 10986
+        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260727.json",
+        "modified_at": "2026-07-27T22:59:49Z",
+        "size_bytes": 11141
       },
       "factor_lens": {
         "status": "ok",
         "pattern": "results/group_a_plus_factor_lens_*.json",
-        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_factor_lens_20260721.json",
-        "modified_at": "2026-07-21T14:37:06Z",
-        "size_bytes": 19322
+        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_factor_lens_20260727.json",
+        "modified_at": "2026-07-27T23:12:53Z",
+        "size_bytes": 19334
       },
       "daily_pipeline": {
         "status": "ok",
         "pattern": "results/ncf_daily_pipeline_*.json",
-        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_daily_pipeline_20260723.json",
-        "modified_at": "2026-07-23T11:25:33Z",
+        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_daily_pipeline_20260728.json",
+        "modified_at": "2026-07-28T06:47:38Z",
         "size_bytes": 332
       },
       "alphagen_lite_feature_pool": {
@@ -302,14 +301,19 @@
     }
   },
   "external_data_freshness": {
-    "status": "ok",
-    "latest_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260723.json",
-    "latest_report_modified_at": "2026-07-23T11:25:32Z",
-    "target_date": "2026-07-23",
-    "overall_status": "ok",
+    "status": "error",
+    "latest_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260728.json",
+    "latest_report_modified_at": "2026-07-28T06:47:37Z",
+    "target_date": "2026-07-28",
+    "overall_status": "error",
     "error_tickers": [],
     "warning_tickers": [],
-    "external_error_tickers": []
+    "external_error_tickers": [
+      "^GSPC",
+      "^TNX",
+      "^IRX",
+      "GC=F"
+    ]
   },
   "tsmc_weight_assumption_health": {
     "status": "ok",

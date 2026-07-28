@@ -1,0 +1,280 @@
+# A21.18 DFL Advisory Stale-Input Fix - 2026-07-26
+
+## Status
+
+**Fixed and verified end-to-end.** No decision logic changed -- this is a
+data-pointer correction plus two regenerated research artifacts. No live
+allocation, execution plan, or gate threshold was touched. The advisory
+this fixes has never driven a real decision (`advisory_active: false`
+throughout), so there is no trading impact from either the bug or the fix.
+
+## Origin
+
+Found while investigating a user proposal (`decision_confidence`/
+`direction_confidence` NCF calibration fields, referencing arXiv:2601.07852)
+for whether it duplicated existing work -- see
+`GROUP_A_PLUS_20260726_SESSION_HANDOFF_INDEX.md` Thread 5 and the earlier
+Thread-adjacent discussion. That investigation found the DFL
+(decision-focused-learning) advisory line already existed
+(`evaluate_a2118_decision_focused_action_shadow.py`, live-wired via
+`scripts/run/build_a2118_dfl_advisory.py`), and that its currently-live
+output was serving a disproven claim.
+
+## The bug
+
+`report/group_a_plus/latest/a2118_dfl_advisory.json`, regenerated daily,
+was reading `"input": ".../a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json"`
+and reporting `"triple_pass_windows": 7, "all_windows_triple_pass": true`.
+
+That claim was disproven on **2026-07-16**
+(`GROUP_A_PLUS_FABLE_COMBINATION_OPPORTUNITIES_HANDOFF_20260716.md`, item
+#9): the `covid_2020` evaluation window had been silently **panel-blind**
+(pointed at a panel with zero 2020 rows), so `--require-panel-signal`
+defaulted every day to KEEP. The "0 non-KEEP actions in covid_2020" result
+this produced was read as "the model correctly held" -- it was actually a
+silent no-op that had never tested anything. After backfilling real 2020
+NCF data
+(`python3 scripts/misc/ncf_00631l.py --train-start 2015-06-01 --val-start
+2020-01-01 --val-end 2020-12-31 --full-panel`, already done on 07-16) and
+re-running the promoted config, `covid_2020` became the **worst window in
+the suite**: ΔSharpe -0.0796, 4 CAP10 actions fired on 2020-06-03/04/08 and
+2020-10-06 -- exactly during the sharp V-shaped post-crash rally, i.e.
+wrong-signed. Corrected result: `triple_pass_windows: 6/7`, not 7/7.
+
+**The bug fixed today**: nobody had repointed the three places that feed
+the live advisory at the corrected file. For 10 days
+(2026-07-16 -> 2026-07-26), the live shadow report kept regenerating and
+re-asserting the disproven "7/7" claim daily. Not a trading-impact bug
+(the advisory has never matched a real decision --
+`matched_decision_count: 0` throughout), but a live-serving correctness
+bug: anyone reading this report during that window would have been told
+the opposite of the actual, already-known result.
+
+**Two selective variants (p50/p70) were never corrected at all, not even
+partially.** They had their own separate stale defaults pointing at
+07-14 files that were never re-run against the real 2020 panel, unlike the
+main config which at least got the 07-16 fix (just not wired in).
+
+## What was fixed
+
+Three call sites in `scripts/run/run_ncf_daily_pipeline.py` (all read a
+hardcoded default filename, only overridable via CLI args that are never
+actually passed by the scheduled daily run):
+
+1. `dfl_advisory_input` (line ~1200) -- fed `build_a2118_dfl_advisory.py --input`.
+   Was: `results/a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json`.
+   Now: `results/a2118_decision_focused_action_shadow_stateful_panelgate_edge0005_adj75_7win_pit2020_20260716.json`
+   (the file the 07-16 fix already produced -- no new computation needed,
+   just repointing).
+2. `dfl_selective_p50_input` / `dfl_selective_p70_input` -- fed
+   `build_a2118_dfl_advisory.py --selective-inputs`. These had **no**
+   pit2020-corrected counterpart to point to, so both were regenerated
+   today by re-running `evaluate_a2118_decision_focused_action_shadow.py`
+   with the exact same flags as the 07-16 promoted-config rerun
+   (`--stateful-actions --require-panel-signal --min-train-days 60
+   --edge-threshold 0.0005 --reenter-edge-threshold -0.0005 --regret-clip
+   0.02 --adjustment-fraction 0.75 --turnover-cap 0.05`) plus each
+   variant's own `--selective-reliability --reliability-max-error-percentile
+   {0.5,0.7} --reliability-min-train-days 60`, and the same corrected
+   7-window `--windows` list (covid_2020 pointed at
+   `results/ncf_00631l_panel_backfill_2020_20260716.csv`, the panel the
+   07-16 backfill already produced -- reused, not retrained; the ~20-minute
+   NCF training step from 07-16 did not need to be repeated). Outputs:
+   `results/a2118_decision_focused_action_shadow_selective_p50_7win_pit2020_20260726.json`
+   (6/7 triple-pass) and
+   `..._selective_p70_7win_pit2020_20260726.json` (5/7 triple-pass).
+3. `dfl_shadow_result` / `dfl_overlap_result` -- fed
+   `evaluate_a2118_dfl_active_date_audit.py --input`/`--overlap`. Same
+   `dfl_shadow_result` fix as (1). `dfl_overlap_result` had its own stale
+   07-14 file; regenerated by re-running
+   `evaluate_a2118_decision_focused_overlap.py --input <the corrected main
+   file>` (cheap -- reads the already-computed shadow result and computes
+   guard overlap, no re-simulation). Output:
+   `results/a2118_decision_focused_action_overlap_pit2020_20260726.json`.
+
+Also fixed the same stale defaults hardcoded independently inside
+`scripts/run/build_a2118_dfl_advisory.py` (`DEFAULT_INPUT`,
+`DEFAULT_SELECTIVE_INPUTS`) and
+`scripts/evaluate/evaluate_a2118_dfl_active_date_audit.py` (`DEFAULT_INPUT`,
+`DEFAULT_OVERLAP`) -- these matter less in practice (the daily pipeline
+always passes explicit `--input`/`--selective-inputs`/`--overlap`, so these
+constants were dead in the scheduled run) but were fixed too so a
+standalone manual run without arguments doesn't silently reproduce the
+same stale claim.
+
+## Second, larger finding: `run_a2118()` itself has drifted since 2026-07-16
+
+While preparing to automate periodic reruns (so this staleness class can't
+recur), timed a fresh rerun of the *main* (non-selective) config using the
+exact same flags and `--windows` as the 07-16 file, to compare. Result did
+**not** reproduce: `covid_2020` went from 4 CAP10 actions
+(ΔSharpe -0.0796, the 07-16 number) to **14 CAP10 actions**
+(ΔSharpe -0.1626), and the overall `triple_pass_windows` dropped from
+6/7 to **3/7**. The `method` block in both output files is byte-identical
+(same flags, same regret_clip/edge_threshold/adjustment_fraction/
+turnover_cap/model config) -- confirmed via direct JSON diff. The three
+static NCF panel files involved (`ncf_00631l_panel_backfill_2020_20260716.csv`,
+`ncf_00631l_panel_backfill_2017_2019_20260710.csv`,
+`ncf_00631l_panel_latest_20260707.csv`) are unmodified since their creation
+dates (checked mtime and md5). **The only remaining explanation is that
+`run_a2118()` -- the shared simulation engine this evaluator calls into --
+has itself changed between 2026-07-16 and 2026-07-26** from other,
+unrelated work in this repo during that window, and re-running the exact
+same historical backtest with today's code produces different results even
+for a fixed 2020 date range.
+
+This was not chased further to find the specific commit/change responsible
+-- out of scope for this fix, and would require bisecting 10 days of
+unrelated changes to `run_a2118()` and everything it calls. **Flagged as
+an open question, not resolved**: is this legitimate (accumulated bug
+fixes since 07-16 correctly changing how 2020 is simulated), or a
+lookahead/leakage bug (something in the current code path uses information
+that shouldn't be available for a 2020 backtest)? Either way it's a
+second, independent instance of the same underlying problem this whole
+document is about -- a shadow evaluation isn't a stable, reproducible
+artifact unless it's regenerated and consumed atomically as one unit.
+
+**Consequence for this fix**: the p50/p70/overlap files regenerated today
+(the "What was fixed" section above) used today's code, but the *main*
+config file being pointed at was still the 07-16 vintage -- meaning the
+three files backing the live advisory were themselves inconsistent with
+each other (different code snapshots), a subtler version of the exact bug
+being fixed. **Regenerated the main config today as well**
+(`results/a2118_decision_focused_action_shadow_stateful_panelgate_edge0005_adj75_7win_pit2020_20260726.json`,
+replacing the 07-16 file as the default everywhere it was referenced) and
+the overlap file against it, so all four artifacts (main, p50, p70,
+overlap) are now from the same generation run. **Final, fully-consistent
+numbers**: main config 3/7 triple-pass (not 6/7, not 7/7), p50 6/7, p70
+5/7, all with `total_candidate_non_keep_days: 46` (up from 11 in the stale
+version) -- the corrected picture is meaningfully worse for the
+non-selective config than either the original disproven claim (7/7) or
+the first, code-inconsistent correction (6/7). Re-verified the live
+advisory end-to-end and reran the full test suite again after this second
+correction (42/42 passing, one more filename-assertion update needed in
+`tests/test_run_ncf_daily_pipeline.py`).
+
+## New finding from the p50/p70 regeneration (not previously known)
+
+With the real 2020 panel, both selective variants' reliability filter
+(`selective_reliability`) **correctly rejects every covid_2020 CAP10
+candidate as unreliable** -- `covid_2020: non_keep=0` for both p50 and p70,
+neither repeating the main (non-selective) config's wrong-signed 4x CAP10
+misfire. This is new information: the selective-reliability mechanism,
+never actually tested against a real crisis before today, behaved as
+intended in the one real crisis it now has been tested against. This does
+not change the "not promoted" status of the DFL line overall (p50 fails
+on `live_2024_2026`/`2019_recovery`, p70 fails on those plus
+`2018_correction` -- see the regenerated JSON files for exact numbers),
+but it is a genuinely new, positive data point about the selective
+variants specifically that didn't exist before today.
+
+## Verification
+
+- Regenerated the real `report/group_a_plus/latest/a2118_dfl_advisory.json`
+  end-to-end twice (once after the initial fix, again after discovering
+  and correcting the code-drift inconsistency above) and confirmed the
+  final state reports `triple_pass_windows: 3, all_windows_triple_pass:
+  false` for the main config, 6/7 for p50, 5/7 for p70, all with
+  `total_candidate_non_keep_days: 46` -- no longer the disproven 7/7 claim,
+  and no longer internally inconsistent across variants. `advisory_active:
+  false`, `matched_decision_count: 0` unchanged (still no real decision
+  impact today).
+- `pytest tests/ -k "dfl or daily_pipeline"`: 42/42 passing after both
+  rounds of fixes. `test_build_commands_includes_refresh_ncf_and_advisory_steps`
+  in `tests/test_run_ncf_daily_pipeline.py` had hardcoded assertions on
+  the old stale filenames -- updated twice (once per round) to assert the
+  final corrected filenames, since it was asserting the bug as correct
+  behavior.
+- `pytest tests/test_build_a2118_dfl_advisory.py`: 4/4 passing, unchanged
+  (uses synthetic fixtures, not the real default paths).
+- `python3 -m py_compile` on all three changed Python files.
+
+## Follow-up: automated so this failure class can't recur
+
+Both corrections above (the original stale-claim fix, and the code-drift
+fix) shared the same root pattern: a one-time backtest run's output
+filename gets hardcoded as a default, and nobody repoints it when the
+underlying data or code later changes. Patching the specific stale
+filename fixes today's instance but not the pattern.
+
+**Fix**: replaced the dated-snapshot-filename convention with a
+stable-filename-that-gets-regenerated-every-run convention for this
+specific pipeline sub-chain. Added four new best-effort steps to
+`run_ncf_daily_pipeline.py` (`dfl_shadow_refresh_main`,
+`dfl_shadow_refresh_p50`, `dfl_shadow_refresh_p70`,
+`dfl_shadow_refresh_overlap`), inserted immediately before `dfl_advisory`
+(main/p50/p70) and between `dfl_advisory` and `dfl_active_date_audit`
+(overlap, which depends on the freshly-regenerated main file). Each
+re-runs `evaluate_a2118_decision_focused_action_shadow.py` /
+`evaluate_a2118_decision_focused_overlap.py` with the exact promoted-config
+flags (reconstructed from `GROUP_A_PLUS_FABLE_COMBINATION_OPPORTUNITIES_HANDOFF_20260716.md`'s
+item #9 command, now captured as `DFL_COMMON_FLAGS`/`DFL_WINDOWS_7WIN_PIT`
+constants in `run_ncf_daily_pipeline.py` itself rather than only in a
+markdown doc), writing to **stable, non-dated filenames**:
+- `results/a2118_decision_focused_action_shadow_dfl_main_latest.json`
+- `results/a2118_decision_focused_action_shadow_dfl_selective_p50_latest.json`
+- `results/a2118_decision_focused_action_shadow_dfl_selective_p70_latest.json`
+- `results/a2118_decision_focused_action_overlap_dfl_latest.json`
+
+`dfl_advisory_input`/`dfl_selective_p50_input`/`dfl_selective_p70_input`/
+`dfl_shadow_result`/`dfl_overlap_result` in `run_ncf_daily_pipeline.py`,
+and the matching `DEFAULT_INPUT`/`DEFAULT_SELECTIVE_INPUTS`/`DEFAULT_OVERLAP`
+constants in `build_a2118_dfl_advisory.py` and
+`evaluate_a2118_dfl_active_date_audit.py`, now all point at these stable
+filenames. **No default filename will ever need to be manually repointed
+again** -- the refresh steps overwrite the same four files in place every
+pipeline run, so `dfl_advisory` always reads today's actual result.
+
+Runtime cost: ~45-90 seconds per variant (main/p50/p70), all four steps
+together add roughly 2-3 minutes to the daily pipeline -- registered as
+best-effort (`BEST_EFFORT_STEP_NAMES`) so a failure here (e.g. a future
+`run_a2118()` change that breaks compatibility) logs and continues rather
+than blocking `daily_status`/`promotion_gate` below it, matching this
+project's existing convention for all other shadow/diagnostic steps.
+`inflation_2022` remains panel-blind in every refresh (unchanged from the
+07-16 scope decision) -- extending it further would need the same
+`ncf_00631l.py --full-panel` backfill command with different
+`--val-start`/`--val-end` dates, not attempted here.
+
+**Verified**: ran all four refresh commands manually once (confirming
+runtime and that they reproduce sane output), regenerated the live
+advisory from the resulting stable files (`input` fields now end in
+`dfl_main_latest.json`/`dfl_selective_p50_latest.json`/
+`dfl_selective_p70_latest.json` rather than any dated filename), and
+re-ran the full test suite (`pytest tests/ -k "dfl or daily_pipeline"`,
+42/42 passing) -- two tests needed their hardcoded filename/step-order
+assertions updated (`test_build_commands_includes_refresh_ncf_and_advisory_steps`,
+`test_build_commands_can_skip_refresh_and_disable_external_features`),
+since both asserted the exact list of pipeline step names in order.
+
+The pre-existing dated snapshot files
+(`..._fixed_7win_20260714_rerun.json`,
+`..._pit2020_20260716.json`/`_20260726.json`, etc.) are left in place as
+historical record, not deleted -- they are no longer referenced as
+defaults anywhere in the code.
+
+## What was NOT done
+
+- `inflation_2022` (and 2021/2023/2024) remain panel-blind, exactly as
+  noted in the original 07-16 finding -- extending the real-panel backfill
+  further was explicitly out of that pilot's scope and remains out of
+  scope here too. Only the already-backfilled 2020 window was wired in.
+- No change to the DFL line's overall promotion status. It remains
+  shadow-only, not promoted, with a demonstrated real-crisis failure mode
+  in its non-selective configuration -- this fix makes the live report
+  honest about that, it does not resolve or improve it.
+- The user's original `decision_confidence`/`direction_confidence`
+  proposal (arXiv:2601.07852-inspired) was not built. See the session
+  index for that thread's status -- this stale-input fix was surfaced as a
+  higher-priority, independent side-finding during that investigation and
+  addressed first per the user's "需要就重跑" (rerun if needed) instruction.
+- `check_group_a_plus_daily_status.py`'s `_dfl_frozen_input_staleness()`
+  check (added 2026-07-16) reads `dfl_advisory`'s `input` field dynamically
+  rather than hardcoding filenames, so it required no code change --
+  and with the "Follow-up" automation below now regenerating the
+  tuning-window coverage every pipeline run, its calendar-gap staleness
+  measurement should stay near zero going forward instead of growing
+  unboundedly the way it did between 07-16 and 07-26.
+- `inflation_2022` and 2021/2023/2024 remain panel-blind in every refresh
+  (unchanged scope decision from 07-16) -- the automation regenerates the
+  *evaluation*, not the underlying NCF panels themselves.

@@ -45,7 +45,7 @@ class RewardConfig:
     用於配置各項獎勵權重和參數。
     """
     # 主要獎勵權重
-    capital_reward_weight: float = 100.0      # 資本回報獎勵權重
+    capital_reward_weight: float = 1.0        # 資本回報獎勵權重（日報酬率 scale）
     holding_bonus_weight: float = 0.1        # 持有獲利部位 bonus
     trade_penalty_weight: float = 0.001      # 交易懲罰
     stop_loss_penalty_weight: float = 0.05   # 停損懲罰
@@ -141,9 +141,18 @@ class RewardFunction:
         # =========================================================================
         # 1. Capital Reward（資本回報獎勵）- 主要獎勵
         # =========================================================================
-        # 計算相對於初始資本的回報率
+        # 使用日報酬率（與 v1 一致），而非相對於初始資本的累積報酬率
+        # 這樣可以避免訓練初期和後期 reward 數量級差異巨大的問題
         initial_capital = 1_000_000
-        portfolio_return = (current_metrics.portfolio_value - initial_capital) / initial_capital
+        if prev_metrics is not None and prev_metrics.portfolio_value > 0:
+            portfolio_return = (current_metrics.portfolio_value - prev_metrics.portfolio_value) / prev_metrics.portfolio_value
+        elif current_metrics.portfolio_value > 0:
+            # 第一步或 prev_metrics 無效，使用相對於初始資本的報酬率
+            portfolio_return = (current_metrics.portfolio_value - initial_capital) / initial_capital
+        else:
+            portfolio_return = 0.0
+        # clamp: 單步報酬不超過 ±10%，避免 NaN/inf 傳播（與 v1 一致）
+        portfolio_return = max(-0.10, min(0.10, portfolio_return))
         capital_reward = portfolio_return * self.config.capital_reward_weight
         details['capital_reward'] = capital_reward
         

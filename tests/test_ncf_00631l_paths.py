@@ -254,3 +254,97 @@ def test_expanding_model_weights_flag_off_matches_current_behavior() -> None:
     for name, w in clf_default["ensemble"]["weights"].items():
         assert clf_explicit_off["ensemble"]["weights"][name] == pytest.approx(w, abs=1e-6)
     assert clf_explicit_off["ensemble"]["ensemble_weight_method"] == "global"
+
+
+def test_deduplicate_correlated_features_drops_near_duplicate() -> None:
+    """2026-07-25: arXiv:2607.06117v1-style correlation de-duplication.
+    A feature perfectly correlated with an already-kept, higher-priority
+    feature must be dropped; an uncorrelated feature must survive."""
+    module = _load_ncf_00631l_module()
+    rng = np.random.default_rng(0)
+    n = 200
+    base = rng.normal(size=n)
+    X = pd.DataFrame(
+        {
+            "a": base,
+            "b": base * 2.0 + 0.001 * rng.normal(size=n),  # near-perfectly correlated with a
+            "c": rng.normal(size=n),  # independent
+        }
+    )
+    kept = module._deduplicate_correlated_features(
+        X, ["a", "b", "c"], corr_threshold=0.95, priority=["a", "b", "c"]
+    )
+    assert kept == ["a", "c"]
+
+
+def test_deduplicate_correlated_features_priority_order_picks_winner() -> None:
+    """When two features are highly correlated, the one earlier in
+    `priority` is kept regardless of `features`' own order."""
+    module = _load_ncf_00631l_module()
+    rng = np.random.default_rng(0)
+    n = 200
+    base = rng.normal(size=n)
+    X = pd.DataFrame({"a": base, "b": base * 2.0 + 0.001 * rng.normal(size=n)})
+    kept_b_wins = module._deduplicate_correlated_features(
+        X, ["a", "b"], corr_threshold=0.95, priority=["b", "a"]
+    )
+    assert kept_b_wins == ["b"]
+
+
+def test_deduplicate_correlated_features_below_threshold_keeps_both() -> None:
+    module = _load_ncf_00631l_module()
+    rng = np.random.default_rng(0)
+    n = 200
+    X = pd.DataFrame({"a": rng.normal(size=n), "b": rng.normal(size=n)})
+    kept = module._deduplicate_correlated_features(X, ["a", "b"], corr_threshold=0.95)
+    assert kept == ["a", "b"]
+
+
+def test_identify_stable_features_dedupe_correlated_flag_off_matches_current_behavior() -> None:
+    """dedupe_correlated defaults False and must not change identify_stable_features'
+    existing output at all -- same discipline as expanding_model_weights above."""
+    module = _load_ncf_00631l_module()
+    rng = np.random.default_rng(3)
+    n = 400
+    base = rng.normal(size=n)
+    X = pd.DataFrame(
+        {
+            "dup_a": base,
+            "dup_b": base * 3.0 + 0.001 * rng.normal(size=n),
+            "signal": np.concatenate([base[: n // 2], -base[n // 2 :]]) + 0.01 * rng.normal(size=n),
+            **{f"noise_{i}": rng.normal(size=n) for i in range(6)},
+        }
+    )
+    y_dir = (X["signal"] > 0).astype(int).to_numpy()
+
+    default_stable = module.identify_stable_features(X, y_dir, n_folds=3, top_k=5, min_folds=1)
+    explicit_off_stable = module.identify_stable_features(
+        X, y_dir, n_folds=3, top_k=5, min_folds=1, dedupe_correlated=False
+    )
+    assert default_stable == explicit_off_stable
+
+
+def test_identify_stable_features_dedupe_correlated_drops_redundant_pair() -> None:
+    """With dedupe_correlated=True, a near-duplicate pair that both clear
+    the stability bar collapses to one survivor."""
+    module = _load_ncf_00631l_module()
+    rng = np.random.default_rng(3)
+    n = 400
+    base = rng.normal(size=n)
+    X = pd.DataFrame(
+        {
+            "dup_a": base,
+            "dup_b": base * 3.0 + 0.001 * rng.normal(size=n),
+            "signal": np.concatenate([base[: n // 2], -base[n // 2 :]]) + 0.01 * rng.normal(size=n),
+            **{f"noise_{i}": rng.normal(size=n) for i in range(6)},
+        }
+    )
+    y_dir = (X["signal"] > 0).astype(int).to_numpy()
+
+    stable_no_dedup = module.identify_stable_features(X, y_dir, n_folds=3, top_k=5, min_folds=1)
+    stable_dedup = module.identify_stable_features(
+        X, y_dir, n_folds=3, top_k=5, min_folds=1, dedupe_correlated=True, corr_threshold=0.95
+    )
+    if "dup_a" in stable_no_dedup and "dup_b" in stable_no_dedup:
+        assert not ("dup_a" in stable_dedup and "dup_b" in stable_dedup)
+    assert len(stable_dedup) <= len(stable_no_dedup)

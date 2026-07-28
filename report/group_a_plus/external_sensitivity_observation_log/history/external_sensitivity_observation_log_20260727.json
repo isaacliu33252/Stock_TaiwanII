@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_external_sensitivity_observation_log",
+  "generated_at": "2026-07-27T23:48:09",
+  "policy": "diagnostic_only_no_strategy_change_no_weight_change",
+  "active_allocation_impact": "none",
+  "summary": {
+    "observation_count": 3,
+    "valid_observation_count": 2,
+    "stable_observation_count": 0,
+    "latest_observation_date": "2026-07-27",
+    "latest_trigger_critical_exceeded": []
+  },
+  "observations": [
+    {
+      "observation_date": "2026-07-22",
+      "sensitivity_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_no_external_vs_external_20260722.json",
+      "same_method_baseline_manifest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_same_method_baseline_manifest_20260722.json",
+      "audit_available": true,
+      "same_method_baseline_valid": true,
+      "valid_observation": true,
+      "stable_observation": false,
+      "trigger_critical": {
+        "h20_prob_up": {
+          "tier": "trigger_critical",
+          "max_abs_delta": 0.5113554732054251,
+          "max_abs_delta_date": "2025-04-02",
+          "limit": 0.15,
+          "exceeds_limit": true
+        },
+        "confidence": {
+          "tier": "trigger_critical",
+          "max_abs_delta": 0.6372621107070484,
+          "max_abs_delta_date": "2025-03-05",
+          "limit": 0.28,
+          "exceeds_limit": true
+        }
+      },
+      "diagnostic": {
+        "ensemble_prob_up": {
+          "tier": "diagnostic",
+          "max_abs_delta": 0.45321795524421554,
+          "max_abs_delta_date": "2025-01-15",
+          "limit": 0.15,
+          "exceeds_limit": true
+        }
+      },
+      "trigger_critical_exceeded": [
+        "h20_prob_up",
+        "confidence"
+      ],
+      "diagnostic_exceeded": [
+        "ensemble_prob_up"
+      ]
+    },
+    {
+      "observation_date": "2026-07-25",
+      "sensitivity_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_no_external_vs_external_20260725.json",
+      "same_method_baseline_manifest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_same_method_baseline_manifest_20260725.json",
+      "audit_available": true,
+      "same_method_baseline_valid": true,
+      "valid_observation": true,
+      "stable_observation": false,
+      "trigger_critical": {
+        "h20_prob_up": {
+          "tier": "trigger_critical",
+          "max_abs_delta": 0.5113554732054251,
+          "max_abs_delta_date": "2025-04-02",
+          "limit": 0.15,
+          "exceeds_limit": true
+        },
+        "confidence": {
+          "tier": "trigger_critical",
+          "max_abs_delta": 0.6372621107070484,
+          "max_abs_delta_date": "2025-03-05",
+          "limit": 0.28,
+          "exceeds_limit": true
+        }
+      },
+      "diagnostic": {
+        "ensemble_prob_up": {
+          "tier": "diagnostic",
+          "max_abs_delta": 0.45321795524421565,
+          "max_abs_delta_date": "2025-01-15",
+          "limit": 0.15,
+          "exceeds_limit": true
+        }
+      },
+      "trigger_critical_exceeded": [
+        "h20_prob_up",
+        "confidence"
+      ],
+      "diagnostic_exceeded": [
+        "ensemble_prob_up"
+      ]
+    },
+    {
+      "observation_date": "2026-07-27",
+      "sensitivity_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_no_external_vs_external_20260727.json",
+      "same_method_baseline_manifest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_same_method_baseline_manifest_20260727.json",
+      "audit_available": false,
+      "same_method_baseline_valid": false,
+      "valid_observation": false,
+      "stable_observation": false,
+      "trigger_critical": {
+        "h20_prob_up": {
+          "tier": "trigger_critical",
+          "max_abs_delta": 0.0,
+          "max_abs_delta_date": null,
+          "limit": 0.15,
+          "exceeds_limit": false
+        },
+        "confidence": {
+          "tier": "trigger_critical",
+          "max_abs_delta": 0.0,
+          "max_abs_delta_date": null,
+          "limit": 0.28,
+          "exceeds_limit": false
+        }
+      },
+      "diagnostic": {
+        "ensemble_prob_up": {
+          "tier": "diagnostic",
+          "max_abs_delta": 0.0,
+          "max_abs_delta_date": null,
+          "limit": 0.15,
+          "exceeds_limit": false
+        }
+      },
+      "trigger_critical_exceeded": [],
+      "diagnostic_exceeded": []
+    }
+  ],
+  "decision": {
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "training_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "promote_to_live": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

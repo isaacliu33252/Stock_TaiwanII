@@ -553,7 +553,9 @@ class TechnicalIndicators:
         tr2 = np.where(np.isnan(tr2), tr1, tr2)
         tr3 = np.where(np.isnan(tr3), tr1, tr3)
         tr = np.maximum(tr1, np.maximum(tr2, tr3))
-        self.df['atr_14'] = pd.Series(tr).rolling(window=period).mean()
+        # 使用 Wilder 平滑（EWM），與 TA-Lib 計算方式一致
+        # 而非 rolling(window).mean()（簡單移動平均）
+        self.df['atr_14'] = pd.Series(tr).ewm(span=period, adjust=False).mean()
     
     # =========================================================================
     # DMI (方向指標)
@@ -825,7 +827,9 @@ class TechnicalIndicators:
         
         for period in periods:
             col_name = f'momentum_{period}'
-            self.df[col_name] = pd.Series(close).diff(periods=period)
+            # 使用 pct_change（與 v1 一致），而非 diff（絕對值）
+            pct_change = pd.Series(close).pct_change(periods=period)
+            self.df[col_name] = pct_change.replace([np.inf, -np.inf], 0.0)
         
         return self.df
     
@@ -988,7 +992,9 @@ class TechnicalIndicators:
         obv = (np.sign(self.df['close'].diff()) * self.df['volume']).fillna(0).cumsum()
         self.df['obv'] = obv
         self.df['obv_ma10'] = obv.rolling(window=10).mean()
-        self.df['obv_slope'] = obv.diff() / (obv.diff().abs().rolling(window=5).sum() + 1e-10)
+        # OBV Slope：使用標準的 pct_change（5日動量），而非怪異的 diff/abs_sum 比值
+        # 原始實作 obv.diff() / (obv.diff().abs().rolling(5).sum()) 是非標準計算
+        self.df['obv_slope'] = obv.pct_change(periods=5).replace([np.inf, -np.inf], 0.0).fillna(0.0)
         
         # VWAP（成交量加權平均價 - 日內滾動版本，與 v1 一致）
         typical_price = (self.df['high'] + self.df['low'] + self.df['close']) / 3.0

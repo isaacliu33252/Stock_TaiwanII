@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_synthetic_augmentation_validation_audit",
+  "generated_at": "2026-07-26T01:52:27",
+  "policy": "research_only_size_matched_null_block_permutation_no_weight_change",
+  "status": "passed",
+  "as_of": "2026-07-25",
+  "panel_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_panel_latest_20260725.csv",
+  "panel_coverage": {
+    "start": "2025-01-02",
+    "end": "2026-06-26",
+    "row_count": 357
+  },
+  "method": {
+    "size_matched_null_augmentation_implemented": true,
+    "block_permutation_test_implemented": true,
+    "walk_forward_oos_panel_used": true,
+    "n_permutations_requested": 500,
+    "block_size": 5,
+    "seed": 260414498,
+    "note": "Scores are tested against block-shuffled same-size null scores on OOS panel rows."
+  },
+  "tasks": [
+    {
+      "task": "directional_up_ensemble",
+      "score_column": "ensemble_prob_up",
+      "label_column": "actual_up_h20",
+      "sample_size": 357,
+      "positive_rate": 0.7619047619047619,
+      "metric": "average_precision",
+      "observed": 0.8364267037579292,
+      "size_matched_null_mean": 0.7698527357518123,
+      "size_matched_null_p95": 0.8356611615523037,
+      "lift_vs_null_mean": 0.06657396800611681,
+      "block_permutation_p_value": 0.04790419161676647,
+      "n_permutations": 500,
+      "block_size": 5,
+      "passed": true
+    },
+    {
+      "task": "rare_gain_h20",
+      "score_column": "prob_fwd_gain_gt5_h20",
+      "label_column": "actual_fwd_gain_gt5_h20",
+      "sample_size": 357,
+      "positive_rate": 0.7815126050420168,
+      "metric": "average_precision",
+      "observed": 0.8587891143453713,
+      "size_matched_null_mean": 0.7885529018023526,
+      "size_matched_null_p95": 0.8542666301844767,
+      "lift_vs_null_mean": 0.0702362125430187,
+      "block_permutation_p_value": 0.03792415169660679,
+      "n_permutations": 500,
+      "block_size": 5,
+      "passed": true
+    },
+    {
+      "task": "rare_mdd_h20",
+      "score_column": "prob_fwd_mdd_gt5_h20",
+      "label_column": "actual_fwd_mdd_gt5_h20",
+      "sample_size": 357,
+      "positive_rate": 0.39775910364145656,
+      "metric": "average_precision",
+      "observed": 0.5875121874485978,
+      "size_matched_null_mean": 0.4120319856267948,
+      "size_matched_null_p95": 0.4938147453848646,
+      "lift_vs_null_mean": 0.17548020182180296,
+      "block_permutation_p_value": 0.001996007984031936,
+      "n_permutations": 500,
+      "block_size": 5,
+      "passed": true
+    }
+  ],
+  "summary": {
+    "task_count": 3,
+    "passed_task_count": 3,
+    "passed_tasks": [
+      "directional_up_ensemble",
+      "rare_gain_h20",
+      "rare_mdd_h20"
+    ],
+    "validation_passed": true,
+    "rare_validation_passed": true,
+    "directional_validation_passed": true,
+    "directional_synthetic_alpha_tested": true,
+    "directional_synthetic_alpha_reason": "directional label tested against block-shuffled size-matched null"
+  },
+  "decision": {
+    "synthetic_validation_passed": true,
+    "directional_synthetic_alpha_allowed": true,
+    "synthetic_generator_promotion_allowed": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

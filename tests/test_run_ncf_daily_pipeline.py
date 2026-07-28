@@ -4,6 +4,7 @@ import argparse
 import importlib.util
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import duckdb
@@ -78,6 +79,19 @@ def test_daily_pipeline_blocks_golden1_0531_release_output_target() -> None:
         module._assert_no_protected_golden1_output_targets(commands)
 
 
+def test_parse_args_dfl_defaults_use_stable_latest_files(monkeypatch: pytest.MonkeyPatch) -> None:
+    module = _load_module()
+    monkeypatch.setattr(sys, "argv", ["run_ncf_daily_pipeline.py"])
+
+    args = module.parse_args()
+
+    assert args.dfl_shadow_result == "results/a2118_decision_focused_action_shadow_dfl_main_latest.json"
+    assert args.dfl_advisory_input == "results/a2118_decision_focused_action_shadow_dfl_main_latest.json"
+    assert args.dfl_selective_p50_input == "results/a2118_decision_focused_action_shadow_dfl_selective_p50_latest.json"
+    assert args.dfl_selective_p70_input == "results/a2118_decision_focused_action_shadow_dfl_selective_p70_latest.json"
+    assert args.dfl_overlap_result == "results/a2118_decision_focused_action_overlap_dfl_latest.json"
+
+
 def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     module = _load_module()
     args = _command_args()
@@ -112,6 +126,9 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "ncf_panel_drift_diagnosis",
         "panel_drift_triage",
         "ncf_panel_drift_remediation_plan_initial",
+        "ncf_panel_drift_no_tabnet_baseline_vs_today",
+        "ncf_panel_drift_model_set_isolation_report",
+        "ncf_panel_same_method_baseline_manifest",
         "external_sensitivity_observation_log",
         "ncf_panel_external_feature_sensitivity_governance",
         "ncf_panel_drift_remediation_plan",
@@ -157,7 +174,11 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "gift_manual_approval_readiness",
         "gift_pdf_advantage_coverage_review",
         "research_shadow_decision_snapshot",
+        "dfl_shadow_refresh_main",
+        "dfl_shadow_refresh_p50",
+        "dfl_shadow_refresh_p70",
         "dfl_advisory",
+        "dfl_shadow_refresh_overlap",
         "dfl_active_date_audit",
         "dfl_shadow_ensemble",
         "daily_status",
@@ -558,6 +579,60 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         item.endswith("results/ncf_panel_drift_remediation_plan_initial_20260627.json")
         for item in commands["ncf_panel_drift_remediation_plan_initial"]
     )
+    assert commands["ncf_panel_drift_no_tabnet_baseline_vs_today"][1] == (
+        "scripts/evaluate/evaluate_ncf_panel_drift.py"
+    )
+    assert commands["ncf_panel_drift_no_tabnet_baseline_vs_today"][
+        commands["ncf_panel_drift_no_tabnet_baseline_vs_today"].index("--baseline-panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260630_no_tabnet.csv")
+    assert commands["ncf_panel_drift_no_tabnet_baseline_vs_today"][
+        commands["ncf_panel_drift_no_tabnet_baseline_vs_today"].index("--candidate-panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260627.csv")
+    assert commands["ncf_panel_drift_no_tabnet_baseline_vs_today"][
+        commands["ncf_panel_drift_no_tabnet_baseline_vs_today"].index("--output") + 1
+    ].endswith("results/ncf_panel_drift_no_tabnet_baseline_vs_20260627.json")
+    assert commands["ncf_panel_drift_model_set_isolation_report"][1] == (
+        "scripts/evaluate/build_ncf_panel_drift_model_set_isolation_report.py"
+    )
+    assert commands["ncf_panel_drift_model_set_isolation_report"][
+        commands["ncf_panel_drift_model_set_isolation_report"].index("--original-vs-today") + 1
+    ].endswith("results/ncf_panel_drift_active_vs_20260627.json")
+    assert commands["ncf_panel_drift_model_set_isolation_report"][
+        commands["ncf_panel_drift_model_set_isolation_report"].index("--original-vs-no-tabnet") + 1
+    ].endswith("results/ncf_panel_drift_tabnet_vs_no_tabnet_20260630.json")
+    assert commands["ncf_panel_drift_model_set_isolation_report"][
+        commands["ncf_panel_drift_model_set_isolation_report"].index("--no-tabnet-vs-today") + 1
+    ].endswith("results/ncf_panel_drift_no_tabnet_baseline_vs_20260627.json")
+    assert commands["ncf_panel_same_method_baseline_manifest"][1] == (
+        "scripts/evaluate/build_ncf_panel_same_method_baseline_manifest.py"
+    )
+    assert commands["ncf_panel_same_method_baseline_manifest"][
+        commands["ncf_panel_same_method_baseline_manifest"].index("--original-baseline-panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260630.csv")
+    assert commands["ncf_panel_same_method_baseline_manifest"][
+        commands["ncf_panel_same_method_baseline_manifest"].index("--same-method-baseline-panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260630_no_tabnet.csv")
+    assert commands["ncf_panel_same_method_baseline_manifest"][
+        commands["ncf_panel_same_method_baseline_manifest"].index("--same-method-baseline-signal") + 1
+    ].endswith("results/ncf_00631l_latest_20260630_no_tabnet.json")
+    assert commands["ncf_panel_same_method_baseline_manifest"][
+        commands["ncf_panel_same_method_baseline_manifest"].index("--validation-drift-audit") + 1
+    ].endswith("results/ncf_panel_drift_no_tabnet_baseline_vs_20260627.json")
+    assert commands["ncf_panel_same_method_baseline_manifest"][
+        commands["ncf_panel_same_method_baseline_manifest"].index("--isolation-report") + 1
+    ].endswith("results/ncf_panel_drift_model_set_isolation_report_20260627.json")
+    assert commands["ncf_panel_same_method_baseline_manifest"][
+        commands["ncf_panel_same_method_baseline_manifest"].index("--output") + 1
+    ].endswith("results/ncf_panel_same_method_baseline_manifest_20260627.json")
+    for best_effort_name in (
+        "ncf_panel_drift_no_tabnet_baseline_vs_today",
+        "ncf_panel_drift_model_set_isolation_report",
+        "ncf_panel_same_method_baseline_manifest",
+        "ncf_panel_external_feature_sensitivity_governance",
+        "ncf_panel_drift_remediation_plan",
+        "panel_drift_resolution_progress",
+    ):
+        assert best_effort_name in module.BEST_EFFORT_STEP_NAMES
     assert commands["external_sensitivity_observation_log"][1] == (
         "scripts/evaluate/build_group_a_plus_external_sensitivity_observation_log.py"
     )
@@ -619,12 +694,12 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert commands["dfl_advisory"][1] == "scripts/run/build_a2118_dfl_advisory.py"
     assert "--input" in commands["dfl_advisory"]
     assert commands["dfl_advisory"][commands["dfl_advisory"].index("--input") + 1].endswith(
-        "results/a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json"
+        "results/a2118_decision_focused_action_shadow_dfl_main_latest.json"
     )
     assert "--selective-inputs" in commands["dfl_advisory"]
     selective_inputs = commands["dfl_advisory"][commands["dfl_advisory"].index("--selective-inputs") + 1]
-    assert "p50=results/a2118_decision_focused_action_shadow_selective_p50_7win_20260714.json" in selective_inputs
-    assert "p70=results/a2118_decision_focused_action_shadow_selective_p70_7win_20260714.json" in selective_inputs
+    assert "p50=results/a2118_decision_focused_action_shadow_dfl_selective_p50_latest.json" in selective_inputs
+    assert "p70=results/a2118_decision_focused_action_shadow_dfl_selective_p70_latest.json" in selective_inputs
     assert "--live-signal" in commands["dfl_advisory"]
     assert commands["dfl_advisory"][commands["dfl_advisory"].index("--live-signal") + 1].endswith(
         "results/group_a_plus_live_signal_v2_20260627.json"
@@ -632,7 +707,7 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert commands["dfl_active_date_audit"][1] == "scripts/evaluate/evaluate_a2118_dfl_active_date_audit.py"
     assert "--input" in commands["dfl_active_date_audit"]
     assert commands["dfl_active_date_audit"][commands["dfl_active_date_audit"].index("--input") + 1].endswith(
-        "results/a2118_decision_focused_action_shadow_fixed_7win_20260714_rerun.json"
+        "results/a2118_decision_focused_action_shadow_dfl_main_latest.json"
     )
     assert any(
         item.endswith("results/a2118_dfl_active_date_audit_20260627.json")
@@ -828,6 +903,9 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
         "ncf_panel_drift_diagnosis",
         "panel_drift_triage",
         "ncf_panel_drift_remediation_plan_initial",
+        "ncf_panel_drift_no_tabnet_baseline_vs_today",
+        "ncf_panel_drift_model_set_isolation_report",
+        "ncf_panel_same_method_baseline_manifest",
         "external_sensitivity_observation_log",
         "ncf_panel_external_feature_sensitivity_governance",
         "ncf_panel_drift_remediation_plan",
@@ -873,7 +951,11 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
             "gift_manual_approval_readiness",
             "gift_pdf_advantage_coverage_review",
             "research_shadow_decision_snapshot",
+        "dfl_shadow_refresh_main",
+        "dfl_shadow_refresh_p50",
+        "dfl_shadow_refresh_p70",
         "dfl_advisory",
+        "dfl_shadow_refresh_overlap",
         "dfl_active_date_audit",
         "dfl_shadow_ensemble",
         "daily_status",

@@ -20,12 +20,20 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 
-DEFAULT_INPUT = PROJECT_ROOT / "results" / "a2118_decision_focused_action_shadow_stateful_panelgate_edge0005_adj75_7win_20260714.json"
+# 2026-07-26: repointed to STABLE filenames that `run_ncf_daily_pipeline.py`'s
+# "dfl_shadow_refresh_*" steps now regenerate every run (see
+# GROUP_A_PLUS_DFL_ADVISORY_STALE_INPUT_FIX_20260726.md). Previously
+# pointed at one-off dated snapshot files (e.g. "..._20260714_rerun.json")
+# that nobody ever repointed after later corrections -- for 10 days a live
+# report kept re-asserting a disproven "7/7 triple_pass" claim. Using
+# stable, always-refreshed filenames instead of dated ones removes the
+# whole failure class rather than fixing one instance of it.
+DEFAULT_INPUT = PROJECT_ROOT / "results" / "a2118_decision_focused_action_shadow_dfl_main_latest.json"
 DEFAULT_LIVE_SIGNAL = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "live_signal.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "a2118_dfl_advisory.json"
 DEFAULT_SELECTIVE_INPUTS = (
-    "p50=results/a2118_decision_focused_action_shadow_selective_p50_7win_20260714.json,"
-    "p70=results/a2118_decision_focused_action_shadow_selective_p70_7win_20260714.json"
+    "p50=results/a2118_decision_focused_action_shadow_dfl_selective_p50_latest.json,"
+    "p70=results/a2118_decision_focused_action_shadow_dfl_selective_p70_latest.json"
 )
 
 

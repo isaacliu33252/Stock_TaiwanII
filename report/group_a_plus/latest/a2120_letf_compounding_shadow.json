@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "report_type": "a2120_letf_compounding_daily_shadow",
-  "generated_at": "2026-07-21T14:37:32+00:00",
-  "date_stamp": "20260721",
+  "generated_at": "2026-07-27T23:13:27+00:00",
+  "date_stamp": "20260727",
   "research_only": true,
   "production_effect": "none",
   "candidate": {
@@ -16,31 +16,28 @@
     "reversal_speed_trend_max": 0.5
   },
   "daily_state": {
-    "date": "2026-07-21",
-    "compounding_regime": "TRANSITIONAL",
-    "raw_action": "MAINTAIN",
+    "date": "2026-07-27",
+    "compounding_regime": "TREND_PERSISTENT",
+    "raw_action": "FAST_REENTER_CANDIDATE",
     "recommended_action": "BLOCKED_BY_HARD_GUARD",
     "hard_blockers": [
-      "compounding regime date does not align with execution_plan actual_data_date: 2026-07-21 != 2026-07-17",
-      "turnover ratio 50.06% exceeds automatic limit 50.00%",
-      "blocked pre-trade guard: volatility_gate_no_00631l_add",
-      "blocked pre-trade guard: compounding_regime_no_00631l_add"
+      "compounding regime date does not align with execution_plan actual_data_date: 2026-07-27 != 2026-07-24"
     ],
-    "shadow_target_00631l_before_hard_guards": 668,
-    "turnover50_target_00631l": 668,
-    "turnover50_ratio": 0.49998554362182457,
+    "shadow_target_00631l_before_hard_guards": 8571,
+    "turnover50_target_00631l": 8571,
+    "turnover50_ratio": 0.34698896388935824,
     "combined_action": "BLOCKED_BY_HARD_GUARD"
   },
   "risk_sensitive_variant": {
     "name": "ce20_negative_to_trend90",
-    "raw_action": "MAINTAIN",
+    "raw_action": "FAST_REENTER_CANDIDATE",
     "recommended_action": "BLOCKED_BY_HARD_GUARD",
     "weak_trend_edge_gate": "ce20_negative",
-    "weak_trend_edge_active": false,
-    "allowed_fraction_for_regime": 0.4,
-    "shadow_target_00631l_before_hard_guards": 668,
-    "turnover50_target_00631l": 668,
-    "turnover50_ratio": 0.49998554362182457
+    "weak_trend_edge_active": true,
+    "allowed_fraction_for_regime": 0.9,
+    "shadow_target_00631l_before_hard_guards": 7782,
+    "turnover50_target_00631l": 7782,
+    "turnover50_ratio": 0.32857872670330956
   },
   "scorecard_decision": {
     "shadow_gate": "pass",
@@ -57,13 +54,13 @@
     ]
   },
   "artifacts": {
-    "diagnostic": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_tunedtrend_score3_ar0_persist50_rev50_20260721.json",
-    "diagnostic_csv": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_tunedtrend_score3_ar0_persist50_rev50_20260721.csv",
-    "execution_replay": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_compounding_execution_replay_shadow_tunedtrend_score3_ar0_persist50_rev50_20260721.json",
-    "risk_sensitive_execution_replay": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_compounding_execution_replay_shadow_tunedtrend_score3_ar0_persist50_rev50_ce20neg_to_trend90_20260721.json",
-    "turnover_capped_replay": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/turnover_capped_execution_shadow_20260721_tunedtrend_00631l668_risk_first.json",
-    "risk_sensitive_turnover_capped_replay": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/turnover_capped_execution_shadow_20260721_tunedtrend_ce20neg90_00631l668_risk_first.json",
-    "scorecard": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/shadow/a2120_letf_compounding_shadow_scorecard_20260721.json",
-    "combined_policy": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/shadow/a2119_a2120_combined_policy_shadow_20260721.json"
+    "diagnostic": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_tunedtrend_score3_ar0_persist50_rev50_20260727.json",
+    "diagnostic_csv": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_tunedtrend_score3_ar0_persist50_rev50_20260727.csv",
+    "execution_replay": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_compounding_execution_replay_shadow_tunedtrend_score3_ar0_persist50_rev50_20260727.json",
+    "risk_sensitive_execution_replay": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_compounding_execution_replay_shadow_tunedtrend_score3_ar0_persist50_rev50_ce20neg_to_trend90_20260727.json",
+    "turnover_capped_replay": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/turnover_capped_execution_shadow_20260727_tunedtrend_00631l8571_risk_first.json",
+    "risk_sensitive_turnover_capped_replay": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/turnover_capped_execution_shadow_20260727_tunedtrend_ce20neg90_00631l7782_risk_first.json",
+    "scorecard": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/shadow/a2120_letf_compounding_shadow_scorecard_20260727.json",
+    "combined_policy": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/shadow/a2119_a2120_combined_policy_shadow_20260727.json"
   }
 }
