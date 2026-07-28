@@ -6,6 +6,14 @@ FinRL (Financial Reinforcement Learning) 台股量化交易系統
 
 這個系統基於深度強化學習技術，專為台灣股票市場設計。
 
+Fable audit (2026-07-28, #8): 這個v2樹和上層的FinRL/(v1)是各自獨立演化、彼此
+不共用程式碼的兩套RL-agent實作，不是「v2取代v1」的棄用關係。目前唯一真正被
+production工具消費的部分是 FinRL.v2.backtesting.performance_metrics（被
+backtest_group_a_plus_switch_policy.py 拿來做baseline/candidate指標對帳）；
+v2的agents/environments/data本身仍是獨立的RL實驗管線，沒有被GroupA+的即時
+決策路徑(group_a_plus/*)引用。如果只是在處理GroupA+策略邏輯，不需要同步維護
+這一整棵樹。
+
 主要功能：
     - 資料層：數據取得、技術指標計算、數據庫管理
     - 環境層：Gym-style 交易環境、動作空間、獎勵函數

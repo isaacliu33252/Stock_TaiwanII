@@ -162,7 +162,22 @@ def _ops_health_payload(
     pipeline_status="ok",
     external_status="ok",
     execution_plan_freshness=None,
+    external_error_tickers=None,
+    external_ticker_errors=None,
 ) -> dict:
+    if external_error_tickers is not None or external_ticker_errors is not None:
+        # Real collect_external_data_freshness() shape for a readable report
+        # with overall_status=="error": it never sets "errors", only
+        # "error_tickers"/"external_error_tickers" (see ops_health.py
+        # collect_external_data_freshness). Callers that care about the
+        # rendered alert text (not just alert presence) should use this shape.
+        external_data_freshness = {
+            "status": external_status,
+            "error_tickers": list(external_ticker_errors or []),
+            "external_error_tickers": list(external_error_tickers or []),
+        }
+    else:
+        external_data_freshness = {"status": external_status, "errors": ["ohlcv_freshness_report_unreadable"]}
     return {
         "success": True,
         "data": {
@@ -173,7 +188,7 @@ def _ops_health_payload(
                 "execution_plan_freshness": execution_plan_freshness or {"status": "fresh", "lag_days": 1.0},
             },
             "pipeline_health": {"status": pipeline_status, "errors": ["pipeline_manifest_unreadable"]},
-            "external_data_freshness": {"status": external_status, "errors": ["ohlcv_freshness_report_unreadable"]},
+            "external_data_freshness": external_data_freshness,
         },
     }
 
@@ -200,6 +215,39 @@ def test_ops_health_artifact_pipeline_external_errors_are_surfaced() -> None:
     types = {alert["type"] for alert in alerts}
     assert types == {"ops_health_artifact_missing", "ops_health_pipeline", "ops_health_external_data"}
     assert all(alert["level"] == "high" for alert in alerts)
+
+
+def test_ops_health_external_error_tickers_are_named_in_reason() -> None:
+    # 2026-07-28 Fable audit: with only error_tickers/external_error_tickers
+    # populated (the real producer shape, see collect_external_data_freshness
+    # in ops_health.py), the old fallback rendered an empty ticker list and
+    # the alert reason came out as "External data freshness error(s): .".
+    alerts = _ops_health_error_alerts(
+        _ops_health_payload(
+            external_status="error",
+            external_error_tickers=["^GSPC", "^TNX", "^IRX", "GC=F"],
+        )
+    )
+    external_alerts = [a for a in alerts if a["type"] == "ops_health_external_data"]
+    assert len(external_alerts) == 1
+    reason = external_alerts[0]["reason"]
+    for ticker in ("^GSPC", "^TNX", "^IRX", "GC=F"):
+        assert ticker in reason
+
+
+def test_ops_health_external_error_tickers_combine_with_error_tickers() -> None:
+    alerts = _ops_health_error_alerts(
+        _ops_health_payload(
+            external_status="error",
+            external_ticker_errors=["2330.TW"],
+            external_error_tickers=["^GSPC"],
+        )
+    )
+    external_alerts = [a for a in alerts if a["type"] == "ops_health_external_data"]
+    assert len(external_alerts) == 1
+    reason = external_alerts[0]["reason"]
+    assert "2330.TW" in reason
+    assert "^GSPC" in reason
 
 
 def test_execution_plan_lag_under_a_week_is_medium() -> None:

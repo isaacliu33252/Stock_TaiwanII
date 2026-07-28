@@ -361,6 +361,68 @@ def build_catalog(
                 "outputs": ["json", "frame_csv"],
             },
             {
+                "id": "a2110_runner",
+                # Fable audit (2026-07-28, #5): not in SUPPORTED_STRATEGIES,
+                # not in _LEGACY_COVERED_MODULES, and not referenced by any
+                # other module in the repo -- an orphaned candidate runner
+                # left on disk with no catalog record of its status.
+                "kind": "archived",
+                "script": "group_a_plus_a2110_runner.py",
+                "module": "group_a_plus.runners.a2110",
+                "description": "A21.10 semi-defensive intermediate allocation research runner (Direction C, superseded).",
+                "command_template": (
+                    "python3 group_a_plus_a2110_runner.py --start {start} --end {end} "
+                    "--output results/group_a_plus_runner_a2110_{label}.json "
+                    "--frame-output results/group_a_plus_runner_a2110_{label}_frame.csv"
+                ),
+                "module_command_template": (
+                    "python3 -m group_a_plus.runners.a2110 --start {start} --end {end} "
+                    "--output results/group_a_plus_runner_a2110_{label}.json "
+                    "--frame-output results/group_a_plus_runner_a2110_{label}_frame.csv"
+                ),
+                "outputs": ["json", "frame_csv"],
+            },
+            {
+                "id": "a218_runner",
+                # Fable audit (2026-07-28, #5): same orphan pattern as a2110
+                # above -- absent from every governance list, unreferenced.
+                "kind": "archived",
+                "script": "group_a_plus_a218_runner.py",
+                "module": "group_a_plus.runners.a218",
+                "description": "A21.8 risk-override entry research runner (superseded).",
+                "command_template": (
+                    "python3 group_a_plus_a218_runner.py --start {start} --end {end} "
+                    "--output results/group_a_plus_runner_a218_{label}.json "
+                    "--frame-output results/group_a_plus_runner_a218_{label}_frame.csv"
+                ),
+                "module_command_template": (
+                    "python3 -m group_a_plus.runners.a218 --start {start} --end {end} "
+                    "--output results/group_a_plus_runner_a218_{label}.json "
+                    "--frame-output results/group_a_plus_runner_a218_{label}_frame.csv"
+                ),
+                "outputs": ["json", "frame_csv"],
+            },
+            {
+                "id": "a219_runner",
+                # Fable audit (2026-07-28, #5): same orphan pattern as a2110
+                # above -- absent from every governance list, unreferenced.
+                "kind": "archived",
+                "script": "group_a_plus_a219_runner.py",
+                "module": "group_a_plus.runners.a219",
+                "description": "A21.9 low-risk fast-exit research runner (Direction B, superseded).",
+                "command_template": (
+                    "python3 group_a_plus_a219_runner.py --start {start} --end {end} "
+                    "--output results/group_a_plus_runner_a219_{label}.json "
+                    "--frame-output results/group_a_plus_runner_a219_{label}_frame.csv"
+                ),
+                "module_command_template": (
+                    "python3 -m group_a_plus.runners.a219 --start {start} --end {end} "
+                    "--output results/group_a_plus_runner_a219_{label}.json "
+                    "--frame-output results/group_a_plus_runner_a219_{label}_frame.csv"
+                ),
+                "outputs": ["json", "frame_csv"],
+            },
+            {
                 "id": "latest_runner",
                 "kind": "active_dispatcher",
                 "script": "group_a_plus_latest_runner.py",

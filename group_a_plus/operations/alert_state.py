@@ -312,7 +312,21 @@ def _ops_health_error_alerts(ops_health_payload: dict[str, Any]) -> list[dict[st
 
     external_freshness = data.get("external_data_freshness") or {}
     if external_freshness.get("status") == "error":
-        errors = external_freshness.get("errors") or external_freshness.get("error_tickers") or []
+        # 2026-07-28 Fable audit: collect_external_data_freshness()'s normal
+        # error branch (payload readable, overall_status=="error") never sets
+        # "errors" -- it only sets "error_tickers"/"external_error_tickers".
+        # The old `errors or error_tickers or []` fallback missed
+        # external_error_tickers entirely, so this alert's reason rendered as
+        # an empty string while the real outage (e.g. ^GSPC/^TNX/^IRX/GC=F)
+        # went unnamed for days. Combine all three so any producer shape
+        # surfaces a ticker list.
+        errors = (
+            external_freshness.get("errors")
+            or [
+                *external_freshness.get("error_tickers", []),
+                *external_freshness.get("external_error_tickers", []),
+            ]
+        )
         alerts.append(
             {
                 "type": "ops_health_external_data",

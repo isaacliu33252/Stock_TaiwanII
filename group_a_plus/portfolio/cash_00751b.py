@@ -5,7 +5,9 @@ from __future__ import annotations
 import argparse
 import json
 import math
-from datetime import datetime
+import re
+import sys
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +20,7 @@ from group_a_plus.paths import PROJECT_ROOT
 
 
 DEFAULT_WORKBOOK = PROJECT_ROOT / "taiwan_stock_20260619.xlsx"
+WORKBOOK_MAX_AGE_DAYS = 30
 
 HEADER_TO_TICKER = {
     "0050": "0050.TW",
@@ -38,6 +41,33 @@ def _extract_code(value: Any) -> str | None:
         if code in text:
             return code
     return None
+
+
+def workbook_snapshot_date(workbook_path: Path) -> date | None:
+    """Best-effort holdings-snapshot date parsed from a `..._YYYYMMDD.xlsx` filename.
+
+    Fable audit (2026-07-28, #7): DEFAULT_WORKBOOK is a hardcoded snapshot
+    filename with no staleness check anywhere -- a caller who forgets
+    `--workbook` silently compares against whatever holdings existed on that
+    one date, with no warning.
+    """
+    match = re.search(r"(20\d{2})(\d{2})(\d{2})", workbook_path.stem)
+    if not match:
+        return None
+    try:
+        return date(int(match.group(1)), int(match.group(2)), int(match.group(3)))
+    except ValueError:
+        return None
+
+
+def workbook_snapshot_is_stale(
+    workbook_path: Path, *, today: date | None = None, max_age_days: int = WORKBOOK_MAX_AGE_DAYS
+) -> bool:
+    snapshot_date = workbook_snapshot_date(workbook_path)
+    if snapshot_date is None:
+        return True
+    today = today or date.today()
+    return (today - snapshot_date).days > max_age_days
 
 
 def read_group_a_plus_plus_holdings(workbook_path: Path) -> dict[str, float]:
@@ -216,7 +246,16 @@ def main() -> None:
     parser.add_argument("--output-prefix", default="results/group_a_plus_plus_00751b_cash_20260619")
     parser.add_argument("--workbook-output", default="taiwan_stock_20260619_groupA++_00751B_eval.xlsx")
     args = parser.parse_args()
-    report, curves = evaluate(Path(args.workbook), Path(args.db), args.start, args.end)
+    workbook_path = Path(args.workbook)
+    if workbook_snapshot_is_stale(workbook_path):
+        snapshot_date = workbook_snapshot_date(workbook_path)
+        age_note = f"snapshot_date={snapshot_date}" if snapshot_date else "snapshot_date=unknown (no YYYYMMDD in filename)"
+        print(
+            f"WARNING: {workbook_path.name} holdings snapshot looks stale ({age_note}, "
+            f"max_age_days={WORKBOOK_MAX_AGE_DAYS}). Pass a fresher --workbook if one exists.",
+            file=sys.stderr,
+        )
+    report, curves = evaluate(workbook_path, Path(args.db), args.start, args.end)
     prefix = Path(args.output_prefix)
     prefix.parent.mkdir(parents=True, exist_ok=True)
     json_path = prefix.with_suffix(".json")

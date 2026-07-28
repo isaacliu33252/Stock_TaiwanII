@@ -125,6 +125,7 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "recovery_boost_spillover_gate_shadow_log",
         "trough_override_eligibility_shadow_log",
         "cvar_tail_risk_diagnostic",
+        "network_volatility_spillover_shadow",
         "option_state_coverage_review",
         "adversarial_market_integrity_review",
         "sciphyrl_readiness_review",
@@ -192,6 +193,13 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "scripts/run/build_group_a_plus_cvar_tail_risk_diagnostic_snapshot.py"
     )
     assert "cvar_tail_risk_diagnostic" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["network_volatility_spillover_shadow"][1] == (
+        "scripts/evaluate/build_group_a_plus_network_volatility_spillover_shadow.py"
+    )
+    assert commands["network_volatility_spillover_shadow"][
+        commands["network_volatility_spillover_shadow"].index("--end") + 1
+    ] == "2026-06-27"
+    assert "network_volatility_spillover_shadow" in module.BEST_EFFORT_STEP_NAMES
     assert commands["option_state_coverage_review"][1] == (
         "scripts/evaluate/build_group_a_plus_option_state_coverage_review.py"
     )
@@ -841,6 +849,7 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
         "recovery_boost_spillover_gate_shadow_log",
         "trough_override_eligibility_shadow_log",
         "cvar_tail_risk_diagnostic",
+        "network_volatility_spillover_shadow",
         "option_state_coverage_review",
         "adversarial_market_integrity_review",
         "sciphyrl_readiness_review",

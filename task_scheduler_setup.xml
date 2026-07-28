@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-16"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
     <Description>台股每日盤後 NCF 訊號流程 - 23:00 自動執行</Description>
@@ -26,6 +26,10 @@
     <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
     <Enabled>true</Enabled>
     <RunOnlyIfNetworkAvailable>true</RunOnlyIfNetworkAvailable>
+    <!-- Fable audit (2026-07-28, #4): without this, a missed 23:00 trigger
+         (machine off/asleep/logged out) silently skips the whole day's
+         download+train+signal run with no catch-up and no notification. -->
+    <StartWhenAvailable>true</StartWhenAvailable>
   </Settings>
   <Actions>
     <Exec>

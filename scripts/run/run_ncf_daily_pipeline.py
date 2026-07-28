@@ -125,6 +125,16 @@ BEST_EFFORT_STEP_NAMES = frozenset(
         # never changes target weights; a failure here must never block
         # anything downstream.
         "cvar_tail_risk_diagnostic",
+        # Fable audit (2026-07-28, #3): this shadow snapshot
+        # (results/group_a_plus_network_vol_spillover_shadow_latest.json,
+        # read by alert_state.py's _network_spillover_alerts) was never
+        # scheduled anywhere -- same "shadow script never wired into
+        # automation" pattern as the three modules above, just missed at the
+        # time. It had gone stale for 17 days, which is exactly what was
+        # driving the network_spillover_snapshot_stale alert. Pure diagnostic
+        # (research_only, production_effect=none); a failure here must never
+        # block anything downstream.
+        "network_volatility_spillover_shadow",
         # Deep-hedging overlay review (2026-07-17): option-state coverage is
         # a governance/data-readiness check for TXO/SOXX option features.
         # It only writes a latest JSON report and never changes live target
@@ -857,6 +867,12 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
     commands["cvar_tail_risk_diagnostic"] = [
         sys.executable,
         "scripts/run/build_group_a_plus_cvar_tail_risk_diagnostic_snapshot.py",
+    ]
+    commands["network_volatility_spillover_shadow"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_network_volatility_spillover_shadow.py",
+        "--end",
+        as_of,
     ]
     commands["option_state_coverage_review"] = [
         sys.executable,
