@@ -2,7 +2,7 @@
   "schema_version": 1,
   "report_type": "group_a_plus_market_impact_readiness_review",
   "status": "blocked",
-  "generated_at": "2026-07-28T07:14:18",
+  "generated_at": "2026-08-06T03:02:12",
   "policy": "research_pretrade_readiness_only_no_weight_change",
   "as_of": "2026-07-20",
   "source_paper": {
@@ -29,60 +29,61 @@
     "cost_model_required_before_live": "quadratic_or_square_root_impact_calibrated_to_taiwan_etf_liquidity"
   },
   "computed": {
-    "execution_plan_actual_data_date": "2026-07-24",
+    "execution_plan_actual_data_date": "2026-08-05",
     "live_actual_data_date": "2026-07-17",
     "execution_plan_stale_vs_live": true,
-    "current_total_assets": 1435695.7888641357,
-    "total_trade_notional": 339548.09423828125,
-    "turnover": 0.2365042071391168,
-    "max_participation_of_volume": 0.0003024193548387097,
+    "current_total_assets": 272649.6044769287,
+    "total_trade_notional": 220375.00261878967,
+    "turnover": 0.808271858826179,
+    "max_participation_of_volume": 0.00010568814438590073,
     "trade_count_nonzero": 3,
     "trade_rows": [
       {
         "ticker": "0050.TW",
-        "current_shares": 3274,
-        "target_shares": 4787,
-        "delta_shares": 1513,
-        "price": 101.69999694824219,
-        "trade_notional": 153872.09538269043,
-        "latest_volume": 94377095.0,
-        "participation_of_volume": 1.603143220290898e-05
+        "current_shares": 1342,
+        "target_shares": 788,
+        "delta_shares": -554,
+        "price": 103.80000305175781,
+        "trade_notional": 57505.20169067383,
+        "latest_volume": 168559261.0,
+        "participation_of_volume": 3.2866779120489858e-06
       },
       {
         "ticker": "00631L.TW",
-        "current_shares": 680,
-        "target_shares": 3836,
-        "delta_shares": 3156,
-        "price": 33.5,
-        "trade_notional": 105726.0,
-        "latest_volume": 247852826.0,
-        "participation_of_volume": 1.2733362983724866e-05
+        "current_shares": 0,
+        "target_shares": 0,
+        "delta_shares": 0,
+        "price": 34.150001525878906,
+        "trade_notional": 0.0,
+        "latest_volume": 391349318.0,
+        "participation_of_volume": 0.0
       },
       {
         "ticker": "00632R.TW",
         "current_shares": 0,
-        "target_shares": 0,
-        "delta_shares": 0,
-        "price": 10.569999694824219,
-        "trade_notional": 0.0,
-        "latest_volume": 147912923.0,
-        "participation_of_volume": 0.0
+        "target_shares": 2866,
+        "delta_shares": 2866,
+        "price": 10.300000190734863,
+        "trade_notional": 29519.800546646118,
+        "latest_volume": 318178277.0,
+        "participation_of_volume": 9.007528820077179e-06
       },
       {
         "ticker": "00679B.TWO",
-        "current_shares": 3000,
+        "current_shares": 5000,
         "target_shares": 0,
-        "delta_shares": -3000,
-        "price": 26.649999618530273,
-        "trade_notional": 79949.99885559082,
-        "latest_volume": 9920000.0,
-        "participation_of_volume": 0.0003024193548387097
+        "delta_shares": -5000,
+        "price": 26.670000076293945,
+        "trade_notional": 133350.00038146973,
+        "latest_volume": 47308996.0,
+        "participation_of_volume": 0.00010568814438590073
       }
     ]
   },
   "blocking_reasons": [
     "execution_plan_stale_vs_live_signal",
-    "rebalance_review_disallows_auto_rebalance"
+    "rebalance_review_disallows_auto_rebalance",
+    "turnover_exceeds_limit"
   ],
   "warning_reasons": [],
   "decision": {

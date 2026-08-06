@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_broker_holdings_time_series_sample",
-  "generated_at": "2026-07-28T07:15:14",
+  "generated_at": "2026-08-06T03:03:00",
   "status": "sample_available",
   "history_type": "transaction_derived_incomplete_not_authoritative_broker_positions",
   "authoritative_broker_export": false,

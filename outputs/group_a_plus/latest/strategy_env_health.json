@@ -1,0 +1,99 @@
+{
+  "artifact_kind": "pipeline",
+  "artifact_name": "strategy_env_health",
+  "generated_at": "2026-08-05T19:08:30.714166+00:00",
+  "payload": {
+    "bad_dirs": [],
+    "directories": [
+      {
+        "exists": true,
+        "label": "results",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results",
+        "status": "ok",
+        "writable": true
+      },
+      {
+        "exists": true,
+        "label": "latest_report",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest",
+        "status": "ok",
+        "writable": true
+      },
+      {
+        "exists": true,
+        "label": "news",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/news",
+        "status": "ok",
+        "writable": true
+      }
+    ],
+    "files": [
+      {
+        "exists": true,
+        "label": "strategy_manifest",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/strategy.json",
+        "size_bytes": 24545,
+        "status": "ok"
+      },
+      {
+        "exists": true,
+        "label": "live_signal",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal.json",
+        "size_bytes": 87115,
+        "status": "ok"
+      },
+      {
+        "exists": true,
+        "label": "watchlist_config",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/config/group_a_plus_watchlist.json",
+        "size_bytes": 879,
+        "status": "ok"
+      },
+      {
+        "exists": true,
+        "label": "ncf_panel_00631l",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_panel_latest_20260716.csv",
+        "size_bytes": 125230,
+        "status": "ok"
+      },
+      {
+        "exists": true,
+        "label": "ncf_00631l",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260716.json",
+        "size_bytes": 12039,
+        "status": "ok"
+      }
+    ],
+    "generated_at": "2026-08-05T19:08:30Z",
+    "missing_files": [],
+    "optional_env": {
+      "ANTHROPIC_API_KEY": {
+        "description": "Anthropic commentary provider",
+        "masked_value": "",
+        "present": false
+      },
+      "MINIMAX_API_KEY": {
+        "description": "MiniMax commentary provider",
+        "masked_value": "",
+        "present": false
+      },
+      "NCF_EXTERNAL_ALLOW_DOWNLOAD": {
+        "description": "Allow NCF external feature downloads",
+        "masked_value": "",
+        "present": false
+      }
+    },
+    "python": {
+      "current_executable": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/.venv/bin/python",
+      "running_inside_project_venv": true,
+      "venv_python": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/.venv/bin/python",
+      "venv_python_exists": true
+    },
+    "root": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main",
+    "schema_version": 1,
+    "status": "ok",
+    "warnings": []
+  },
+  "run_mode": "production",
+  "schema_version": 1
+}

@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-04T04:38:51Z",
+  "status": "available",
+  "policy": "alert_only_no_auto_weight_change",
+  "as_of": "2026-08-03",
+  "requested_as_of": "latest",
+  "watch_level": "medium",
+  "alert_level": null,
+  "alert_active": false,
+  "category_score": 2,
+  "category_flags": {
+    "options_tail": false,
+    "liquidity_forced_selling": true,
+    "cross_market_shock": true
+  },
+  "condition_details": {
+    "options_tail": {
+      "txo_pcr_volume_z20_ge_1": false,
+      "txo_pcr_oi_z20_ge_1": false,
+      "txo_foreign_put_call_net_oi_chg5_z60_ge_1": false
+    },
+    "liquidity_forced_selling": {
+      "market_margin_forced_repay_z60_ge_1": true,
+      "market_margin_balance_chg20_z252_le_minus_1": true,
+      "securities_lending_0050_volume_z60_ge_1": false
+    },
+    "cross_market_shock": {
+      "vix_level_z60_ge_1": false,
+      "vix_chg5_z60_ge_1": false,
+      "soxx_ret1_le_minus_3pct": false,
+      "soxx_realized_vol20_z60_ge_1": false,
+      "soxx_downside_vol20_z60_ge_1": false,
+      "vix_soxx_realized_vol_gap_z60_ge_1": false,
+      "soxx_atm_iv30_raw_ge_55pct": false,
+      "soxx_put_call_volume_ratio_raw_ge_3": false,
+      "soxx_put_call_oi_ratio_raw_ge_3": false,
+      "soxx_atm_iv30_z252_ge_1": false,
+      "soxx_iv_rank_252_ge_80pct": false,
+      "soxx_iv_minus_rv20_z252_ge_1": false,
+      "soxx_put_call_iv_skew_z252_ge_1": false,
+      "soxx_put_call_volume_ratio_z60_ge_1": false,
+      "soxx_put_call_oi_ratio_z60_ge_1": true,
+      "qqq_ret1_le_minus_2_5pct": false,
+      "us_taiwan_gap1_le_minus_3pct": true,
+      "usdtwd_ret5_z60_ge_1": false
+    }
+  },
+  "active_reason_lines": [
+    "Liquidity / forced selling: Market margin repayment pressure is elevated; Market margin balance has contracted sharply",
+    "Cross-market implied volatility: SOXX options put/call open-interest ratio is elevated",
+    "Cross-market price/FX: SOXX underperformed TWII by more than 3% on the prior session"
+  ],
+  "manual_review": {
+    "recommended_action": "none",
+    "do_not_auto_sell": true,
+    "do_not_auto_deleverage": true,
+    "no_buy_advisory": false,
+    "rationale": [
+      "Liquidity / forced selling: Market margin repayment pressure is elevated; Market margin balance has contracted sharply",
+      "Cross-market implied volatility: SOXX options put/call open-interest ratio is elevated",
+      "Cross-market price/FX: SOXX underperformed TWII by more than 3% on the prior session"
+    ]
+  },
+  "persistence": {
+    "previous_as_of": "2026-07-31",
+    "previous_score": 1,
+    "persistent_2of3": false,
+    "immediate_high": false
+  },
+  "latest_source_dates": {
+    "options_tail": "2026-08-03",
+    "liquidity_forced_selling": "2026-08-03",
+    "cross_market_shock": "2026-08-03"
+  },
+  "freshness": {
+    "status": "degraded",
+    "stale_family_count": 2,
+    "families": {
+      "options_tail": {
+        "latest_date_at_or_before_as_of": "2026-07-31",
+        "lag_days_vs_as_of": 3,
+        "stale": true
+      },
+      "liquidity_forced_selling": {
+        "latest_date_at_or_before_as_of": "2026-08-03",
+        "lag_days_vs_as_of": 0,
+        "stale": false
+      },
+      "cross_market_shock": {
+        "latest_date_at_or_before_as_of": "2026-07-31",
+        "lag_days_vs_as_of": 3,
+        "stale": true
+      }
+    }
+  },
+  "soxx_iv_health": {
+    "status": "ok",
+    "warnings": [],
+    "latest_snapshot": {
+      "date": "2026-08-03",
+      "lag_days_vs_generated_date": 1,
+      "spot": 506.25,
+      "expiry": "2026-09-04",
+      "dte": 32.0,
+      "atm_iv": 0.5984232052612305,
+      "put_call_iv_skew": -0.010375872802734554,
+      "put_call_volume_ratio": 0.20175438596491227,
+      "put_call_oi_ratio": 1.6465661641541038,
+      "contract_count": 97.0
+    },
+    "as_of_snapshot": {
+      "date": "2026-08-03",
+      "atm_iv": 0.5984232052612305,
+      "put_call_volume_ratio": 0.20175438596491227,
+      "put_call_oi_ratio": 1.6465661641541038
+    }
+  },
+  "as_of_advancement": {
+    "as_of": "2026-08-03",
+    "latest_available_feature_date": "2026-08-03",
+    "blocked_dates": []
+  },
+  "feature_values": {
+    "txo_pcr_volume_z20": null,
+    "txo_pcr_oi_z20": null,
+    "txo_foreign_put_call_net_oi_chg5_z60": -0.024963740708682593,
+    "market_margin_forced_repay_z60": 2.2748753679754556,
+    "market_margin_balance_chg20_z252": -2.3859576058329406,
+    "securities_lending_0050_volume_z60": -0.28682120730417154,
+    "vix_level_z60": -0.9500012793030269,
+    "vix_chg5_z60": -1.1423301294185781,
+    "soxx_ret1": 0.0007135668245925597,
+    "soxx_realized_vol20_z60": -0.08951627124446364,
+    "soxx_downside_vol20_z60": -0.12599703972604706,
+    "vix_soxx_realized_vol_gap_z60": -0.015686104577952265,
+    "soxx_atm_iv30_raw": 0.062509375,
+    "soxx_options_dte": 28.0,
+    "soxx_options_contract_count": 159.0,
+    "soxx_put_call_iv_skew_raw": 0.0,
+    "soxx_put_call_volume_ratio_raw": 2.2476894639556377,
+    "soxx_put_call_oi_ratio_raw": 2.961505190311419,
+    "soxx_atm_iv30_z252": null,
+    "soxx_iv_rank_252": null,
+    "soxx_iv_minus_rv20_z252": null,
+    "soxx_put_call_iv_skew_z252": null,
+    "soxx_put_call_volume_ratio_z60": -0.2376653785244286,
+    "soxx_put_call_oi_ratio_z60": 1.2823849838270673,
+    "qqq_ret1": 0.00649550511403274,
+    "us_taiwan_gap1": -0.07908071905738345,
+    "usdtwd_ret5_z60": 0.2001230939368975
+  },
+  "signal_alert": null,
+  "research_context": {
+    "source_script": "scripts/evaluate/evaluate_00631l_multisource_crash_risk.py",
+    "promotion_status": "not_promoted_to_trading_rule",
+    "reason": "2-of-3 ensemble had only local 2018 OOS value and failed broader trading validation."
+  }
+}

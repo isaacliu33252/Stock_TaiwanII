@@ -28,6 +28,8 @@ if str(PROJECT_ROOT) not in sys.path:
 from group_a_plus.integrations.ncf_decision_calibration import (  # noqa: E402
     DEFAULT_DFL_SHADOW_PATH,
     build_snapshot,
+    calibration_pair_readiness_summary,
+    calibration_governance_summary,
     fit_regret_calibration,
     load_calibration_pairs,
     load_historical_regret_distribution,
@@ -68,8 +70,8 @@ def main() -> None:
             "proxy when available. Default off: out-of-sample validation on "
             "2017/2018/2019 (2026-07-27) found CAP10's calibrated probabilities do not "
             "reliably transfer across regimes (direction is right, magnitude is not) -- "
-            "see GROUP_A_PLUS_DFL_ACTION_VALUE_CALIBRATION_PHASE2_20260727.md. Kept as an "
-            "opt-in research path, not a default, until that improves."
+            "see GROUP_A_PLUS_DFL_ACTION_VALUE_CALIBRATION_PHASE2_20260727.md. Closed as "
+            "failed OOS; kept only as an opt-in research reproduction path."
         ),
     )
     parser.add_argument("--calibration-bins", type=int, default=5)
@@ -102,8 +104,16 @@ def main() -> None:
     print(f"direction_confidence: {snapshot.direction_confidence}")
     print(f"decision_confidence: {snapshot.decision_confidence}")
     print(f"calibration_method: {snapshot.calibration_method}")
+    print(f"calibration_governance_status: {calibration_governance_summary()['status']}")
     print(f"action: {snapshot.action}")
     print(f"basis: {snapshot.basis}")
+    readiness = calibration_pair_readiness_summary(Path(args.dfl_shadow))
+    print(f"calibration_pair_readiness: {readiness['status']}")
+    print(
+        "calibration_pairs: "
+        f"{readiness['pairs_with_realized_regret']}/{readiness['total_pairs']} realized labels "
+        f"across {readiness['windows_with_calibration_pairs_key']}/{readiness['window_count']} windows"
+    )
 
     historical = load_historical_regret_distribution(Path(args.dfl_shadow))
     print("\nHistorical candidate distribution (shadow-only sanity check, NOT a calibration curve):")
@@ -117,6 +127,8 @@ def main() -> None:
     output = {
         "report_type": "ncf_decision_calibration_shadow",
         "status": "research_only",
+        "calibration_governance": calibration_governance_summary(),
+        "calibration_pair_readiness": readiness,
         "snapshot": snapshot.to_json_dict(),
         "historical_distribution_summary": {
             act: {

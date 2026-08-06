@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 """Refresh the small set of yfinance closes backing the 00631L crash-risk
-alert's cross_market_shock family: VIX, SOXX, QQQ, TWII, TSM ADR, USD/TWD.
+alert's cross_market_shock family: VIX, SOXX, QQQ, TWII, TSM ADR, USD/TWD,
+plus S&P500/Nasdaq/10Y yield/13-week bill/gold.
 
 Unlike scripts/fetch/fetch_ncf_2330_checklist_external_cache.py, this always
 attempts a live download (not gated behind --refresh-external-cache /
-NCF_EXTERNAL_ALLOW_DOWNLOAD). These are 6 lightweight daily closes, and
+NCF_EXTERNAL_ALLOW_DOWNLOAD). These are lightweight daily closes, and
 build_00631l_crash_risk_alert.py's freshness check needs them to actually
 update every day the pipeline runs, or the cross_market_shock family will be
 reported degraded indefinitely.
+
+2026-08-04: added ^GSPC/^IXIC/^TNX/^IRX/GC=F. These five were only refreshed
+as a side effect of the flag-gated NCF model steps (NCF_EXTERNAL_ALLOW_DOWNLOAD)
+and had silently drifted 6-8 calendar days stale (check_ohlcv_freshness.py's
+external_error_tickers) despite --refresh-external-cache running daily --
+the other six tickers stayed fresh precisely because this script fetches them
+unconditionally. See
+[[project_external_cross_market_ticker_staleness_fix_20260804]].
 
 This only writes to `external_market_ohlcv` through the existing
 ncf_external_cache helper. It does not change model outputs or portfolio
@@ -30,7 +39,19 @@ from ncf_external_cache import fetch_yf_close_cached
 DEFAULT_DB = PROJECT_ROOT / "FinRL" / "data" / "stock_data.db"
 DEFAULT_OUTPUT = PROJECT_ROOT / "results" / f"cross_market_ohlcv_{date.today().strftime('%Y%m%d')}.json"
 
-DEFAULT_TICKERS = ["^VIX", "SOXX", "QQQ", "^TWII", "TSM", "TWD=X"]
+DEFAULT_TICKERS = [
+    "^VIX",
+    "SOXX",
+    "QQQ",
+    "^TWII",
+    "TSM",
+    "TWD=X",
+    "^GSPC",
+    "^IXIC",
+    "^TNX",
+    "^IRX",
+    "GC=F",
+]
 
 
 def refresh_cross_market_ohlcv(

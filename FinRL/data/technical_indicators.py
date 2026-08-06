@@ -255,6 +255,7 @@ class TechnicalIndicators:
         """
         close = self.df['close'].values
         
+        # TA-Lib 優先，Pandas Fallback
         if TALIB_AVAILABLE:
             try:
                 macd_line, signal_line, hist = talib.MACD(
@@ -266,28 +267,29 @@ class TechnicalIndicators:
                 self.df['macd_line'] = macd_line
                 self.df['signal_line'] = signal_line
                 self.df['histogram'] = hist
+                # TA-Lib 成功：添加衍生指標（與 Pandas fallback 相同的特徵）
+                self.df['histogram_change'] = self.df['histogram'].diff()
+                prev_histogram = self.df['histogram'].shift(1)
+                self.df['macd_turn_positive'] = (
+                    (prev_histogram < 0) & (self.df['histogram'] >= 0)
+                ).astype(int)
+                self.df['macd_turn_negative'] = (
+                    (prev_histogram > 0) & (self.df['histogram'] <= 0)
+                ).astype(int)
+                return self.df
             except Exception:
-                # TA-Lib 失敗，使用 Pandas fallback
-                ema_fast = self.df['close'].ewm(span=fast_period, adjust=False).mean()
-                ema_slow = self.df['close'].ewm(span=slow_period, adjust=False).mean()
-                macd_line = ema_fast - ema_slow
-                signal_line = macd_line.ewm(span=signal_period, adjust=False).mean()
-                histogram = macd_line - signal_line
-                
-                self.df['macd_line'] = macd_line
-                self.df['signal_line'] = signal_line
-                self.df['histogram'] = histogram
-        else:
-            # 無 TA-Lib，使用 Pandas
-            ema_fast = self.df['close'].ewm(span=fast_period, adjust=False).mean()
-            ema_slow = self.df['close'].ewm(span=slow_period, adjust=False).mean()
-            macd_line = ema_fast - ema_slow
-            signal_line = macd_line.ewm(span=signal_period, adjust=False).mean()
-            histogram = macd_line - signal_line
-            
-            self.df['macd_line'] = macd_line
-            self.df['signal_line'] = signal_line
-            self.df['histogram'] = histogram
+                pass
+        
+        # Fallback: Pandas implementation (only when TA-Lib unavailable or failed)
+        ema_fast = self.df['close'].ewm(span=fast_period, adjust=False).mean()
+        ema_slow = self.df['close'].ewm(span=slow_period, adjust=False).mean()
+        macd_line = ema_fast - ema_slow
+        signal_line = macd_line.ewm(span=signal_period, adjust=False).mean()
+        histogram = macd_line - signal_line
+        
+        self.df['macd_line'] = macd_line
+        self.df['signal_line'] = signal_line
+        self.df['histogram'] = histogram
         
         # === 計算 Histogram 變化 ===
         # Histogram 變化反映動量加速/減速
@@ -546,6 +548,7 @@ class TechnicalIndicators:
         """
         close = self.df['close'].values
         
+        # TA-Lib 優先，Pandas Fallback
         if TALIB_AVAILABLE:
             try:
                 upper, middle, lower = talib.BBANDS(
@@ -558,20 +561,18 @@ class TechnicalIndicators:
                 self.df['bb_upper'] = upper
                 self.df['bb_middle'] = middle
                 self.df['bb_lower'] = lower
+                # TA-Lib 成功：添加衍生指標（與 Pandas fallback 相同的特徵）
+                self.df['bb_width'] = (self.df['bb_upper'] - self.df['bb_lower']) / self.df['bb_middle']
+                return self.df
             except Exception:
-                # TA-Lib 失敗，使用 Pandas fallback
-                middle = self.df['close'].rolling(window=period).mean()
-                std = self.df['close'].rolling(window=period).std(ddof=1)
-                self.df['bb_upper'] = middle + std_dev * std
-                self.df['bb_middle'] = middle
-                self.df['bb_lower'] = middle - std_dev * std
-        else:
-            # 無 TA-Lib，使用 Pandas
-            middle = self.df['close'].rolling(window=period).mean()
-            std = self.df['close'].rolling(window=period).std(ddof=1)
-            self.df['bb_upper'] = middle + std_dev * std
-            self.df['bb_middle'] = middle
-            self.df['bb_lower'] = middle - std_dev * std
+                pass
+        
+        # Fallback: Pandas implementation (only when TA-Lib unavailable or failed)
+        middle = self.df['close'].rolling(window=period).mean()
+        std = self.df['close'].rolling(window=period).std(ddof=1)
+        self.df['bb_upper'] = middle + std_dev * std
+        self.df['bb_middle'] = middle
+        self.df['bb_lower'] = middle - std_dev * std
         
         # === 計算布林通道寬度 (標準化) ===
         # 寬度越大表示波動率越高
@@ -843,11 +844,11 @@ class TechnicalIndicators:
         is_up = price_change > 0
         is_down = price_change < 0
 
-        # 連續上漲天數（每個上漲段各自從 1 開始累積）
-        # 修正：原 groupby(cumsum) 實作是錯誤的——它計算的是「到目前為止的 group 內上漲天數 cumsum」，
-        # 會錯誤地將 non-consecutive 上漲分組在一起。
-        # 正確方式：每個上漲段（group）的 cumcount 從 0 開始遞增。
-        up_groups = (~is_up).cumsum()  # 每個非上漲日開新 group
+        # 連續上漲天數
+        # 使用 groupby-cumsum 向量化實現：每個非上漲日開新 group
+        # 每個連續上漲段內的 cumcount 從 0 開始遞增（0, 1, 2, 3...）
+        # 驗證：上漲 4 天 → [0,1,2,3]，下跌後再漲 3 天 → [0,1,2]
+        up_groups = (~is_up).cumsum()
         self.df['consecutive_up_days'] = is_up.groupby(up_groups).cumcount()
 
         # 連續下跌天數

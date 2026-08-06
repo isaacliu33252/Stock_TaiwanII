@@ -190,6 +190,23 @@ def calculate_max_drawdown_duration(equity_curve: np.ndarray) -> int:
     return max_duration
 
 
+def calculate_recovery_duration(equity_curve: np.ndarray) -> Optional[int]:
+    """計算最大回撤觸底後回到前高所需天數；尚未回補則回傳 None"""
+    if len(equity_curve) < 2:
+        return None
+
+    running_max = np.maximum.accumulate(equity_curve)
+    drawdowns = (equity_curve - running_max) / running_max
+
+    max_dd_idx = int(np.argmin(drawdowns))
+    peak_value = running_max[max_dd_idx]
+
+    for offset, value in enumerate(equity_curve[max_dd_idx:]):
+        if value >= peak_value:
+            return offset
+    return None
+
+
 def calculate_max_consecutive_loss(trade_history: List[Dict]) -> float:
     """計算最大連續虧損金額"""
     if not trade_history:
@@ -279,6 +296,7 @@ def calculate_all_metrics(
     sell_trades = sum(1 for t in trade_history if t.get('action') in [2, 3])
     
     max_dd_duration = calculate_max_drawdown_duration(equity_curve)
+    recovery_duration = calculate_recovery_duration(equity_curve)
     max_consecutive_loss = calculate_max_consecutive_loss(trade_history)
     avg_holding_days = calculate_avg_holding_days(trade_history)
     
@@ -291,6 +309,7 @@ def calculate_all_metrics(
         'calmar_ratio': calmar_ratio,
         'max_drawdown': max_drawdown,
         'max_drawdown_duration': max_dd_duration,
+        'recovery_duration': recovery_duration,
         'win_rate': win_rate,
         'profit_factor': profit_factor,
         'avg_win': avg_win,

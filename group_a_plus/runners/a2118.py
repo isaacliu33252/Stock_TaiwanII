@@ -737,6 +737,7 @@ def run_a2118(
     recovery_00631l_boost_fraction: float = 0.0,
     recovery_00631l_boost_max_age_days: int | None = None,
     exclude_zero_volume_rows: bool = False,
+    golden_signal_path_override: str | Path | None = None,
 ) -> tuple[dict, pd.DataFrame]:
     """Run A21.18: A21.11 base + NCF late-bull de-leverage overlay on golden1.
 
@@ -766,9 +767,28 @@ def run_a2118(
     runner_params) opts into this; historical backtests are intentionally
     left as-is pending a separate audit of how many/which historical
     windows this affects.
+
+    golden_signal_path_override: research-only knob, default None (no
+    behavior change). `_resolve_golden_signal_path()` always resolves to
+    whichever `signal_group_a_*.json` has the newest mtime *at run time*,
+    so re-running a backtest today replays the entire window under today's
+    golden1 weights regardless of which historical dates are requested --
+    this is documented, intentional H3 behavior (see
+    `_golden_signal_metadata`). That also means any shadow evaluator that
+    calls `run_a2118` picks up whatever golden1 weights happen to be live
+    right now, which can silently zero out 00631L-related research (e.g.
+    while a large golden1 rebalance is mid-transition under the 0050/00631L
+    MA-brake). Pass an explicit path here to pin a specific historical
+    golden1 snapshot instead, matching the point-in-time weights a prior
+    research run actually used. See
+    [[project_golden1_signal_resolution_whatif_pollution_20260804]].
     """
     policy_signal, policy_signal_path = _load_policy_signal(_resolve(DEFAULT_DECISION_POINTER))
-    golden_signal_path = _resolve_golden_signal_path()
+    golden_signal_path = (
+        _resolve(golden_signal_path_override)
+        if golden_signal_path_override is not None
+        else _resolve_golden_signal_path()
+    )
     golden_signal = _load(golden_signal_path)
     current_defensive = _normalize(_weights_from_group_a_plus(policy_signal))
     basket = _normalize(DEFENSIVE_BASKETS["bond30_cash30"])

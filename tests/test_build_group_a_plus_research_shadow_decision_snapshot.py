@@ -34,6 +34,7 @@ def test_build_snapshot_blocks_when_research_shadows_block(tmp_path: Path) -> No
     llm_state_reward_regime_filtered_micro_tilt = tmp_path / "llm_state_reward_regime_filtered_micro_tilt.json"
     llm_state_reward_manual_approval_readiness = tmp_path / "llm_state_reward_manual_approval_readiness.json"
     llm_state_reward_signed_approval_validation = tmp_path / "llm_state_reward_signed_approval_validation.json"
+    ncf_decision_calibration = tmp_path / "ncf_decision_calibration.json"
     finstressts.write_text(
         json.dumps({"status": "blocked", "decision": {"allow_00631l_add": False}}),
         encoding="utf-8",
@@ -387,6 +388,23 @@ def test_build_snapshot_blocks_when_research_shadows_block(tmp_path: Path) -> No
         ),
         encoding="utf-8",
     )
+    ncf_decision_calibration.write_text(
+        json.dumps(
+            {
+                "status": "research_only",
+                "calibration_governance": {
+                    "status": "closed_failed_oos",
+                    "decision_confidence_contract": (
+                        "predicted_regret_percentile_rank_proxy_not_calibrated_probability"
+                    ),
+                    "calibration_model_default_enabled": False,
+                    "live_gate_allowed": False,
+                    "target_weight_change_allowed": False,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
 
     snapshot = build_snapshot(
         finstressts_path=finstressts,
@@ -413,6 +431,7 @@ def test_build_snapshot_blocks_when_research_shadows_block(tmp_path: Path) -> No
         llm_state_reward_regime_filtered_micro_tilt_path=llm_state_reward_regime_filtered_micro_tilt,
         llm_state_reward_manual_approval_readiness_path=llm_state_reward_manual_approval_readiness,
         llm_state_reward_signed_approval_validation_path=llm_state_reward_signed_approval_validation,
+        ncf_decision_calibration_path=ncf_decision_calibration,
     )
 
     assert snapshot["status"] == "blocked"
@@ -546,6 +565,14 @@ def test_build_snapshot_blocks_when_research_shadows_block(tmp_path: Path) -> No
     assert snapshot["summary"]["llm_state_reward_signed_approval_model_training_allowed"] is False
     assert snapshot["summary"]["llm_state_reward_signed_approval_ppo_training_allowed"] is False
     assert snapshot["summary"]["llm_state_reward_signed_approval_promote_to_live"] is False
+    assert snapshot["summary"]["ncf_decision_calibration_status"] == "research_only"
+    assert snapshot["summary"]["ncf_decision_calibration_governance_status"] == "closed_failed_oos"
+    assert snapshot["summary"]["ncf_decision_confidence_contract"] == (
+        "predicted_regret_percentile_rank_proxy_not_calibrated_probability"
+    )
+    assert snapshot["summary"]["ncf_decision_calibration_model_default_enabled"] is False
+    assert snapshot["summary"]["ncf_decision_calibration_live_gate_allowed"] is False
+    assert snapshot["summary"]["ncf_decision_calibration_target_weight_change_allowed"] is False
     assert "llm_state_reward_diagnostic_refinement_status:available_for_manual_offline_review" in snapshot[
         "warning_reasons"
     ]
@@ -582,6 +609,7 @@ def test_build_snapshot_blocks_when_research_shadows_block(tmp_path: Path) -> No
         "llm_state_reward_signed_approval_validation:missing_signed_human_exception_approval_record"
         in snapshot["warning_reasons"]
     )
+    assert "ncf_decision_calibration_governance_status:closed_failed_oos" in snapshot["warning_reasons"]
 
 
 def test_write_snapshot(tmp_path: Path) -> None:

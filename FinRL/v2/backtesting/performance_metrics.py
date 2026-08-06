@@ -278,9 +278,14 @@ def calculate_sortino_ratio(
         return (ann_return - ann_target) / 0.001  # 除以極小值避免除零
 
     downside_std = np.std(negative_returns, ddof=1)
-    if downside_std == 0:
-        # 負報酬標準差為0（全為相同負報酬或樣本不足）
-        return 0.0
+    if downside_std < 1e-10:
+        # 負報酬標準差極小（接近零）：說明下行波動極低
+        # 使用無風險利率作為回報基准，避免返回荒謬的巨大負數
+        ann_return = np.mean(excess_returns) * periods_per_year
+        ann_target = target_return
+        if ann_return - ann_target > 0:
+            return float('inf')  # 無下行風險的正報酬
+        return 0.0  # 極小的下行標準差視為零風險，回報低於目標則返回 0
 
     ann_downside_std = downside_std * np.sqrt(periods_per_year)
 

@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_gift_signed_approval_validator_smoke",
+  "generated_at": "2026-08-02T07:58:08",
+  "as_of": "2026-08-03",
+  "status": "blocked",
+  "policy": "validator_smoke_only_temporary_records_no_formal_approval_no_training_no_live_action",
+  "sources": {
+    "approval_record_schema": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_approval_record_schema.json",
+      "exists": true
+    }
+  },
+  "temporary_record_policy": {
+    "formal_signed_record_written": false,
+    "temporary_directory_prefix": "gift_signed_approval_smoke_",
+    "temporary_directory_example": "/tmp/gift_signed_approval_smoke_0s9vl2gq",
+    "temporary_files_removed_after_validation": true
+  },
+  "smoke_cases": {
+    "valid_non_ppo_shadow_record": {
+      "input_path_was_temporary": true,
+      "validation": {
+        "status": "blocked",
+        "signed_approval_record_valid": false,
+        "human_exception_approved": false,
+        "non_ppo_shadow_queue_review_allowed": false,
+        "training_queue_allowed": false,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false,
+        "blocking_reasons": [
+          "signed_record_expired_as_of_validation_date"
+        ],
+        "warning_reasons": []
+      }
+    },
+    "invalid_allow_00631l_add": {
+      "input_path_was_temporary": true,
+      "validation": {
+        "status": "blocked",
+        "signed_approval_record_valid": false,
+        "human_exception_approved": false,
+        "non_ppo_shadow_queue_review_allowed": false,
+        "training_queue_allowed": false,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false,
+        "blocking_reasons": [
+          "signed_record_expired_as_of_validation_date",
+          "signed_record_forbidden_action_not_false:allow_00631l_add"
+        ],
+        "warning_reasons": []
+      },
+      "expected_blocking_reason": "signed_record_forbidden_action_not_false:allow_00631l_add"
+    },
+    "invalid_allow_model_training_command": {
+      "input_path_was_temporary": true,
+      "validation": {
+        "status": "blocked",
+        "signed_approval_record_valid": false,
+        "human_exception_approved": false,
+        "non_ppo_shadow_queue_review_allowed": false,
+        "training_queue_allowed": false,
+        "model_training_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "target_weight_change_allowed": false,
+        "auto_rebalance_allowed": false,
+        "allow_00631l_add": false,
+        "allow_00632r_open": false,
+        "blocking_reasons": [
+          "signed_record_expired_as_of_validation_date",
+          "signed_record_forbidden_action_not_false:allow_model_training_command"
+        ],
+        "warning_reasons": []
+      },
+      "expected_blocking_reason": "signed_record_forbidden_action_not_false:allow_model_training_command"
+    }
+  },
+  "summary": {
+    "smoke_passed": false,
+    "valid_non_ppo_shadow_record_accepted": false,
+    "invalid_allow_00631l_add_blocked": true,
+    "invalid_allow_model_training_command_blocked": true,
+    "formal_signed_record_written": false,
+    "signed_approval_record_valid_in_latest": false,
+    "human_exception_approved_in_latest": false,
+    "training_queue_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "blocking_reasons": [
+    "valid_non_ppo_shadow_record_not_accepted_safely"
+  ],
+  "warning_reasons": [],
+  "decision": {
+    "validator_smoke_passed": false,
+    "formal_signed_record_created": false,
+    "signed_approval_record_valid": false,
+    "human_exception_approved": false,
+    "non_ppo_shadow_queue_review_allowed": false,
+    "training_queue_allowed": false,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

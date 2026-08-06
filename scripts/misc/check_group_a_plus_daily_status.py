@@ -16,7 +16,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_BASELINE = PROJECT_ROOT / "GROUP_A_PLUS_CURRENT_BASELINE.json"
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from group_a_plus.outputs import output_path as canonical_output_path
+from group_a_plus.outputs import write_json_report
 from group_a_plus_report_manager import GroupAPlusReportManager
+
+
+DEFAULT_CANONICAL_OUTPUT = canonical_output_path("daily_status", kind="pipeline", run_mode="production", latest=True)
 
 
 def _load(path: str | Path) -> dict[str, Any]:
@@ -314,6 +319,21 @@ def _execution_plan_cash_summary(execution_plan: dict[str, Any] | None, *, align
     }
 
 
+def _artifact_integrity_summary(artifact_integrity: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(artifact_integrity, dict) or not artifact_integrity:
+        return {}
+    checks = artifact_integrity.get("checks") if isinstance(artifact_integrity.get("checks"), list) else []
+    return {
+        "status": artifact_integrity.get("status"),
+        "generated_at": artifact_integrity.get("generated_at"),
+        "check_date": artifact_integrity.get("check_date"),
+        "errors": artifact_integrity.get("errors") or [],
+        "warnings": artifact_integrity.get("warnings") or [],
+        "check_count": len(checks),
+        "policy": artifact_integrity.get("policy"),
+    }
+
+
 def _markdown_text(report: dict[str, Any]) -> str:
     lines = [
         "# GroupA+ Daily Status",
@@ -388,6 +408,19 @@ def _markdown_text(report: dict[str, Any]) -> str:
     research_shadow_snapshot = report["group_a_plus"].get("research_shadow_decision_snapshot") or {}
     gift_signed_approval_governance = report["group_a_plus"].get("gift_signed_approval_governance") or {}
     promotion_gate = report["group_a_plus"].get("promotion_gate") or {}
+    artifact_integrity = report["group_a_plus"].get("daily_artifact_integrity") or {}
+    if artifact_integrity:
+        lines.extend(
+            [
+                "",
+                "## Artifact Integrity",
+                "",
+                f"- Status: `{artifact_integrity.get('status')}`",
+                f"- Errors: `{artifact_integrity.get('errors')}`",
+                f"- Warnings: `{artifact_integrity.get('warnings')}`",
+                f"- Policy: `{artifact_integrity.get('policy')}`",
+            ]
+        )
     if promotion_gate:
         lines.extend(
             [
@@ -874,6 +907,21 @@ def _write_markdown(path: Path, report: dict[str, Any]) -> str:
     return text
 
 
+def _write_canonical_daily_status(path: str | Path | None, report: dict[str, Any]) -> Path | None:
+    if not path:
+        return None
+    canonical_path = Path(path)
+    if not canonical_path.is_absolute():
+        canonical_path = PROJECT_ROOT / canonical_path
+    return write_json_report(
+        canonical_path,
+        artifact_name="daily_status",
+        kind="pipeline",
+        run_mode="production",
+        payload=report,
+    )
+
+
 def _live_status_report(args: argparse.Namespace) -> dict[str, Any]:
     live_signal = _load(args.live_signal)
     data = live_signal.get("data") if isinstance(live_signal.get("data"), dict) else live_signal
@@ -955,6 +1003,9 @@ def _live_status_report(args: argparse.Namespace) -> dict[str, Any]:
     research_shadow_decision_snapshot = _unwrap_standard_payload(
         _load_optional(getattr(args, "research_shadow_decision_snapshot", None))
     )
+    daily_artifact_integrity_path = getattr(args, "daily_artifact_integrity", None)
+    daily_artifact_integrity_payload = _unwrap_standard_payload(_load_optional(daily_artifact_integrity_path))
+    daily_artifact_integrity = _artifact_integrity_summary(daily_artifact_integrity_payload)
     gift_signed_approval_checklist_review = _unwrap_standard_payload(
         _load_optional(getattr(args, "gift_signed_approval_checklist_review", None))
     )
@@ -1056,6 +1107,21 @@ def _live_status_report(args: argparse.Namespace) -> dict[str, Any]:
             ),
         },
     ]
+    if daily_artifact_integrity_path:
+        artifact_status = daily_artifact_integrity.get("status") if daily_artifact_integrity else "missing"
+        checks.append(
+            {
+                "name": "daily_artifact_integrity",
+                "status": "block" if artifact_status == "error" else "warn" if artifact_status != "ok" else "ok",
+                "detail": (
+                    f"status={artifact_status}, "
+                    f"errors={len(daily_artifact_integrity.get('errors') or [])}, "
+                    f"warnings={len(daily_artifact_integrity.get('warnings') or [])}"
+                    if daily_artifact_integrity
+                    else "daily artifact integrity report missing"
+                ),
+            }
+        )
     if promotion_gate:
         checks.append(
             {
@@ -1118,6 +1184,7 @@ def _live_status_report(args: argparse.Namespace) -> dict[str, Any]:
                 Path(getattr(args, "asian_etf_tail_analytics_readiness_review", ""))
             ),
             "research_shadow_decision_snapshot": str(Path(getattr(args, "research_shadow_decision_snapshot", ""))),
+            "daily_artifact_integrity": str(Path(getattr(args, "daily_artifact_integrity", "") or "")),
             "gift_signed_approval_checklist_review": str(
                 Path(getattr(args, "gift_signed_approval_checklist_review", ""))
             ),
@@ -1172,6 +1239,7 @@ def _live_status_report(args: argparse.Namespace) -> dict[str, Any]:
             ),
             "asian_etf_tail_analytics_readiness_review": asian_etf_tail_analytics_readiness_review or {},
             "research_shadow_decision_snapshot": research_shadow_decision_snapshot or {},
+            "daily_artifact_integrity": daily_artifact_integrity,
             "gift_signed_approval_checklist_review": gift_signed_approval_checklist_review or {},
             "gift_signed_approval_validator_smoke": gift_signed_approval_validator_smoke or {},
             "gift_signed_approval_governance": gift_signed_approval_governance,
@@ -1358,6 +1426,14 @@ def main() -> None:
         help="Optional consolidated research-shadow decision snapshot JSON. Missing file is non-blocking.",
     )
     parser.add_argument(
+        "--daily-artifact-integrity",
+        default="report/group_a_plus/latest/daily_artifact_integrity.json",
+        help=(
+            "Optional daily artifact-integrity JSON. Missing/error status is surfaced in daily_status, "
+            "but does not directly change live weights."
+        ),
+    )
+    parser.add_argument(
         "--gift-signed-approval-checklist-review",
         default="report/group_a_plus/latest/gift_signed_approval_checklist_review.json",
         help="Optional GIFT signed approval checklist review JSON. Missing file is non-blocking.",
@@ -1392,6 +1468,11 @@ def main() -> None:
         ),
     )
     parser.add_argument("--output-prefix", default="results/group_a_plus_daily_status")
+    parser.add_argument(
+        "--canonical-output",
+        default=str(DEFAULT_CANONICAL_OUTPUT),
+        help="Canonical enveloped daily-status JSON output. Use an empty value to skip.",
+    )
     parser.add_argument("--report-dir", default="report/group_a_plus")
     parser.add_argument("--skip-managed-report", action="store_true")
     args = parser.parse_args()
@@ -1406,6 +1487,7 @@ def main() -> None:
     md_path = prefix.with_suffix(".md")
     json_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     markdown = _write_markdown(md_path, report)
+    canonical_path = _write_canonical_daily_status(args.canonical_output, report)
     managed_paths: dict[str, str] | None = None
     if not args.skip_managed_report:
         manager = GroupAPlusReportManager(args.report_dir)
@@ -1420,6 +1502,8 @@ def main() -> None:
         )
     print(f"JSON: {json_path}")
     print(f"MD:   {md_path}")
+    if canonical_path:
+        print(f"Canonical JSON: {canonical_path}")
     if managed_paths:
         print(f"Managed HTML: {managed_paths['html']}")
         print(f"Managed JSON: {managed_paths['json']}")

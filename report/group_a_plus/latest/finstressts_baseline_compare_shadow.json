@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_finstressts_baseline_compare_shadow",
-  "generated_at": "2026-07-28T07:14:29",
+  "generated_at": "2026-08-06T03:02:21",
   "policy": "research_only_baseline_compare_no_weight_change",
   "source_paper": "C:/Users/isaac/Downloads/2606.03184.pdf",
   "input_window": {

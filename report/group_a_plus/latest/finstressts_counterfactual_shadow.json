@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_finstressts_counterfactual_shadow",
-  "generated_at": "2026-07-28T07:14:24",
+  "generated_at": "2026-08-06T03:02:17",
   "policy": "research_only_counterfactual_stress_no_weight_change",
   "source_paper": "C:/Users/isaac/Downloads/2606.03184.pdf",
   "input_window": {

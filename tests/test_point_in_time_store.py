@@ -5,9 +5,13 @@ from pathlib import Path
 import pandas as pd
 
 from group_a_plus.core.point_in_time_store import (
+    archive_json_file,
     latest_snapshot_for_date,
+    list_json_artifact_snapshots,
     list_snapshots_for_date,
+    read_json_artifact_snapshot,
     read_snapshot,
+    write_json_artifact_snapshot,
     write_snapshot,
 )
 from group_a_plus.core.signal_contract import TargetWeightSignal
@@ -106,3 +110,71 @@ def test_different_signal_asof_dates_go_to_different_directories(tmp_path: Path)
     assert list_snapshots_for_date(pd.Timestamp("2026-08-01"), root=tmp_path) != []
     assert (tmp_path / "2026" / "07" / "25").exists()
     assert (tmp_path / "2026" / "08" / "01").exists()
+
+
+def test_write_json_artifact_snapshot_never_overwrites_different_content(tmp_path: Path) -> None:
+    payload_1 = {"actual_data_date": "2026-07-27", "target_shares": {"00631L.TW": 100}}
+    payload_2 = {"actual_data_date": "2026-07-27", "target_shares": {"00631L.TW": 200}}
+
+    path_1 = write_json_artifact_snapshot(
+        "execution_plan",
+        payload_1,
+        artifact_asof="2026-07-27",
+        generated_at="2026-07-27T21:00:00",
+        root=tmp_path,
+    )
+    path_2 = write_json_artifact_snapshot(
+        "execution_plan",
+        payload_2,
+        artifact_asof="2026-07-27",
+        generated_at="2026-07-27T21:00:00",
+        root=tmp_path,
+    )
+
+    assert path_1 != path_2
+    assert path_1.exists()
+    assert path_2.exists()
+    assert len(list_json_artifact_snapshots("execution_plan", "2026-07-27", root=tmp_path)) == 2
+    assert read_json_artifact_snapshot(path_1) == payload_1
+    assert read_json_artifact_snapshot(path_2) == payload_2
+
+
+def test_write_json_artifact_snapshot_is_idempotent_for_same_content(tmp_path: Path) -> None:
+    payload = {"actual_data_date": "2026-07-27", "target_shares": {"00631L.TW": 100}}
+
+    path_1 = write_json_artifact_snapshot(
+        "execution_plan",
+        payload,
+        artifact_asof="2026-07-27",
+        generated_at="2026-07-27T21:00:00",
+        root=tmp_path,
+    )
+    original_mtime = path_1.stat().st_mtime_ns
+    path_2 = write_json_artifact_snapshot(
+        "execution_plan",
+        payload,
+        artifact_asof="2026-07-27",
+        generated_at="2026-07-27T21:00:00",
+        root=tmp_path,
+    )
+
+    assert path_1 == path_2
+    assert path_2.stat().st_mtime_ns == original_mtime
+
+
+def test_archive_json_file_can_snapshot_golden1_release_payload(tmp_path: Path) -> None:
+    release = tmp_path / "group_a_release_Golden1_0531.json"
+    payload = {"strategy_id": "golden1_0531", "weights": {"0050.TW": 0.6, "00631L.TW": 0.2, "cash": 0.2}}
+    release.write_text(__import__("json").dumps(payload), encoding="utf-8")
+
+    path = archive_json_file(
+        release,
+        artifact_name="golden1_0531_release",
+        artifact_asof="2026-05-31",
+        generated_at="2026-07-30T12:00:00",
+        root=tmp_path / "pit",
+    )
+
+    assert path.exists()
+    assert "golden1_0531_release" in str(path)
+    assert read_json_artifact_snapshot(path) == payload

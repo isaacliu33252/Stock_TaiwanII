@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_securities_lending_0050_source_status",
+  "generated_at": "2026-08-03T19:22:16",
+  "as_of": "2026-08-03",
+  "ticker": "0050.TW",
+  "status": "db_snapshot_only",
+  "policy": "source_status_only_no_strategy_change_no_weight_change",
+  "query_window": {
+    "start": "2026-07-13",
+    "end": "2026-08-03"
+  },
+  "provider_observation": {
+    "rows_written": null,
+    "message": null,
+    "provider_no_rows": false
+  },
+  "database_observation": {
+    "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "latest_dt": "2026-07-30",
+    "db_lagged_after_query": true,
+    "recent_rows": [
+      {
+        "dt": "2026-07-30",
+        "volume": 800.0
+      },
+      {
+        "dt": "2026-07-29",
+        "volume": 182.0
+      },
+      {
+        "dt": "2026-07-27",
+        "volume": 2353.0
+      },
+      {
+        "dt": "2026-07-24",
+        "volume": 2000.0
+      },
+      {
+        "dt": "2026-07-23",
+        "volume": 247900.0
+      },
+      {
+        "dt": "2026-07-17",
+        "volume": 5000.0
+      },
+      {
+        "dt": "2026-07-15",
+        "volume": 2714.0
+      },
+      {
+        "dt": "2026-07-14",
+        "volume": 2277.0
+      }
+    ]
+  },
+  "summary": {
+    "soft_source": true,
+    "provider_no_rows_confirmed": false,
+    "latest_available_dt": "2026-07-30",
+    "query_end": "2026-08-03",
+    "db_lagged_after_query": true,
+    "strategy_change_allowed": false,
+    "target_weight_change_allowed": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "decision": {
+    "blocks_deployment": false,
+    "strategy_change_allowed": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

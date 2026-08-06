@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_synthetic_augmentation_validation_readiness_review",
-  "generated_at": "2026-07-28T07:15:07",
+  "generated_at": "2026-08-06T03:02:54",
   "policy": "research_only_synthetic_augmentation_validation_no_synthetic_alpha_no_weight_change",
   "status": "blocked",
   "as_of": "2026-07-20",

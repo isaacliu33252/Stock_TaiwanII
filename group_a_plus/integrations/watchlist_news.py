@@ -8,6 +8,8 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from group_a_plus.outputs import output_path as canonical_output_path
+from group_a_plus.outputs import write_json_report
 from group_a_plus.paths import PROJECT_ROOT
 
 
@@ -163,9 +165,20 @@ def build_watchlist_news_summary(
 def write_watchlist_news_summary(
     *,
     output_path: Path = DEFAULT_OUTPUT_PATH,
+    canonical_path: Path | None = None,
     **kwargs: Any,
 ) -> dict[str, Any]:
     summary = build_watchlist_news_summary(**kwargs)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if canonical_path is None and output_path == DEFAULT_OUTPUT_PATH:
+        canonical_path = canonical_output_path("watchlist_news", kind="pipeline", run_mode="production", latest=True)
+    if canonical_path is not None:
+        write_json_report(
+            canonical_path,
+            artifact_name="watchlist_news",
+            kind="pipeline",
+            run_mode="production",
+            payload=summary,
+        )
     return summary

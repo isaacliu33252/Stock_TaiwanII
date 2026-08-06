@@ -17,7 +17,10 @@ from group_a_plus.operations.execution_plan import (
     _apply_buy_staging,
     _build_guard_impact_summary,
     _combine_guarded_targets,
+    _execution_plan_pit_asof,
+    _execution_plan_pit_generated_at,
     _latest_prices,
+    _write_execution_plan_pit_snapshot,
     _trough_high_vol_override_watch,
     _trough_nowcast_buy_fraction,
     build_execution_plan,
@@ -32,6 +35,44 @@ from group_a_plus.operations.execution_guard import (
 
 
 class ExecutionPlanV2Tests(unittest.TestCase):
+    def test_execution_plan_pit_snapshot_uses_actual_data_date_and_generated_at(self) -> None:
+        payload = {
+            "success": True,
+            "data": {
+                "actual_data_date": "2026-07-27",
+                "requested_as_of_date": "2026-07-30",
+                "generated_at": "2026-07-30T21:30:00",
+                "target_shares": {"00631L.TW": 100},
+            },
+            "metadata": {"timestamp": "2026-07-30T21:31:00"},
+        }
+
+        self.assertEqual(_execution_plan_pit_asof(payload, "2026-07-30"), "2026-07-27")
+        self.assertEqual(_execution_plan_pit_generated_at(payload), "2026-07-30T21:30:00")
+
+    def test_execution_plan_pit_snapshot_writes_append_only_artifact(self) -> None:
+        payload = {
+            "success": True,
+            "data": {
+                "actual_data_date": "2026-07-27",
+                "generated_at": "2026-07-30T21:30:00",
+                "target_shares": {"00631L.TW": 100},
+            },
+            "metadata": {},
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch.object(execution_plan, "write_json_artifact_snapshot") as writer:
+                writer.return_value = Path(tmp) / "execution_plan.json"
+                path = _write_execution_plan_pit_snapshot(payload, requested_as_of="2026-07-30")
+
+        self.assertEqual(path.name, "execution_plan.json")
+        writer.assert_called_once()
+        _, args, kwargs = writer.mock_calls[0]
+        self.assertEqual(args[0], "execution_plan")
+        self.assertEqual(args[1], payload)
+        self.assertEqual(kwargs["artifact_asof"], "2026-07-27")
+        self.assertEqual(kwargs["generated_at"], "2026-07-30T21:30:00")
+
     def test_latest_prices_returns_empty_dict_for_empty_ticker_list(self) -> None:
         # 2026-07-24: an all-zero-holdings scenario (e.g. a fresh-cash cold
         # start) produces an empty held_tickers list, which used to build an

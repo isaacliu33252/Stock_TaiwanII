@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_finsmart_lite_readiness_review",
+  "generated_at": "2026-08-06T10:01:23",
+  "as_of": "2026-08-06",
+  "status": "available_for_shadow_design",
+  "policy": "research_shadow_only_no_training_no_live_action",
+  "sources": {
+    "paper_pdf": {
+      "path": "/mnt/c/Users/isaac/Downloads/2607.28127.pdf",
+      "exists": true,
+      "sha256": "586b000aea0e0518138fa9b693143842b5c7e2dab04636053bd1d9e309f981ac"
+    },
+    "diagnostic": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/research/shadow/FINSMART_REWARD_ALIGNMENT_DIAGNOSTIC_20260805.md",
+      "exists": true,
+      "sha256": "1d2f5e413c67eb0ba6f73f06cfcb50ebdf9451431b96f3d945eddc1b48b64591"
+    }
+  },
+  "paper_takeaways": {
+    "title": "FinSMART: Financial Sentiment Analysis for Algorithmic Trading through Market-Aligned Reinforcement Learning",
+    "arxiv_id": "2607.28127",
+    "usable_components": [
+      "entity_or_ticker_gating_before_sentiment_enters_group_a_plus",
+      "sentiment_gate_discards_unclear_positive_negative_neutral_outputs",
+      "dual_filter_reward_requires_directional_return_and_alpha_threshold",
+      "periodic_market_aligned_retraining_or_recalibration"
+    ],
+    "not_ported_now": [
+      "full_grpo_or_lora_training",
+      "same_day_return_live_signal",
+      "direct_target_weight_changes_from_news_sentiment"
+    ]
+  },
+  "diagnostic_summary": {
+    "rows": [
+      {
+        "series": "FinMind 0050-tagged headlines (same keyword scorer) vs 0050 return",
+        "n": 354,
+        "corr_same_day": 0.2355,
+        "corr_next_day": 0.0884,
+        "n_gated_same": 253,
+        "corr_same_day_gated_0_5pct": 0.2638,
+        "corr_next_day_gated_0_5pct": 0.1033
+      }
+    ],
+    "best_existing_alignment": {
+      "series": "FinMind 0050-tagged headlines (same keyword scorer) vs 0050 return",
+      "n": 354,
+      "corr_same_day": 0.2355,
+      "corr_next_day": 0.0884,
+      "n_gated_same": 253,
+      "corr_same_day_gated_0_5pct": 0.2638,
+      "corr_next_day_gated_0_5pct": 0.1033
+    },
+    "interpretation": "Ticker/entity-specific FinMind 0050 headlines show stronger same-day and next-day alignment than broad market LTN features; GroupA+ should prioritize strict article-to-asset mapping before any sentiment reward model is trusted."
+  },
+  "recommended_shadow_design": {
+    "artifact_name": "market_aligned_sentiment_shadow",
+    "output_path": "report/group_a_plus/latest/market_aligned_sentiment_shadow.json",
+    "input_sources": [
+      "report/group_a_plus/latest/watchlist_news.json",
+      "report/group_a_plus/latest/watchlist_news_finmind.json",
+      "FinRL/data/stock_data.db:ohlcv",
+      "FinRL/data/sentiment/finbert_market_sentiment_daily.csv",
+      "FinRL/data/sentiment/llm_market_sentiment_daily.csv"
+    ],
+    "entity_mapping_targets": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "2330.TW",
+      "TWII_proxy",
+      "semiconductor_basket"
+    ],
+    "reward_spec": {
+      "horizons_trading_days": [
+        1,
+        3,
+        5
+      ],
+      "alpha_threshold": 0.005,
+      "transaction_cost_required": true,
+      "labels": {
+        "bullish": 1,
+        "neutral": 0,
+        "bearish": -1
+      },
+      "reward": {
+        "correct_direction": 2.0,
+        "correct_neutral": 0.1,
+        "opposite_direction": -1.5,
+        "missed_or_false_signal": -1.0
+      }
+    },
+    "integration_points": [
+      "group_a_plus/integrations/watchlist_news.py",
+      "group_a_plus/integrations/signal_alignment.py",
+      "group_a_plus/integrations/llm_sentiment_features.py",
+      "group_a_plus/integrations/strategy_trust_gate.py"
+    ],
+    "promotion_requirements": [
+      "point_in_time_join_no_lookahead",
+      "walk_forward_2024_2026_improves_next_day_alignment",
+      "cost_adjusted_shadow_backtest_improves_sharpe_or_drawdown_without_turnover_regression",
+      "manual_approval_before_any_training_or_live_weight_change"
+    ]
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "decision": {
+    "finsmart_lite_shadow_design_allowed": true,
+    "market_aligned_sentiment_shadow_allowed": true,
+    "llm_training_allowed": false,
+    "grpo_training_allowed": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "keep_golden1_0531_unchanged": true,
+    "keep_latest_strategy_weights_unchanged": true
+  }
+}

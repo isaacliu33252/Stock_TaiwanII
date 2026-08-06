@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_speculative_influence_network_readiness_review",
+  "generated_at": "2026-08-05T16:18:34",
+  "as_of": "2026--0-8-05",
+  "actual_data_end": "2026-08-05",
+  "source_paper": {
+    "path": "C:/Users/isaac/Downloads/1510.08162.pdf",
+    "title": "Speculative Influence Network during financial bubbles: application to Chinese Stock Markets",
+    "imported_concept": "HMM bubble-state probability, transfer-entropy speculative influence network, net speculative influence intensity, maximum-loss validation"
+  },
+  "policy": "research_only_speculative_influence_network_readiness_no_weight_change",
+  "status": "blocked",
+  "data": {
+    "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "db_exists": true,
+    "available_tables": [
+      "day_trading_data",
+      "dealer_futures_data",
+      "dealer_options_data",
+      "derivative_institutional_data",
+      "external_data_version",
+      "external_market_ohlcv",
+      "external_options_iv",
+      "foreign_shareholding_data",
+      "institutional_data",
+      "margin_data",
+      "market_margin_data",
+      "ohlcv",
+      "securities_lending_data",
+      "shareholding_distribution",
+      "short_sale_balance_data",
+      "stock_per_data",
+      "taifex_futures_daily",
+      "taifex_futures_institutional",
+      "taifex_options_daily",
+      "ticker_metadata",
+      "total_return_index_data"
+    ],
+    "table_counts": {
+      "day_trading_data": 1459,
+      "dealer_futures_data": 39773,
+      "dealer_options_data": 35473,
+      "derivative_institutional_data": 18066,
+      "external_data_version": 345,
+      "external_market_ohlcv": 71186,
+      "external_options_iv": 14,
+      "foreign_shareholding_data": 1455,
+      "institutional_data": 14254,
+      "margin_data": 9770,
+      "market_margin_data": 2474,
+      "ohlcv": 30846,
+      "securities_lending_data": 484,
+      "shareholding_distribution": 693100,
+      "short_sale_balance_data": 1439,
+      "stock_per_data": 866,
+      "taifex_futures_daily": 88131,
+      "taifex_futures_institutional": 78,
+      "taifex_options_daily": 3078034,
+      "ticker_metadata": 16,
+      "total_return_index_data": 704
+    },
+    "ohlcv_summary": {
+      "distinct_tickers": 15,
+      "min_dt": "2009-01-02",
+      "max_dt": "2026-08-05",
+      "rows": 30846
+    },
+    "broad_universe_min_tickers": 50,
+    "broad_universe_ready": false,
+    "requirements": {
+      "sector_or_style_mapping": {
+        "required_any_of": [
+          "ticker_metadata",
+          "stock_sector_style",
+          "stock_industry_mapping"
+        ],
+        "matched_tables": [
+          "ticker_metadata"
+        ],
+        "matched_table_counts": {
+          "ticker_metadata": 16
+        },
+        "populated_tables": [
+          "ticker_metadata"
+        ],
+        "available": true
+      },
+      "sector_index_history": {
+        "required_any_of": [
+          "sector_index_ohlcv",
+          "twse_sector_indices",
+          "industry_index_ohlcv"
+        ],
+        "matched_tables": [],
+        "matched_table_counts": {},
+        "populated_tables": [],
+        "available": false
+      },
+      "hmm_bubble_state_probabilities": {
+        "required_any_of": [
+          "hmm_bubble_state_probabilities",
+          "bubble_state_probabilities"
+        ],
+        "matched_tables": [],
+        "matched_table_counts": {},
+        "populated_tables": [],
+        "available": false
+      },
+      "transfer_entropy_network": {
+        "required_any_of": [
+          "transfer_entropy_network",
+          "speculative_influence_network",
+          "nsii_network"
+        ],
+        "matched_tables": [],
+        "matched_table_counts": {},
+        "populated_tables": [],
+        "available": false
+      },
+      "crash_maxloss_validation": {
+        "required_any_of": [
+          "crash_window_maxloss_labels",
+          "maxloss_validation_labels"
+        ],
+        "matched_tables": [],
+        "matched_table_counts": {},
+        "populated_tables": [],
+        "available": false
+      }
+    }
+  },
+  "candidate_imports": {
+    "bubble_state_probability": "concept overlaps with systemic bubble time-at-risk; not implemented as HMM live signal",
+    "speculative_influence_network": "possible only after sector/firm universe and transfer entropy validation exist",
+    "nsii_ranked_maxloss_validation": "useful validation design; no current Taiwan labels",
+    "finance_vs_industry_asymmetry_check": "research-only sector diagnostic after metadata backfill"
+  },
+  "data_backfill_plan": {
+    "priority": [
+      "sector_or_style_mapping",
+      "broad_taiwan_stock_ohlcv_universe",
+      "sector_index_history",
+      "hmm_bubble_state_probabilities",
+      "transfer_entropy_network",
+      "crash_maxloss_validation_labels"
+    ],
+    "minimum_viable_tables": {
+      "ticker_metadata": {
+        "purpose": "Map stocks to sector, industry, financial/non-financial group, and market-cap bucket.",
+        "minimum_columns": [
+          "ticker",
+          "name",
+          "sector",
+          "industry",
+          "is_financial_sector",
+          "market_cap_bucket"
+        ]
+      },
+      "sector_index_ohlcv": {
+        "purpose": "Build sector-level bubble-state nodes comparable to the paper's sector indices.",
+        "minimum_columns": [
+          "sector",
+          "dt",
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume"
+        ]
+      },
+      "hmm_bubble_state_probabilities": {
+        "purpose": "Cache per-node probability of speculative bubble state.",
+        "minimum_columns": [
+          "node_id",
+          "node_type",
+          "dt",
+          "bubble_probability",
+          "model_version"
+        ]
+      },
+      "transfer_entropy_network": {
+        "purpose": "Store directional speculative influence among bubble-qualified nodes.",
+        "minimum_columns": [
+          "source_node",
+          "target_node",
+          "window_start",
+          "window_end",
+          "transfer_entropy",
+          "nsii"
+        ]
+      },
+      "crash_window_maxloss_labels": {
+        "purpose": "Validate whether influence metrics predict later maximum loss.",
+        "minimum_columns": [
+          "node_id",
+          "window_start",
+          "window_end",
+          "max_loss",
+          "label_source"
+        ]
+      }
+    },
+    "validation_requirements": [
+      "Use shadow-only review first; no live target-weight effect.",
+      "Validate separately on Taiwan 2015, 2018, 2020, 2022, and 2026 stress windows.",
+      "Compare incremental value against SRR-lite and systemic bubble time-at-risk review.",
+      "Reject thresholds that improve recall only by raising false positives materially.",
+      "Keep China 2006-2008 findings separate from Taiwan-calibrated thresholds."
+    ]
+  },
+  "blocking_reasons": [
+    "broad_stock_universe_insufficient_for_sin",
+    "china_2006_2008_parameters_not_portable_to_group_a_plus",
+    "missing_crash_maxloss_validation",
+    "missing_hmm_bubble_state_probabilities",
+    "missing_sector_index_history",
+    "missing_transfer_entropy_network",
+    "nsii_maxloss_validation_missing_for_taiwan",
+    "sornette_andersen_hmm_not_implemented",
+    "speculative_influence_signal_not_allowed_to_change_live_weights",
+    "transfer_entropy_sin_not_implemented"
+  ],
+  "decision": {
+    "speculative_influence_network_ready": false,
+    "hmm_bubble_state_ready": false,
+    "transfer_entropy_network_ready": false,
+    "maxloss_validation_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

@@ -4,12 +4,14 @@ import pytest
 
 from scripts.evaluate.evaluate_a2118_decision_focused_action_shadow import (
     _apply_action,
+    _build_action_labels,
     _apply_partial_and_turnover_cap,
     _build_calibration_pairs,
     _predict_action_regrets,
     _predict_action_error_percentiles,
     _select_actions,
     _select_actions_stateful,
+    _stateful_candidate_weights,
     _utility,
     _vix_relief_signal,
 )
@@ -51,6 +53,23 @@ def test_cap12_caps_00631l_and_moves_excess_to_0050() -> None:
     assert sum(weights.values()) == pytest.approx(1.0)
 
 
+def test_reenter_00631l_step_label_rebuilds_part_of_prior_gap() -> None:
+    weights = _apply_action(BASE_WEIGHTS, action="REENTER_00631L_5", prior_00631l_weight=0.10)
+
+    assert weights["00631L.TW"] == pytest.approx(0.15)
+    assert weights["0050.TW"] == pytest.approx(0.65)
+    assert weights["cash"] == pytest.approx(0.20)
+    assert sum(weights.values()) == pytest.approx(1.0)
+
+
+def test_reenter_00631l_step_label_caps_at_a2118_target() -> None:
+    weights = _apply_action(BASE_WEIGHTS, action="REENTER_00631L_10", prior_00631l_weight=0.15)
+
+    assert weights["00631L.TW"] == pytest.approx(BASE_WEIGHTS["00631L.TW"])
+    assert weights["0050.TW"] == pytest.approx(BASE_WEIGHTS["0050.TW"])
+    assert sum(weights.values()) == pytest.approx(1.0)
+
+
 def test_utility_regret_rewards_cap_when_00631l_underperforms() -> None:
     dates = pd.bdate_range("2026-01-01", periods=21)
     prices = pd.DataFrame(
@@ -76,6 +95,35 @@ def test_utility_regret_rewards_cap_when_00631l_underperforms() -> None:
     )
 
     assert result["action_regret"] > 0.0
+
+
+def test_reenter_step_label_rewards_rebuild_when_00631l_outperforms_0050() -> None:
+    dates = pd.bdate_range("2026-01-01", periods=25)
+    prices = pd.DataFrame(
+        {
+            "0050.TW": np.linspace(100.0, 101.0, 25),
+            "00631L.TW": np.linspace(100.0, 120.0, 25),
+            "00632R.TW": [10.0] * 25,
+            "00679B.TWO": [30.0] * 25,
+        },
+        index=dates,
+    )
+    target_weights = pd.DataFrame([BASE_WEIGHTS] * len(dates), index=dates)
+
+    labels = _build_action_labels(
+        prices,
+        target_weights,
+        horizon=20,
+        lambda_mdd=0.0,
+        gamma_turnover=0.0,
+        eta_missed_rebound=0.0,
+        cap10=0.10,
+        actions=("KEEP", "REENTER_00631L_5", "REENTER_00631L_10"),
+    )
+
+    assert labels.iloc[0]["KEEP"] == pytest.approx(0.0)
+    assert labels.iloc[0]["REENTER_00631L_5"] > 0.0
+    assert labels.iloc[0]["REENTER_00631L_10"] > labels.iloc[0]["REENTER_00631L_5"]
 
 
 def test_partial_adjustment_respects_turnover_cap() -> None:
@@ -326,6 +374,79 @@ def test_stateful_keep_preserves_trim_and_reenter_restores_toward_a2118() -> Non
     assert decisions.iloc[2]["action"] == "REENTER"
     assert weights.iloc[2]["00631L.TW"] > weights.iloc[1]["00631L.TW"]
     assert weights.iloc[2]["00631L.TW"] < BASE_WEIGHTS["00631L.TW"]
+
+
+def test_stateful_reenter_step_adds_00631l_from_0050_first() -> None:
+    current = dict(BASE_WEIGHTS)
+    current["0050.TW"] = 0.70
+    current["00631L.TW"] = 0.10
+
+    weights = _stateful_candidate_weights(
+        BASE_WEIGHTS,
+        current,
+        action="REENTER_00631L_5",
+        prior_a2118_00631l_weight=0.20,
+        cap10=0.10,
+        adjustment_fraction=1.0,
+        turnover_cap=1.0,
+    )
+
+    assert weights["00631L.TW"] == pytest.approx(0.15)
+    assert weights["0050.TW"] == pytest.approx(0.65)
+    assert weights["cash"] == pytest.approx(0.20)
+    assert sum(weights.values()) == pytest.approx(1.0)
+
+
+def test_stateful_reenter_step_uses_cash_when_0050_is_insufficient() -> None:
+    current = dict(BASE_WEIGHTS)
+    current["0050.TW"] = 0.02
+    current["00631L.TW"] = 0.10
+    current["cash"] = 0.88
+
+    weights = _stateful_candidate_weights(
+        BASE_WEIGHTS,
+        current,
+        action="REENTER_00631L_5",
+        prior_a2118_00631l_weight=0.20,
+        cap10=0.10,
+        adjustment_fraction=1.0,
+        turnover_cap=1.0,
+    )
+
+    assert weights["00631L.TW"] == pytest.approx(0.15)
+    assert weights["0050.TW"] == pytest.approx(0.0)
+    assert weights["cash"] == pytest.approx(0.85)
+    assert sum(weights.values()) == pytest.approx(1.0)
+
+
+def test_stateful_reenter_step_requires_position_below_a2118() -> None:
+    dates = pd.bdate_range("2026-01-01", periods=2)
+    target_weights = pd.DataFrame([BASE_WEIGHTS, BASE_WEIGHTS], index=dates)
+    predicted = pd.DataFrame(
+        {
+            "KEEP": [0.0, 0.0],
+            "NO_ADD": [0.0, 0.0],
+            "CAP10": [0.0, 0.0],
+            "REENTER": [0.0, 0.0],
+            "REENTER_00631L_5": [0.01, 0.01],
+            "REENTER_00631L_10": [0.0, 0.0],
+        },
+        index=dates,
+    )
+
+    weights, decisions = _select_actions_stateful(
+        target_weights,
+        predicted,
+        edge_threshold=0.002,
+        regret_clip=0.03,
+        adjustment_fraction=1.0,
+        turnover_cap=1.0,
+        cap10=0.10,
+        reenter_edge_threshold=-0.0005,
+    )
+
+    assert (decisions["action"] == "KEEP").all()
+    assert np.allclose(weights["00631L.TW"], BASE_WEIGHTS["00631L.TW"])
 
 
 def test_vix_relief_signal_fires_only_after_a_meaningful_fall_from_peak() -> None:

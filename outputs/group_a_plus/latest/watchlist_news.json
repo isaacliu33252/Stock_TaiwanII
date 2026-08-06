@@ -1,0 +1,41 @@
+{
+  "artifact_kind": "pipeline",
+  "artifact_name": "watchlist_news",
+  "generated_at": "2026-08-05T19:09:17.512436+00:00",
+  "payload": {
+    "article_count": 0,
+    "articles": [],
+    "config": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/config/group_a_plus_watchlist.json",
+    "fallback_used": true,
+    "generated_at": "2026-08-05T19:09:17Z",
+    "lookback_days": 7,
+    "news_glob": "news/ltn_mainstream_*.jsonl",
+    "schema_version": 1,
+    "signal_date": "2026-08-06",
+    "source": "local_ltn_jsonl",
+    "watchlist": [
+      {
+        "label": "元大台灣50",
+        "matched_count": 0,
+        "symbol": "0050.TW"
+      },
+      {
+        "label": "元大台灣50正2",
+        "matched_count": 0,
+        "symbol": "00631L.TW"
+      },
+      {
+        "label": "元大台灣50反1",
+        "matched_count": 0,
+        "symbol": "00632R.TW"
+      },
+      {
+        "label": "元大美債20年",
+        "matched_count": 0,
+        "symbol": "00679B.TWO"
+      }
+    ]
+  },
+  "run_mode": "production",
+  "schema_version": 1
+}

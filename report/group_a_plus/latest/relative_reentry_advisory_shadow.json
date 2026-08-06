@@ -1,0 +1,295 @@
+{
+  "schema_version": 1,
+  "report_type": "00631l_0050_relative_reentry_advisory_shadow",
+  "status": "available",
+  "policy": "shadow_only_no_auto_weight_change",
+  "active_allocation_impact": "none",
+  "generated_at": "2026-08-06T03:07:55",
+  "as_of": "2026-08-05",
+  "input": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/relative_reentry_opportunity_shadow.json",
+  "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260806.json",
+  "model_snapshot": {
+    "primary_window": "live_2024_2026",
+    "source_status": "shadow_only_no_live_action",
+    "summary": {
+      "windows": 7,
+      "action_counts": {
+        "KEEP": 2013,
+        "SHIFT_00631L_5": 72
+      },
+      "non_keep_days": 72,
+      "mean_selected_edge_across_active_windows": 0.0005228109353988378
+    },
+    "selected_decision": {
+      "date": "2026-08-05",
+      "action": "KEEP",
+      "shift_00631l_weight": 0.0,
+      "predicted_regret": 0.0,
+      "predicted_regrets": {
+        "KEEP": 0.0,
+        "SHIFT_00631L_2": -0.0007650295406937609,
+        "SHIFT_00631L_5": -0.0019146955067821385
+      },
+      "candidate_action_before_reliability": "KEEP",
+      "candidate_predicted_regret_before_reliability": 0.0,
+      "reliability_error_percentile": null,
+      "reliability_gate_pass": true,
+      "action_allowed": false,
+      "block_reason": "risk_up_permission_block:probability<0.5000",
+      "risk_up_permission_probability": 0.2143189405727953,
+      "source_list": "recent_decisions"
+    }
+  },
+  "advisory_rule": {
+    "candidate_action": "KEEP",
+    "target_shift_from_0050_to_00631l": 0.0,
+    "max_shift_from_0050_to_00631l": 0.05,
+    "holding_observation_horizon_trading_days": 20,
+    "cumulative_signals": "not_allowed",
+    "withdrawal_rule": "Revert to A21.18 baseline on the next KEEP decision, any strategy-trust non-TRUST state, FAST_CRASH/PERSISTENT_DRAWDOWN risk mechanism, stale opportunity coverage, or after 20 trading days.",
+    "conflict_rule": "A21.18 live allocation and hard risk guards override this report."
+  },
+  "gates": {
+    "checks": {
+      "opportunity_input_available": true,
+      "coverage_fresh_for_live_date": true,
+      "exact_live_date_decision_available": true,
+      "strategy_trust_pass": false,
+      "risk_mechanism_pass": true,
+      "model_action_non_keep": false,
+      "model_internal_gates_pass": false
+    },
+    "blockers": [
+      "strategy_trust_pass",
+      "model_internal_gates_pass"
+    ],
+    "latest_strategy_trust": {
+      "date": "2026-08-04",
+      "trust_level": "ABSTAIN",
+      "reasons": [
+        "risk_mechanism=NORMAL",
+        "signal_alignment=mixed",
+        "model ensemble disagrees on direction (alignment=mixed, divergent_sources=['composite_risk_score'])",
+        "data-quality sub-status not ok: module_health=warning feature_table_sync=ok external_data_freshness=error"
+      ],
+      "components": {
+        "risk_mechanism": "NORMAL",
+        "signal_alignment": "mixed",
+        "divergent_sources": [
+          "composite_risk_score"
+        ],
+        "module_health_status": "warning",
+        "feature_table_sync_status": "ok",
+        "external_data_freshness_status": "error",
+        "uncertain_regime": false,
+        "ensemble_disagrees": true,
+        "data_quality_problem": true
+      }
+    },
+    "latest_risk_mechanism": {
+      "date": "2026-08-04",
+      "mechanism": "NORMAL",
+      "reasons": [
+        "market_state.state=choppy_range_low_risk",
+        "market_state.bucket=choppy_range"
+      ],
+      "components": {
+        "market_state_state": "choppy_range_low_risk",
+        "market_state_bucket": "choppy_range",
+        "market_state_crash": false,
+        "crash_alert_available": true,
+        "crash_alert_active": false,
+        "crash_alert_category_score": 1,
+        "persistent_drawdown_days": 0,
+        "prior_drawdown_streak_days": 0,
+        "persistent_min_days": 5,
+        "persistent_drawdown_confirmed": false
+      }
+    },
+    "coverage": {
+      "actual_data_date": "2026-08-05",
+      "opportunity_coverage_end": "2026-08-05",
+      "selected_decision_date": "2026-08-05"
+    },
+    "recommended_action": "keep_shadow_only",
+    "advisory_allowed": false
+  },
+  "tail_risk_evaluation": {
+    "selected_edge_worst_across_active_windows": -0.0072389372476094685,
+    "stress_windows": {
+      "2018_correction_non_keep_days": 0,
+      "inflation_2022_non_keep_days": 0
+    },
+    "window_summaries": [
+      {
+        "label": "covid_2020",
+        "bucket": "out_of_sample",
+        "non_keep_days": 5,
+        "action_counts": {
+          "KEEP": 220,
+          "SHIFT_00631L_5": 5
+        },
+        "selected_edge": {
+          "count": 5,
+          "mean": 0.0012749832416930641,
+          "positive_rate": 0.8,
+          "worst": -0.00029691516649748076,
+          "p10": 0.00010907973968594459,
+          "median": 0.0010952298083353375,
+          "p90": 0.002501672820208184
+        },
+        "blocked_days": {
+          "slow_bear": 38,
+          "risk_up_permission": 104
+        }
+      },
+      {
+        "label": "inflation_2022",
+        "bucket": "out_of_sample",
+        "non_keep_days": 0,
+        "action_counts": {
+          "KEEP": 226
+        },
+        "selected_edge": {
+          "count": 0,
+          "mean": null,
+          "positive_rate": null,
+          "worst": null,
+          "p10": null,
+          "median": null,
+          "p90": null
+        },
+        "blocked_days": {
+          "slow_bear": 132,
+          "risk_up_permission": 176
+        }
+      },
+      {
+        "label": "live_2024_2026",
+        "bucket": "tuning_window",
+        "non_keep_days": 31,
+        "action_counts": {
+          "KEEP": 576,
+          "SHIFT_00631L_5": 31
+        },
+        "selected_edge": {
+          "count": 31,
+          "mean": 0.00028199961745797495,
+          "positive_rate": 0.6129032258064516,
+          "worst": -0.007238937247609364,
+          "p10": -0.002033271798391946,
+          "median": 0.0007280921506700594,
+          "p90": 0.0022400089528864936
+        },
+        "blocked_days": {
+          "slow_bear": 106,
+          "risk_up_permission": 438
+        }
+      },
+      {
+        "label": "active_2025_2026",
+        "bucket": "tuning_window",
+        "non_keep_days": 33,
+        "action_counts": {
+          "KEEP": 332,
+          "SHIFT_00631L_5": 33
+        },
+        "selected_edge": {
+          "count": 33,
+          "mean": 0.0004691514243653268,
+          "positive_rate": 0.5454545454545454,
+          "worst": -0.0072389372476094685,
+          "p10": -0.0032714538687014356,
+          "median": 0.00035595759721725184,
+          "p90": 0.0052260294614287425
+        },
+        "blocked_days": {
+          "slow_bear": 69,
+          "risk_up_permission": 196
+        }
+      },
+      {
+        "label": "2017_bull",
+        "bucket": "out_of_sample",
+        "non_keep_days": 0,
+        "action_counts": {
+          "KEEP": 216
+        },
+        "selected_edge": {
+          "count": 0,
+          "mean": null,
+          "positive_rate": null,
+          "worst": null,
+          "p10": null,
+          "median": null,
+          "p90": null
+        },
+        "blocked_days": {
+          "slow_bear": 17,
+          "risk_up_permission": 174
+        }
+      },
+      {
+        "label": "2018_correction",
+        "bucket": "out_of_sample",
+        "non_keep_days": 0,
+        "action_counts": {
+          "KEEP": 225
+        },
+        "selected_edge": {
+          "count": 0,
+          "mean": null,
+          "positive_rate": null,
+          "worst": null,
+          "p10": null,
+          "median": null,
+          "p90": null
+        },
+        "blocked_days": {
+          "slow_bear": 74,
+          "risk_up_permission": 168
+        }
+      },
+      {
+        "label": "2019_recovery",
+        "bucket": "out_of_sample",
+        "non_keep_days": 3,
+        "action_counts": {
+          "KEEP": 218,
+          "SHIFT_00631L_5": 3
+        },
+        "selected_edge": {
+          "count": 3,
+          "mean": 6.510945807898516e-05,
+          "positive_rate": 0.6666666666666666,
+          "worst": -0.00025105666460838866,
+          "p10": -0.00019851540280345915,
+          "median": 1.164964441625893e-05,
+          "p90": 0.00035011824442652
+        },
+        "blocked_days": {
+          "slow_bear": 24,
+          "risk_up_permission": 149
+        }
+      }
+    ],
+    "limitations": [
+      "Drawdown-impact and 5/10/20-day path details are not yet persisted separately; selected edge uses the evaluator's 20-day utility label.",
+      "A live/advisory candidate is blocked if data coverage is behind the live signal date."
+    ]
+  },
+  "promotion_requirements": {
+    "daily_latest_min_observation_days": 5,
+    "preferred_observation_days_before_advisory": 10,
+    "requires_strategy_trust": "TRUST",
+    "requires_risk_mechanism": [
+      "NORMAL",
+      "RECOVERY"
+    ],
+    "requires_exact_live_date_decision": true,
+    "requires_fresh_opportunity_coverage": true,
+    "requires_manual_review": true
+  },
+  "recommended_action": "keep_shadow_only",
+  "advisory_allowed": false
+}

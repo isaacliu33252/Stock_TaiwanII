@@ -3,11 +3,11 @@
 - Status: `blocked`
 - Exceeded columns: `['h20_prob_up']`
 - Trigger-critical exceeded: `['h20_prob_up']`
-- Source hypotheses: `['model_set_changed', 'candidate_external_source_stale']`
+- Source hypotheses: `['model_set_changed', 'candidate_external_source_stale', 'external_feature_sensitivity_visible']`
 
 ## Columns
 
-- `h20_prob_up` tier `trigger_critical` delta `0.15955034020305625` limit `0.15` date `2026-05-11` direction `negative`
+- `h20_prob_up` tier `trigger_critical` delta `0.1982313917525921` limit `0.15` date `2026-02-10` direction `negative`
 
 ## Next Checks
 

@@ -239,6 +239,7 @@ class TechnicalIndicators:
         """
         close = self.df['close'].values
         
+        # TA-Lib 優先，Pandas Fallback
         if TALIB_AVAILABLE:
             try:
                 macd_line, signal_line, hist = talib.MACD(
@@ -250,28 +251,28 @@ class TechnicalIndicators:
                 self.df['macd_line'] = macd_line
                 self.df['signal_line'] = signal_line
                 self.df['histogram'] = hist
+                # TA-Lib 成功：添加衍生指標（與 Pandas fallback 相同的特徵）
+                self.df['histogram_change'] = self.df['histogram'].diff()
+                self.df['macd_turn_positive'] = np.where(
+                    (self.df['macd_line'] > 0) & (self.df['macd_line'].shift(1) <= 0), 1, 0
+                )
+                self.df['macd_turn_negative'] = np.where(
+                    (self.df['macd_line'] < 0) & (self.df['macd_line'].shift(1) >= 0), 1, 0
+                )
+                return self.df
             except Exception:
-                # TA-Lib 失敗，使用 Pandas
-                ema_fast = pd.Series(close).ewm(span=fast_period, adjust=False).mean()
-                ema_slow = pd.Series(close).ewm(span=slow_period, adjust=False).mean()
-                macd_line = ema_fast - ema_slow
-                signal_line = pd.Series(macd_line).ewm(span=signal_period, adjust=False).mean()
-                hist = macd_line - signal_line
-                
-                self.df['macd_line'] = macd_line
-                self.df['signal_line'] = signal_line
-                self.df['histogram'] = hist
-        else:
-            # 無 TA-Lib，使用 Pandas
-            ema_fast = pd.Series(close).ewm(span=fast_period, adjust=False).mean()
-            ema_slow = pd.Series(close).ewm(span=slow_period, adjust=False).mean()
-            macd_line = ema_fast - ema_slow
-            signal_line = pd.Series(macd_line).ewm(span=signal_period, adjust=False).mean()
-            hist = macd_line - signal_line
-            
-            self.df['macd_line'] = macd_line
-            self.df['signal_line'] = signal_line
-            self.df['histogram'] = hist
+                pass
+        
+        # Fallback: Pandas implementation (only when TA-Lib unavailable or failed)
+        ema_fast = pd.Series(close).ewm(span=fast_period, adjust=False).mean()
+        ema_slow = pd.Series(close).ewm(span=slow_period, adjust=False).mean()
+        macd_line = ema_fast - ema_slow
+        signal_line = pd.Series(macd_line).ewm(span=signal_period, adjust=False).mean()
+        hist = macd_line - signal_line
+        
+        self.df['macd_line'] = macd_line
+        self.df['signal_line'] = signal_line
+        self.df['histogram'] = hist
         
         # MACD 柱狀圖變化（動量）
         self.df['histogram_change'] = self.df['histogram'].diff()
@@ -404,7 +405,11 @@ class TechnicalIndicators:
         denominator = denominator.replace(0, np.inf)
 
         rsv = (close - lowest_low) / denominator * 100
-        
+        # BUG FIX (2026-08-05): RSV should be bounded [0, 100] for proper KDJ.
+        # Without clipping, extreme price movements produce RSV in the thousands,
+        # causing KDJ to produce nonsensical values (K=-1552~37714 observed).
+        rsv = np.clip(rsv, 0, 100)
+
         # 計算 K, D, J（向量化 EMA 實現，替代 for 迴圈）
         # K = (2/3)*prev_K + (1/3)*RSV → EMA(RSV, alpha=1/3)
         # D = (2/3)*prev_D + (1/3)*K   → EMA(K, alpha=1/3)
@@ -454,6 +459,7 @@ class TechnicalIndicators:
         """
         close = self.df['close'].values
         
+        # TA-Lib 優先，Pandas Fallback
         if TALIB_AVAILABLE:
             try:
                 upper, middle, lower = talib.BBANDS(
@@ -466,22 +472,19 @@ class TechnicalIndicators:
                 self.df['bb_upper'] = upper
                 self.df['bb_middle'] = middle
                 self.df['bb_lower'] = lower
+                # TA-Lib 成功：添加衍生指標（與 Pandas fallback 相同的特徵）
+                self.df['bb_width'] = (self.df['bb_upper'] - self.df['bb_lower']) / self.df['bb_middle']
+                return self.df
             except Exception:
-                # TA-Lib 失敗，使用 Pandas
-                middle = pd.Series(close).rolling(window=period).mean()
-                std = pd.Series(close).rolling(window=period).std(ddof=1)
-
-                self.df['bb_upper'] = middle + nb_devup * std
-                self.df['bb_middle'] = middle
-                self.df['bb_lower'] = middle - nb_devdn * std
-        else:
-            # 無 TA-Lib，使用 Pandas
-            middle = pd.Series(close).rolling(window=period).mean()
-            std = pd.Series(close).rolling(window=period).std(ddof=1)
-
-            self.df['bb_upper'] = middle + nb_devup * std
-            self.df['bb_middle'] = middle
-            self.df['bb_lower'] = middle - nb_devdn * std
+                pass
+        
+        # Fallback: Pandas implementation (only when TA-Lib unavailable or failed)
+        middle = pd.Series(close).rolling(window=period).mean()
+        std = pd.Series(close).rolling(window=period).std(ddof=1)
+        
+        self.df['bb_upper'] = middle + nb_devup * std
+        self.df['bb_middle'] = middle
+        self.df['bb_lower'] = middle - nb_devdn * std
         
         # 布林帶寬度（波動性指標）
         self.df['bb_width'] = (self.df['bb_upper'] - self.df['bb_lower']) / self.df['bb_middle']
@@ -637,8 +640,9 @@ class TechnicalIndicators:
         tr = np.maximum(tr1, np.maximum(tr2, tr3))
         
         # 計算 ATR (使用 EMA 方式，與 TA-Lib 一致)
+        # 注意：EWM ATR 不會產生 0 值，atr.replace(0,nan).bfill() 是多餘且可能誤解的操作
+        # ATR 在初期累積足夠數據前保持 NaN（從第 period 筆開始有效）
         atr = pd.Series(tr).ewm(span=period, adjust=False).mean()
-        atr = atr.replace(0, np.nan).bfill()
 
         # 計算 +DI, -DI (ATR-normalized，範圍 0-100)
         # 當 atr 為 NaN（波動初期），用 np.errstate 避免 warning
@@ -906,7 +910,7 @@ class TechnicalIndicators:
         # 注意：原本使用 20日均量 * 2 倍二元閾值，觸發率 < 1%，幾乎恆為 0，對 RL 無訊號價值
         volume_ma5 = self.df['volume'].rolling(window=5).mean()
         self.df['volume_spike'] = self.df['volume'] / (volume_ma5 + 1e-10)
-        
+
         # 價格動量（5日變化率）
         self.df['price_momentum'] = self.df['close'].pct_change(periods=5)
         
@@ -982,12 +986,7 @@ class TechnicalIndicators:
         
         # 5日均量（與 v1 一致）
         self.df['volume_ma5'] = self.df['volume'].rolling(window=5).mean()
-        
 
-        
-        # 量比：當日成交量 / 5日均量（與 v1 一致，是 volume_spike 的另一表示）
-        self.df['volume_ratio'] = self.df['volume'] / (self.df['volume'].rolling(window=5).mean() + 1e-10)
-        
         # OBV（On-Balance Volume / 能量潮）
         obv = (np.sign(self.df['close'].diff()) * self.df['volume']).fillna(0).cumsum()
         self.df['obv'] = obv
@@ -1137,8 +1136,8 @@ class TechnicalIndicators:
         features.extend(['momentum_21', 'momentum_63', 'momentum_126', 'momentum_252'])
         
         # 位置
-        # 注意：rolling_mdd_period 在 calculate_position_features 中計算
-        # 使用 rolling_mdd_63 作為標準名稱（明確標示窗口大小）
+        # high_252_position: (close - 252日低點) / (252日高點 - 252日低點)
+        # rolling_mdd_63: 63日滾動最大回撤
         features.extend(['high_252_position', 'rolling_mdd_63'])
         
         # 型態
@@ -1150,7 +1149,7 @@ class TechnicalIndicators:
 
         # 成交量
         features.extend([
-            'volume_normalized', 'volume_ma5', 'volume_spike', 'volume_ratio',
+            'volume_normalized', 'volume_ma5', 'volume_spike',
             'obv', 'obv_ma10', 'obv_slope',
             'vwap', 'close_vwap_ratio'
         ])
@@ -1165,11 +1164,11 @@ class TechnicalIndicators:
 def calculate_ma(df: pd.DataFrame, periods: List[int] = None) -> pd.DataFrame:
     """
     便捷函數：計算移動平均線
-    
+
     Args:
         df: 股價數據
         periods: 週期列表
-        
+
     Returns:
         包含 MA 的 DataFrame
     """
@@ -1187,13 +1186,13 @@ def calculate_macd(
 ) -> pd.DataFrame:
     """
     便捷函數：計算 MACD
-    
+
     Args:
         df: 股價數據
         fast_period: 快線週期
         slow_period: 慢線週期
         signal_period: 信號線週期
-        
+
     Returns:
         包含 MACD 的 DataFrame
     """
@@ -1204,11 +1203,11 @@ def calculate_macd(
 def calculate_rsi(df: pd.DataFrame, period: int = 14) -> pd.DataFrame:
     """
     便捷函數：計算 RSI
-    
+
     Args:
         df: 股價數據
         period: RSI 週期
-        
+
     Returns:
         包含 RSI 的 DataFrame
     """
@@ -1219,10 +1218,10 @@ def calculate_rsi(df: pd.DataFrame, period: int = 14) -> pd.DataFrame:
 def calculate_kdj(df: pd.DataFrame) -> pd.DataFrame:
     """
     便捷函數：計算 KDJ
-    
+
     Args:
         df: 股價數據
-        
+
     Returns:
         包含 KDJ 的 DataFrame
     """
@@ -1233,53 +1232,14 @@ def calculate_kdj(df: pd.DataFrame) -> pd.DataFrame:
 def calculate_bollinger_bands(df: pd.DataFrame, period: int = 20) -> pd.DataFrame:
     """
     便捷函數：計算布林帶
-    
+
     Args:
         df: 股價數據
         period: 週期
-        
+
     Returns:
         包含布林帶的 DataFrame
     """
     ti = TechnicalIndicators(df)
     return ti.calculate_bollinger_bands(period)
 
-
-# =============================================================================
-# 主程式測試
-# =============================================================================
-
-if __name__ == '__main__':
-    import yfinance as yf
-    
-    print("=" * 60)
-    print("TechnicalIndicators 測試")
-    print("=" * 60)
-    
-    # 獲取測試數據
-    print("\n[測試] 下載台積電 (2330) 測試數據...")
-    ticker = yf.Ticker("2330.TW")
-    df = ticker.history(start='2023-01-01', end='2024-01-01', auto_adjust=False)
-    df = df.reset_index()
-    
-    if df.empty:
-        print("無法下載測試數據")
-    else:
-        print(f"成功獲取 {len(df)} 筆數據")
-        
-        # 計算技術指標
-        print("\n[測試] 計算技術指標...")
-        ti = TechnicalIndicators(df)
-        df_with_features = ti.calculate_all()
-        
-        # 顯示結果
-        feature_list = ti.get_feature_list()
-        print(f"\n共計算 {len(feature_list)} 個技術指標")
-        print("\n前10個特徵:")
-        for feat in feature_list[:10]:
-            if feat in df_with_features.columns:
-                print(f"  - {feat}: {df_with_features[feat].iloc[-1]:.4f}")
-    
-    print("\n" + "=" * 60)
-    print("測試完成")
-    print("=" * 60)

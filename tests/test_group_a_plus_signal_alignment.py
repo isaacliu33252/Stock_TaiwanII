@@ -10,6 +10,7 @@ from pathlib import Path
 from group_a_plus.integrations.signal_alignment import (
     append_signal_alignment_shadow_log,
     build_signal_alignment,
+    build_signal_alignment_from_file,
     _aligned_confidence,
     _ncf_sources,
     _tbrain_source,
@@ -58,6 +59,27 @@ def test_signal_alignment_detects_current_bearish_alignment() -> None:
     # available. See test_execution_regime_excluded_when_ncf_hedge_active
     # below for the dedicated regression test.
     assert result["available_sources"] == 6
+
+
+def test_signal_alignment_from_file_writes_canonical_envelope(tmp_path: Path) -> None:
+    live_signal_path = tmp_path / "live_signal.json"
+    legacy_output = tmp_path / "report/group_a_plus/latest/signal_alignment.json"
+    canonical_output = tmp_path / "outputs/group_a_plus/latest/signal_alignment.json"
+    live_signal_path.write_text(json.dumps(_live_signal(), ensure_ascii=False), encoding="utf-8")
+
+    result = build_signal_alignment_from_file(
+        live_signal_path,
+        output_path=legacy_output,
+        canonical_path=canonical_output,
+    )
+
+    legacy = json.loads(legacy_output.read_text(encoding="utf-8"))
+    canonical = json.loads(canonical_output.read_text(encoding="utf-8"))
+    assert legacy == result
+    assert canonical["artifact_name"] == "signal_alignment"
+    assert canonical["artifact_kind"] == "signal"
+    assert canonical["run_mode"] == "production"
+    assert canonical["payload"] == result
 
 
 def test_execution_regime_excluded_when_ncf_hedge_active() -> None:

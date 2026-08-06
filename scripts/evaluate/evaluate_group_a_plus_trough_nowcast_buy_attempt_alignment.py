@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +33,13 @@ from scripts.evaluate.evaluate_group_a_plus_trough_nowcast_shadow import (
     DEFAULT_WINDOWS,
     build_trough_state_frame,
     _forward_return,
+    _load_external_rebound_frame,
+    _load_ohlcv_frame,
+    build_multisource_features,
+)
+from scripts.evaluate.evaluate_group_a_plus_trough_nowcast_param_sweep import (
+    SweepParams,
+    build_param_state_frame,
 )
 from scripts.evaluate.evaluate_group_a_plus_volatility_gate_shadow import _build_volatility_gate_frame
 
@@ -218,6 +226,43 @@ def simulate_buy_attempt_alignment(
     }
 
 
+def _build_trough_state_with_params(
+    *,
+    db_path: Path,
+    strategy_frame: pd.DataFrame,
+    sweep_params: SweepParams,
+) -> pd.DataFrame:
+    """Same inputs/output shape as build_trough_state_frame, but reuses the
+    parameterized classifier from evaluate_group_a_plus_trough_nowcast_param_sweep.py
+    instead of trough_nowcast.py's hardcoded (v6-equivalent) thresholds.
+
+    2026-08-05: added so this dollar-value evaluator can be re-run against a
+    non-default threshold candidate (e.g. the sweep's breadth_min=0.6 finding)
+    with the exact same methodology used for the existing +1527.6/9yr result,
+    instead of approximating. Opt-in via --sweep-params; default (None)
+    preserves existing behavior exactly.
+    """
+    index = pd.DatetimeIndex(strategy_frame.index)
+    market_proxy = _load_ohlcv_frame(db_path, index)
+    external = _load_external_rebound_frame(db_path, index)
+    try:
+        multisource = build_multisource_features(db_path, pd.bdate_range(index.min() - pd.Timedelta(days=420), index.max()))
+    except Exception:
+        multisource = pd.DataFrame(index=index)
+    multisource = multisource.reindex(index)
+    if "txo_pcr_volume_z20" in multisource:
+        multisource["txo_pcr_volume_z20_chg5"] = multisource["txo_pcr_volume_z20"].diff(5)
+    if "usdtwd_ret5_z60" in multisource:
+        multisource["usdtwd_ret5_z60_chg5"] = multisource["usdtwd_ret5_z60"].diff(5)
+    return build_param_state_frame(
+        strategy_frame=strategy_frame,
+        market_proxy=market_proxy,
+        multisource=multisource,
+        external=external,
+        params=sweep_params,
+    )
+
+
 def evaluate_window(
     *,
     label: str,
@@ -227,6 +272,7 @@ def evaluate_window(
     kind: str,
     db_path: Path,
     initial_value: float,
+    sweep_params: SweepParams | None = None,
 ) -> dict[str, Any]:
     report, frame = run_a2118(
         start=start,
@@ -239,7 +285,10 @@ def evaluate_window(
     prices = _load_prices(db_path, list(TICKERS), start, end).reindex(frame.index)
     chip = _load_chip_features(db_path, prices.index, start, end)
     gate_frame = _build_volatility_gate_frame(prices, chip).reindex(frame.index)
-    trough = build_trough_state_frame(db_path=db_path, strategy_frame=frame)
+    if sweep_params is not None:
+        trough = _build_trough_state_with_params(db_path=db_path, strategy_frame=frame, sweep_params=sweep_params)
+    else:
+        trough = build_trough_state_frame(db_path=db_path, strategy_frame=frame)
     alignment = simulate_buy_attempt_alignment(
         prices=prices,
         frame=frame,
@@ -263,19 +312,34 @@ def main() -> None:
     parser.add_argument("--windows", default="default", help="default or semicolon-separated label,start,end,panel,kind")
     parser.add_argument("--initial-value", type=float, default=1_000_000.0)
     parser.add_argument("--output", default=str(PROJECT_ROOT / "results" / "group_a_plus_trough_nowcast_buy_attempt_alignment_20260714.json"))
+    parser.add_argument(
+        "--sweep-params",
+        default=None,
+        help=(
+            "Optional JSON object overriding PARTIAL_REENTRY thresholds via the "
+            "param-sweep's parameterized classifier instead of trough_nowcast.py's "
+            "hardcoded defaults, e.g. '{\"breadth_min\": 0.6}'. Unspecified fields "
+            "fall back to SweepParams defaults (cap_min=3, reentry_min=3, "
+            "rebound_0050_min=0.02, rebound_00631l_min=0.04, breadth_min=0.5, "
+            "risk_unwind_chg_max=-0.5). Default None preserves existing behavior."
+        ),
+    )
     args = parser.parse_args()
 
     db_path = Path(args.db)
+    sweep_params = SweepParams(**json.loads(args.sweep_params)) if args.sweep_params else None
     payload = {
         "experiment": "group_a_plus_trough_nowcast_buy_attempt_alignment",
         "research_only": True,
         "full_reentry": "disabled",
+        "sweep_params": asdict(sweep_params) if sweep_params is not None else None,
         "windows": [],
     }
     for label, start, end, panel, kind in _parse_windows(args.windows):
         print(f"Evaluating {label}: {start}..{end}")
         payload["windows"].append(
             evaluate_window(
+                sweep_params=sweep_params,
                 label=label,
                 start=start,
                 end=end,

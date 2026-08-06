@@ -7,7 +7,7 @@ import json
 from argparse import Namespace
 from pathlib import Path
 
-from scripts.misc.check_group_a_plus_daily_status import _live_status_report, _markdown_text
+from scripts.misc.check_group_a_plus_daily_status import _live_status_report, _markdown_text, _write_canonical_daily_status
 
 
 def _write_standard(path: Path, data: dict) -> None:
@@ -86,6 +86,23 @@ def _live_signal_data() -> dict:
         "estimated_cash_after_rounding_before_cost": 1000.0,
         "data_freshness": {"optional_sources": {}},
     }
+
+
+def test_write_canonical_daily_status_writes_enveloped_payload(tmp_path: Path) -> None:
+    canonical = tmp_path / "outputs/group_a_plus/latest/daily_status.json"
+
+    saved_path = _write_canonical_daily_status(canonical, {"overall_status": "ok"})
+
+    assert saved_path == canonical
+    payload = json.loads(canonical.read_text(encoding="utf-8"))
+    assert payload["artifact_name"] == "daily_status"
+    assert payload["artifact_kind"] == "pipeline"
+    assert payload["run_mode"] == "production"
+    assert payload["payload"] == {"overall_status": "ok"}
+
+
+def test_write_canonical_daily_status_skips_blank_path() -> None:
+    assert _write_canonical_daily_status("", {"overall_status": "ok"}) is None
 
 
 def test_live_status_includes_aligned_execution_plan_pre_trade_guard(tmp_path: Path) -> None:
@@ -222,6 +239,51 @@ def test_live_status_includes_promotion_gate_deployment_summary_status(tmp_path:
     assert "## Promotion Gate" in markdown
     assert "Deployment summary gate: `pass`" in markdown
     assert "Deployment summary consistency: `ok`" in markdown
+
+
+def test_live_status_includes_daily_artifact_integrity_warning(tmp_path: Path) -> None:
+    live_signal = tmp_path / "live_signal.json"
+    execution_plan = tmp_path / "execution_plan.json"
+    artifact_integrity = tmp_path / "daily_artifact_integrity.json"
+    _write_standard(live_signal, _live_signal_data())
+    _write_standard(
+        execution_plan,
+        {
+            "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+            "actual_data_date": "2026-07-09",
+        },
+    )
+    artifact_integrity.write_text(
+        json.dumps(
+            {
+                "status": "warning",
+                "generated_at": "2026-07-09T08:00:00",
+                "check_date": "2026-07-09",
+                "policy": "diagnostic_only_no_strategy_change_no_weight_change",
+                "errors": [],
+                "warnings": ["NCF panel refresh recommendation artifact missing"],
+                "checks": [{"status": "warning", "message": "NCF panel refresh recommendation artifact missing"}],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    args = _args(live_signal, execution_plan)
+    args.daily_artifact_integrity = str(artifact_integrity)
+
+    report = _live_status_report(args)
+    check = [row for row in report["checks"] if row["name"] == "daily_artifact_integrity"][0]
+
+    assert check["status"] == "warn"
+    assert report["overall_status"] == "warn"
+    assert report["group_a_plus"]["daily_artifact_integrity"]["status"] == "warning"
+    assert report["group_a_plus"]["daily_artifact_integrity"]["warnings"] == [
+        "NCF panel refresh recommendation artifact missing"
+    ]
+    markdown = _markdown_text(report)
+    assert "## Artifact Integrity" in markdown
+    assert "Status: `warning`" in markdown
+    assert "NCF panel refresh recommendation artifact missing" in markdown
 
 
 def test_live_status_promotion_gate_omitted_does_not_crash(tmp_path: Path) -> None:

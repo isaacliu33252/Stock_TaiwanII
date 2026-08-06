@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-02T13:48:08Z",
+  "status": "available",
+  "policy": "alert_only_no_auto_weight_change",
+  "as_of": "2026-07-30",
+  "requested_as_of": "latest",
+  "watch_level": "watch",
+  "alert_level": null,
+  "alert_active": false,
+  "category_score": 1,
+  "category_flags": {
+    "options_tail": false,
+    "liquidity_forced_selling": true,
+    "cross_market_shock": false
+  },
+  "condition_details": {
+    "options_tail": {
+      "txo_pcr_volume_z20_ge_1": false,
+      "txo_pcr_oi_z20_ge_1": false,
+      "txo_foreign_put_call_net_oi_chg5_z60_ge_1": false
+    },
+    "liquidity_forced_selling": {
+      "market_margin_forced_repay_z60_ge_1": true,
+      "market_margin_balance_chg20_z252_le_minus_1": true,
+      "securities_lending_0050_volume_z60_ge_1": false
+    },
+    "cross_market_shock": {
+      "vix_level_z60_ge_1": false,
+      "vix_chg5_z60_ge_1": false,
+      "soxx_ret1_le_minus_3pct": false,
+      "soxx_realized_vol20_z60_ge_1": false,
+      "soxx_downside_vol20_z60_ge_1": false,
+      "vix_soxx_realized_vol_gap_z60_ge_1": false,
+      "soxx_atm_iv30_raw_ge_55pct": false,
+      "soxx_put_call_volume_ratio_raw_ge_3": false,
+      "soxx_put_call_oi_ratio_raw_ge_3": false,
+      "soxx_atm_iv30_z252_ge_1": false,
+      "soxx_iv_rank_252_ge_80pct": false,
+      "soxx_iv_minus_rv20_z252_ge_1": false,
+      "soxx_put_call_iv_skew_z252_ge_1": false,
+      "soxx_put_call_volume_ratio_z60_ge_1": false,
+      "soxx_put_call_oi_ratio_z60_ge_1": false,
+      "qqq_ret1_le_minus_2_5pct": false,
+      "us_taiwan_gap1_le_minus_3pct": false,
+      "usdtwd_ret5_z60_ge_1": false
+    }
+  },
+  "active_reason_lines": [
+    "Liquidity / forced selling: Market margin repayment pressure is elevated; Market margin balance has contracted sharply"
+  ],
+  "manual_review": {
+    "recommended_action": "watch_only_no_action",
+    "do_not_auto_sell": true,
+    "do_not_auto_deleverage": true,
+    "no_buy_advisory": false,
+    "rationale": [
+      "Liquidity / forced selling: Market margin repayment pressure is elevated; Market margin balance has contracted sharply"
+    ]
+  },
+  "persistence": {
+    "previous_as_of": "2026-07-28",
+    "previous_score": 1,
+    "persistent_2of3": false,
+    "immediate_high": false
+  },
+  "latest_source_dates": {
+    "options_tail": "2026-07-31",
+    "liquidity_forced_selling": "2026-07-30",
+    "cross_market_shock": "2026-07-31"
+  },
+  "freshness": {
+    "status": "degraded",
+    "stale_family_count": 1,
+    "families": {
+      "options_tail": {
+        "latest_date_at_or_before_as_of": "2026-07-30",
+        "lag_days_vs_as_of": 0,
+        "stale": false
+      },
+      "liquidity_forced_selling": {
+        "latest_date_at_or_before_as_of": "2026-07-30",
+        "lag_days_vs_as_of": 0,
+        "stale": false
+      },
+      "cross_market_shock": {
+        "latest_date_at_or_before_as_of": "2026-07-28",
+        "lag_days_vs_as_of": 2,
+        "stale": true
+      }
+    }
+  },
+  "soxx_iv_health": {
+    "status": "ok",
+    "warnings": [],
+    "latest_snapshot": {
+      "date": "2026-07-30",
+      "lag_days_vs_generated_date": 3,
+      "spot": 504.5299987792969,
+      "expiry": "2026-08-28",
+      "dte": 29.0,
+      "atm_iv": 0.062509375,
+      "put_call_iv_skew": 0.0,
+      "put_call_volume_ratio": 2.0495049504950495,
+      "put_call_oi_ratio": 1.5823331733077293,
+      "contract_count": 128.0
+    },
+    "as_of_snapshot": {
+      "date": "2026-07-30",
+      "atm_iv": 0.062509375,
+      "put_call_volume_ratio": 2.0495049504950495,
+      "put_call_oi_ratio": 1.5823331733077293
+    }
+  },
+  "as_of_advancement": {
+    "as_of": "2026-07-30",
+    "latest_available_feature_date": "2026-07-31",
+    "blocked_dates": [
+      {
+        "date": "2026-07-31",
+        "missing_families": [
+          "liquidity_forced_selling"
+        ]
+      }
+    ]
+  },
+  "feature_values": {
+    "txo_pcr_volume_z20": -0.3846225197772342,
+    "txo_pcr_oi_z20": -1.462305976715966,
+    "txo_foreign_put_call_net_oi_chg5_z60": 0.3866993461965185,
+    "market_margin_forced_repay_z60": 1.7061278306397212,
+    "market_margin_balance_chg20_z252": -3.7166388254030296,
+    "securities_lending_0050_volume_z60": -0.2956881631548455,
+    "vix_level_z60": 0.5575300620073508,
+    "vix_chg5_z60": 0.6599402592601964,
+    "soxx_ret1": 0.0,
+    "soxx_realized_vol20_z60": -0.7048106659681282,
+    "soxx_downside_vol20_z60": -0.04230929457861984,
+    "vix_soxx_realized_vol_gap_z60": 0.7543470820513272,
+    "soxx_atm_iv30_raw": 0.062509375,
+    "soxx_options_dte": 31.0,
+    "soxx_options_contract_count": 128.0,
+    "soxx_put_call_iv_skew_raw": 0.0,
+    "soxx_put_call_volume_ratio_raw": 0.9717573221757322,
+    "soxx_put_call_oi_ratio_raw": 1.8163786249319998,
+    "soxx_atm_iv30_z252": null,
+    "soxx_iv_rank_252": null,
+    "soxx_iv_minus_rv20_z252": null,
+    "soxx_put_call_iv_skew_z252": null,
+    "soxx_put_call_volume_ratio_z60": -0.7405191210966845,
+    "soxx_put_call_oi_ratio_z60": -0.7828232691560607,
+    "qqq_ret1": 0.0,
+    "us_taiwan_gap1": 0.03759743710600294,
+    "usdtwd_ret5_z60": 0.20564803141355742
+  },
+  "signal_alert": null,
+  "research_context": {
+    "source_script": "scripts/evaluate/evaluate_00631l_multisource_crash_risk.py",
+    "promotion_status": "not_promoted_to_trading_rule",
+    "reason": "2-of-3 ensemble had only local 2018 OOS value and failed broader trading validation."
+  }
+}

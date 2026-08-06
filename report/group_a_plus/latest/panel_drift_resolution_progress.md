@@ -3,7 +3,7 @@
 - Status: `blocked`
 - Remediation status: `blocked`
 - Unresolved actions: `['refresh_stale_candidate_sources', 'quantify_external_feature_sensitivity']`
-- Remaining observation sessions: `1`
+- Remaining observation sessions: `0`
 
 ## Next Actions
 

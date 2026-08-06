@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_promotion_blocked_diagnostic",
+  "generated_at": "2026-08-05T16:34:36",
+  "status": "blocked",
+  "promotion_decision": "blocked_deployment_consistency_and_model_gates",
+  "blocking_gates": [
+    "panel_drift",
+    "multi_window",
+    "deployment_consistency",
+    "deployment_summary"
+  ],
+  "summary": {
+    "panel_drift_failed": true,
+    "multi_window_failed": true,
+    "deployment_consistency_failed": true,
+    "deployment_summary_failed": true,
+    "manual_approval_pending": true,
+    "metrics_status": "fail",
+    "deployment_summary_gate_status": "fail"
+  },
+  "metrics_gate": {
+    "status": "fail",
+    "formal_upgrade_pass_count": 0,
+    "research_watchlist_pass_count": 0,
+    "top_failures": [
+      {
+        "variant": "best_by_final_value",
+        "promotion_objective_status": "fail:final_value_floor",
+        "final_value": 2086215.922626549,
+        "final_value_floor": 2095951.368040168,
+        "delta_final": -52509.9631287246,
+        "sharpe_non_worse_pass": true,
+        "max_drawdown_non_worse_pass": true
+      },
+      {
+        "variant": "top_by_final_value",
+        "promotion_objective_status": "fail:final_value_floor",
+        "final_value": 2086215.922626549,
+        "final_value_floor": 2095951.368040168,
+        "delta_final": -52509.9631287246,
+        "sharpe_non_worse_pass": true,
+        "max_drawdown_non_worse_pass": true
+      },
+      {
+        "variant": "top_by_sharpe",
+        "promotion_objective_status": "fail:final_value_floor",
+        "final_value": 2086215.922626549,
+        "final_value_floor": 2095951.368040168,
+        "delta_final": -52509.9631287246,
+        "sharpe_non_worse_pass": true,
+        "max_drawdown_non_worse_pass": true
+      },
+      {
+        "variant": "top_by_mdd_then_value",
+        "promotion_objective_status": "fail:final_value_floor",
+        "final_value": 2086215.922626549,
+        "final_value_floor": 2095951.368040168,
+        "delta_final": -52509.9631287246,
+        "sharpe_non_worse_pass": true,
+        "max_drawdown_non_worse_pass": true
+      },
+      {
+        "variant": "top_by_final_value",
+        "promotion_objective_status": "fail:final_value_floor",
+        "final_value": 2083888.825474513,
+        "final_value_floor": 2095951.368040168,
+        "delta_final": -54837.06028076052,
+        "sharpe_non_worse_pass": true,
+        "max_drawdown_non_worse_pass": true
+      }
+    ]
+  },
+  "panel_drift_gate": {
+    "status": "fail",
+    "reason": "drift exceeds limits: h20_prob_up",
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_active_vs_20260805.json",
+    "overlap_rows": 371,
+    "overlap_start": "2025-01-02",
+    "overlap_end": "2026-07-16",
+    "failed_checks": [
+      {
+        "name": "h20_prob_up",
+        "tier": "trigger_critical",
+        "max_abs_delta": 0.1982313917525921,
+        "limit": 0.15,
+        "max_abs_delta_date": "2026-02-10"
+      }
+    ]
+  },
+  "multi_window_gate": {
+    "status": "fail",
+    "reason": "no candidate passed the multi-window gate",
+    "source_decision": "research_only_no_multi_window_pass",
+    "candidate_count": 6,
+    "pass_candidates": [],
+    "criteria": {
+      "min_pass_ratio": 1.0,
+      "max_final_drawdown_pct": 0.02,
+      "min_sharpe_delta": 0.0,
+      "require_mdd_nonworse": true
+    }
+  },
+  "deployment_consistency_gate": {
+    "status": "fail",
+    "reason": "deployment consistency governance blocks promotion",
+    "blocking_reasons": [
+      "source_freshness_not_ok",
+      "ops_health_errors_present",
+      "deployment_consistency_status:blocked",
+      "deployment_consistency_not_broker_actionable"
+    ],
+    "hard_blocking_reasons": [
+      "source_freshness_not_ok",
+      "ops_health_errors_present",
+      "deployment_consistency_status:blocked",
+      "deployment_consistency_not_broker_actionable"
+    ],
+    "manual_approval_pending_reasons": [
+      "gift_signed_approval_record_missing_or_invalid",
+      "gift_human_exception_not_approved",
+      "gift_signed_approval_manual_completion_pending"
+    ],
+    "warning_reasons": [
+      "gift_signed_approval_record_missing_or_invalid",
+      "gift_human_exception_not_approved",
+      "gift_signed_approval_manual_completion_pending",
+      "cash_balance_zero_with_nonzero_trades",
+      "execution_plan_not_allowed",
+      "manual_confirmation_required"
+    ],
+    "all_reasons": [
+      "source_freshness_not_ok",
+      "ops_health_errors_present",
+      "deployment_consistency_status:blocked",
+      "deployment_consistency_not_broker_actionable",
+      "gift_signed_approval_record_missing_or_invalid",
+      "gift_human_exception_not_approved",
+      "gift_signed_approval_manual_completion_pending",
+      "cash_balance_zero_with_nonzero_trades",
+      "execution_plan_not_allowed",
+      "manual_confirmation_required"
+    ]
+  },
+  "deployment_summary_gate": {
+    "status": "fail",
+    "reason": "deployment summary governance blocks promotion",
+    "blocking_reasons": [
+      "source_freshness_not_ok",
+      "ops_health_errors_present"
+    ]
+  },
+  "decision": {
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "promotion_gate": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_promotion_gate_20260805.json"
+  }
+}

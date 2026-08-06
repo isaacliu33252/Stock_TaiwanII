@@ -1,0 +1,314 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_deployment_summary",
+  "generated_at": "2026-08-05T16:30:48",
+  "policy": "summary_only_no_order_no_strategy_change_no_weight_change",
+  "as_of": "2026-08-04",
+  "actual_data_date": null,
+  "strategy_id": null,
+  "status": "blocked",
+  "broker_actionable": false,
+  "blocking_reasons": [
+    "ops_health_errors_present"
+  ],
+  "warning_reasons": [
+    "gift_signed_approval_record_missing_or_invalid",
+    "gift_human_exception_not_approved",
+    "gift_signed_approval_manual_completion_pending",
+    "cash_balance_zero_with_nonzero_trades",
+    "execution_plan_not_allowed",
+    "manual_confirmation_required",
+    "daily_status_pre_trade_guard_not_ok"
+  ],
+  "target_weights": {
+    "0050.TW": 0.3,
+    "00631L.TW": 0.0,
+    "00632R.TW": 0.2707873391613097,
+    "00679B.TWO": 0.0,
+    "cash": 0.42921266083869036
+  },
+  "final_target_shares": {
+    "0050.TW": 1463,
+    "00631L.TW": 0,
+    "00632R.TW": 5002,
+    "00679B.TWO": 0
+  },
+  "execution_plan_cash": {
+    "current_cash_input": 0.0,
+    "cash_assumption": "workbook has no cash field; using explicit --cash-balance input",
+    "nonzero_trade_count": 4,
+    "cash_source_explicit": true,
+    "execution_plan_allowed": false,
+    "manual_confirmation_required": true
+  },
+  "planned_trades": [
+    {
+      "ticker": "0050.TW",
+      "side": "sell",
+      "current_shares": 3834,
+      "target_shares": 1463,
+      "delta_shares": -2371,
+      "price": 100.6500015258789,
+      "notional": 238641.1536178589,
+      "commission": 340.06364390544894,
+      "slippage": 119.32057680892945,
+      "sell_tax_rate": 0.001,
+      "sell_tax": 238.6411536178589,
+      "estimated_cost": 698.0253743322373
+    },
+    {
+      "ticker": "00631L.TW",
+      "side": "sell",
+      "current_shares": 800,
+      "target_shares": 0,
+      "delta_shares": -800,
+      "price": 32.150001525878906,
+      "notional": 25720.001220703125,
+      "commission": 36.65100173950196,
+      "slippage": 12.860000610351562,
+      "sell_tax_rate": 0.001,
+      "sell_tax": 25.720001220703125,
+      "estimated_cost": 75.23100357055665
+    },
+    {
+      "ticker": "00679B.TWO",
+      "side": "sell",
+      "current_shares": 3000,
+      "target_shares": 0,
+      "delta_shares": -3000,
+      "price": 26.450000762939453,
+      "notional": 79350.00228881836,
+      "commission": 113.07375326156617,
+      "slippage": 39.67500114440918,
+      "sell_tax_rate": 0.0,
+      "sell_tax": 0.0,
+      "estimated_cost": 152.74875440597535
+    },
+    {
+      "ticker": "00632R.TW",
+      "side": "buy",
+      "current_shares": 0,
+      "target_shares": 5002,
+      "delta_shares": 5002,
+      "price": 10.630000114440918,
+      "notional": 53171.26057243347,
+      "commission": 75.7690463157177,
+      "slippage": 26.585630286216738,
+      "sell_tax_rate": 0.001,
+      "sell_tax": 0.0,
+      "estimated_cost": 102.35467660193444
+    }
+  ],
+  "pre_trade_guards": [
+    {
+      "name": "volatility_gate_no_00631l_add",
+      "status": "active_allowed",
+      "ticker": "00631L.TW",
+      "current_shares": 800,
+      "requested_target_shares": 0,
+      "guarded_target_shares": 0,
+      "blocked_trades": [],
+      "policy": "advisory_no_auto_weight_change",
+      "allow_00631l_add": false,
+      "reason": "tail_conformal_blocks_new_00631l_exposure",
+      "source_alert_type": "tail_specific_conformal_warning",
+      "volatility_gate": null,
+      "reference_00631l_scale": null,
+      "tail_conformal": {
+        "policy": "diagnostic_warning_only_no_weight_change",
+        "recommended_action": "pause_new_00631l_adds_and_monitor_trough",
+        "allow_00631l_add": false,
+        "auto_reduce_00631l": false,
+        "ticker": "00631L.TW",
+        "current_risk_bucket": "elevated",
+        "min_lower_tail_confidence_bound": -0.08010959777713278,
+        "max_prob_mdd_lt_8pct": 0.19631901840490798,
+        "high_tail_reasons": [
+          "h10_lower_bound_le_8pct"
+        ],
+        "diagnostics": {
+          "h5": {
+            "horizon_days": 5,
+            "point_forecast_return": 0.024476309930013374,
+            "lower_tail_confidence_bound": -0.0644699472502025,
+            "alpha": 0.1,
+            "effective_alpha": 0.1,
+            "adaptive": false,
+            "nominal_lower_tail_coverage": 0.9,
+            "calibration_scope": "elevated",
+            "calibration_count": 155,
+            "lower_tail_residual_quantile": 0.08894625718021587,
+            "prob_mdd_lt_8pct": 0.09815950920245399,
+            "mdd_threshold": -0.08
+          },
+          "h10": {
+            "horizon_days": 10,
+            "point_forecast_return": 0.049376908960744315,
+            "lower_tail_confidence_bound": -0.08010959777713278,
+            "alpha": 0.1,
+            "effective_alpha": 0.1,
+            "adaptive": false,
+            "nominal_lower_tail_coverage": 0.9,
+            "calibration_scope": "elevated",
+            "calibration_count": 155,
+            "lower_tail_residual_quantile": 0.1294865067378771,
+            "prob_mdd_lt_8pct": 0.19631901840490798,
+            "mdd_threshold": -0.08
+          }
+        }
+      },
+      "enforced": false
+    },
+    {
+      "name": "a2118_extreme_risk_no_new_adds",
+      "status": "inactive",
+      "tickers": [
+        "0050.TW",
+        "00631L.TW"
+      ],
+      "blocked_trades": [],
+      "policy": "warning_only_no_weight_change",
+      "recommended_action": "none",
+      "source_alert_type": null
+    },
+    {
+      "name": "compounding_regime_no_00631l_add",
+      "status": "inactive",
+      "ticker": "00631L.TW",
+      "current_shares": 800,
+      "requested_target_shares": 0,
+      "guarded_target_shares": 0,
+      "blocked_trades": [],
+      "policy": "diagnostic_no_auto_weight_change",
+      "allow_00631l_add": true,
+      "compounding_regime": "TRANSITIONAL",
+      "recommended_policy": "maintain_a2118_no_active_overlay",
+      "date": "2026-08-04",
+      "enforced": false
+    }
+  ],
+  "blocked_buys": [],
+  "source_freshness": {
+    "status": "ok",
+    "detail": "all required sources ok",
+    "has_required_stale": false,
+    "has_soft_stale": false,
+    "blocks_deployment": false
+  },
+  "securities_lending_0050_source_status": {
+    "schema_version": 1,
+    "report_type": "group_a_plus_securities_lending_0050_source_status",
+    "generated_at": "2026-08-05T15:37:20",
+    "as_of": "2026--0-8-05",
+    "ticker": "0050.TW",
+    "status": "db_snapshot_only",
+    "policy": "source_status_only_no_strategy_change_no_weight_change",
+    "query_window": {
+      "start": "2026-07-15",
+      "end": "2026-08-05"
+    },
+    "provider_observation": {
+      "rows_written": null,
+      "message": null,
+      "provider_no_rows": false
+    },
+    "database_observation": {
+      "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+      "latest_dt": "2026-08-04",
+      "db_lagged_after_query": true,
+      "recent_rows": [
+        {
+          "dt": "2026-08-04",
+          "volume": 570.0
+        },
+        {
+          "dt": "2026-08-03",
+          "volume": 1812.0
+        },
+        {
+          "dt": "2026-07-30",
+          "volume": 800.0
+        },
+        {
+          "dt": "2026-07-29",
+          "volume": 182.0
+        },
+        {
+          "dt": "2026-07-27",
+          "volume": 2353.0
+        },
+        {
+          "dt": "2026-07-24",
+          "volume": 2000.0
+        },
+        {
+          "dt": "2026-07-23",
+          "volume": 247900.0
+        },
+        {
+          "dt": "2026-07-17",
+          "volume": 5000.0
+        }
+      ]
+    },
+    "summary": {
+      "soft_source": true,
+      "provider_no_rows_confirmed": false,
+      "latest_available_dt": "2026-08-04",
+      "query_end": "2026-08-05",
+      "db_lagged_after_query": true,
+      "strategy_change_allowed": false,
+      "target_weight_change_allowed": false,
+      "keep_golden1_0531_unchanged": true
+    },
+    "decision": {
+      "blocks_deployment": false,
+      "strategy_change_allowed": false,
+      "target_weight_change_allowed": false,
+      "auto_rebalance_allowed": false,
+      "allow_00631l_add": false,
+      "allow_00632r_open": false,
+      "keep_golden1_0531_unchanged": true
+    }
+  },
+  "decision": {
+    "summary_only": true,
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260805.json",
+    "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+    "deployment_consistency_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/deployment_consistency_review.json"
+  },
+  "consistency_review": {
+    "status": "ok",
+    "errors": [],
+    "warnings": [],
+    "checked": {
+      "summary_decision_flags": [
+        "allow_00631l_add",
+        "allow_00632r_open",
+        "auto_rebalance_allowed",
+        "creates_orders",
+        "keep_golden1_0531_unchanged",
+        "summary_only",
+        "target_weight_change_allowed"
+      ],
+      "deployment_decision_flags": [
+        "allow_00631l_add",
+        "auto_rebalance_allowed",
+        "keep_golden1_0531_unchanged",
+        "target_weight_change_allowed"
+      ],
+      "status": true,
+      "broker_actionable": true,
+      "blocking_reason_presence": true,
+      "warning_reasons": true
+    }
+  }
+}

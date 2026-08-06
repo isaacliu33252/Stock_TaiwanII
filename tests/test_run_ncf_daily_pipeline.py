@@ -37,6 +37,9 @@ def _command_args(**overrides) -> argparse.Namespace:
         "fail_on_ohlcv_warning": False,
         "train_start_00631l": "2020-01-01",
         "train_start_00632r": "2015-01-01",
+        "train_start_2330": "2015-01-01",
+        "skip_ncf_data_validation": False,
+        "ncf_max_ohlcv_gap_days": 14,
         "val_start": "2025-01-02",
         "val_end": "latest",
         "no_external_features": False,
@@ -79,6 +82,18 @@ def test_daily_pipeline_blocks_golden1_0531_release_output_target() -> None:
         module._assert_no_protected_golden1_output_targets(commands)
 
 
+def test_infer_no_external_panel_path() -> None:
+    module = _load_module()
+
+    assert module._infer_no_external_panel_path("results/ncf_00631l_panel_latest_20260716.csv") == (
+        "results/ncf_00631l_panel_latest_20260716_no_external.csv"
+    )
+    assert module._infer_no_external_panel_path("results/ncf_00631l_panel_latest_20260716_no_external.csv") == (
+        "results/ncf_00631l_panel_latest_20260716_no_external.csv"
+    )
+    assert module._infer_no_external_panel_path("results/not_a_panel.json") == "results/not_a_panel.json"
+
+
 def test_parse_args_dfl_defaults_use_stable_latest_files(monkeypatch: pytest.MonkeyPatch) -> None:
     module = _load_module()
     monkeypatch.setattr(sys, "argv", ["run_ncf_daily_pipeline.py"])
@@ -117,12 +132,18 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "refresh_2330_per",
         "refresh_shareholding",
         "ohlcv_freshness",
+        "ncf_data_validation",
         "ncf_00631l",
         "ncf_00632r",
+        "ncf_0050",
         "ncf_signal_archive",
         "ncf_2330",
+        "ncf_00631l_no_external_shadow",
         "ncf_panel_manifest",
+        "ncf_0050_threshold_eval",
         "ncf_panel_drift",
+        "ncf_panel_refresh_recommendation",
+        "ncf_panel_drift_no_external_vs_external",
         "ncf_panel_drift_diagnosis",
         "panel_drift_triage",
         "ncf_panel_drift_remediation_plan_initial",
@@ -138,6 +159,7 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "factor_lens",
         "daily_signal",
         "compounding_regime",
+        "gjr_garch_shadow",
         "a2120_shadow_pipeline",
         "recovery_boost_spillover_gate_shadow_log",
         "trough_override_eligibility_shadow_log",
@@ -173,7 +195,6 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "gift_signed_approval_validator_smoke",
         "gift_manual_approval_readiness",
         "gift_pdf_advantage_coverage_review",
-        "research_shadow_decision_snapshot",
         "dfl_shadow_refresh_main",
         "dfl_shadow_refresh_p50",
         "dfl_shadow_refresh_p70",
@@ -181,6 +202,13 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "dfl_shadow_refresh_overlap",
         "dfl_active_date_audit",
         "dfl_shadow_ensemble",
+        "relative_reentry_opportunity_shadow",
+        "relative_reentry_advisory_shadow",
+        "relative_reentry_candidate_review",
+        "relative_reentry_promotion_gate",
+        "ncf_decision_calibration_shadow",
+        "daily_artifact_integrity",
+        "research_shadow_decision_snapshot",
         "daily_status",
         "deployment_consistency_review",
         "deployment_summary",
@@ -192,6 +220,9 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "ncf_2330_checklist",
     ]
     assert commands["refresh_group_data"][-1] == "--force"
+    assert commands["ncf_data_validation"][1] == "ncf_data_quality.py"
+    assert "--fail-on-degraded-freshness" not in commands["ncf_data_validation"]
+    assert "ncf_data_validation" not in module.BEST_EFFORT_STEP_NAMES
     assert commands["a2120_shadow_pipeline"][1] == "scripts/run/run_a2120_daily_shadow_pipeline.py"
     assert commands["a2120_shadow_pipeline"][commands["a2120_shadow_pipeline"].index("--date-stamp") + 1] == "20260627"
     assert "a2120_shadow_pipeline" in module.BEST_EFFORT_STEP_NAMES
@@ -529,6 +560,9 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["research_shadow_decision_snapshot"].index("--llm-state-reward-signed-approval-validation") + 1
     ].endswith("report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_validation.json")
     assert commands["research_shadow_decision_snapshot"][
+        commands["research_shadow_decision_snapshot"].index("--ncf-decision-calibration") + 1
+    ].endswith("results/ncf_decision_calibration_shadow_20260627.json")
+    assert commands["research_shadow_decision_snapshot"][
         commands["research_shadow_decision_snapshot"].index("--output") + 1
     ].endswith("report/group_a_plus/latest/research_shadow_decision_snapshot.json")
     assert "research_shadow_decision_snapshot" in module.BEST_EFFORT_STEP_NAMES
@@ -541,16 +575,56 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert any(item.endswith("results/ohlcv_freshness_20260627.json") for item in commands["ohlcv_freshness"])
     assert any(item.endswith("results/ncf_00631l_latest_20260627.json") for item in commands["ncf_00631l"])
     assert any(item.endswith("results/ncf_00632r_panel_latest_20260627.csv") for item in commands["ncf_00632r"])
+    assert commands["ncf_0050"][1] == "scripts/misc/ncf_0050.py"
+    assert any(item.endswith("results/ncf_0050_latest_20260627.json") for item in commands["ncf_0050"])
+    assert any(item.endswith("results/ncf_0050_panel_latest_20260627.csv") for item in commands["ncf_0050"])
     assert "--full-panel" in commands["ncf_00631l"]
     assert "--no-tabnet" in commands["ncf_00631l"]
+    assert "--full-panel" in commands["ncf_0050"]
+    assert "--no-tabnet" in commands["ncf_0050"]
+    assert commands["ncf_00631l_no_external_shadow"][1] == "scripts/misc/ncf_00631l.py"
+    assert "--no-external-features" in commands["ncf_00631l_no_external_shadow"]
+    assert any(
+        item.endswith("results/ncf_00631l_latest_20260627_no_external.json")
+        for item in commands["ncf_00631l_no_external_shadow"]
+    )
+    assert any(
+        item.endswith("results/ncf_00631l_panel_latest_20260627_no_external.csv")
+        for item in commands["ncf_00631l_no_external_shadow"]
+    )
     assert "--full-panel" in commands["ncf_00632r"]
     assert "--full-panel" in commands["ncf_2330"]
     assert commands["ncf_2330"][commands["ncf_2330"].index("--feature-mode") + 1] == "after_close"
+    assert any(item.endswith("results/ncf_0050_panel_latest_20260627.csv") for item in commands["ncf_panel_manifest"])
     assert any(item.endswith("results/ncf_2330_panel_latest_20260627.csv") for item in commands["ncf_panel_manifest"])
     assert any(item.endswith("results/ncf_panel_manifest_20260627.json") for item in commands["ncf_panel_manifest"])
+    assert commands["ncf_0050_threshold_eval"][1] == "scripts/evaluate/evaluate_ncf_0050_panel_thresholds.py"
+    assert commands["ncf_0050_threshold_eval"][
+        commands["ncf_0050_threshold_eval"].index("--panel") + 1
+    ].endswith("results/ncf_0050_panel_latest_20260627.csv")
+    assert commands["ncf_0050_threshold_eval"][
+        commands["ncf_0050_threshold_eval"].index("--output") + 1
+    ].endswith("results/ncf_0050_threshold_eval_20260627.json")
+    assert commands["ncf_0050_threshold_eval"][
+        commands["ncf_0050_threshold_eval"].index("--output-md") + 1
+    ].endswith("results/ncf_0050_threshold_eval_20260627.md")
+    assert "ncf_0050_threshold_eval" in module.BEST_EFFORT_STEP_NAMES
     assert any(item.endswith("results/ncf_00631l_panel_latest_20260627.csv") for item in commands["ncf_panel_drift"])
     assert any(item.endswith("results/ncf_panel_drift_active_vs_20260627.json") for item in commands["ncf_panel_drift"])
     assert any(item.endswith("results/ncf_panel_drift_active_vs_20260627.csv") for item in commands["ncf_panel_drift"])
+    assert "--outcome-aware" in commands["ncf_panel_drift"]
+    assert commands["ncf_panel_refresh_recommendation"][1] == (
+        "scripts/evaluate/build_ncf_panel_refresh_recommendation.py"
+    )
+    assert commands["ncf_panel_refresh_recommendation"][
+        commands["ncf_panel_refresh_recommendation"].index("--drift-audit") + 1
+    ].endswith("results/ncf_panel_drift_active_vs_20260627.json")
+    assert commands["ncf_panel_refresh_recommendation"][
+        commands["ncf_panel_refresh_recommendation"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/ncf_panel_refresh_recommendation.json")
+    assert commands["ncf_panel_refresh_recommendation"][
+        commands["ncf_panel_refresh_recommendation"].index("--snapshot-output") + 1
+    ].endswith("results/ncf_panel_refresh_recommendation_20260627.json")
     assert any(
         item.endswith("results/ncf_panel_drift_active_vs_20260627.json")
         for item in commands["ncf_panel_drift_diagnosis"]
@@ -565,6 +639,15 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert commands["ncf_panel_drift_diagnosis"][
         commands["ncf_panel_drift_diagnosis"].index("--candidate-signal") + 1
     ].endswith("results/ncf_00631l_latest_20260627.json")
+    assert commands["ncf_panel_drift_diagnosis"][
+        commands["ncf_panel_drift_diagnosis"].index("--baseline-no-external-panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260630_no_external.csv")
+    assert commands["ncf_panel_drift_diagnosis"][
+        commands["ncf_panel_drift_diagnosis"].index("--candidate-no-external-panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260627_no_external.csv")
+    assert commands["ncf_panel_drift_diagnosis"][
+        commands["ncf_panel_drift_diagnosis"].index("--sensitivity-audit") + 1
+    ].endswith("results/ncf_panel_drift_no_external_vs_external_20260627.json")
     assert commands["panel_drift_triage"][1] == "scripts/evaluate/build_group_a_plus_panel_drift_triage.py"
     assert commands["panel_drift_triage"][commands["panel_drift_triage"].index("--diagnosis") + 1].endswith(
         "results/ncf_panel_drift_diagnosis_20260627.json"
@@ -624,10 +707,24 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert commands["ncf_panel_same_method_baseline_manifest"][
         commands["ncf_panel_same_method_baseline_manifest"].index("--output") + 1
     ].endswith("results/ncf_panel_same_method_baseline_manifest_20260627.json")
+    assert commands["ncf_panel_drift_no_external_vs_external"][1] == "scripts/evaluate/evaluate_ncf_panel_drift.py"
+    assert commands["ncf_panel_drift_no_external_vs_external"][
+        commands["ncf_panel_drift_no_external_vs_external"].index("--baseline-panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260627_no_external.csv")
+    assert commands["ncf_panel_drift_no_external_vs_external"][
+        commands["ncf_panel_drift_no_external_vs_external"].index("--candidate-panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260627.csv")
+    assert commands["ncf_panel_drift_no_external_vs_external"][
+        commands["ncf_panel_drift_no_external_vs_external"].index("--output") + 1
+    ].endswith("results/ncf_panel_drift_no_external_vs_external_20260627.json")
+    assert "--outcome-aware" in commands["ncf_panel_drift_no_external_vs_external"]
     for best_effort_name in (
+        "ncf_00631l_no_external_shadow",
+        "ncf_panel_refresh_recommendation",
         "ncf_panel_drift_no_tabnet_baseline_vs_today",
         "ncf_panel_drift_model_set_isolation_report",
         "ncf_panel_same_method_baseline_manifest",
+        "ncf_panel_drift_no_external_vs_external",
         "ncf_panel_external_feature_sensitivity_governance",
         "ncf_panel_drift_remediation_plan",
         "panel_drift_resolution_progress",
@@ -691,6 +788,14 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         item.endswith("results/00631l_leveraged_compounding_regime_20260627.csv")
         for item in commands["compounding_regime"]
     )
+    assert commands["gjr_garch_shadow"][1] == "scripts/evaluate/build_group_a_plus_gjr_garch_shadow.py"
+    assert commands["gjr_garch_shadow"][commands["gjr_garch_shadow"].index("--output") + 1].endswith(
+        "report/group_a_plus/latest/gjr_garch_shadow.json"
+    )
+    assert commands["gjr_garch_shadow"][commands["gjr_garch_shadow"].index("--log") + 1].endswith(
+        "results/gjr_garch_shadow_log.jsonl"
+    )
+    assert "gjr_garch_shadow" in module.BEST_EFFORT_STEP_NAMES
     assert commands["dfl_advisory"][1] == "scripts/run/build_a2118_dfl_advisory.py"
     assert "--input" in commands["dfl_advisory"]
     assert commands["dfl_advisory"][commands["dfl_advisory"].index("--input") + 1].endswith(
@@ -722,6 +827,116 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert commands["dfl_shadow_ensemble"][commands["dfl_shadow_ensemble"].index("--log") + 1].endswith(
         "results/a2118_dfl_shadow_ensemble_log.jsonl"
     )
+    assert commands["relative_reentry_opportunity_shadow"][1] == (
+        "scripts/evaluate/evaluate_00631l_0050_relative_reentry_opportunity.py"
+    )
+    relative_cmd = commands["relative_reentry_opportunity_shadow"]
+    relative_windows = relative_cmd[relative_cmd.index("--windows") + 1]
+    assert "live_2024_2026:2024-01-02:latest:" in relative_windows
+    assert "active_2025_2026:2025-01-02:latest:" in relative_windows
+    assert "results/ncf_00631l_panel_latest_20260627.csv:tuning_window" in relative_windows
+    assert "2018_correction:2018-01-02:2018-12-31:" in relative_windows
+    assert relative_cmd[relative_cmd.index("--actions") + 1] == "KEEP,SHIFT_00631L_2,SHIFT_00631L_5"
+    assert "--slow-bear-gate" in relative_cmd
+    assert "--risk-up-permission-gate" in relative_cmd
+    assert relative_cmd[relative_cmd.index("--risk-up-permission-min-probability") + 1] == "0.50"
+    assert relative_cmd[relative_cmd.index("--output") + 1].endswith(
+        "results/00631l_0050_relative_reentry_opportunity_latest.json"
+    )
+    assert relative_cmd[relative_cmd.index("--latest-output") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_opportunity_shadow.json"
+    )
+    assert "relative_reentry_opportunity_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["relative_reentry_advisory_shadow"][1] == (
+        "scripts/run/build_00631l_0050_relative_reentry_advisory_shadow.py"
+    )
+    advisory_cmd = commands["relative_reentry_advisory_shadow"]
+    assert advisory_cmd[advisory_cmd.index("--input") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_opportunity_shadow.json"
+    )
+    assert advisory_cmd[advisory_cmd.index("--live-signal") + 1].endswith(
+        "results/group_a_plus_live_signal_v2_20260627.json"
+    )
+    assert advisory_cmd[advisory_cmd.index("--strategy-trust-log") + 1].endswith(
+        "results/strategy_trust_shadow_log.jsonl"
+    )
+    assert advisory_cmd[advisory_cmd.index("--risk-mechanism-log") + 1].endswith(
+        "results/risk_mechanism_shadow_log.jsonl"
+    )
+    assert advisory_cmd[advisory_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_advisory_shadow.json"
+    )
+    assert advisory_cmd[advisory_cmd.index("--output-md") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_advisory_shadow.md"
+    )
+    assert "relative_reentry_advisory_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["relative_reentry_candidate_review"][1] == (
+        "scripts/evaluate/build_00631l_0050_relative_reentry_candidate_review.py"
+    )
+    candidate_review_cmd = commands["relative_reentry_candidate_review"]
+    assert candidate_review_cmd[candidate_review_cmd.index("--input") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_opportunity_shadow.json"
+    )
+    assert candidate_review_cmd[candidate_review_cmd.index("--advisory") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_advisory_shadow.json"
+    )
+    assert candidate_review_cmd[candidate_review_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_candidate_review.json"
+    )
+    assert candidate_review_cmd[candidate_review_cmd.index("--output-md") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_candidate_review.md"
+    )
+    assert "relative_reentry_candidate_review" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["relative_reentry_promotion_gate"][1] == (
+        "scripts/evaluate/build_00631l_0050_relative_reentry_promotion_gate.py"
+    )
+    promotion_gate_cmd = commands["relative_reentry_promotion_gate"]
+    assert promotion_gate_cmd[promotion_gate_cmd.index("--advisory") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_advisory_shadow.json"
+    )
+    assert promotion_gate_cmd[promotion_gate_cmd.index("--review") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_candidate_review.json"
+    )
+    assert promotion_gate_cmd[promotion_gate_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_promotion_gate.json"
+    )
+    assert promotion_gate_cmd[promotion_gate_cmd.index("--output-md") + 1].endswith(
+        "report/group_a_plus/latest/relative_reentry_promotion_gate.md"
+    )
+    assert "relative_reentry_promotion_gate" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["ncf_decision_calibration_shadow"][1] == "scripts/evaluate/evaluate_ncf_decision_calibration.py"
+    assert commands["ncf_decision_calibration_shadow"][
+        commands["ncf_decision_calibration_shadow"].index("--panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260627.csv")
+    assert commands["ncf_decision_calibration_shadow"][
+        commands["ncf_decision_calibration_shadow"].index("--advisory") + 1
+    ].endswith("report/group_a_plus/latest/a2118_dfl_advisory.json")
+    assert commands["ncf_decision_calibration_shadow"][
+        commands["ncf_decision_calibration_shadow"].index("--dfl-shadow") + 1
+    ].endswith("results/a2118_decision_focused_action_shadow_dfl_main_latest.json")
+    assert commands["ncf_decision_calibration_shadow"][
+        commands["ncf_decision_calibration_shadow"].index("--output") + 1
+    ].endswith("results/ncf_decision_calibration_shadow_20260627.json")
+    assert "ncf_decision_calibration_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["daily_artifact_integrity"][1] == (
+        "scripts/evaluate/build_group_a_plus_daily_artifact_integrity.py"
+    )
+    assert commands["daily_artifact_integrity"][
+        commands["daily_artifact_integrity"].index("--live-signal") + 1
+    ].endswith("results/group_a_plus_live_signal_v2_20260627.json")
+    assert commands["daily_artifact_integrity"][
+        commands["daily_artifact_integrity"].index("--execution-plan") + 1
+    ].endswith("report/group_a_plus/latest/execution_plan.json")
+    assert commands["daily_artifact_integrity"][
+        commands["daily_artifact_integrity"].index("--panel-refresh-recommendation") + 1
+    ].endswith("report/group_a_plus/latest/ncf_panel_refresh_recommendation.json")
+    assert commands["daily_artifact_integrity"][
+        commands["daily_artifact_integrity"].index("--ncf-decision-calibration") + 1
+    ].endswith("results/ncf_decision_calibration_shadow_20260627.json")
+    assert commands["daily_artifact_integrity"][
+        commands["daily_artifact_integrity"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/daily_artifact_integrity.json")
+    assert "daily_artifact_integrity" in module.BEST_EFFORT_STEP_NAMES
     assert any(item.endswith("results/group_a_plus_daily_status_20260627") for item in commands["daily_status"])
     assert "--execution-plan" in commands["daily_status"]
     assert commands["daily_status"][commands["daily_status"].index("--execution-plan") + 1].endswith(
@@ -795,6 +1010,10 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert "--research-shadow-decision-snapshot" in commands["daily_status"]
     assert commands["daily_status"][commands["daily_status"].index("--research-shadow-decision-snapshot") + 1].endswith(
         "report/group_a_plus/latest/research_shadow_decision_snapshot.json"
+    )
+    assert "--daily-artifact-integrity" in commands["daily_status"]
+    assert commands["daily_status"][commands["daily_status"].index("--daily-artifact-integrity") + 1].endswith(
+        "report/group_a_plus/latest/daily_artifact_integrity.json"
     )
     assert any(item.endswith("results/group_a_plus_promotion_gate_20260627.json") for item in commands["promotion_gate"])
     assert any(item.endswith("results/ncf_panel_drift_active_vs_20260627.json") for item in commands["promotion_gate"])
@@ -894,12 +1113,16 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
 
     assert list(commands) == [
         "ohlcv_freshness",
+        "ncf_data_validation",
         "ncf_00631l",
         "ncf_00632r",
+        "ncf_0050",
         "ncf_signal_archive",
         "ncf_2330",
         "ncf_panel_manifest",
+        "ncf_0050_threshold_eval",
         "ncf_panel_drift",
+        "ncf_panel_refresh_recommendation",
         "ncf_panel_drift_diagnosis",
         "panel_drift_triage",
         "ncf_panel_drift_remediation_plan_initial",
@@ -915,6 +1138,7 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
         "factor_lens",
         "daily_signal",
         "compounding_regime",
+        "gjr_garch_shadow",
         "a2120_shadow_pipeline",
         "recovery_boost_spillover_gate_shadow_log",
         "trough_override_eligibility_shadow_log",
@@ -950,7 +1174,6 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
             "gift_signed_approval_validator_smoke",
             "gift_manual_approval_readiness",
             "gift_pdf_advantage_coverage_review",
-            "research_shadow_decision_snapshot",
         "dfl_shadow_refresh_main",
         "dfl_shadow_refresh_p50",
         "dfl_shadow_refresh_p70",
@@ -958,6 +1181,13 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
         "dfl_shadow_refresh_overlap",
         "dfl_active_date_audit",
         "dfl_shadow_ensemble",
+        "relative_reentry_opportunity_shadow",
+        "relative_reentry_advisory_shadow",
+        "relative_reentry_candidate_review",
+        "relative_reentry_promotion_gate",
+        "ncf_decision_calibration_shadow",
+        "daily_artifact_integrity",
+            "research_shadow_decision_snapshot",
         "daily_status",
         "deployment_consistency_review",
         "deployment_summary",
@@ -970,7 +1200,10 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
     ]
     assert "--no-external-features" in commands["ncf_00631l"]
     assert "--no-external-features" in commands["ncf_00632r"]
+    assert "--no-external-features" in commands["ncf_0050"]
     assert "--no-external-features" in commands["ncf_2330"]
+    assert "ncf_00631l_no_external_shadow" not in commands
+    assert "ncf_panel_drift_no_external_vs_external" not in commands
 
 
 def test_build_commands_can_use_ncf_2330_pre_open_feature_mode() -> None:

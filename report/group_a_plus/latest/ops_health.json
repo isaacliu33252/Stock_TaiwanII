@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_ops_health",
-  "generated_at": "2026-07-28T16:57:36Z",
+  "generated_at": "2026-08-05T19:08:37Z",
   "root": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main",
   "status": "error",
   "errors": [
@@ -9,7 +9,6 @@
   ],
   "warnings": [
     "system_resources",
-    "artifact_health",
     "module_health"
   ],
   "active_allocation_impact": "none",
@@ -18,52 +17,51 @@
     "disk": {
       "root": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main",
       "total_bytes": 254544252928,
-      "used_bytes": 246193225728,
-      "free_bytes": 8351027200,
-      "free_ratio": 0.0328,
+      "used_bytes": 249391230976,
+      "free_bytes": 5153021952,
+      "free_ratio": 0.0202,
       "status_policy": "warn_below_5pct_error_below_2pct"
     },
     "cpu": {
-      "status": "unavailable",
-      "reason": "ModuleNotFoundError(\"No module named 'psutil'\")"
+      "percent": 33.6,
+      "count": 4
     },
     "memory": {
-      "status": "unavailable",
-      "reason": "ModuleNotFoundError(\"No module named 'psutil'\")"
+      "total_bytes": 12544364544,
+      "available_bytes": 10672943104,
+      "used_bytes": 1871421440,
+      "available_ratio": 0.8508
     },
     "warnings": [
-      "disk_free_below_5pct",
-      "psutil_unavailable"
+      "disk_free_below_5pct"
     ],
     "errors": [],
     "status": "warning"
   },
   "artifact_health": {
-    "status": "warning",
+    "status": "ok",
     "missing_required": [],
-    "missing_optional": [
-      "dfl_active_date_audit_hard_checks_not_passing"
-    ],
+    "missing_optional": [],
     "legacy_frozen_artifact_warnings": [
       "group_a_plus_decision_signal_stale"
     ],
     "execution_plan_freshness": {
       "status": "fresh",
-      "lag_days": -0.02,
+      "lag_days": 0.44,
       "max_lag_days": 3,
-      "execution_plan_modified_at": "2026-07-27T23:45:26Z",
-      "live_signal_modified_at": "2026-07-27T23:13:10Z"
+      "execution_plan_modified_at": "2026-08-05T08:34:03Z",
+      "live_signal_modified_at": "2026-08-05T19:01:08Z"
     },
     "golden_signal_freshness": {
       "status": "fresh",
-      "lag_days": 0.72,
+      "lag_days": 2.3,
       "max_lag_days": 3,
-      "golden_signal_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/signal_group_a_20260728_074555.json",
-      "golden_signal_modified_at": "2026-07-27T23:45:55Z"
+      "golden_signal_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/signal_group_a_20260803_195945.json",
+      "golden_signal_modified_at": "2026-08-03T11:59:45Z"
     },
     "group_a_plus_decision_signal_freshness": {
       "status": "stale",
-      "lag_days": 31.16,
+      "lag_days": 39.25,
       "max_lag_days": 14,
       "policy_signal_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_policy_signal_20260627_210621.json",
       "policy_signal_modified_at": "2026-06-27T13:06:21Z"
@@ -78,9 +76,9 @@
       "status": "ok",
       "exists": true,
       "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/a2118_dfl_advisory.json",
-      "modified_at": "2026-07-27T23:19:02Z",
-      "live_signal_actual_data_date": "2026-07-27",
-      "advisory_as_of": "2026-07-27",
+      "modified_at": "2026-08-05T19:06:58Z",
+      "live_signal_actual_data_date": "2026-08-05",
+      "advisory_as_of": "2026-08-05",
       "aligned": true,
       "advisory_status": "available",
       "action": "KEEP",
@@ -89,21 +87,19 @@
       "warnings": []
     },
     "dfl_active_date_audit": {
-      "status": "warning",
+      "status": "ok",
       "exists": true,
-      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_dfl_active_date_audit_20260727.json",
-      "modified_at": "2026-07-27T23:19:18Z",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_dfl_active_date_audit_20260806.json",
+      "modified_at": "2026-08-05T19:07:12Z",
       "audit_status": "research_only",
       "conclusion": "review_required_shadow_only",
       "policy": "shadow_only_no_auto_weight_change",
-      "active_days": 46,
-      "all_checks_pass": false,
-      "warning_days": 44,
-      "existing_guard_overlap_days": 1,
-      "total_estimated_cost_bps": 174.0382502681462,
-      "warnings": [
-        "dfl_active_date_audit_hard_checks_not_passing"
-      ]
+      "active_days": 0,
+      "all_checks_pass": true,
+      "warning_days": 0,
+      "existing_guard_overlap_days": 0,
+      "total_estimated_cost_bps": 0.0,
+      "warnings": []
     },
     "required": [
       {
@@ -122,8 +118,8 @@
         "relative_path": "report/group_a_plus/latest/live_signal.json",
         "required": true,
         "exists": true,
-        "size_bytes": 86820,
-        "modified_at": "2026-07-27T23:13:10Z",
+        "size_bytes": 87115,
+        "modified_at": "2026-08-05T19:01:08Z",
         "status": "ok"
       },
       {
@@ -132,8 +128,8 @@
         "relative_path": "report/group_a_plus/latest/execution_plan.json",
         "required": true,
         "exists": true,
-        "size_bytes": 105299,
-        "modified_at": "2026-07-27T23:45:26Z",
+        "size_bytes": 105917,
+        "modified_at": "2026-08-05T08:34:03Z",
         "status": "ok"
       },
       {
@@ -142,8 +138,8 @@
         "relative_path": "report/group_a_plus/latest/strategy_env_health.json",
         "required": true,
         "exists": true,
-        "size_bytes": 2773,
-        "modified_at": "2026-07-28T16:57:35Z",
+        "size_bytes": 2840,
+        "modified_at": "2026-08-05T19:08:30Z",
         "status": "ok"
       },
       {
@@ -195,48 +191,485 @@
       "relative_path": "logs/daily.log",
       "required": false,
       "exists": true,
-      "size_bytes": 2344147,
-      "modified_at": "2026-07-28T06:47:38Z",
+      "size_bytes": 3637131,
+      "modified_at": "2026-08-05T19:08:30Z",
       "status": "ok"
     }
   },
   "pipeline_health": {
     "status": "ok",
-    "latest_manifest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_daily_pipeline_20260728.json",
-    "latest_manifest_modified_at": "2026-07-28T06:47:38Z",
-    "date_stamp": "20260728",
-    "stale_days": 0,
+    "latest_manifest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_daily_pipeline_20260806.json",
+    "latest_manifest_modified_at": "2026-08-05T19:08:30Z",
+    "date_stamp": "20260806",
+    "stale_days": -1,
     "errors": [],
     "missing_outputs": [],
     "outputs": {
       "ohlcv_freshness": {
         "label": "ohlcv_freshness",
-        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260728.json",
-        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260728.json",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260806.json",
         "required": false,
         "exists": true,
-        "size_bytes": 8762,
-        "modified_at": "2026-07-28T06:47:37Z",
+        "size_bytes": 9205,
+        "modified_at": "2026-08-05T18:27:57Z",
         "status": "ok"
       },
       "data_refresh": {
         "label": "data_refresh",
-        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/data_refresh_20260728.json",
-        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/data_refresh_20260728.json",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/data_refresh_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/data_refresh_20260806.json",
         "required": false,
         "exists": true,
-        "size_bytes": 12542,
-        "modified_at": "2026-07-28T06:43:01Z",
+        "size_bytes": 12583,
+        "modified_at": "2026-08-05T18:24:19Z",
+        "status": "ok"
+      },
+      "ncf_00631l": {
+        "label": "ncf_00631l",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 11622,
+        "modified_at": "2026-08-05T18:32:37Z",
+        "status": "ok"
+      },
+      "ncf_00632r": {
+        "label": "ncf_00632r",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 11156,
+        "modified_at": "2026-08-05T18:40:19Z",
+        "status": "ok"
+      },
+      "ncf_0050": {
+        "label": "ncf_0050",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_latest_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_latest_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 11586,
+        "modified_at": "2026-08-05T18:46:23Z",
+        "status": "ok"
+      },
+      "panel_00631l": {
+        "label": "panel_00631l",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_panel_latest_20260806.csv",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_panel_latest_20260806.csv",
+        "required": false,
+        "exists": true,
+        "size_bytes": 134574,
+        "modified_at": "2026-08-05T18:32:37Z",
+        "status": "ok"
+      },
+      "panel_00632r": {
+        "label": "panel_00632r",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_panel_latest_20260806.csv",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_panel_latest_20260806.csv",
+        "required": false,
+        "exists": true,
+        "size_bytes": 129531,
+        "modified_at": "2026-08-05T18:40:16Z",
+        "status": "ok"
+      },
+      "panel_0050": {
+        "label": "panel_0050",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_panel_latest_20260806.csv",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_panel_latest_20260806.csv",
+        "required": false,
+        "exists": true,
+        "size_bytes": 132589,
+        "modified_at": "2026-08-05T18:46:23Z",
+        "status": "ok"
+      },
+      "panel_2330": {
+        "label": "panel_2330",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_panel_latest_20260806.csv",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_panel_latest_20260806.csv",
+        "required": false,
+        "exists": true,
+        "size_bytes": 146956,
+        "modified_at": "2026-08-05T18:56:30Z",
+        "status": "ok"
+      },
+      "ncf_panel_manifest": {
+        "label": "ncf_panel_manifest",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_manifest_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_manifest_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 16831,
+        "modified_at": "2026-08-05T18:59:54Z",
+        "status": "ok"
+      },
+      "ncf_0050_threshold_eval": {
+        "label": "ncf_0050_threshold_eval",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_threshold_eval_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_threshold_eval_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 17652,
+        "modified_at": "2026-08-05T18:59:59Z",
+        "status": "ok"
+      },
+      "ncf_0050_threshold_eval_md": {
+        "label": "ncf_0050_threshold_eval_md",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_threshold_eval_20260806.md",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_threshold_eval_20260806.md",
+        "required": false,
+        "exists": true,
+        "size_bytes": 1615,
+        "modified_at": "2026-08-05T18:59:59Z",
+        "status": "ok"
+      },
+      "ncf_panel_drift": {
+        "label": "ncf_panel_drift",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_active_vs_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_active_vs_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 48425,
+        "modified_at": "2026-08-05T19:00:04Z",
+        "status": "ok"
+      },
+      "ncf_panel_drift_csv": {
+        "label": "ncf_panel_drift_csv",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_active_vs_20260806.csv",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_active_vs_20260806.csv",
+        "required": false,
+        "exists": true,
+        "size_bytes": 239493,
+        "modified_at": "2026-08-05T19:00:04Z",
+        "status": "ok"
+      },
+      "panel_drift_triage": {
+        "label": "panel_drift_triage",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/panel_drift_triage.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/panel_drift_triage.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 2443,
+        "modified_at": "2026-08-05T19:00:14Z",
+        "status": "ok"
+      },
+      "external_sensitivity_observation_log": {
+        "label": "external_sensitivity_observation_log",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/external_sensitivity_observation_log.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/external_sensitivity_observation_log.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 10429,
+        "modified_at": "2026-08-05T19:00:20Z",
+        "status": "ok"
+      },
+      "panel_drift_resolution_progress": {
+        "label": "panel_drift_resolution_progress",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/panel_drift_resolution_progress.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/panel_drift_resolution_progress.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 3444,
+        "modified_at": "2026-08-05T19:00:20Z",
+        "status": "ok"
+      },
+      "ncf_panel_coverage": {
+        "label": "ncf_panel_coverage",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_coverage_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_coverage_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 1940,
+        "modified_at": "2026-08-05T19:00:25Z",
+        "status": "ok"
+      },
+      "advisory_panel": {
+        "label": "advisory_panel",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_advisory_panel_latest_20260806.csv",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_advisory_panel_latest_20260806.csv",
+        "required": false,
+        "exists": true,
+        "size_bytes": 99565,
+        "modified_at": "2026-08-05T19:00:38Z",
+        "status": "ok"
+      },
+      "factor_lens": {
+        "label": "factor_lens",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_factor_lens_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_factor_lens_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 19378,
+        "modified_at": "2026-08-05T19:00:52Z",
+        "status": "ok"
+      },
+      "live_signal": {
+        "label": "live_signal",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 87115,
+        "modified_at": "2026-08-05T19:01:08Z",
+        "status": "ok"
+      },
+      "compounding_regime": {
+        "label": "compounding_regime",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 3269,
+        "modified_at": "2026-08-05T19:01:14Z",
+        "status": "ok"
+      },
+      "compounding_regime_csv": {
+        "label": "compounding_regime_csv",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_20260806.csv",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_20260806.csv",
+        "required": false,
+        "exists": true,
+        "size_bytes": 849388,
+        "modified_at": "2026-08-05T19:01:14Z",
+        "status": "ok"
+      },
+      "gjr_garch_shadow": {
+        "label": "gjr_garch_shadow",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/gjr_garch_shadow.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/gjr_garch_shadow.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 1920,
+        "modified_at": "2026-08-05T19:01:20Z",
+        "status": "ok"
+      },
+      "daily_status": {
+        "label": "daily_status",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_daily_status_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_daily_status_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 146080,
+        "modified_at": "2026-08-05T19:08:14Z",
+        "status": "ok"
+      },
+      "daily_status_pointer": {
+        "label": "daily_status_pointer",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/daily_status.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/daily_status.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 692,
+        "modified_at": "2026-08-05T19:08:24Z",
+        "status": "ok"
+      },
+      "securities_lending_0050_source_status": {
+        "label": "securities_lending_0050_source_status",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/securities_lending_0050_source_status.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/securities_lending_0050_source_status.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 1856,
+        "modified_at": "2026-08-05T18:25:32Z",
+        "status": "ok"
+      },
+      "deployment_summary": {
+        "label": "deployment_summary",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/deployment_summary.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/deployment_summary.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 7476,
+        "modified_at": "2026-08-05T19:08:15Z",
+        "status": "ok"
+      },
+      "gift_signed_approval_checklist_review": {
+        "label": "gift_signed_approval_checklist_review",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/gift_signed_approval_checklist_review.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/gift_signed_approval_checklist_review.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 6796,
+        "modified_at": "2026-08-05T19:03:25Z",
+        "status": "ok"
+      },
+      "gift_signed_approval_validator_smoke": {
+        "label": "gift_signed_approval_validator_smoke",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/gift_signed_approval_validator_smoke.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/gift_signed_approval_validator_smoke.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 4826,
+        "modified_at": "2026-08-05T19:03:31Z",
+        "status": "ok"
+      },
+      "gift_pdf_advantage_coverage_review": {
+        "label": "gift_pdf_advantage_coverage_review",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/gift_pdf_advantage_coverage_review.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/gift_pdf_advantage_coverage_review.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 54929,
+        "modified_at": "2026-08-05T19:03:39Z",
+        "status": "ok"
+      },
+      "ncf_2330_checklist": {
+        "label": "ncf_2330_checklist",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_checklist_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_checklist_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 7592,
+        "modified_at": "2026-08-05T19:08:30Z",
+        "status": "ok"
+      },
+      "promotion_gate": {
+        "label": "promotion_gate",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_promotion_gate_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_promotion_gate_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 89261,
+        "modified_at": "2026-08-05T19:08:19Z",
+        "status": "ok"
+      },
+      "multi_window_failure_attribution": {
+        "label": "multi_window_failure_attribution",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/multi_window_failure_attribution.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/multi_window_failure_attribution.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 9961,
+        "modified_at": "2026-08-05T19:08:19Z",
+        "status": "ok"
+      },
+      "promotion_blocked_diagnostic": {
+        "label": "promotion_blocked_diagnostic",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/promotion_blocked_diagnostic.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/promotion_blocked_diagnostic.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 5602,
+        "modified_at": "2026-08-05T19:08:19Z",
+        "status": "ok"
+      },
+      "daily_status_final": {
+        "label": "daily_status_final",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_daily_status_final_20260806.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_daily_status_final_20260806.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 146112,
+        "modified_at": "2026-08-05T19:08:24Z",
+        "status": "ok"
+      },
+      "final_governance_snapshot": {
+        "label": "final_governance_snapshot",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/final_governance_snapshot.json",
+        "relative_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/final_governance_snapshot.json",
+        "required": false,
+        "exists": true,
+        "size_bytes": 8760,
+        "modified_at": "2026-08-05T19:08:24Z",
         "status": "ok"
       }
     },
     "final_daily_status": {
-      "status": "not_required",
-      "required": false,
+      "status": "ok",
+      "required": true,
       "errors": [],
-      "warnings": []
+      "warnings": [],
+      "final_output": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_daily_status_final_20260806.json",
+      "final_output_status_stage": "final",
+      "latest_pointer": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/daily_status.json",
+      "latest_payload": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/daily/json/daily_status_a2118_a2111_ncf_late_bull_deleverage_20260806_20260806_030824.json",
+      "latest_payload_status_stage": "final"
     },
-    "signals": {}
+    "signals": {
+      "00631L": {
+        "ticker": "00631L.TW",
+        "last_close_date": "2026-08-05",
+        "last_close": 34.15,
+        "current_regime": "BULL",
+        "direction": "UP",
+        "probability_up": 0.6526,
+        "calibrated_probability_up": 0.6167,
+        "confidence": 0.6638,
+        "weighted_return": 0.01068,
+        "data_freshness_status": "degraded_stale",
+        "data_sources": {
+          "ohlcv": "2026-08-05",
+          "institutional": "2026-08-05",
+          "margin": "2026-08-05",
+          "market_margin": "2026-08-05",
+          "taifex_futures": "2026-08-04",
+          "taifex_institutional": "2026-08-04",
+          "tdcc_shareholding": "2026-07-31",
+          "external_market_ohlcv": "2026-07-21"
+        },
+        "missing_sources": [],
+        "stale_sources": [
+          "external_market_ohlcv"
+        ],
+        "sources_ahead_of_ohlcv": []
+      },
+      "00632R": {
+        "ticker": "00632R.TW",
+        "last_close_date": "2026-08-05",
+        "last_close": 10.3,
+        "current_regime": "BEAR",
+        "direction": "DOWN",
+        "probability_up": 0.2794,
+        "calibrated_probability_up": 0.3225,
+        "confidence": 0.721,
+        "weighted_return": 0.046237,
+        "data_freshness_status": "degraded_stale",
+        "data_sources": {
+          "ohlcv": "2026-08-05",
+          "institutional": "2026-08-05",
+          "margin": "2026-08-05",
+          "market_margin": "2026-08-05",
+          "taifex_futures": "2026-08-04",
+          "taifex_institutional": "2026-08-04",
+          "tdcc_shareholding": "2026-07-31",
+          "external_market_ohlcv": "2026-07-21"
+        },
+        "missing_sources": [],
+        "stale_sources": [
+          "external_market_ohlcv"
+        ],
+        "sources_ahead_of_ohlcv": []
+      },
+      "0050": {
+        "ticker": "0050.TW",
+        "last_close_date": "2026-08-05",
+        "last_close": 103.8,
+        "current_regime": "BULL",
+        "direction": "UP",
+        "probability_up": 0.5001,
+        "calibrated_probability_up": 0.5,
+        "confidence": 0.3377,
+        "weighted_return": 0.001903,
+        "data_freshness_status": "degraded_stale",
+        "data_sources": {
+          "ohlcv": "2026-08-05",
+          "institutional": "2026-08-05",
+          "margin": "2026-08-05",
+          "market_margin": "2026-08-05",
+          "taifex_futures": "2026-08-04",
+          "taifex_institutional": "2026-08-04",
+          "tdcc_shareholding": "2026-07-31",
+          "external_market_ohlcv": "2026-07-21"
+        },
+        "missing_sources": [],
+        "stale_sources": [
+          "external_market_ohlcv"
+        ],
+        "sources_ahead_of_ohlcv": []
+      }
+    }
   },
   "module_health": {
     "status": "warning",
@@ -247,30 +680,30 @@
       "ncf_00631l": {
         "status": "ok",
         "pattern": "results/ncf_00631l_latest_*.json",
-        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260727.json",
-        "modified_at": "2026-07-27T22:50:35Z",
-        "size_bytes": 11580
+        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260806_no_external.json",
+        "modified_at": "2026-08-05T18:59:49Z",
+        "size_bytes": 11612
       },
       "ncf_00632r": {
         "status": "ok",
         "pattern": "results/ncf_00632r_latest_*.json",
-        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260727.json",
-        "modified_at": "2026-07-27T22:59:49Z",
-        "size_bytes": 11141
+        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260806.json",
+        "modified_at": "2026-08-05T18:40:19Z",
+        "size_bytes": 11156
       },
       "factor_lens": {
         "status": "ok",
         "pattern": "results/group_a_plus_factor_lens_*.json",
-        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_factor_lens_20260727.json",
-        "modified_at": "2026-07-27T23:12:53Z",
-        "size_bytes": 19334
+        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_factor_lens_20260806.json",
+        "modified_at": "2026-08-05T19:00:52Z",
+        "size_bytes": 19378
       },
       "daily_pipeline": {
         "status": "ok",
         "pattern": "results/ncf_daily_pipeline_*.json",
-        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_daily_pipeline_20260728.json",
-        "modified_at": "2026-07-28T06:47:38Z",
-        "size_bytes": 332
+        "latest_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_daily_pipeline_20260806.json",
+        "modified_at": "2026-08-05T19:08:30Z",
+        "size_bytes": 8087
       },
       "alphagen_lite_feature_pool": {
         "status": "ok",
@@ -302,18 +735,120 @@
   },
   "external_data_freshness": {
     "status": "error",
-    "latest_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260728.json",
-    "latest_report_modified_at": "2026-07-28T06:47:37Z",
-    "target_date": "2026-07-28",
+    "latest_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ohlcv_freshness_20260806.json",
+    "latest_report_modified_at": "2026-08-05T18:27:57Z",
+    "target_date": "2026-08-06",
     "overall_status": "error",
     "error_tickers": [],
-    "warning_tickers": [],
+    "warning_tickers": [
+      "0050.TW",
+      "0056.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "00646.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW"
+    ],
     "external_error_tickers": [
-      "^GSPC",
-      "^TNX",
-      "^IRX",
-      "GC=F"
+      "2330.TW"
     ]
+  },
+  "feature_table_sync": {
+    "status": "ok",
+    "database": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "reference": {
+      "table": "ohlcv",
+      "tickers": [
+        "0050.TW",
+        "00631L.TW",
+        "00632R.TW"
+      ],
+      "latest_common_date": "2026-08-05",
+      "policy": "feature tables must not lag the OHLCV common date"
+    },
+    "errors": [],
+    "warnings": [],
+    "checks": {
+      "institutional_0050": {
+        "status": "ok",
+        "reason": "in_sync",
+        "table": "institutional_data",
+        "where": "ticker = '0050.TW'",
+        "latest_date": "2026-08-05",
+        "reference_ohlcv_date": "2026-08-05",
+        "lag_days": 0,
+        "max_lag_days": 0,
+        "severity": "error"
+      },
+      "institutional_00631l": {
+        "status": "ok",
+        "reason": "in_sync",
+        "table": "institutional_data",
+        "where": "ticker = '00631L.TW'",
+        "latest_date": "2026-08-05",
+        "reference_ohlcv_date": "2026-08-05",
+        "lag_days": 0,
+        "max_lag_days": 0,
+        "severity": "error"
+      },
+      "institutional_00632r": {
+        "status": "ok",
+        "reason": "in_sync",
+        "table": "institutional_data",
+        "where": "ticker = '00632R.TW'",
+        "latest_date": "2026-08-05",
+        "reference_ohlcv_date": "2026-08-05",
+        "lag_days": 0,
+        "max_lag_days": 0,
+        "severity": "error"
+      },
+      "margin_00631l": {
+        "status": "ok",
+        "reason": "in_sync",
+        "table": "margin_data",
+        "where": "ticker = '00631L.TW'",
+        "latest_date": "2026-08-05",
+        "reference_ohlcv_date": "2026-08-05",
+        "lag_days": 0,
+        "max_lag_days": 1,
+        "severity": "error"
+      },
+      "margin_00632r": {
+        "status": "ok",
+        "reason": "in_sync",
+        "table": "margin_data",
+        "where": "ticker = '00632R.TW'",
+        "latest_date": "2026-08-05",
+        "reference_ohlcv_date": "2026-08-05",
+        "lag_days": 0,
+        "max_lag_days": 1,
+        "severity": "error"
+      },
+      "market_margin": {
+        "status": "ok",
+        "reason": "in_sync",
+        "table": "market_margin_data",
+        "where": "1 = 1",
+        "latest_date": "2026-08-05",
+        "reference_ohlcv_date": "2026-08-05",
+        "lag_days": 0,
+        "max_lag_days": 1,
+        "severity": "error"
+      },
+      "derivative_tx_txo_foreign": {
+        "status": "ok",
+        "reason": "in_sync",
+        "table": "derivative_institutional_data",
+        "where": "product_id IN ('TX', 'TXO') AND institutional_investors = '外資'",
+        "latest_date": "2026-08-05",
+        "reference_ohlcv_date": "2026-08-05",
+        "lag_days": 0,
+        "max_lag_days": 3,
+        "severity": "error"
+      }
+    }
   },
   "tsmc_weight_assumption_health": {
     "status": "ok",

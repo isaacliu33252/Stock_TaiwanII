@@ -89,6 +89,11 @@ from group_a_plus.integrations.global_features import (
     global_feature_columns,
     global_interaction_feature_columns,
 )
+from group_a_plus.ncf_2330 import (
+    _add_tsmc_leadership_features,
+    _classify_tsmc_market_state,
+    resolve_end_date,
+)
 from ncf_data_quality import ncf_data_freshness
 from ncf_external_cache import fetch_yf_close_cached
 
@@ -658,102 +663,6 @@ def _fetch_yf(ticker: str, start: str, end: str) -> pd.Series:
         return pd.Series(dtype=float, name=ticker)
 
 
-def _rolling_zscore(series: pd.Series, window: int = 120) -> pd.Series:
-    mean = series.rolling(window, min_periods=20).mean()
-    std = series.rolling(window, min_periods=20).std()
-    return ((series - mean) / std.replace(0.0, np.nan)).clip(-3.0, 3.0)
-
-
-def _align_to_index(series: pd.Series | None, idx: pd.DatetimeIndex, *, shift_n: int = 0) -> pd.Series:
-    if series is None or series.empty:
-        return pd.Series(np.nan, index=idx)
-    s = series.copy()
-    s.index = pd.to_datetime(s.index)
-    out = s.sort_index().reindex(idx, method="ffill")
-    if shift_n:
-        out = out.shift(shift_n)
-    return out.astype(float)
-
-
-def _add_tsmc_leadership_features(
-    ext: pd.DataFrame,
-    idx: pd.DatetimeIndex,
-    *,
-    tsmc_close: pd.Series,
-    etf_0050_close: pd.Series | None,
-    adr_fx_ret: pd.Series | None,
-    soxx_ret: pd.Series | None,
-    peer_semis_ret: pd.Series | None,
-    usdtwd_change: pd.Series | None,
-    inst_foreign_net: pd.Series | None = None,
-    feature_mode: str = "after_close",
-    tsmc_weight_in_0050: float = TSMC_0050_WEIGHT_ASSUMPTION,
-) -> None:
-    """Add TSMC leadership features with explicit timing control.
-
-    `pre_open` uses only T-1 Taiwan close-derived data plus US overnight data.
-    `after_close` may use the current Taiwan close-derived data. US series are
-    already overnight inputs from the latest available US session and are not
-    additionally shifted here.
-    """
-    if feature_mode not in {"pre_open", "after_close"}:
-        raise ValueError(f"Unsupported feature_mode: {feature_mode}")
-    tw_shift = 1 if feature_mode == "pre_open" else 0
-    weight = float(np.clip(tsmc_weight_in_0050, 0.0, 0.95))
-    ex_weight = max(1.0 - weight, 1e-6)
-
-    tsmc = _align_to_index(tsmc_close, idx)
-    tsmc_ret_1d = tsmc.pct_change()
-    tsmc_ret_5d = tsmc.pct_change(5)
-    tsmc_ret_20d = tsmc.pct_change(20)
-
-    et50 = _align_to_index(etf_0050_close, idx) if etf_0050_close is not None else pd.Series(np.nan, index=idx)
-    et50_ret_1d = et50.pct_change()
-    ex_tsmc_ret = (et50_ret_1d - weight * tsmc_ret_1d) / ex_weight
-    vs_ex_tsmc = tsmc_ret_1d - ex_tsmc_ret
-    contribution = weight * tsmc_ret_1d
-
-    ext["tsmc_leadership_ret_5d"] = tsmc_ret_5d.shift(tw_shift).values
-    ext["tsmc_leadership_ret_20d"] = tsmc_ret_20d.shift(tw_shift).values
-    ext["tsmc_leadership_vs_0050_ex_tsmc"] = vs_ex_tsmc.shift(tw_shift).values
-    ext["tsmc_leadership_0050_contribution"] = contribution.shift(tw_shift).values
-    ext["tsmc_leadership_foreign_net"] = _align_to_index(inst_foreign_net, idx, shift_n=tw_shift).values
-
-    ext["tsmc_leadership_adr_overnight"] = _align_to_index(adr_fx_ret, idx).values
-    ext["tsmc_leadership_soxx_ret"] = _align_to_index(soxx_ret, idx).values
-    ext["tsmc_leadership_peer_semis_ret"] = _align_to_index(peer_semis_ret, idx).values
-    ext["tsmc_leadership_usdtwd_change"] = _align_to_index(usdtwd_change, idx).values
-
-    score_inputs = [
-        "tsmc_leadership_ret_5d",
-        "tsmc_leadership_ret_20d",
-        "tsmc_leadership_adr_overnight",
-        "tsmc_leadership_soxx_ret",
-        "tsmc_leadership_peer_semis_ret",
-        "tsmc_leadership_vs_0050_ex_tsmc",
-        "tsmc_leadership_0050_contribution",
-        "tsmc_leadership_foreign_net",
-        "tsmc_leadership_usdtwd_change",
-    ]
-    z = pd.DataFrame({col: _rolling_zscore(ext[col]) for col in score_inputs}, index=idx)
-    weights = pd.Series(
-        {
-            "tsmc_leadership_ret_5d": 1.0,
-            "tsmc_leadership_ret_20d": 1.0,
-            "tsmc_leadership_adr_overnight": 1.2,
-            "tsmc_leadership_soxx_ret": 0.8,
-            "tsmc_leadership_peer_semis_ret": 0.8,
-            "tsmc_leadership_vs_0050_ex_tsmc": 1.2,
-            "tsmc_leadership_0050_contribution": 0.7,
-            "tsmc_leadership_foreign_net": 0.9,
-            "tsmc_leadership_usdtwd_change": 0.5,
-        }
-    )
-    weighted = z.mul(weights, axis=1)
-    denom = weighted.notna().mul(weights, axis=1).sum(axis=1).replace(0.0, np.nan)
-    ext["TSMC_Leadership_Score"] = (weighted.sum(axis=1) / denom).fillna(0.0).clip(-3.0, 3.0).values
-
-
 def load_external_df(
     main_df: pd.DataFrame,
     db_path: Path,
@@ -1209,32 +1118,6 @@ def load_data(db_path: Path, ticker: str, start: str, end: str) -> pd.DataFrame:
     return rows
 
 
-def resolve_end_date(db_path: Path, ticker: str, requested_end: str) -> str:
-    """Resolve 'latest' to the newest available OHLCV date for this ticker.
-
-    2026-07-12 fix: defensive `volume > 0` guard, matching the same fix in
-    ncf_00631l.py/ncf_00632r.py's resolve_end_date. `external_market_ohlcv`
-    (fetched via ncf_external_cache.fetch_yf_close_cached) was confirmed to
-    correctly skip non-trading days rather than insert a phantom
-    zero-volume row for 2330.TW as of this fix, unlike the `ohlcv` table
-    used by the other two scripts -- but a real, traded stock like 2330.TW
-    should never legitimately have a volume=0 row, so this guard is free
-    insurance against that ingestion path changing later. See
-    GROUP_A_PLUS_A2118_CHIP_DATA_CORE_CLOCK_AUDIT_HANDOFF_20260712.md.
-    """
-    if str(requested_end).lower() != "latest":
-        return requested_end
-    con = duckdb.connect(str(db_path), read_only=True)
-    max_dt = con.execute(
-        "SELECT MAX(dt) FROM external_market_ohlcv WHERE provider='yfinance' AND ticker = ? AND volume > 0",
-        [ticker],
-    ).fetchone()[0]
-    con.close()
-    if max_dt is None:
-        raise ValueError(f"No OHLCV rows found for {ticker}")
-    return pd.Timestamp(max_dt).strftime("%Y-%m-%d")
-
-
 def build_dataset(
     df: pd.DataFrame,
     horizon: int = 1,
@@ -1477,169 +1360,6 @@ def train_forward_upside_reward(
         "val_proba": val_proba,
         "val_label": y_val.rename(f"actual_fwd_gain_gt{int(threshold * 100)}_h{horizon}"),
         "val_forward_gain": forward_gain.reindex(X_val.index),
-    }
-
-
-def _risk_probability(result: dict, default: float | None = None) -> float | None:
-    if not result.get("available"):
-        return default
-    value = result.get("probability")
-    return float(value) if value is not None else default
-
-
-def _classify_tsmc_market_state(
-    all_results: dict,
-    combined_prob: float,
-    calibrated_prob: float,
-    confidence: float,
-    weighted_return: float,
-    drawdown_risk: dict,
-    severe_drawdown_risk: dict,
-    upside_reward: dict,
-) -> dict:
-    """Classify TSMC leadership phase for advisory diagnostics."""
-    h1 = all_results.get(1, {})
-    h5 = all_results.get(5, {})
-    h20 = all_results.get(20, {})
-
-    h1_prob = float(h1.get("ens_proba", 0.5))
-    h5_prob = float(h5.get("ens_proba", 0.5))
-    h20_prob = float(h20.get("ens_proba", 0.5))
-    h1_ret = float(h1.get("ens_ret", 0.0))
-    h5_ret = float(h5.get("ens_ret", 0.0))
-    h20_ret = float(h20.get("ens_ret", 0.0))
-    h1_dir = str(h1.get("direction", "NEUTRAL"))
-    h5_dir = str(h5.get("direction", "NEUTRAL"))
-    h20_dir = str(h20.get("direction", "NEUTRAL"))
-
-    tail5 = _risk_probability(drawdown_risk)
-    tail8 = _risk_probability(severe_drawdown_risk)
-    upside5 = _risk_probability(upside_reward)
-    tail_reward_score = (
-        upside5 - tail5
-        if upside5 is not None and tail5 is not None
-        else None
-    )
-
-    low_severe_risk = tail8 is None or tail8 <= 0.15
-    high_tail_risk = (tail5 is not None and tail5 >= 0.48) or (tail8 is not None and tail8 >= 0.22)
-    elevated_tail_risk = (tail5 is not None and tail5 >= 0.40) or (tail8 is not None and tail8 >= 0.16)
-    upside_healthy = upside5 is None or upside5 >= 0.45
-    upside_weak = upside5 is not None and upside5 <= 0.35
-
-    reasons: list[str] = []
-
-    if (
-        h5_dir == "UP"
-        and h20_dir == "UP"
-        and h5_prob >= 0.56
-        and h20_prob >= 0.65
-        and calibrated_prob >= 0.58
-        and weighted_return >= 0.005
-        and upside_healthy
-        and low_severe_risk
-        and confidence >= 0.45
-    ):
-        state = 1
-        label = "強勢領漲"
-        bias = "bullish_leadership"
-        reasons.extend([
-            "H5/H20 both UP with strong H20 probability",
-            "weighted return is positive and upside reward is healthy",
-            "severe drawdown risk is low",
-        ])
-    elif (
-        (h5_dir == "DOWN" and h20_dir == "DOWN")
-        or (
-            calibrated_prob <= 0.48
-            and h20_prob <= 0.50
-            and (high_tail_risk or weighted_return <= -0.005)
-        )
-    ):
-        state = 5
-        label = "趨勢轉弱"
-        bias = "bearish"
-        reasons.extend([
-            "medium/long horizon direction has weakened",
-            "calibrated probability is below neutral",
-        ])
-        if high_tail_risk:
-            reasons.append("tail risk is high")
-    elif (
-        h20_dir == "UP"
-        and h20_prob >= 0.58
-        and h1_dir == "DOWN"
-        and weighted_return <= 0.002
-        and (elevated_tail_risk or upside_weak or (tail_reward_score is not None and tail_reward_score <= 0.0))
-    ):
-        state = 3
-        label = "假突破"
-        bias = "failed_breakout_risk"
-        reasons.extend([
-            "H20 remains UP, but short horizon turned DOWN",
-            "weighted return is flat or weak",
-        ])
-        if elevated_tail_risk:
-            reasons.append("drawdown risk is elevated")
-        if upside_weak or (tail_reward_score is not None and tail_reward_score <= 0.0):
-            reasons.append("upside reward does not compensate tail risk")
-    elif (
-        h20_dir == "UP"
-        and (h5_dir == "DOWN" or h1_ret < -0.006 or h5_ret < -0.003)
-        and not high_tail_risk
-    ):
-        state = 4
-        label = "拉回整理"
-        bias = "pullback_in_uptrend"
-        reasons.extend([
-            "H20 is still UP",
-            "short/medium horizon is pulling back",
-            "tail risk is not high enough to confirm trend weakening",
-        ])
-    else:
-        state = 2
-        label = "高檔震盪"
-        bias = "neutral_bullish"
-        reasons.extend([
-            "direction remains constructive but not strong enough for leadership",
-            "expected return is flat or signals are mixed",
-        ])
-        if tail8 is not None and tail8 <= 0.15:
-            reasons.append("severe drawdown risk remains contained")
-
-    return {
-        "state": state,
-        "label_zh": label,
-        "bias": bias,
-        "policy": "diagnostic_only_no_weight_change",
-        "rule_version": "tsmc_market_state_v1",
-        "reasons": reasons,
-        "inputs": {
-            "h1_direction": h1_dir,
-            "h5_direction": h5_dir,
-            "h20_direction": h20_dir,
-            "h1_probability_up": round(h1_prob, 6),
-            "h5_probability_up": round(h5_prob, 6),
-            "h20_probability_up": round(h20_prob, 6),
-            "h1_return": round(h1_ret, 6),
-            "h5_return": round(h5_ret, 6),
-            "h20_return": round(h20_ret, 6),
-            "combined_probability_up": round(float(combined_prob), 6),
-            "calibrated_probability_up": round(float(calibrated_prob), 6),
-            "confidence": round(float(confidence), 6),
-            "weighted_return": round(float(weighted_return), 6),
-            "prob_fwd_mdd_gt5_h20": round(float(tail5), 6) if tail5 is not None else None,
-            "prob_fwd_mdd_gt8_h20": round(float(tail8), 6) if tail8 is not None else None,
-            "prob_fwd_gain_gt5_h20": round(float(upside5), 6) if upside5 is not None else None,
-            "tail_reward_risk_score": round(float(tail_reward_score), 6) if tail_reward_score is not None else None,
-        },
-        "state_map": {
-            "1": "強勢領漲",
-            "2": "高檔震盪",
-            "3": "假突破",
-            "4": "拉回整理",
-            "5": "趨勢轉弱",
-        },
     }
 
 

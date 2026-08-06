@@ -1139,7 +1139,18 @@ def main() -> None:
         )
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    out_prefix = PROJECT_ROOT / "results" / f"signal_{args.group}_{timestamp}"
+    # 2026-08-04: override-holdings (what-if) runs must not match the
+    # `signal_group_a_*.json` glob that
+    # group_a_plus.runners.a2111._resolve_golden_signal_path() uses to pick
+    # "today's golden1 signal" by newest mtime. A what-if run left in
+    # `results/` with a newer mtime than the real curated pointer silently
+    # became the golden1 baseline for every run_a2118-based backtest until a
+    # newer real signal was generated -- see
+    # [[project_golden1_signal_resolution_whatif_pollution_20260804]]. Real
+    # (non-override) runs keep the exact prior filename, so this does not
+    # change resolution for any live/production invocation.
+    filename_prefix = "whatif_signal" if override_source else "signal"
+    out_prefix = PROJECT_ROOT / "results" / f"{filename_prefix}_{args.group}_{timestamp}"
     csv_path = out_prefix.with_suffix(".csv")
     json_path = out_prefix.with_suffix(".json")
     pd.DataFrame(rows).to_csv(csv_path, index=False, encoding="utf-8-sig")

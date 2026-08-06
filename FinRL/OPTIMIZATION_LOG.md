@@ -1,168 +1,285 @@
 # FinRL 優化日誌
 
-## 2026-07-28 第四輪系統性代碼審查
+## 2026-08-06 第十三輪系統性代碼審查
 
 ---
 
-## 一、本次發現的問題
+## 一、本次審查範圍
 
-### 🟡 中等：OBV Slope 計算方式非標準
+針對 FinRL 台股量化交易系統 v2 核心模組進行優化審查：
 
-**檔案：**
-- `v2/data/technical_indicators.py` 第 995 行
-- `data/technical_indicators.py`（v1）第 791 行
+1. `v2/data/technical_indicators.py`（技術指標）
+2. `v2/environments/taiwan_stock_env.py`（交易環境）
+3. `v2/backtesting/performance_metrics.py`（績效指標）
+4. `v2/backtesting/backtest_engine.py`（回測引擎）
+5. `v2/environments/reward_function.py`（獎勵函數）
+
+---
+
+## 二、語法驗證
+
+所有核心檔案通過 Python 編譯檢查：
+
+```bash
+$ python3 -m py_compile v2/data/technical_indicators.py    # ✅ OK
+$ python3 -m py_compile v2/backtesting/performance_metrics.py # ✅ OK
+$ python3 -m py_compile v2/environments/taiwan_stock_env.py   # ✅ OK
+$ python3 -m py_compile v2/backtesting/backtest_engine.py    # ✅ OK
+$ python3 -m py_compile v2/environments/reward_function.py    # ✅ OK
+```
+
+---
+
+## 三、本次發現問題
+
+### 🔴 問題 1：`volume_spike` 與 `volume_ratio` 完全重複
+
+**嚴重程度：** 低（程式碼品質）
+**受影響檔案：** `v2/data/technical_indicators.py`
 
 **問題描述：**
 
-兩版本的 OBV slope 計算方式相同，但公式非標準：
+`calculate_pattern_features()` 和 `calculate_volume_features()` 各自獨立計算了相同的指標：
 
 ```python
-# 原始（錯誤/非標準）
-self.df['obv_slope'] = obv.diff() / (obv.diff().abs().rolling(window=5).sum() + 1e-10)
+# calculate_pattern_features() (line 912):
+self.df['volume_spike'] = self.df['volume'] / (volume_ma5 + 1e-10)
+
+# calculate_volume_features() (line 993):
+self.df['volume_ratio'] = self.df['volume'] / (self.df['volume'].rolling(window=5).mean() + 1e-10)
 ```
 
-這計算的是「當日 OBV 變化 / 過去5日 OBV 絕對變化總和」，不是傳統意義上的斜率。輸出範例：
+兩者公式完全相同，都是「當日成交量 / 5日均量」，只是變數名稱不同。
 
-| 日期 | OBV | 當前實作值 | pct_change(5) |
-|------|-----|-----------|---------------|
-| 26 | -33281 | -0.050 | 0.007 |
-| 27 | -27394 | +0.172 | +0.134 |
-| 28 | -33253 | -0.182 | +0.038 |
-| 29 | -40584 | -0.240 | -0.008 |
+實測驗證：
+```python
+# 兩個 DataFrame 的值完全相同
+volume_spike == volume_ratio: True
+```
 
 **修復內容：**
 
+移除 `calculate_volume_features()` 中的 `volume_ratio` 計算（因為 `volume_spike` 已存在）。
+
 ```python
-# 修復後（標準化 5日動量）
-self.df['obv_slope'] = obv.pct_change(periods=5).replace([np.inf, -np.inf], 0.0).fillna(0.0)
+# 刪除 calculate_volume_features() 中的這段：
+# 量比：當日成交量 / 5日均量（與 v1 一致，是 volume_spike 的另一表示）
+self.df['volume_ratio'] = self.df['volume'] / (self.df['volume'].rolling(window=5).mean() + 1e-10)
 ```
 
-**影響：**
-- OBV slope 從非標準比值改為標準動量指標
-- RL 模型能更好地學習 OBV 趨勢變化
-- 修復後的信號更直觀且易於解釋
+同步更新 `get_feature_list()` 中的特徵列表，移除 `volume_ratio`。
+
+**修復後結果：**
+- 技術指標總數從 63 欄減少為 62 欄（移除 1 個重複欄位）
+- `volume_ratio` 不再出現於特徵列表中
+- 功能不變，指標更精簡
 
 ---
 
-## 二、已確認正常的實作（確認未被破壞）
+### 🟡 問題 2：技術指標文檔註釋混淆
 
-### ✅ v2 ATR Pandas Fallback（Wilder 平滑）
+**嚴重程度：** 低（文件品質）
+**受影響檔案：** `v2/data/technical_indicators.py`
 
-`v2/data/technical_indicators.py` 第 558 行：
+**問題描述：**
+
+`get_feature_list()` 中「位置」區塊的註釋僅標註「rolling_mdd_period 在 calculate_position_features 中計算」，但未說明這些特徵的實際意義。
+
 ```python
-self.df['atr_14'] = pd.Series(tr).ewm(span=period, adjust=False).mean()
+# 位置
+# 注意：rolling_mdd_period 在 calculate_position_features 中計算
+# 使用 rolling_mdd_63 作為標準名稱（明確標示窗口大小）
+features.extend(['high_252_position', 'rolling_mdd_63'])
 ```
-使用 EWM（Wilder 平滑），與 TA-Lib 計算方式一致。✓
 
-### ✅ v2 Momentum 計算
+**修復內容：**
 
-`v2/data/technical_indicators.py` 第 831 行：
+將註釋改為更具資訊價值的描述：
+
 ```python
-pct_change = pd.Series(close).pct_change(periods=period)
-self.df[col_name] = pct_change.replace([np.inf, -np.inf], 0.0)
+# 位置
+# high_252_position: (close - 252日低點) / (252日高點 - 252日低點)
+# rolling_mdd_63: 63日滾動最大回撤
+features.extend(['high_252_position', 'rolling_mdd_63'])
 ```
-使用 pct_change（標準化回報），而非 diff（絕對值）。✓
 
-### ✅ v2 DMI Pandas Fallback
+---
 
-`v2/data/technical_indicators.py` 第 640 行：
+## 四、已確認無問題的模組（上次修復後持續追蹤）
+
+### ✅ KDJ 指標範圍修復有效（2026-08-05）
+
+KDJ 指標的 RSV .clip(rsv, 0, 100) 修復已確認有效：
+
+```
+kdj_k range: [0.00, 100.00]    ✅
+kdj_d range: [0.00, 100.00]    ✅
+kdj_j range: [-32.92, 109.77]  ✅
+```
+
+### ✅ Sortino Ratio 邊界條件修復有效（2026-08-05）
+
+Sortino Ratio 的 `downside_std < 1e-10` 處理已確認有效：
+
 ```python
-atr = pd.Series(tr).ewm(span=period, adjust=False).mean()
+All zeros - Sortino: 0.0              ✅
+All same negative (-0.5%) - Sortino: 0.0  ✅
+All same positive (0.5%) - Sortino: inf    ✅
 ```
-正確使用 EWM 而非 rolling().mean()。✓
 
-### ✅ TA-Lib double-computation 模式（正確）
+### ✅ v2 交易環境 Position 更新（持續確認）
 
-所有技術指標的 TA-Lib 使用模式：
+所有 BUY/SELL/CLOSE 動作的 position 更新均正確（2026-08-05 已驗證）。
+
+### ✅ TA-Lib 安裝狀態
+
+TA-Lib 當前未安裝，所有指標使用 Pandas fallback 計算。
+
+---
+
+## 五、本次實際修改
+
+| 檔案 | 修改類型 | 變更 |
+|------|----------|------|
+| `v2/data/technical_indicators.py` | 移除重複程式碼 | 刪除 `volume_ratio` 計算（line 992-993） |
+| `v2/data/technical_indicators.py` | 程式碼清理 | 更新 `get_feature_list()` 移除 `volume_ratio` |
+| `v2/data/technical_indicators.py` | 文檔改進 | 改善「位置」特徵的註釋說明 |
+
+**修改行數：** -4 行（刪除重複）+ 2 行（文檔改善）
+
+---
+
+## 六、架構觀察（無需修改）
+
+### TA-Lib Double-Computation 模式分析
+
+部分技術指標函數採用「TA-Lib 優先 + Pandas fallback」模式：
+
+**結構 A（正確結構，如 ATR、DMI、MFI、Williams %R）：**
 ```python
 if TALIB_AVAILABLE:
     try:
-        self.df['atr_14'] = talib.ATR(...)
-        return self.df  # 成功時 early return
-    except Exception:
-        pass
-# Fallback: Pandas 實作（僅在 TA-Lib 失敗時執行）
-self._atr_pandas_impl(period)
+        result = talib.XXX(...)   # 使用 TA-Lib
+        return self.df             # 成功後直接返回
+    except:
+        pass                       # TA-Lib 失敗時 pass 到 Pandas
+# Pandas fallback（TA-Lib 不可用或失敗時執行）
 ```
-這是**正確**的模式 - TA-Lib 成功時不回頭執行 Pandas。✓
+
+**結構 B（MACD、Bollinger Bands）：**
+```python
+if TALIB_AVAILABLE:
+    try:
+        result = talib.XXX(...)   # 使用 TA-Lib
+        self.df[col] = result
+        return self.df             # 成功後直接返回
+    except:
+        pass                       # 失敗時 pass
+# Pandas fallback
+```
+
+**結論：** 所有函數都正確地在 TA-Lib 成功後立即 `return`，Pandas fallback 不會在 TA-Lib 成功後執行。
+
+**但存在一個潛在風險：** 當 `TALIB_AVAILABLE=True` 但 TA-Lib 函數拋出異常時，`pass` 陳述式會執行，控制流會落入後面的 Pandas fallback 實作。這是預期行為。
 
 ---
 
-## 三、本次實際修改
+## 七、後續優化方向
 
-| 檔案 | 修改內容 | 類型 |
-|------|---------|------|
-| `v2/data/technical_indicators.py` | 第 995 行：OBV slope 從 `diff/abs_sum` 改為 `pct_change(5)` + inf/nan 處理 | ✅ Bug 修復 |
-| `data/technical_indicators.py`（v1） | 第 791 行：同上的 OBV slope 修復 | ✅ Bug 修復 |
+### 1. 安裝 TA-Lib 提升效能
 
-**修改檔案數：** 2 個
-**Bug 修復數：** 2 處（v1 和 v2 各一）
+TA-Lib 當前未安裝，所有指標使用 Pandas fallback 計算。建議安裝以提升計算效能（約 10-50 倍加速）：
 
-### OBV Slope 修復驗證
+```bash
+# Windows (使用 conda)
+conda install -c conda-forge ta-lib
+
+# 或使用 pip（需要先安裝 TA-Lib C 庫）
+pip install ta-lib
+```
+
+### 2. 考虑引入單元測試框架
+
+建議增加以下測試以確保程式碼品質：
+- KDJ 指標範圍邊界測試（盤整資料、趨勢資料）
+- Sortino Ratio 邊界條件測試（全零報酬、恆定負報酬、恆定正報酬）
+- 技術指標 NaN/Inf 值檢查
+- 交易環境 BUY/SELL/CLOSE 動作 position 更新驗證
+
+### 3. 考慮使用 Polars 替代 Pandas 加速計算
+
+對於大數據集（> 10000 行），可考虑：
+- 使用 `polars` 替代 `pandas` 加速計算
+- 使用 `numba` JIT 編譯熱路徑
+
+### 4. 統一 v1/v2 架構
+
+v1 和 v2 並存造成維護負擔。建議逐步遷移至 v2。
+
+---
+
+## 八、總結
+
+| 項目 | 狀態 | 說明 |
+|------|------|------|
+| v2 KDJ 指標範圍 | ✅ 正確 | RSV.clip(0, 100) 修復有效 |
+| v2 Sortino Ratio 邊界 | ✅ 正確 | downside_std < 1e-10 修復有效 |
+| v2 交易環境 Position 更新 | ✅ 正確 | 所有動作 position 更新正確 |
+| volume_spike / volume_ratio 重複 | ✅ 已修復 | 移除重複的 volume_ratio |
+| 技術指標文檔註釋 | ✅ 已改善 | 位置特徵註釋更具資訊價值 |
+| TA-Lib 安裝狀態 | ⚠️ 未安裝 | 使用 Pandas fallback |
+| 語法驗證 | ✅ 全部通過 | 5 個核心檔案 |
+
+**本次發現問題：** 2 個（volume_ratio 重複、文件註釋不清）
+**本次修復問題：** 2 個
+**累計已修復問題：** 8 個
+
+---
+
+## 九、驗證測試腳本
 
 ```python
-# 修復前（原始實作）
-obv_slope_weird = obv.diff() / (obv.diff().abs().rolling(window=5).sum() + 1e-10)
-# 範圍: -0.37 ~ +0.39（有界但含義模糊）
+import sys
+sys.path.insert(0, '.')
+sys.path.insert(0, 'v2')
 
-# 修復後（標準動量）
-obv_slope_fixed = obv.pct_change(periods=5).replace([np.inf, -np.inf], 0.0).fillna(0.0)
-# 範圍: -0.35 ~ +99.47（標準化但可能有inf）
+from v2.data.technical_indicators import TechnicalIndicators
+from v2.backtesting.performance_metrics import calculate_sortino_ratio
+import pandas as pd
+import numpy as np
 
-# 測試結論：pct_change 會因除以零產生 inf，已加入 replace([np.inf, -np.inf], 0.0) 處理
+# Test 1: volume_ratio NOT in result (removed as duplicate)
+np.random.seed(42)
+n = 300
+df = pd.DataFrame({
+    'date': pd.date_range('2023-01-01', periods=n, freq='D'),
+    'open': 100 + np.cumsum(np.random.randn(n) * 0.5),
+    'high': 100 + np.cumsum(np.random.randn(n) * 0.5) + 2,
+    'low': 100 + np.cumsum(np.random.randn(n) * 0.5) - 2,
+    'close': 100 + np.cumsum(np.random.randn(n) * 0.5),
+    'volume': np.random.randint(1000, 10000, n)
+})
+
+ti = TechnicalIndicators(df)
+df_result = ti.calculate_all()
+assert 'volume_ratio' not in df_result.columns, "volume_ratio should be removed"
+assert 'volume_spike' in df_result.columns, "volume_spike should remain"
+print(f"✅ volume_ratio removed, volume_spike retained")
+print(f"   Total columns: {len(df_result.columns)}")
+
+# Test 2: KDJ bounded [0, 100]
+assert df_result['kdj_k'].min() >= 0 and df_result['kdj_k'].max() <= 100, "KDJ K out of range"
+print("✅ KDJ bounded [0, 100]")
+
+# Test 3: Sortino edge cases
+assert calculate_sortino_ratio([0.0]*252, 0.02) == 0.0, "Sortino zeros failed"
+assert calculate_sortino_ratio([-0.005]*100, 0.02) == 0.0, "Sortino constant negative failed"
+print("✅ Sortino edge cases pass")
+
+print("\nAll verification tests passed!")
 ```
 
 ---
 
-## 四、建議後續優化方向
-
-### 1. 觀察：taiwan_stock_env.py 的 _calculate_reward 內聯實作
-
-**發現：** `v2/environments/taiwan_stock_env.py` 的 `_calculate_reward` 方法（第 573-628 行）是內聯實作，未使用獨立的 `RewardFunction` 類別。
-
-**現況：**
-- 環境有自己的 reward 計算邏輯
-- `reward_function.py` 中的 `RewardFunction` 類別存在但未被 environment 使用
-- 環境的 `_calculate_reward` 使用 `portfolio_return * 100` 放大機制
-
-**評估：** 這是一個架構設計選擇，不是錯誤。獨立 `RewardFunction` 適合需要多策略切換的場景，內聯實作適合單一策略。如需統一，考慮重構為使用 `RewardFunction`。
-
-### 2. OBV Slope 替代方案討論
-
-對於未來優化，可以考慮使用 Z-score 標準化的 OBV slope：
-```python
-obv_diff_mean = obv.diff().rolling(window=5).mean()
-obv_diff_std = obv.diff().rolling(window=5).std()
-obv_slope_zscore = (obv_diff_mean / (obv_diff_std + 1e-10)).fillna(0.0)
-# 範圍: -1.73 ~ +0.60，恆有值
-```
-
-這避免了 pct_change 可能產生無窮大的問題，但改變了信號的語義。當前修復（pct_change）保持了與其他 momentum 指標（如 momentum_21, price_momentum）的一致性。
-
-### 3. v1/v2 統一建議
-
-兩套架構（v1 根目錄 / v2/v2目錄）已基本一致，但仍有些差異：
-- v2 的 reward 計算有 `* 100` 放大
-- v1 的 reward 計算可能不同
-
-建議確認生產環境使用的版本，並將差異文件化。
-
----
-
-## 五、總結
-
-| 項目 | 狀態 |
-|------|------|
-| v2 OBV Slope 非標準計算 | ✅ 已修復（syntax verified） |
-| v1 OBV Slope 非標準計算 | ✅ 已修復（syntax verified） |
-| v2 ATR Pandas Fallback（Wilder） | ✅ 已確認正確 |
-| v2 Momentum 計算（pct_change） | ✅ 已確認正確 |
-| v2 DMI Pandas Fallback（EWM） | ✅ 已確認正確 |
-| TA-Lib double-computation 模式 | ✅ 已確認正確 |
-
-**本次實際修改：** 2 個檔案，2 處修改，所有修改均通過語法檢查。
-
----
-
-*報告產生時間：2026-07-28*
-*審查方法：系統性除錯（Systematic Debugging）+ v1/v2 並行比對 + 數值驗證*
+*報告產生時間：2026-08-06*
+*審查方法：系統性除錯（Systematic Debugging）+ 程式碼結構分析 + 單元測試*

@@ -17,6 +17,10 @@ DEFAULT_LIMITS = {
     "h20_prob_up": 0.15,
     "confidence": 0.28,
 }
+HISTORICAL_VERIFICATION_BOUNDS = {
+    "h20_prob_up": 0.13,
+    "confidence": 0.13,
+}
 HORIZON_KEYS = ("1", "5", "20")
 
 
@@ -44,6 +48,18 @@ def _optional_json(path: str | Path | None) -> dict[str, Any] | None:
     if not resolved.exists():
         return None
     return json.loads(resolved.read_text(encoding="utf-8"))
+
+
+def _artifact_status(path: str | Path | None) -> dict[str, Any]:
+    if path is None:
+        return {"path": None, "exists": False, "provided": False, "file_size_bytes": None}
+    resolved = _resolve(path)
+    return {
+        "path": str(resolved),
+        "exists": resolved.exists(),
+        "provided": True,
+        "file_size_bytes": int(resolved.stat().st_size) if resolved.exists() else None,
+    }
 
 
 def _number(value: Any) -> float | None:
@@ -166,6 +182,58 @@ def _panel_method_differences(baseline: pd.DataFrame, candidate: pd.DataFrame) -
     }
 
 
+def _artifact_contract(
+    *,
+    baseline_panel: str | Path,
+    candidate_panel: str | Path,
+    baseline_signal: str | Path | None,
+    candidate_signal: str | Path | None,
+    baseline_no_external_panel: str | Path | None,
+    candidate_no_external_panel: str | Path | None,
+    sensitivity_audit: str | Path | None,
+    historical_bound_exceeded: list[str],
+) -> dict[str, Any]:
+    artifacts = {
+        "baseline_panel": _artifact_status(baseline_panel),
+        "candidate_panel": _artifact_status(candidate_panel),
+        "baseline_signal": _artifact_status(baseline_signal),
+        "candidate_signal": _artifact_status(candidate_signal),
+        "baseline_no_external_panel": _artifact_status(baseline_no_external_panel),
+        "candidate_no_external_panel": _artifact_status(candidate_no_external_panel),
+        "sensitivity_audit": _artifact_status(sensitivity_audit),
+    }
+    missing_provided = [
+        name
+        for name, artifact in artifacts.items()
+        if artifact["provided"] and not artifact["exists"]
+    ]
+    candidate_pair_available = bool(artifacts["candidate_no_external_panel"]["exists"])
+    baseline_pair_available = bool(artifacts["baseline_no_external_panel"]["exists"])
+    full_attribution_required = bool(historical_bound_exceeded)
+    full_attribution_possible = (not full_attribution_required) or (
+        candidate_pair_available and baseline_pair_available and artifacts["sensitivity_audit"]["exists"]
+    )
+    return {
+        "status": "missing_provided_artifacts" if missing_provided else "available",
+        "artifacts": artifacts,
+        "missing_provided_artifacts": missing_provided,
+        "paired_external_no_external": {
+            "candidate_pair_available": candidate_pair_available,
+            "baseline_pair_available": baseline_pair_available,
+            "sensitivity_audit_available": bool(artifacts["sensitivity_audit"]["exists"]),
+            "full_attribution_required": full_attribution_required,
+            "full_attribution_possible": full_attribution_possible,
+            "reason": "baseline no-external pair is missing; exact attribution remains partial"
+            if full_attribution_required and not baseline_pair_available
+            else "candidate no-external pair is missing; external sensitivity cannot be quantified"
+            if full_attribution_required and not candidate_pair_available
+            else "sensitivity audit is missing; external sensitivity cannot be summarized"
+            if full_attribution_required and not artifacts["sensitivity_audit"]["exists"]
+            else "paired artifacts are sufficient for this diagnosis",
+        },
+    }
+
+
 def build_diagnosis(
     drift_audit: str | Path,
     *,
@@ -173,6 +241,8 @@ def build_diagnosis(
     candidate_panel: str | Path | None = None,
     baseline_signal: str | Path | None = None,
     candidate_signal: str | Path | None = None,
+    baseline_no_external_panel: str | Path | None = None,
+    candidate_no_external_panel: str | Path | None = None,
     sensitivity_audit: str | Path | None = None,
     limits: dict[str, float] | None = None,
 ) -> dict[str, Any]:
@@ -189,14 +259,19 @@ def build_diagnosis(
     columns: dict[str, Any] = {}
     exceeded_columns = []
     trigger_critical_exceeded = []
+    historical_bound_exceeded = []
     for column, summary in (audit.get("column_summary") or {}).items():
         max_abs = float(summary.get("max_abs_delta") or 0.0)
         limit = active_limits.get(column)
         exceeded = bool(limit is not None and max_abs > float(limit))
+        historical_bound = HISTORICAL_VERIFICATION_BOUNDS.get(column)
+        historical_exceeded = bool(historical_bound is not None and max_abs > float(historical_bound))
         if exceeded:
             exceeded_columns.append(column)
         if exceeded and column in TRIGGER_CRITICAL_COLUMNS:
             trigger_critical_exceeded.append(column)
+        if historical_exceeded:
+            historical_bound_exceeded.append(column)
 
         date = str(summary.get("max_abs_delta_date"))
         before = _value_at(baseline, date, column)
@@ -205,6 +280,8 @@ def build_diagnosis(
             "tier": "trigger_critical" if column in TRIGGER_CRITICAL_COLUMNS else "diagnostic",
             "limit": limit,
             "exceeds_limit": exceeded,
+            "historical_verification_bound": historical_bound,
+            "exceeds_historical_verification_bound": historical_exceeded,
             "mean_abs_delta": summary.get("mean_abs_delta"),
             "median_abs_delta": summary.get("median_abs_delta"),
             "max_abs_delta": max_abs,
@@ -231,6 +308,7 @@ def build_diagnosis(
         "status": "blocked" if exceeded_columns else "pass",
         "exceeded_columns": exceeded_columns,
         "trigger_critical_exceeded": trigger_critical_exceeded,
+        "historical_verification_bound_exceeded": historical_bound_exceeded,
         "columns": columns,
         "source_diagnosis": {
             "panel_methods": _panel_method_differences(baseline, candidate),
@@ -241,6 +319,16 @@ def build_diagnosis(
                 "path": str(_resolve(sensitivity_audit)) if sensitivity_audit else None,
                 "column_summary": (sensitivity_payload or {}).get("column_summary", {}),
             },
+            "artifact_contract": _artifact_contract(
+                baseline_panel=baseline_path,
+                candidate_panel=candidate_path,
+                baseline_signal=baseline_signal,
+                candidate_signal=candidate_signal,
+                baseline_no_external_panel=baseline_no_external_panel,
+                candidate_no_external_panel=candidate_no_external_panel,
+                sensitivity_audit=sensitivity_audit,
+                historical_bound_exceeded=historical_bound_exceeded,
+            ),
         },
         "interpretation": {
             "promotion_allowed": False,
@@ -252,6 +340,25 @@ def build_diagnosis(
             if exceeded_columns
             else "no configured drift limits exceeded",
         },
+        "root_cause_follow_up": {
+            "status": "unresolved_requires_diagnosis" if historical_bound_exceeded else "not_required",
+            "reason": (
+                "drift exceeds the 2026-07-07 historical verification bound; do not close as noise without root-cause isolation"
+                if historical_bound_exceeded
+                else "no historical verification bound exceeded"
+            ),
+            "historical_bound_source": "2026-07-07 NCF panel drift fix verification, documented as <=0.13 residual drift bound for trigger-critical columns",
+            "exceeded_columns": historical_bound_exceeded,
+            "required_checks": [
+                "same_method_baseline_vs_candidate",
+                "model_set_isolation",
+                "feature_schema_or_external_feature_delta",
+                "training_window_or_label_availability_delta",
+                "pin_and_baseline_path_verification",
+            ]
+            if historical_bound_exceeded
+            else [],
+        },
     }
 
 
@@ -262,6 +369,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--candidate-panel", default=None)
     parser.add_argument("--baseline-signal", default=None)
     parser.add_argument("--candidate-signal", default=None)
+    parser.add_argument("--baseline-no-external-panel", default=None)
+    parser.add_argument("--candidate-no-external-panel", default=None)
     parser.add_argument("--sensitivity-audit", default=None)
     parser.add_argument("--output", default="results/ncf_panel_drift_diagnosis_latest.json")
     return parser.parse_args()
@@ -275,6 +384,8 @@ def main() -> None:
         candidate_panel=args.candidate_panel,
         baseline_signal=args.baseline_signal,
         candidate_signal=args.candidate_signal,
+        baseline_no_external_panel=args.baseline_no_external_panel,
+        candidate_no_external_panel=args.candidate_no_external_panel,
         sensitivity_audit=args.sensitivity_audit,
     )
     output = _resolve(args.output)

@@ -1414,6 +1414,7 @@ def evaluate_window(
     gate_confidence_min: float,
     gate_risk_mode: str,
     gate_blocked_action: str,
+    golden_signal_path: str | None = None,
 ) -> dict[str, Any]:
     end = _resolve_end_date(db_path, end)
     report, frame = run_a2118(
@@ -1433,6 +1434,7 @@ def evaluate_window(
         momentum_fast_exit_min=MOMENTUM_FAST_EXIT_MIN,
         momentum_fast_exit_ma_gap_min=MOMENTUM_FAST_EXIT_MA_GAP_MIN,
         exclude_zero_volume_rows=True,
+        golden_signal_path_override=golden_signal_path,
     )
     panel = _load_panel(ncf_panel_631l)
     prices, dividend_coverage = _load_total_return_prices(db_path, frame.index)
@@ -1613,6 +1615,17 @@ def main() -> None:
     parser.add_argument("--gate-risk-mode", choices=("any", "all"), default="any")
     parser.add_argument("--gate-blocked-action", choices=("hold", "baseline"), default="hold")
     parser.add_argument("--windows", default=None)
+    parser.add_argument(
+        "--golden-signal-path",
+        default=None,
+        help=(
+            "Pin golden1 weights to a specific historical results/signal_group_a_*.json "
+            "snapshot instead of run_a2118's default newest-mtime resolution. Use this for "
+            "point-in-time-correct OOS reruns -- see "
+            "[[project_golden1_signal_resolution_whatif_pollution_20260804]]. Default None "
+            "preserves existing (live-pointer) behavior."
+        ),
+    )
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     args = parser.parse_args()
 
@@ -1647,6 +1660,7 @@ def main() -> None:
             gate_confidence_min=float(args.gate_confidence_min),
             gate_risk_mode=str(args.gate_risk_mode),
             gate_blocked_action=str(args.gate_blocked_action),
+            golden_signal_path=args.golden_signal_path,
         )
         for label, start, end, panel, bucket in windows
     ]

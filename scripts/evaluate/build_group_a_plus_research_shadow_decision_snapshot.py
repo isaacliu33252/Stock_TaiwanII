@@ -70,6 +70,7 @@ DEFAULT_LLM_STATE_REWARD_MANUAL_APPROVAL_READINESS = (
 DEFAULT_LLM_STATE_REWARD_SIGNED_APPROVAL_VALIDATION = (
     PROJECT_ROOT / "report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_validation.json"
 )
+DEFAULT_NCF_DECISION_CALIBRATION = PROJECT_ROOT / "results/ncf_decision_calibration_shadow_latest.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "report/group_a_plus/latest/research_shadow_decision_snapshot.json"
 
 
@@ -117,6 +118,7 @@ def build_snapshot(
     llm_state_reward_regime_filtered_micro_tilt_path: Path = DEFAULT_LLM_STATE_REWARD_REGIME_FILTERED_MICRO_TILT,
     llm_state_reward_manual_approval_readiness_path: Path = DEFAULT_LLM_STATE_REWARD_MANUAL_APPROVAL_READINESS,
     llm_state_reward_signed_approval_validation_path: Path = DEFAULT_LLM_STATE_REWARD_SIGNED_APPROVAL_VALIDATION,
+    ncf_decision_calibration_path: Path = DEFAULT_NCF_DECISION_CALIBRATION,
 ) -> dict[str, Any]:
     finstressts = _load(finstressts_path)
     trigate = _load(trigate_path)
@@ -142,6 +144,7 @@ def build_snapshot(
     llm_state_reward_regime_filtered_micro_tilt = _load(llm_state_reward_regime_filtered_micro_tilt_path)
     llm_state_reward_manual_approval_readiness = _load(llm_state_reward_manual_approval_readiness_path)
     llm_state_reward_signed_approval_validation = _load(llm_state_reward_signed_approval_validation_path)
+    ncf_decision_calibration = _load(ncf_decision_calibration_path)
     fin_decision = _decision(finstressts)
     tri_decision = _decision(trigate)
     systemic_decision = _decision(systemic_bubble)
@@ -213,6 +216,8 @@ def build_snapshot(
         warnings.append("missing_llm_state_reward_manual_approval_readiness_review")
     if not llm_state_reward_signed_approval_validation:
         warnings.append("missing_llm_state_reward_signed_approval_validation")
+    if not ncf_decision_calibration:
+        warnings.append("missing_ncf_decision_calibration_shadow")
     if finstressts.get("status") == "blocked":
         blockers.append("finstressts_snapshot_blocked")
     if tri_state.get("state") == "blocked_for_leverage_add":
@@ -328,6 +333,11 @@ def build_snapshot(
         )
     for reason in llm_state_reward_signed_approval_validation.get("blocking_reasons") or []:
         warnings.append(f"llm_state_reward_signed_approval_validation:{reason}")
+    ncf_calibration_governance = ncf_decision_calibration.get("calibration_governance") or (
+        (ncf_decision_calibration.get("snapshot") or {}).get("governance") or {}
+    )
+    if ncf_calibration_governance.get("status"):
+        warnings.append(f"ncf_decision_calibration_governance_status:{ncf_calibration_governance.get('status')}")
 
     return {
         "schema_version": 1,
@@ -606,6 +616,16 @@ def build_snapshot(
             "llm_state_reward_signed_approval_promote_to_live": (
                 llm_state_reward_signed_approval_validation_decision.get("promote_to_live")
             ),
+            "ncf_decision_calibration_status": ncf_decision_calibration.get("status"),
+            "ncf_decision_calibration_governance_status": ncf_calibration_governance.get("status"),
+            "ncf_decision_confidence_contract": ncf_calibration_governance.get("decision_confidence_contract"),
+            "ncf_decision_calibration_model_default_enabled": ncf_calibration_governance.get(
+                "calibration_model_default_enabled"
+            ),
+            "ncf_decision_calibration_live_gate_allowed": ncf_calibration_governance.get("live_gate_allowed"),
+            "ncf_decision_calibration_target_weight_change_allowed": ncf_calibration_governance.get(
+                "target_weight_change_allowed"
+            ),
         },
         "blocking_reasons": blockers,
         "warning_reasons": warnings,
@@ -650,6 +670,7 @@ def build_snapshot(
             "llm_state_reward_regime_filtered_micro_tilt": str(llm_state_reward_regime_filtered_micro_tilt_path),
             "llm_state_reward_manual_approval_readiness": str(llm_state_reward_manual_approval_readiness_path),
             "llm_state_reward_signed_approval_validation": str(llm_state_reward_signed_approval_validation_path),
+            "ncf_decision_calibration": str(ncf_decision_calibration_path),
         },
     }
 
@@ -700,6 +721,7 @@ def main() -> None:
         "--llm-state-reward-signed-approval-validation",
         default=str(DEFAULT_LLM_STATE_REWARD_SIGNED_APPROVAL_VALIDATION),
     )
+    parser.add_argument("--ncf-decision-calibration", default=str(DEFAULT_NCF_DECISION_CALIBRATION))
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     args = parser.parse_args()
 
@@ -736,6 +758,7 @@ def main() -> None:
         llm_state_reward_signed_approval_validation_path=_resolve(
             args.llm_state_reward_signed_approval_validation
         ),
+        ncf_decision_calibration_path=_resolve(args.ncf_decision_calibration),
     )
     write_snapshot(snapshot, _resolve(args.output))
     print(f"Research shadow decision snapshot: {_resolve(args.output)}")

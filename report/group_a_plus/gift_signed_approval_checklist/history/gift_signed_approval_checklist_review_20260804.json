@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_gift_signed_approval_checklist_review",
+  "generated_at": "2026-08-04T18:51:04",
+  "as_of": "2026-08-04",
+  "status": "manual_completion_pending",
+  "policy": "manual_checklist_only_no_approval_no_training_no_live_action",
+  "sources": {
+    "human_exception_record_draft": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_record_draft.json",
+      "exists": true,
+      "sha256": "e641243c24c1eae8a8c9fc255bd7f4d5097341c9162dd419065a95aefb50c34f"
+    },
+    "approval_record_schema": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_approval_record_schema.json",
+      "exists": true,
+      "sha256": "146ca73d8f2e3d436030d9a3798605419dc6ab47f869eb599b36520018124418"
+    },
+    "signed_approval_record_template": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_record_TEMPLATE.json",
+      "exists": true,
+      "sha256": "77cf462fbab397b140c9e43aeebde3d348a86dbe60e56c78a5a3c5340acd2362"
+    },
+    "signed_approval_validation": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_validation.json",
+      "exists": true,
+      "sha256": "eb038934fc5039184f6ef51e7559b23fef48b7f40b90cddd0102a7b9c7598921"
+    },
+    "target_signed_approval_record": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_record.json",
+      "exists": false,
+      "sha256": null
+    }
+  },
+  "target_signed_record_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_record.json",
+  "checklist_items": [
+    {
+      "id": "copy_template_to_target_signed_record_path",
+      "status": "pending",
+      "target_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_record.json"
+    },
+    {
+      "id": "fill_manual_identity_and_dates",
+      "status": "pending",
+      "missing_fields": [
+        "reviewer",
+        "reviewer_role",
+        "approved_at",
+        "expires_at"
+      ]
+    },
+    {
+      "id": "approve_only_non_ppo_offline_shadow_queue_review",
+      "status": "pending",
+      "required_true_fields": [
+        "approved_actions.allow_non_ppo_offline_shadow_training_queue_review"
+      ]
+    },
+    {
+      "id": "keep_all_live_and_training_permissions_false",
+      "status": "done",
+      "forbidden_true_fields": []
+    },
+    {
+      "id": "acknowledge_all_safety_constraints",
+      "status": "pending",
+      "missing_acknowledgements": [
+        "acknowledgements.00631l_and_00632r_remain_excluded",
+        "acknowledgements.golden1_0531_unchanged",
+        "acknowledgements.no_live_action_no_target_weight_no_auto_rebalance",
+        "acknowledgements.non_ppo_offline_shadow_review_only",
+        "acknowledgements.research_shadow_remains_blocked_for_live_allocation",
+        "acknowledgements.training_runner_must_preserve_no_action_outputs"
+      ]
+    },
+    {
+      "id": "run_signed_approval_validator",
+      "status": "pending",
+      "current_validation_status": "blocked",
+      "current_blocking_reasons": [
+        "missing_signed_human_exception_approval_record"
+      ]
+    }
+  ],
+  "manual_completion_fields": {
+    "identity_and_dates": [
+      "reviewer",
+      "reviewer_role",
+      "approved_at",
+      "expires_at"
+    ],
+    "only_field_that_may_be_set_true_in_approved_actions": "allow_non_ppo_offline_shadow_training_queue_review",
+    "acknowledgements_required_true": [
+      "00631l_and_00632r_remain_excluded",
+      "golden1_0531_unchanged",
+      "no_live_action_no_target_weight_no_auto_rebalance",
+      "non_ppo_offline_shadow_review_only",
+      "research_shadow_remains_blocked_for_live_allocation",
+      "training_runner_must_preserve_no_action_outputs"
+    ],
+    "approved_actions_required_false": [
+      "allow_00631l_add",
+      "allow_00632r_open",
+      "allow_auto_rebalance",
+      "allow_live_signal_output",
+      "allow_live_strategy_change",
+      "allow_model_training_command",
+      "allow_ppo_training",
+      "allow_target_weight_output"
+    ]
+  },
+  "scope_snapshot": {
+    "record_id": "gift_non_ppo_shadow_exception_20260804",
+    "source_draft_sha256": "e641243c24c1eae8a8c9fc255bd7f4d5097341c9162dd419065a95aefb50c34f",
+    "approval_scope": {
+      "scope": "non_ppo_offline_shadow_training_queue_review_only",
+      "freeze_id": "group_a_plus_gift_downside_tail_decay_v2_tuned_20260721",
+      "frozen_manifest_sha256": "a1813b27cfea9ef23df3fb4a7789cbc8855eb416e1f98c89fef88dceb2a833ac",
+      "proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+      "allowed_universe": [
+        "0050.TW",
+        "0056.TW",
+        "00679B.TWO",
+        "00713.TW",
+        "00751B.TWO",
+        "00878.TW"
+      ],
+      "excluded_tickers": [
+        "00631L.TW",
+        "00632R.TW"
+      ]
+    },
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ]
+  },
+  "summary": {
+    "draft_ready": true,
+    "schema_ready": true,
+    "template_ready": true,
+    "signed_record_exists": false,
+    "signed_approval_record_valid": false,
+    "human_exception_approved": false,
+    "manual_completion_ready": true,
+    "manual_completion_pending": true,
+    "non_ppo_shadow_queue_review_allowed_by_signed_validation": false,
+    "training_queue_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "decision": {
+    "checklist_available_for_manual_completion": true,
+    "signed_approval_record_valid": false,
+    "human_exception_approved": false,
+    "non_ppo_shadow_queue_review_allowed": false,
+    "training_queue_allowed": false,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

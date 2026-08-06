@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from group_a_plus.governance.latest import resolve_ncf_00631l_panel_path
+from group_a_plus.operations.daily_signal import _business_days_between
 from group_a_plus.paths import PROJECT_ROOT
 from group_a_plus.utils.tsmc_0050_weight import (
     TSMC_0050_WEIGHT_ASSUMPTION,
@@ -56,6 +57,67 @@ MODULE_OUTPUT_PATTERNS = {
     "alphagen_lite_feature_pool": "results/alphagen_lite_feature_pool_latest_*.json",
     "alphagen_lite_shadow": "results/alphagen_lite_shadow_latest_*.json",
 }
+
+DEFAULT_SYNC_REFERENCE_TICKERS = ("0050.TW", "00631L.TW", "00632R.TW")
+# max_lag_days values mirror the per-table business-day tolerance
+# daily_signal.py's OPTIONAL_SOURCE_SPECS already treats as acceptable for the
+# same source table (institutional_data=0, margin_data=1, market_margin_data=1,
+# derivative_institutional_data TX/TXO=3) -- this collector must not flag an
+# "error" for lag that production's own gate already tolerates, or it becomes
+# noise. institutional_00631l/00632r and margin_00631l/00632r aren't gated by
+# name in OPTIONAL_SOURCE_SPECS (which only checks the 0050 ticker), but share
+# the same source table, so the same table-level tolerance applies.
+FEATURE_TABLE_SYNC_CHECKS = (
+    {
+        "name": "institutional_0050",
+        "table": "institutional_data",
+        "where": "ticker = '0050.TW'",
+        "max_lag_days": 0,
+        "severity": "error",
+    },
+    {
+        "name": "institutional_00631l",
+        "table": "institutional_data",
+        "where": "ticker = '00631L.TW'",
+        "max_lag_days": 0,
+        "severity": "error",
+    },
+    {
+        "name": "institutional_00632r",
+        "table": "institutional_data",
+        "where": "ticker = '00632R.TW'",
+        "max_lag_days": 0,
+        "severity": "error",
+    },
+    {
+        "name": "margin_00631l",
+        "table": "margin_data",
+        "where": "ticker = '00631L.TW'",
+        "max_lag_days": 1,
+        "severity": "error",
+    },
+    {
+        "name": "margin_00632r",
+        "table": "margin_data",
+        "where": "ticker = '00632R.TW'",
+        "max_lag_days": 1,
+        "severity": "error",
+    },
+    {
+        "name": "market_margin",
+        "table": "market_margin_data",
+        "where": "1 = 1",
+        "max_lag_days": 1,
+        "severity": "error",
+    },
+    {
+        "name": "derivative_tx_txo_foreign",
+        "table": "derivative_institutional_data",
+        "where": "product_id IN ('TX', 'TXO') AND institutional_investors = '外資'",
+        "max_lag_days": 3,
+        "severity": "error",
+    },
+)
 
 
 def _utc_now() -> datetime:
@@ -653,6 +715,120 @@ def collect_external_data_freshness(root: Path = PROJECT_ROOT) -> dict[str, Any]
     }
 
 
+def collect_feature_table_sync(root: Path = PROJECT_ROOT) -> dict[str, Any]:
+    """Compare chip/feature table max dates against the latest OHLCV date.
+
+    This catches a different failure class from ordinary freshness checks:
+    OHLCV can be fresh while a feature table is one trading day behind. That
+    creates mixed-date feature rows and can silently change regime decisions.
+    """
+    db_path = root / "FinRL" / "data" / "stock_data.db"
+    if not db_path.exists():
+        return {
+            "status": "warning",
+            "database": str(db_path),
+            "warnings": ["stock_data_db_missing"],
+            "errors": [],
+            "checks": {},
+        }
+    try:
+        import duckdb  # type: ignore
+    except Exception as exc:  # noqa: BLE001
+        return {
+            "status": "warning",
+            "database": str(db_path),
+            "warnings": ["duckdb_unavailable"],
+            "errors": [],
+            "reason": repr(exc),
+            "checks": {},
+        }
+
+    errors: list[str] = []
+    warnings: list[str] = []
+    checks: dict[str, Any] = {}
+    try:
+        con = duckdb.connect(str(db_path), read_only=True)
+        try:
+            placeholders = ", ".join("?" for _ in DEFAULT_SYNC_REFERENCE_TICKERS)
+            reference_date = con.execute(
+                f"""
+                SELECT MIN(max_dt)
+                FROM (
+                    SELECT ticker, MAX(dt) AS max_dt
+                    FROM ohlcv
+                    WHERE ticker IN ({placeholders}) AND volume > 0
+                    GROUP BY ticker
+                )
+                """,
+                list(DEFAULT_SYNC_REFERENCE_TICKERS),
+            ).fetchone()[0]
+            if reference_date is None:
+                return {
+                    "status": "error",
+                    "database": str(db_path),
+                    "reference": {
+                        "table": "ohlcv",
+                        "tickers": list(DEFAULT_SYNC_REFERENCE_TICKERS),
+                        "latest_common_date": None,
+                    },
+                    "errors": ["ohlcv_reference_date_missing"],
+                    "warnings": [],
+                    "checks": {},
+                }
+            for spec in FEATURE_TABLE_SYNC_CHECKS:
+                latest_date = con.execute(
+                    f"SELECT MAX(dt) FROM {spec['table']} WHERE {spec['where']}"
+                ).fetchone()[0]
+                if latest_date is None:
+                    lag_days = None
+                    status = "error" if spec["severity"] == "error" else "warning"
+                    reason = "feature_table_date_missing"
+                else:
+                    lag_days = _business_days_between(latest_date, reference_date)
+                    status = "ok" if lag_days <= int(spec["max_lag_days"]) else str(spec["severity"])
+                    reason = "in_sync" if status == "ok" else "feature_table_lags_ohlcv"
+                checks[str(spec["name"])] = {
+                    "status": status,
+                    "reason": reason,
+                    "table": spec["table"],
+                    "where": spec["where"],
+                    "latest_date": str(latest_date) if latest_date is not None else None,
+                    "reference_ohlcv_date": str(reference_date),
+                    "lag_days": lag_days,
+                    "max_lag_days": int(spec["max_lag_days"]),
+                    "severity": spec["severity"],
+                }
+                if status == "error":
+                    errors.append(str(spec["name"]))
+                elif status == "warning":
+                    warnings.append(str(spec["name"]))
+        finally:
+            con.close()
+    except Exception as exc:  # noqa: BLE001
+        return {
+            "status": "error",
+            "database": str(db_path),
+            "errors": ["feature_table_sync_check_failed"],
+            "warnings": [],
+            "reason": repr(exc),
+            "checks": checks,
+        }
+
+    return {
+        "status": _status_from_warnings(errors, warnings),
+        "database": str(db_path),
+        "reference": {
+            "table": "ohlcv",
+            "tickers": list(DEFAULT_SYNC_REFERENCE_TICKERS),
+            "latest_common_date": next(iter(checks.values()))["reference_ohlcv_date"] if checks else None,
+            "policy": "feature tables must not lag the OHLCV common date",
+        },
+        "errors": errors,
+        "warnings": warnings,
+        "checks": checks,
+    }
+
+
 def collect_module_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
     modules: dict[str, dict[str, Any]] = {}
     warnings: list[str] = []
@@ -724,6 +900,7 @@ def build_ops_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
     pipeline = collect_pipeline_health(root)
     modules = collect_module_health(root)
     external_data_freshness = collect_external_data_freshness(root)
+    feature_table_sync = collect_feature_table_sync(root)
     tsmc_weight_assumption = collect_tsmc_weight_assumption_health()
     sections = {
         "system_resources": system,
@@ -731,6 +908,7 @@ def build_ops_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
         "pipeline_health": pipeline,
         "module_health": modules,
         "external_data_freshness": external_data_freshness,
+        "feature_table_sync": feature_table_sync,
         "tsmc_weight_assumption_health": tsmc_weight_assumption,
     }
     errors = [name for name, section in sections.items() if section.get("status") == "error"]

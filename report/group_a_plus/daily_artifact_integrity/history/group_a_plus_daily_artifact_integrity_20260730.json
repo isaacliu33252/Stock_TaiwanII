@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_daily_artifact_integrity",
+  "generated_at": "2026-07-30T09:05:04",
+  "check_date": "2026-07-30",
+  "status": "ok",
+  "policy": "diagnostic_only_no_strategy_change_no_weight_change",
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal.json",
+    "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+    "panel_refresh_recommendation": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/ncf_panel_refresh_recommendation.json",
+    "ncf_decision_calibration": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_decision_calibration_shadow_readiness_check_after_refresh_20260730.json",
+    "pit_root": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/point_in_time_artifacts"
+  },
+  "dates": {
+    "live_signal_actual_data_date": "2026-07-27",
+    "execution_plan_actual_data_date": "2026-07-27"
+  },
+  "checks": [
+    {
+      "status": "ok",
+      "message": "live_signal artifact available",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal.json",
+      "actual_data_date": "2026-07-27"
+    },
+    {
+      "status": "ok",
+      "message": "execution_plan artifact date aligned",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+      "actual_data_date": "2026-07-27"
+    },
+    {
+      "status": "ok",
+      "message": "execution_plan PIT snapshot available",
+      "artifact_name": "execution_plan",
+      "artifact_asof": "2026-07-27",
+      "snapshot_count": 1,
+      "snapshots": [
+        "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/point_in_time_artifacts/execution_plan/2026/07/27/execution_plan_20260728T074526_c34b5c7635ad.json"
+      ]
+    },
+    {
+      "status": "ok",
+      "message": "golden1_0531_release PIT snapshot available",
+      "artifact_name": "golden1_0531_release",
+      "artifact_asof": "2026-05-31",
+      "snapshot_count": 1,
+      "snapshots": [
+        "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/point_in_time_artifacts/golden1_0531_release/2026/05/31/golden1_0531_release_20260730T084600_03a7ee22f97e.json"
+      ]
+    },
+    {
+      "status": "ok",
+      "message": "NCF panel refresh recommendation available",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/ncf_panel_refresh_recommendation.json",
+      "recommendation": "keep_current_pin"
+    },
+    {
+      "status": "ok",
+      "message": "NCF decision calibration realized labels available",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_decision_calibration_shadow_readiness_check_after_refresh_20260730.json",
+      "readiness_status": "available",
+      "realized_label_rows": null,
+      "total_pairs": 4803
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "decision": {
+    "target_weight_change_allowed": false,
+    "creates_orders": false,
+    "recommended_action": "record_and_continue"
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "report_type": "00631l_0050_relative_reentry_promotion_gate",
+  "status": "available",
+  "policy": "shadow_only_no_auto_weight_change",
+  "active_allocation_impact": "none",
+  "generated_at": "2026-08-06T03:08:01",
+  "inputs": {
+    "advisory": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/relative_reentry_advisory_shadow.json",
+    "review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/relative_reentry_candidate_review.json"
+  },
+  "promote_to_advisory": false,
+  "manual_review_candidate": false,
+  "blocked_by": [
+    "strategy_trust_not_abstain",
+    "model_action_shift_00631l_5",
+    "model_internal_gates_pass",
+    "predicted_edge_min"
+  ],
+  "warnings": [],
+  "hard_checks": [
+    {
+      "name": "strategy_trust_not_abstain",
+      "passed": false,
+      "details": {
+        "trust_level": "ABSTAIN",
+        "reasons": [
+          "risk_mechanism=NORMAL",
+          "signal_alignment=mixed",
+          "model ensemble disagrees on direction (alignment=mixed, divergent_sources=['composite_risk_score'])",
+          "data-quality sub-status not ok: module_health=warning feature_table_sync=ok external_data_freshness=error"
+        ]
+      }
+    },
+    {
+      "name": "risk_mechanism_pass",
+      "passed": true,
+      "details": {
+        "value": true
+      }
+    },
+    {
+      "name": "exact_live_date_decision_available",
+      "passed": true,
+      "details": {
+        "coverage": {
+          "actual_data_date": "2026-08-05",
+          "opportunity_coverage_end": "2026-08-05",
+          "selected_decision_date": "2026-08-05"
+        }
+      }
+    },
+    {
+      "name": "model_action_shift_00631l_5",
+      "passed": false,
+      "details": {
+        "action": "KEEP"
+      }
+    },
+    {
+      "name": "model_internal_gates_pass",
+      "passed": false,
+      "details": {
+        "action_allowed": false,
+        "reliability_gate_pass": true,
+        "block_reason": "risk_up_permission_block:probability<0.5000"
+      }
+    },
+    {
+      "name": "edge20_positive_rate_min",
+      "passed": true,
+      "details": {
+        "actual": 0.9027777777777778,
+        "minimum": 0.65
+      }
+    },
+    {
+      "name": "edge20_p10_positive",
+      "passed": true,
+      "details": {
+        "actual": 0.0008057775418698189,
+        "minimum_exclusive": 0.0
+      }
+    },
+    {
+      "name": "predicted_edge_min",
+      "passed": false,
+      "details": {
+        "actual": 0.0,
+        "minimum_exclusive": 0.0005
+      }
+    }
+  ],
+  "warning_checks": [
+    {
+      "name": "strategy_trust_shadow_only_manual_review",
+      "passed": false,
+      "details": {
+        "trust_level": "ABSTAIN"
+      }
+    },
+    {
+      "name": "min_path_edge_20d_p10_warning",
+      "passed": false,
+      "details": {
+        "actual": -0.002218065395013369,
+        "warning_below": -0.003
+      }
+    },
+    {
+      "name": "min_path_edge_20d_worst_warning",
+      "passed": false,
+      "details": {
+        "actual": -0.004493534570014018,
+        "warning_below": -0.006
+      }
+    },
+    {
+      "name": "candidate_cluster_length_warning",
+      "passed": false,
+      "details": {
+        "actual": 9,
+        "warning_above": 10
+      }
+    }
+  ],
+  "latest_decision": {
+    "date": "2026-08-05",
+    "action": "KEEP",
+    "shift_00631l_weight": 0.0,
+    "predicted_regret": 0.0,
+    "predicted_regrets": {
+      "KEEP": 0.0,
+      "SHIFT_00631L_2": -0.0007650295406937609,
+      "SHIFT_00631L_5": -0.0019146955067821385
+    },
+    "candidate_action_before_reliability": "KEEP",
+    "candidate_predicted_regret_before_reliability": 0.0,
+    "reliability_error_percentile": null,
+    "reliability_gate_pass": true,
+    "action_allowed": false,
+    "block_reason": "risk_up_permission_block:probability<0.5000",
+    "risk_up_permission_probability": 0.2143189405727953,
+    "source_list": "recent_decisions"
+  },
+  "review_summary": {
+    "candidate_rows": 72,
+    "unique_candidate_dates": 55,
+    "edge_5d": {
+      "count": 72,
+      "mean": 0.0015704177792579782,
+      "positive_rate": 0.9027777777777778,
+      "worst": -0.0014526867934143096,
+      "p10": 3.759405028493703e-05,
+      "median": 0.0014617726558452838,
+      "p90": 0.0034736987807584586
+    },
+    "edge_10d": {
+      "count": 72,
+      "mean": 0.0019602961131008276,
+      "positive_rate": 0.8611111111111112,
+      "worst": -0.0020344481152157925,
+      "p10": -0.0002946317284087912,
+      "median": 0.0018757662294104473,
+      "p90": 0.004476002036249756
+    },
+    "edge_20d": {
+      "count": 72,
+      "mean": 0.0031387551399879505,
+      "positive_rate": 0.9027777777777778,
+      "worst": -0.00305049603107288,
+      "p10": 0.0008057775418698189,
+      "median": 0.0026321797835381524,
+      "p90": 0.005945349495276868
+    },
+    "min_path_edge_20d": {
+      "count": 72,
+      "mean": -0.0005427237016926739,
+      "positive_rate": 0.3194444444444444,
+      "worst": -0.004493534570014018,
+      "p10": -0.002218065395013369,
+      "median": -0.00029837140276958165,
+      "p90": 0.0008453579810445698
+    },
+    "cluster_count": 31,
+    "max_cluster_length": 9
+  },
+  "recommendation": "keep_shadow_only"
+}

@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from group_a_plus.integrations.watchlist_news import build_watchlist_news_summary
+from group_a_plus.integrations.watchlist_news import build_watchlist_news_summary, write_watchlist_news_summary
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -85,3 +85,36 @@ def test_watchlist_news_uses_market_fallback_when_symbol_news_is_short(tmp_path:
 
     assert summary["fallback_used"] is True
     assert summary["articles"][-1]["match_scope"] == "market_fallback"
+
+
+def test_write_watchlist_news_summary_writes_canonical_envelope(tmp_path: Path, monkeypatch) -> None:
+    config = tmp_path / "watchlist.json"
+    news_dir = tmp_path / "news"
+    legacy_output = tmp_path / "report/group_a_plus/latest/watchlist_news.json"
+    canonical_output = tmp_path / "outputs/group_a_plus/latest/watchlist_news.json"
+    _write_config(config)
+    _write_jsonl(
+        news_dir / "ltn_mainstream_test.jsonl",
+        [
+            {"date": "2026-06-29", "source": "自由時報", "title": "台股收漲", "url": "u1", "category": "財經", "snippet": "台股"},
+        ],
+    )
+    monkeypatch.setattr("group_a_plus.integrations.watchlist_news.PROJECT_ROOT", tmp_path)
+
+    summary = write_watchlist_news_summary(
+        output_path=legacy_output,
+        canonical_path=canonical_output,
+        signal_date="2026-06-29",
+        config_path=config,
+        news_glob="news/*.jsonl",
+        per_symbol_limit=1,
+        max_articles=1,
+    )
+
+    legacy = json.loads(legacy_output.read_text(encoding="utf-8"))
+    canonical = json.loads(canonical_output.read_text(encoding="utf-8"))
+    assert legacy == summary
+    assert canonical["artifact_name"] == "watchlist_news"
+    assert canonical["artifact_kind"] == "pipeline"
+    assert canonical["run_mode"] == "production"
+    assert canonical["payload"] == summary

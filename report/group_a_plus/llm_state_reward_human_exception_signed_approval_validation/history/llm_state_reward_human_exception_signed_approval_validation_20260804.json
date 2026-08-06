@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_human_exception_signed_approval_validation",
+  "generated_at": "2026-08-04T18:51:04",
+  "as_of": "2026-08-04",
+  "status": "blocked",
+  "policy": "signed_approval_validation_only_no_training_no_live_action",
+  "sources": {
+    "approval_record_schema": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_approval_record_schema.json",
+      "sha256": "146ca73d8f2e3d436030d9a3798605419dc6ab47f869eb599b36520018124418",
+      "exists": true
+    },
+    "signed_approval_record": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_record.json",
+      "sha256": null,
+      "exists": false
+    }
+  },
+  "validation": {
+    "signed_record_sha256": null,
+    "schema_sha256": "146ca73d8f2e3d436030d9a3798605419dc6ab47f869eb599b36520018124418",
+    "record_id": null,
+    "reviewer": null,
+    "reviewer_role": null,
+    "approved_at": null,
+    "expires_at": null,
+    "source_draft_sha256": null,
+    "approval_scope": {}
+  },
+  "summary": {
+    "signed_approval_record_valid": false,
+    "human_exception_approved": false,
+    "non_ppo_shadow_queue_review_allowed": false,
+    "training_queue_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "signed_record_exists": false,
+    "schema_ready": true,
+    "reviewer": null,
+    "expires_at": null,
+    "excluded_tickers": []
+  },
+  "blocking_reasons": [
+    "missing_signed_human_exception_approval_record"
+  ],
+  "warning_reasons": [],
+  "decision": {
+    "signed_approval_record_valid": false,
+    "human_exception_approved": false,
+    "non_ppo_shadow_queue_review_allowed": false,
+    "training_queue_allowed": false,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

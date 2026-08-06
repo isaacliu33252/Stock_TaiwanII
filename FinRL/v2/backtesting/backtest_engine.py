@@ -257,6 +257,7 @@ class BacktestEngine:
                 total_shares = self.position + shares
                 total_cost = self.position * self.avg_cost + turnover
                 self.avg_cost = total_cost / total_shares if total_shares > 0 else 0
+                self.position += shares  # BUG FIX: missing position update
                 
                 self.cash -= (turnover + commission)
                 

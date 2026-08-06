@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_asian_etf_tail_analytics_readiness_review",
-  "generated_at": "2026-07-28T07:15:21",
+  "generated_at": "2026-08-06T03:03:05",
   "as_of": "2026-07-20",
   "status": "blocked",
   "policy": "research_only_asian_etf_tail_analytics_no_optimizer_no_weight_change",
@@ -68,11 +68,11 @@
     "cvar_tail_risk": {
       "status": "research_only",
       "promotion_decision": "research_only",
-      "golden1_starr_95": 14.727766403153364,
-      "golden1_rachev_95_95": 1.042372888137112,
-      "00631l_expected_shortfall_loss_95": 0.0811159172627952,
-      "00631l_rachev_95_95": 0.9604260807450556,
-      "00631l_hill_xi_95": 0.32640882039719776
+      "golden1_starr_95": 14.58608808083165,
+      "golden1_rachev_95_95": 1.0953360658309348,
+      "00631l_expected_shortfall_loss_95": 0.08247405550924625,
+      "00631l_rachev_95_95": 1.0148925610933104,
+      "00631l_hill_xi_95": 0.3197802866295796
     },
     "market_impact": {
       "status": "blocked",
@@ -92,12 +92,12 @@
   },
   "tail_reward_risk_monitor": {
     "status": "available",
-    "tier": "defensive_preference",
-    "golden1_rachev_95_95": 1.042372888137112,
-    "00631l_rachev_95_95": 0.9604260807450556,
+    "tier": "golden1_preferred",
+    "golden1_rachev_95_95": 1.0953360658309348,
+    "00631l_rachev_95_95": 1.0148925610933104,
     "golden1_beats_00631l_by_rachev": true,
-    "00631l_rachev_below_one": true,
-    "interpretation": "Golden1 has stronger tail gain/loss balance than 00631L, while 00631L is below 1.0; keep the current defensive preference and do not add leveraged exposure automatically."
+    "00631l_rachev_below_one": false,
+    "interpretation": "Golden1 has stronger tail gain/loss balance than 00631L; use as research warning only."
   },
   "validation_readiness": {
     "markowitz_frontier_implemented": false,
@@ -122,7 +122,6 @@
     "transaction_borrow_financing_costs_missing"
   ],
   "warning_reasons": [
-    "00631l_rachev_below_one_tail_reward_unfavorable",
     "rachev_prefers_golden1_over_00631l"
   ],
   "decision": {

@@ -8,6 +8,8 @@ import pandas as pd
 
 from group_a_plus.integrations.ncf_decision_calibration import (
     build_snapshot,
+    calibration_pair_readiness_summary,
+    calibration_governance_summary,
     decision_confidence_from_regret,
     direction_confidence_from_panel_row,
     fit_regret_calibration,
@@ -178,8 +180,13 @@ def test_snapshot_to_json_dict_roundtrip_shape(tmp_path: Path) -> None:
         "basis",
         "extra",
         "calibration_method",
+        "governance",
     }
     assert payload["calibration_method"] == "predicted_regret_percentile_rank_proxy"
+    assert payload["governance"]["status"] == "closed_failed_oos"
+    assert payload["governance"]["decision_confidence_contract"] == (
+        "predicted_regret_percentile_rank_proxy_not_calibrated_probability"
+    )
 
 
 def _synthetic_pairs(bucket: str, n: int, *, action: str = "CAP10", seed: int = 0) -> list[dict]:
@@ -217,6 +224,55 @@ def test_load_calibration_pairs_pools_bucket_and_window(tmp_path: Path) -> None:
 def test_load_calibration_pairs_missing_file_returns_empty_frame(tmp_path: Path) -> None:
     df = load_calibration_pairs(tmp_path / "does_not_exist.json")
     assert df.empty
+
+
+def test_calibration_pair_readiness_reports_missing_pairs_for_stale_dfl_artifact(tmp_path: Path) -> None:
+    path = _write_dfl_shadow(tmp_path, [[{"action": "CAP10", "predicted_regret": 0.01}]])
+
+    summary = calibration_pair_readiness_summary(path)
+
+    assert summary["status"] == "missing_calibration_pairs"
+    assert summary["window_count"] == 1
+    assert summary["windows_with_calibration_pairs_key"] == 0
+    assert summary["total_pairs"] == 0
+    assert summary["recommended_action"] == "regenerate_dfl_shadow_with_current_evaluator"
+
+
+def test_calibration_pair_readiness_reports_available_realized_labels(tmp_path: Path) -> None:
+    path = _write_dfl_shadow_with_pairs(
+        tmp_path,
+        [
+            (
+                "live_2024_2026",
+                "tuning_window",
+                [
+                    {
+                        "date": "2026-01-02",
+                        "action": "CAP10",
+                        "predicted_regret": 0.01,
+                        "realized_regret": 0.02,
+                        "total_risk_score": 4.0,
+                    },
+                    {
+                        "date": "2026-01-03",
+                        "action": "NO_ADD",
+                        "predicted_regret": -0.01,
+                        "realized_regret": -0.02,
+                    },
+                ],
+            )
+        ],
+    )
+
+    summary = calibration_pair_readiness_summary(path)
+
+    assert summary["status"] == "available"
+    assert summary["windows_with_calibration_pairs_key"] == 1
+    assert summary["total_pairs"] == 2
+    assert summary["pairs_with_realized_regret"] == 2
+    assert summary["pairs_with_total_risk_score"] == 1
+    assert summary["actions"] == {"CAP10": 1, "NO_ADD": 1}
+    assert summary["recommended_action"] == "no_data_export_action_needed"
 
 
 def test_fit_regret_calibration_only_uses_tuning_window_bucket(tmp_path: Path) -> None:
@@ -297,6 +353,7 @@ def test_build_snapshot_uses_calibration_model_when_available(tmp_path: Path) ->
     assert snapshot.calibration_method == "empirical_realized_regret_calibration"
     assert snapshot.decision_confidence is not None
     assert "empirical calibration" in snapshot.basis
+    assert "closed_failed_oos" in snapshot.basis
 
 
 def test_build_snapshot_falls_back_to_rank_proxy_when_no_calibration_data(tmp_path: Path) -> None:
@@ -404,3 +461,15 @@ def test_build_snapshot_passes_through_regime_value_to_calibration(tmp_path: Pat
 
     assert snapshot.calibration_method == "empirical_realized_regret_calibration"
     assert "regime=severe" in snapshot.basis
+
+
+def test_calibration_governance_formally_closes_failed_oos_probability_path() -> None:
+    governance = calibration_governance_summary()
+
+    assert governance["status"] == "closed_failed_oos"
+    assert governance["calibration_model_default_enabled"] is False
+    assert governance["promotion_allowed"] is False
+    assert governance["target_weight_change_allowed"] is False
+    assert governance["auto_rebalance_allowed"] is False
+    assert governance["live_gate_allowed"] is False
+    assert "0.129 to 0.158" in governance["closed_reason"]

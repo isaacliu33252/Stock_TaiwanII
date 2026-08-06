@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-28T16:57:35Z",
+  "generated_at": "2026-08-05T19:08:30Z",
   "root": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main",
   "status": "ok",
   "missing_files": [],
   "bad_dirs": [],
   "warnings": [],
   "python": {
-    "current_executable": "/usr/bin/python3",
+    "current_executable": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/.venv/bin/python",
     "venv_python": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/.venv/bin/python",
     "venv_python_exists": true,
     "running_inside_project_venv": true
@@ -24,7 +24,7 @@
       "label": "live_signal",
       "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal.json",
       "exists": true,
-      "size_bytes": 86820,
+      "size_bytes": 87115,
       "status": "ok"
     },
     {

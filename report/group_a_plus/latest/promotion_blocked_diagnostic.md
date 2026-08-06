@@ -9,7 +9,7 @@
 
 - Status: `fail`
 - Reason: `drift exceeds limits: h20_prob_up`
-- `h20_prob_up` tier `trigger_critical` delta `0.15955034020305625` limit `0.15` date `2026-05-11`
+- `h20_prob_up` tier `trigger_critical` delta `0.1982313917525921` limit `0.15` date `2026-02-10`
 
 ## Multi-Window
 
@@ -20,8 +20,8 @@
 ## Deployment Consistency
 
 - Status: `fail`
-- `execution_plan_date_mismatch`
 - `ops_health_errors_present`
+- `gift_signed_approval_validator_smoke_failed`
 - `deployment_consistency_status:blocked`
 - `deployment_consistency_not_broker_actionable`
 

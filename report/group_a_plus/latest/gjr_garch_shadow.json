@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "report_type": "gjr_garch_shadow",
+  "as_of": "2026-08-05",
+  "status": "available",
+  "policy": "shadow_only_no_weight_change",
+  "active_allocation_impact": "none",
+  "date": "2026-08-05",
+  "ticker": "00631L.TW",
+  "window": {
+    "start": "2023-06-28",
+    "end": "2026-08-05",
+    "rows": 756
+  },
+  "research_context": {
+    "source": "arXiv:2607.16450v1 review 2026-08-01",
+    "in_sample_asymmetry": "significant_for_00631l",
+    "oos_forecast_gate": "failed_high_vol_days_dm_test",
+    "production_boundary": "diagnostic_only_no_target_weight_or_gate_input"
+  },
+  "symmetric_garch": {
+    "converged": true,
+    "log_likelihood": 1669.7216620803529,
+    "params": {
+      "mu": 0.0032447987021681987,
+      "omega": 2.000006217371006e-05,
+      "alpha": 0.1411977598077613,
+      "beta": 0.8530639117347778
+    },
+    "persistence": 0.9942616715425391
+  },
+  "gjr_garch": {
+    "converged": true,
+    "log_likelihood": 1683.4717335575244,
+    "params": {
+      "mu": 0.0024383293042197444,
+      "omega": 3.745639699180282e-05,
+      "alpha": 0.02781059032376487,
+      "gamma": 0.24575240777925683,
+      "beta": 0.8210224264510122
+    },
+    "persistence": 0.9717092206644055
+  },
+  "likelihood_ratio_test": {
+    "statistic": 27.50014295434312,
+    "p_value": 1.5708289444884362e-07,
+    "significant_at_5pct": true
+  },
+  "latest_return": 0.06220839518126042,
+  "symmetric_forecast_variance": 0.001321003931246415,
+  "gjr_forecast_variance": 0.0009164816805486597,
+  "forecast_variance_ratio_gjr_over_symmetric": 0.6937766488582106,
+  "forecast_disagreement_abs_log_ratio": 0.3656052018906525,
+  "vol_model_disagreement": true,
+  "gjr_asymmetry_shock": false,
+  "evidence_level": "watch",
+  "decision_boundary": {
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "promotion_gate_input_allowed": false,
+    "risk_mechanism_trigger_allowed": false
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_llm_state_reward_human_exception_approval_record_schema",
+  "generated_at": "2026-08-02T07:58:04",
+  "as_of": "2026-08-03",
+  "status": "template_ready_for_human_signature",
+  "policy": "approval_record_schema_only_no_approval_no_training_no_live_action",
+  "sources": {
+    "human_exception_record_draft": {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_record_draft.json",
+      "sha256": "bc7145865cb2cb9832a8d822202d2d9c6be038fb4b1b0e19ecd62b218a6b24da",
+      "exists": true
+    }
+  },
+  "approval_record_template": {
+    "record_id": "gift_non_ppo_shadow_exception_20260803",
+    "approval_record_schema_version": 1,
+    "source_draft_sha256": "bc7145865cb2cb9832a8d822202d2d9c6be038fb4b1b0e19ecd62b218a6b24da",
+    "reviewer": null,
+    "reviewer_role": null,
+    "approved_at": null,
+    "expires_at": null,
+    "approval_scope": {
+      "scope": "non_ppo_offline_shadow_training_queue_review_only",
+      "freeze_id": "group_a_plus_gift_downside_tail_decay_v2_tuned_20260721",
+      "frozen_manifest_sha256": "a1813b27cfea9ef23df3fb4a7789cbc8855eb416e1f98c89fef88dceb2a833ac",
+      "proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+      "allowed_universe": [
+        "0050.TW",
+        "0056.TW",
+        "00679B.TWO",
+        "00713.TW",
+        "00751B.TWO",
+        "00878.TW"
+      ],
+      "excluded_tickers": [
+        "00631L.TW",
+        "00632R.TW"
+      ]
+    },
+    "approved_actions": {
+      "allow_non_ppo_offline_shadow_training_queue_review": false,
+      "allow_model_training_command": false,
+      "allow_ppo_training": false,
+      "allow_live_signal_output": false,
+      "allow_target_weight_output": false,
+      "allow_auto_rebalance": false,
+      "allow_live_strategy_change": false,
+      "allow_00631l_add": false,
+      "allow_00632r_open": false
+    },
+    "acknowledgements": {
+      "research_shadow_remains_blocked_for_live_allocation": false,
+      "non_ppo_offline_shadow_review_only": false,
+      "no_live_action_no_target_weight_no_auto_rebalance": false,
+      "00631l_and_00632r_remain_excluded": false,
+      "golden1_0531_unchanged": false,
+      "training_runner_must_preserve_no_action_outputs": false
+    },
+    "constraint_overrides": {},
+    "notes": null
+  },
+  "validation_rules": {
+    "required_template_fields": [
+      "record_id",
+      "approval_record_schema_version",
+      "source_draft_sha256",
+      "reviewer",
+      "reviewer_role",
+      "approved_at",
+      "expires_at",
+      "approval_scope",
+      "approved_actions",
+      "acknowledgements",
+      "constraint_overrides",
+      "notes"
+    ],
+    "required_signoff_fields_from_draft": [
+      "reviewer",
+      "approved_at",
+      "expires_at",
+      "explicit_ack_research_shadow_remains_blocked_for_live_allocation",
+      "explicit_ack_non_ppo_offline_shadow_review_only",
+      "explicit_ack_no_live_action_no_target_weight_no_auto_rebalance",
+      "explicit_ack_00631l_and_00632r_remain_excluded",
+      "explicit_ack_golden1_0531_unchanged"
+    ],
+    "required_acknowledgements": [
+      "research_shadow_remains_blocked_for_live_allocation",
+      "non_ppo_offline_shadow_review_only",
+      "no_live_action_no_target_weight_no_auto_rebalance",
+      "00631l_and_00632r_remain_excluded",
+      "golden1_0531_unchanged",
+      "training_runner_must_preserve_no_action_outputs"
+    ],
+    "must_match_source_draft_sha256": true,
+    "reviewer_required": true,
+    "approved_at_required": true,
+    "expires_at_required": true,
+    "expiry_must_be_after_approved_at": true,
+    "constraint_overrides_must_be_empty": true,
+    "required_false_permissions": [
+      "allow_ppo_training",
+      "allow_live_signal_output",
+      "allow_target_weight_output",
+      "allow_auto_rebalance",
+      "allow_live_strategy_change",
+      "allow_00631l_add",
+      "allow_00632r_open"
+    ]
+  },
+  "summary": {
+    "approval_record_schema_ready": true,
+    "approval_record_template_ready": true,
+    "human_exception_record_draft_ready": true,
+    "human_exception_approved": false,
+    "training_queue_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "draft_status": "draft_ready_for_human_review",
+    "draft_human_exception_approved": false,
+    "eligible_ticker_count": 6,
+    "excluded_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ]
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [],
+  "decision": {
+    "approval_record_schema_ready": true,
+    "approval_record_template_ready": true,
+    "human_exception_approved": false,
+    "training_queue_allowed": false,
+    "shadow_training_request_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "outputs_actions": false,
+    "outputs_target_weights": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

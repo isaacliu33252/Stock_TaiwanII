@@ -24,13 +24,16 @@ Use the example file:
 cp config/fubon_sdk.env.example .fubon.env
 ```
 
-Fill in:
+Fill in non-password fields only:
 
 - `FUBON_PERSONAL_ID`
-- `FUBON_PASSWORD`
 - `FUBON_CERT_PATH`
-- `FUBON_CERT_PASSWORD`
 - optional `FUBON_ACCOUNT`
+
+Do not store `FUBON_PASSWORD` or `FUBON_CERT_PASSWORD` in `.fubon.env`.
+Login commands prompt for the Fubon login password and certificate password
+manually at runtime. The GroupA+ read-only snapshot loader also ignores
+password fields stored in the local `C:\fubon` AES config.
 
 Load them into your shell before testing:
 
@@ -82,13 +85,14 @@ Output files are written under `results/`:
 
 ## Login test
 
-After credentials are loaded:
+After non-password credentials are loaded:
 
 ```bash
 python3 fubon_sdk_bridge.py login-check
 ```
 
-This only tests login and prints the returned account payload. It does not place orders.
+This prompts for the Fubon login password and certificate password. It only
+tests login and prints the returned account payload. It does not place orders.
 
 ## Runtime note
 

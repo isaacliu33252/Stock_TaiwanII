@@ -53,7 +53,7 @@ DEFAULT_WINDOWS = [
     ("2019_recovery", "2019-01-02", "2019-12-31", PANEL_2017_2019, "out_of_sample"),
 ]
 
-DEFAULT_ACTIONS = ("KEEP", "NO_ADD", "CAP10", "REENTER")
+DEFAULT_ACTIONS = ("KEEP", "NO_ADD", "CAP10", "REENTER", "REENTER_00631L_5", "REENTER_00631L_10")
 FEATURE_COLUMNS = (
     "prob_up_h1",
     "prob_up_h5",
@@ -68,6 +68,26 @@ FEATURE_COLUMNS = (
     "ret_0050_5d",
     "ret_00631l_5d",
     "spread_00631l_0050_5d",
+)
+
+# Opt-in via --cross-asset-features. Reuses tickers already cached in
+# external_market_ohlcv (no new download/pipeline dependency) plus TAIFEX
+# foreign futures net OI -- proposed 2026-08-01 as candidate signal for the
+# REENTER-starvation problem (see
+# [[project_spo_dfl_action_value_already_closed_20260727]]: REENTER never
+# wins the KEEP/NO_ADD/CAP10/REENTER regret-argmax on the existing feature
+# set; the 2026-07-26/27 rule-based VIX relief-gate fix was tried and
+# reversed by 2021 OOS. This is a data-driven alternative attempt, not a
+# rule override -- ablate before trusting.
+CROSS_ASSET_FEATURE_COLUMNS = (
+    "us_tsm_adr_ret",
+    "us_soxx_ret",
+    "us_nvda_ret",
+    "usdtwd_change",
+    "tsmc_vs_0050_5d",
+    "foreign_futures_net_oi_ratio",
+    "dist_from_recent_low_60d",
+    "drawdown_recovery_ratio",
 )
 
 
@@ -107,6 +127,58 @@ def _cap_00631l_to_0050(weights: dict[str, float], cap: float) -> dict[str, floa
     return _normalize(out)
 
 
+def _parse_reenter_00631l_step(action: str) -> float | None:
+    prefix = "REENTER_00631L_"
+    if not action.startswith(prefix):
+        return None
+    try:
+        step = float(action.removeprefix(prefix)) / 100.0
+    except ValueError as exc:
+        raise ValueError(f"Unsupported action: {action}") from exc
+    if step <= 0.0:
+        raise ValueError(f"Unsupported action: {action}")
+    return step
+
+
+def _partial_reenter_00631l_label(
+    baseline_weights: dict[str, float],
+    *,
+    prior_00631l_weight: float,
+    step: float,
+) -> dict[str, float]:
+    """One-step label proxy for a stateful partial 00631L re-entry action."""
+
+    out = dict(baseline_weights)
+    keep_00631l = float(out.get("00631L.TW", 0.0) or 0.0)
+    target_00631l = min(keep_00631l, max(0.0, float(prior_00631l_weight)) + float(step))
+    excess = max(keep_00631l - target_00631l, 0.0)
+    out["00631L.TW"] = target_00631l
+    out["0050.TW"] = float(out.get("0050.TW", 0.0) or 0.0) + excess
+    return _normalize(out)
+
+
+def _add_00631l_from_0050_then_cash(
+    current: dict[str, float],
+    *,
+    target_00631l_weight: float,
+) -> dict[str, float]:
+    out = dict(current)
+    current_00631l = float(out.get("00631L.TW", 0.0) or 0.0)
+    add = max(float(target_00631l_weight) - current_00631l, 0.0)
+    if add <= 0.0:
+        return _normalize(out)
+
+    from_0050 = min(add, float(out.get("0050.TW", 0.0) or 0.0))
+    out["0050.TW"] = float(out.get("0050.TW", 0.0) or 0.0) - from_0050
+    out["00631L.TW"] = current_00631l + from_0050
+    remaining = add - from_0050
+    if remaining > 0.0:
+        from_cash = min(remaining, float(out.get("cash", 0.0) or 0.0))
+        out["cash"] = float(out.get("cash", 0.0) or 0.0) - from_cash
+        out["00631L.TW"] = float(out.get("00631L.TW", 0.0) or 0.0) + from_cash
+    return _normalize(out)
+
+
 def _apply_action(
     baseline_weights: dict[str, float],
     *,
@@ -116,15 +188,22 @@ def _apply_action(
 ) -> dict[str, float]:
     """Map a finite action to target weights.
 
-    KEEP and REENTER both use the A21.18 target in one-step labels. REENTER is
-    still kept as a separate action for stateful deployment experiments where a
-    prior guard left the live portfolio below A21.18.
+    KEEP and plain REENTER both use the A21.18 target in one-step labels.
+    Step re-entry actions are a proxy for stateful deployment experiments where
+    a prior guard left the live portfolio below A21.18.
     """
 
     if action == "KEEP":
         return _normalize(dict(baseline_weights))
     if action == "REENTER":
         return _normalize(dict(baseline_weights))
+    reenter_step = _parse_reenter_00631l_step(action)
+    if reenter_step is not None:
+        return _partial_reenter_00631l_label(
+            baseline_weights,
+            prior_00631l_weight=prior_00631l_weight,
+            step=reenter_step,
+        )
     if action == "NO_ADD":
         return _cap_00631l_to_cash(baseline_weights, max(0.0, float(prior_00631l_weight)))
     if action.startswith("CAP") and action != "CAP10":
@@ -210,6 +289,7 @@ def _build_features(
     panel: pd.DataFrame | None,
     target_weights: pd.DataFrame,
     prices: pd.DataFrame,
+    cross_asset: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     rows: list[dict[str, float]] = []
     for dt, row in frame.iterrows():
@@ -241,6 +321,8 @@ def _build_features(
             }
         )
     features = pd.DataFrame(rows, index=frame.index)
+    if cross_asset is not None:
+        features = features.join(cross_asset.reindex(frame.index))
     return features.replace([np.inf, -np.inf], np.nan).fillna(0.0)
 
 
@@ -285,6 +367,119 @@ def _load_vix_close(db_path: Path) -> pd.Series:
     return frame.set_index("dt")["close"].astype(float)
 
 
+CROSS_ASSET_TICKERS = ("TSM", "SOXX", "NVDA", "TWD=X", "2330.TW")
+
+
+def _load_cross_asset_market_close(db_path: Path) -> pd.DataFrame:
+    """Pivot of cached external_market_ohlcv closes for CROSS_ASSET_TICKERS.
+
+    All five tickers are already cached in this DB (verified back to at
+    least 2014-01/03), so this reads existing cache only -- no download.
+    """
+    con = duckdb.connect(str(db_path), read_only=True)
+    try:
+        frame = con.execute(
+            "SELECT dt, ticker, close FROM external_market_ohlcv "
+            "WHERE ticker IN (?, ?, ?, ?, ?) ORDER BY dt",
+            list(CROSS_ASSET_TICKERS),
+        ).fetchdf()
+    finally:
+        con.close()
+    frame["dt"] = pd.to_datetime(frame["dt"])
+    return frame.pivot(index="dt", columns="ticker", values="close").sort_index()
+
+
+def _load_foreign_futures_net_ratio(db_path: Path) -> pd.Series:
+    """TAIFEX foreign (外資及陸資) TX index futures net OI as a share of
+    gross OI (long+short), so the signal is bounded roughly in [-1, 1]
+    instead of a raw contract count that trends with market size over the
+    multi-year OOS windows this evaluator uses."""
+    con = duckdb.connect(str(db_path), read_only=True)
+    try:
+        frame = con.execute(
+            "SELECT dt, open_interest_net, open_interest_long, open_interest_short "
+            "FROM taifex_futures_institutional "
+            "WHERE contract_code = '臺股期貨' AND institution = '外資及陸資' "
+            "ORDER BY dt"
+        ).fetchdf()
+    finally:
+        con.close()
+    if frame.empty:
+        return pd.Series(dtype=float)
+    frame["dt"] = pd.to_datetime(frame["dt"])
+    denom = (frame["open_interest_long"] + frame["open_interest_short"]).replace(0, np.nan)
+    ratio = (frame["open_interest_net"] / denom).fillna(0.0)
+    return pd.Series(ratio.to_numpy(dtype=float), index=frame["dt"]).sort_index()
+
+
+def _drawdown_state_features(
+    price: pd.Series,
+    *,
+    recent_low_lookback: int = 60,
+    drawdown_lookback: int = 252,
+) -> pd.DataFrame:
+    """`dist_from_recent_low_60d`: % above the trailing recent_low_lookback-day
+    low (0.0 = sitting at the low). `drawdown_recovery_ratio`: fraction of the
+    trailing drawdown_lookback-day peak-to-trough range already recovered
+    (0.0 = at the trough, 1.0 = back at/above the peak)."""
+    roll_low_recent = price.rolling(int(recent_low_lookback), min_periods=5).min()
+    dist_from_low = (price / roll_low_recent.replace(0, np.nan) - 1.0).fillna(0.0)
+    roll_peak = price.rolling(int(drawdown_lookback), min_periods=20).max()
+    roll_low = price.rolling(int(drawdown_lookback), min_periods=20).min()
+    denom = (roll_peak - roll_low).replace(0, np.nan)
+    recovery_ratio = ((price - roll_low) / denom).clip(lower=0.0, upper=1.0).fillna(0.0)
+    return pd.DataFrame(
+        {
+            "dist_from_recent_low_60d": dist_from_low,
+            "drawdown_recovery_ratio": recovery_ratio,
+        },
+        index=price.index,
+    )
+
+
+def _build_cross_asset_features(
+    index: pd.DatetimeIndex,
+    market_close: pd.DataFrame,
+    foreign_futures_net_ratio: pd.Series,
+    prices: pd.DataFrame,
+) -> pd.DataFrame:
+    """Aligns cross-asset raw series onto `index` (the evaluation frame's
+    trading dates). US-market and USD/TWD series use shift=1 (T-1, matching
+    the same overnight-signal convention as scripts/misc/ncf_00631l.py's
+    EXT_FEATURES); TSMC-vs-0050 is same-day (both close 1:30pm Taipei);
+    foreign futures OI is shift=1 (published after prior close)."""
+    union_index = market_close.index.union(index)
+    aligned = market_close.reindex(union_index).sort_index().ffill().reindex(index)
+    out = pd.DataFrame(index=index)
+    for ticker, col in (("TSM", "us_tsm_adr_ret"), ("SOXX", "us_soxx_ret"), ("NVDA", "us_nvda_ret")):
+        out[col] = aligned[ticker].pct_change().shift(1) if ticker in aligned.columns else 0.0
+    out["usdtwd_change"] = (
+        aligned["TWD=X"].pct_change().shift(1) if "TWD=X" in aligned.columns else 0.0
+    )
+    if "2330.TW" in aligned.columns and "0050.TW" in prices.columns:
+        tsmc_close = market_close["2330.TW"].reindex(union_index).sort_index().ffill()
+        et50_close = prices["0050.TW"].reindex(union_index).sort_index().ffill()
+        tsmc_5d = tsmc_close.pct_change(5).reindex(index)
+        et50_5d = et50_close.pct_change(5).reindex(index)
+        out["tsmc_vs_0050_5d"] = (tsmc_5d - et50_5d)
+    else:
+        out["tsmc_vs_0050_5d"] = 0.0
+    fut_union = foreign_futures_net_ratio.index.union(index) if not foreign_futures_net_ratio.empty else index
+    fut_aligned = (
+        foreign_futures_net_ratio.reindex(fut_union).sort_index().ffill().reindex(index).shift(1)
+        if not foreign_futures_net_ratio.empty
+        else pd.Series(0.0, index=index)
+    )
+    out["foreign_futures_net_oi_ratio"] = fut_aligned
+    if "00631L.TW" in prices.columns:
+        dd = _drawdown_state_features(prices["00631L.TW"].reindex(index))
+        out = out.join(dd)
+    else:
+        out["dist_from_recent_low_60d"] = 0.0
+        out["drawdown_recovery_ratio"] = 0.0
+    return out.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+
+
 def _build_action_labels(
     prices: pd.DataFrame,
     target_weights: pd.DataFrame,
@@ -307,12 +502,28 @@ def _build_action_labels(
         prior_00631l = float(target_weights.loc[prior_dt].get("00631L.TW", 0.0) or 0.0)
         out: dict[str, float] = {}
         for action in actions:
-            action_weights = _apply_action(keep, action=action, prior_00631l_weight=prior_00631l, cap10=cap10)
+            reenter_step = _parse_reenter_00631l_step(action)
+            if reenter_step is not None:
+                current = _cap_00631l_to_0050(
+                    keep,
+                    max(0.0, float(keep.get("00631L.TW", 0.0) or 0.0) - reenter_step),
+                )
+                action_weights = _add_00631l_from_0050_then_cash(
+                    current,
+                    target_00631l_weight=min(
+                        float(keep.get("00631L.TW", 0.0) or 0.0),
+                        float(current.get("00631L.TW", 0.0) or 0.0) + reenter_step,
+                    ),
+                )
+                keep_weights = current
+            else:
+                action_weights = _apply_action(keep, action=action, prior_00631l_weight=prior_00631l, cap10=cap10)
+                keep_weights = keep
             result = _utility(
                 prices,
                 pos,
                 action_weights=action_weights,
-                keep_weights=keep,
+                keep_weights=keep_weights,
                 horizon=horizon,
                 lambda_mdd=lambda_mdd,
                 gamma_turnover=gamma_turnover,
@@ -361,6 +572,7 @@ def _predict_action_regrets(
     ridge_alpha: float,
     regret_clip: float,
     actions: tuple[str, ...] = DEFAULT_ACTIONS,
+    feature_columns: tuple[str, ...] = FEATURE_COLUMNS,
 ) -> pd.DataFrame:
     rows: list[dict[str, float]] = []
     for dt in features.index:
@@ -370,10 +582,13 @@ def _predict_action_regrets(
         if len(past_idx) < int(min_train_days):
             rows.append({action: 0.0 for action in actions})
             continue
-        train_x = features.loc[past_idx, list(FEATURE_COLUMNS)]
-        test_x = features.loc[dt, list(FEATURE_COLUMNS)]
+        train_x = features.loc[past_idx, list(feature_columns)]
+        test_x = features.loc[dt, list(feature_columns)]
         row: dict[str, float] = {}
         for action in actions:
+            if action not in labels.columns:
+                row[action] = 0.0
+                continue
             pred = _fit_predict_linear(train_x, labels.loc[past_idx, action], test_x, ridge_alpha=ridge_alpha)
             row[action] = float(np.clip(pred, -float(regret_clip), float(regret_clip)))
         row["KEEP"] = 0.0
@@ -390,6 +605,7 @@ def _predict_action_error_percentiles(
     train_window_days: int,
     ridge_alpha: float,
     actions: tuple[str, ...] = DEFAULT_ACTIONS,
+    feature_columns: tuple[str, ...] = FEATURE_COLUMNS,
 ) -> pd.DataFrame:
     """Meta-model expected action-regret error percentile.
 
@@ -407,11 +623,14 @@ def _predict_action_error_percentiles(
         if len(past_idx) < int(min_train_days):
             rows.append({action: 1.0 if action != "KEEP" else 0.0 for action in actions})
             continue
-        train_x = features.loc[past_idx, list(FEATURE_COLUMNS)]
-        test_x = features.loc[dt, list(FEATURE_COLUMNS)]
+        train_x = features.loc[past_idx, list(feature_columns)]
+        test_x = features.loc[dt, list(feature_columns)]
         for action in actions:
             if action == "KEEP":
                 row[action] = 0.0
+                continue
+            if action not in labels.columns or action not in predicted_regrets.columns:
+                row[action] = 1.0
                 continue
             errors = (predicted_regrets.loc[past_idx, action] - labels.loc[past_idx, action]).abs()
             pred_error = max(
@@ -559,7 +778,7 @@ def _select_actions(
             action_weights = keep
         final_weights = (
             action_weights
-            if best in ("KEEP", "REENTER")
+            if best == "KEEP" or best.startswith("REENTER")
             else _apply_partial_and_turnover_cap(
                 keep,
                 action_weights,
@@ -608,6 +827,22 @@ def _stateful_candidate_weights(
         return _apply_partial_and_turnover_cap(
             current,
             keep,
+            adjustment_fraction=adjustment_fraction,
+            turnover_cap=turnover_cap,
+        )
+    reenter_step = _parse_reenter_00631l_step(action)
+    if reenter_step is not None:
+        target_00631l = min(
+            float(keep.get("00631L.TW", 0.0) or 0.0),
+            float(current.get("00631L.TW", 0.0) or 0.0) + reenter_step,
+        )
+        partial_reenter = _add_00631l_from_0050_then_cash(
+            current,
+            target_00631l_weight=target_00631l,
+        )
+        return _apply_partial_and_turnover_cap(
+            current,
+            partial_reenter,
             adjustment_fraction=adjustment_fraction,
             turnover_cap=turnover_cap,
         )
@@ -726,7 +961,10 @@ def _select_actions_stateful(
             and days_since_relief_action >= int(relief_min_holding_days)
         )
         days_since_relief_action += 1
-        best = max(actions, key=lambda action: (preds[action], action == "KEEP"))
+        eligible_actions = tuple(
+            action for action in actions if is_below_a2118 or not action.startswith("REENTER")
+        )
+        best = max(eligible_actions, key=lambda action: (preds[action], action == "KEEP"))
         reliability_percentile = None
         reliability_gate_pass = True
         if not allowed:
@@ -740,10 +978,10 @@ def _select_actions_stateful(
             best = "REENTER"
             days_since_relief_action = 0
         else:
-            threshold = float(reenter_edge_threshold) if best == "REENTER" and is_below_a2118 else float(edge_threshold)
+            threshold = float(reenter_edge_threshold) if best.startswith("REENTER") and is_below_a2118 else float(edge_threshold)
             if best != "KEEP" and preds[best] <= threshold:
                 best = "KEEP"
-            if best == "REENTER" and not is_below_a2118:
+            if best.startswith("REENTER") and not is_below_a2118:
                 best = "KEEP"
         if best.startswith("CAP"):
             cap = float(cap10)
@@ -900,6 +1138,9 @@ def evaluate_window(
     relief_min_holding_days: int = 0,
     relief_min_gap: float = 0.0,
     vix_close: pd.Series | None = None,
+    cross_asset_features: bool = False,
+    cross_asset_market_close: pd.DataFrame | None = None,
+    foreign_futures_net_ratio: pd.Series | None = None,
 ) -> dict[str, Any]:
     end = _resolve_end_date(db_path, end)
     report, frame = run_a2118(
@@ -923,7 +1164,29 @@ def evaluate_window(
     panel = _load_panel(panel_path)
     prices, dividend_coverage = _load_total_return_prices(db_path, frame.index)
     target_weights = _targets_from_report(frame, report)
-    features = _build_features(frame, panel, target_weights, prices)
+    target_00631l = target_weights["00631L.TW"].astype(float)
+    target_00631l_support = {
+        "max_weight": float(target_00631l.max()) if not target_00631l.empty else 0.0,
+        "mean_weight": float(target_00631l.mean()) if not target_00631l.empty else 0.0,
+        "p90_weight": float(target_00631l.quantile(0.90)) if not target_00631l.empty else 0.0,
+        "positive_days": int((target_00631l > 1e-9).sum()),
+        "gt_2pct_days": int((target_00631l > 0.02).sum()),
+        "gt_5pct_days": int((target_00631l > 0.05).sum()),
+        "gt_10pct_days": int((target_00631l > 0.10).sum()),
+        "total_days": int(len(target_00631l)),
+    }
+    feature_columns = FEATURE_COLUMNS + CROSS_ASSET_FEATURE_COLUMNS if cross_asset_features else FEATURE_COLUMNS
+    cross_asset = (
+        _build_cross_asset_features(
+            target_weights.index,
+            cross_asset_market_close if cross_asset_market_close is not None else pd.DataFrame(),
+            foreign_futures_net_ratio if foreign_futures_net_ratio is not None else pd.Series(dtype=float),
+            prices,
+        )
+        if cross_asset_features
+        else None
+    )
+    features = _build_features(frame, panel, target_weights, prices, cross_asset=cross_asset)
     action_allowed = _panel_signal_available(target_weights.index, panel) if require_panel_signal else None
     labels = _build_action_labels(
         prices,
@@ -943,6 +1206,7 @@ def evaluate_window(
         ridge_alpha=ridge_alpha,
         regret_clip=regret_clip,
         actions=actions,
+        feature_columns=feature_columns,
     )
     calibration_pairs = _build_calibration_pairs(
         labels,
@@ -961,6 +1225,7 @@ def evaluate_window(
             train_window_days=train_window_days,
             ridge_alpha=ridge_alpha,
             actions=actions,
+            feature_columns=feature_columns,
         )
         if selective_reliability
         else None
@@ -1039,6 +1304,21 @@ def evaluate_window(
             "mean_selected_realized_regret": float(np.mean(values)) if values else 0.0,
             "positive_selected_realized_regret_rate": float(np.mean([v > 0.0 for v in values])) if values else 0.0,
         }
+    regret_prediction_quality: dict[str, Any] = {}
+    if calibration_pairs:
+        cal_df = pd.DataFrame(calibration_pairs)
+        for action in actions:
+            if action == "KEEP":
+                continue
+            sub = cal_df[cal_df["action"] == action]
+            n = int(len(sub))
+            corr = None
+            if n >= 5 and float(sub["predicted_regret"].std()) > 1e-12 and float(sub["realized_regret"].std()) > 1e-12:
+                corr = float(np.corrcoef(sub["predicted_regret"], sub["realized_regret"])[0, 1])
+            regret_prediction_quality[action] = {
+                "n": n,
+                "oos_pred_vs_realized_corr": corr,
+            }
     reliability_summary: dict[str, Any] = {
         "enabled": bool(selective_reliability),
         "max_error_percentile": float(reliability_max_error_percentile),
@@ -1072,6 +1352,7 @@ def evaluate_window(
         "non_keep_decisions": non_keep.to_dict(orient="records"),
         "realized_selected_edge": realized_edge,
         "calibration_pairs": calibration_pairs,
+        "regret_prediction_quality": regret_prediction_quality,
         "selective_reliability": reliability_summary,
         "recent_decisions": decisions.tail(20).to_dict(orient="records"),
         "label_rows": int(len(labels)),
@@ -1081,6 +1362,7 @@ def evaluate_window(
         "stateful_actions": bool(stateful_actions),
         "require_panel_signal": bool(require_panel_signal),
         "panel_signal_days": int(action_allowed.sum()) if action_allowed is not None else None,
+        "target_00631l_support": target_00631l_support,
         "relief_gate": {
             "enabled": bool(relief_gate),
             "lookback_days": int(relief_lookback_days),
@@ -1091,6 +1373,8 @@ def evaluate_window(
             if not decisions.empty and "relief_triggered" in decisions.columns
             else 0,
         },
+        "cross_asset_features": bool(cross_asset_features),
+        "feature_columns": list(feature_columns),
     }
 
 
@@ -1173,6 +1457,20 @@ def main() -> None:
             "already-immaterial gap in calm periods."
         ),
     )
+    parser.add_argument(
+        "--cross-asset-features",
+        action="store_true",
+        help=(
+            "Add cross-asset features (TSM ADR/SOXX/NVDA overnight returns, "
+            "USD/TWD change, TSMC-vs-0050 5d spread, TAIFEX foreign futures "
+            "net OI ratio, distance from recent low, drawdown recovery ratio) "
+            "to the regret-prediction feature set. All series are read from "
+            "cache already in the DB -- no download. Proposed to test whether "
+            "these features carry information the existing feature set does "
+            "not, ahead of the already-closed rule-based --relief-gate line. "
+            "Default off (identical behavior to no flag)."
+        ),
+    )
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     args = parser.parse_args()
     actions = tuple(part.strip().upper() for part in str(args.actions).split(",") if part.strip())
@@ -1181,6 +1479,12 @@ def main() -> None:
 
     db_path = _resolve(args.db)
     vix_close = _load_vix_close(db_path) if args.relief_gate else None
+    cross_asset_market_close = (
+        _load_cross_asset_market_close(db_path) if args.cross_asset_features else None
+    )
+    foreign_futures_net_ratio = (
+        _load_foreign_futures_net_ratio(db_path) if args.cross_asset_features else None
+    )
     results = [
         evaluate_window(
             label=label,
@@ -1218,6 +1522,9 @@ def main() -> None:
             relief_min_holding_days=int(args.relief_min_holding_days),
             relief_min_gap=float(args.relief_min_gap),
             vix_close=vix_close,
+            cross_asset_features=bool(args.cross_asset_features),
+            cross_asset_market_close=cross_asset_market_close,
+            foreign_futures_net_ratio=foreign_futures_net_ratio,
         )
         for label, start, end, panel, bucket in _parse_windows(args.windows)
     ]
@@ -1264,7 +1571,12 @@ def main() -> None:
                 "min_train_days": int(args.min_train_days),
                 "train_window_days": int(args.train_window_days),
                 "ridge_alpha": float(args.ridge_alpha),
-                "features": list(FEATURE_COLUMNS),
+                "cross_asset_features": bool(args.cross_asset_features),
+                "features": list(
+                    FEATURE_COLUMNS + CROSS_ASSET_FEATURE_COLUMNS
+                    if args.cross_asset_features
+                    else FEATURE_COLUMNS
+                ),
             },
         },
         "summary": {

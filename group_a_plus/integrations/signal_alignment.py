@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any
 
 from backtest_group_a_plus_switch_policy import _chip_data_is_stale
+from group_a_plus.outputs import output_path as canonical_output_path
+from group_a_plus.outputs import write_json_report
 from group_a_plus.runners.a2118 import CHIP_DATA_FALLBACK_MAX_STALE_DAYS
 
 
@@ -784,6 +786,7 @@ def build_signal_alignment_from_file(
     live_signal_path: Path = DEFAULT_LIVE_SIGNAL_PATH,
     *,
     output_path: Path | None = None,
+    canonical_path: Path | None = None,
 ) -> dict[str, Any]:
     payload = json.loads(live_signal_path.read_text(encoding="utf-8-sig"))
     live_signal = _unwrap_standard_json(payload)
@@ -791,4 +794,14 @@ def build_signal_alignment_from_file(
     if output_path is not None:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if canonical_path is None and output_path == DEFAULT_OUTPUT_PATH:
+        canonical_path = canonical_output_path("signal_alignment", kind="signal", run_mode="production", latest=True)
+    if canonical_path is not None:
+        write_json_report(
+            canonical_path,
+            artifact_name="signal_alignment",
+            kind="signal",
+            run_mode="production",
+            payload=result,
+        )
     return result

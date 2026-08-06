@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_intervention_fatigue_risk_budget_readiness_review",
-  "generated_at": "2026-07-28T07:15:15",
+  "generated_at": "2026-08-06T03:03:00",
   "policy": "research_only_intervention_fatigue_risk_budget_pacing_no_weight_change",
   "status": "blocked",
   "as_of": "2026-07-20",
@@ -32,7 +32,7 @@
     },
     "market_impact": {
       "status": "blocked",
-      "turnover": 0.2365042071391168,
+      "turnover": 0.808271858826179,
       "auto_rebalance_allowed": false,
       "allow_00631l_add": false
     },
@@ -48,28 +48,28 @@
   },
   "intervention_fatigue": {
     "trade_count_nonzero": 3,
-    "leverage_change_count": 1,
-    "hedge_change_count": 0,
-    "has_00631l_add_attempt": true,
-    "has_00632r_open_attempt": false,
+    "leverage_change_count": 0,
+    "hedge_change_count": 1,
+    "has_00631l_add_attempt": false,
+    "has_00632r_open_attempt": true,
     "cooldown_policy_implemented": false,
     "recent_intervention_window_days": null,
     "normalized_history_available": true,
-    "history_entry_count": 101,
+    "history_entry_count": 114,
     "history_blocked_entry_count": 73,
-    "history_leverage_intervention_count": 89,
-    "history_hedge_intervention_count": 0
+    "history_leverage_intervention_count": 92,
+    "history_hedge_intervention_count": 3
   },
   "intervention_history": {
     "status": "available",
     "history_type": "system_observed_daily_status_not_broker_fills",
-    "entry_count": 101,
+    "entry_count": 114,
     "blocked_entry_count": 73,
-    "leverage_intervention_count": 89,
-    "hedge_intervention_count": 0,
+    "leverage_intervention_count": 92,
+    "hedge_intervention_count": 3,
     "first_check_date": "2026-07-06",
-    "last_check_date": "2026-07-25",
-    "source_file_count": 56
+    "last_check_date": "2026-08-05",
+    "source_file_count": 68
   },
   "broker_holdings_time_series": {
     "status": "sample_available",
@@ -97,7 +97,7 @@
     "cash_budget_target_weight": 0.30000000000000004,
     "risk_budget_policy_promoted": false,
     "turnover_pacing_limit": 0.5,
-    "turnover": 0.2365042071391168
+    "turnover": 0.808271858826179
   },
   "blocking_reasons": [
     "risk_budget_policy_not_promoted",
@@ -113,7 +113,8 @@
     "rebalance_review_disallows_target_weight_change",
     "market_impact_disallows_00631l_add",
     "tail_cost_readiness_not_ready",
-    "research_shadow_disallows_00631l_add"
+    "research_shadow_disallows_00631l_add",
+    "turnover_at_or_above_pacing_limit"
   ],
   "warning_reasons": [
     "pending_intervention_count:3",

@@ -15,11 +15,14 @@ venv/
 *.xls
 *.csv
 *.log
+*.p12
+*.pfx
 .DS_Store
 
 
 # 訓練產出（由 .gitignore 管理）
-/models/
+/models/*
+!/models/MODEL_REGISTRY.json
 /results/
 /log/
 /logs/
@@ -35,7 +38,13 @@ FinRL/test_integration.py
 FinRL/optimize_0050.py
 /data/cache/
 /data/news/
+/data/private/
 /data/portfolio_cache/
 /data/raw/
 /data/taifex/
 FinRL/data/stock_data.db
+
+# Broker credentials and local SDK samples
+/fubon/
+/fubon/key/
+/fubon/config/

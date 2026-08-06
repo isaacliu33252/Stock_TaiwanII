@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_research_shadow_decision_snapshot",
-  "generated_at": "2026-07-28T07:15:58",
+  "generated_at": "2026-08-06T03:08:10",
   "policy": "research_shadow_summary_no_weight_change",
   "status": "blocked",
   "summary": {
@@ -10,8 +10,8 @@
     "trigate_state": "blocked_for_leverage_add",
     "trigate_stress_gate_count": 3,
     "trigate_allow_00631l_add": false,
-    "systemic_bubble_state": "research_watch",
-    "systemic_bubble_score": 1,
+    "systemic_bubble_state": "blocked_for_leverage_add",
+    "systemic_bubble_score": 2,
     "systemic_bubble_allow_00631l_add": false,
     "illiquidity_network_status": "blocked",
     "illiquidity_network_ready": false,
@@ -19,7 +19,7 @@
     "illiquidity_network_allow_00631l_add": false,
     "illiquidity_daily_proxy_status": "available_research_proxy",
     "illiquidity_daily_proxy_paper_equivalent": false,
-    "illiquidity_daily_proxy_stress_score": 0.0,
+    "illiquidity_daily_proxy_stress_score": 0.027777777777777776,
     "illiquidity_daily_proxy_stress_state": "normal",
     "illiquidity_daily_proxy_manual_review_required": false,
     "illiquidity_daily_proxy_coverage_tickers": 9,
@@ -31,7 +31,7 @@
     "speculative_influence_allow_00631l_add": false,
     "sin_lite_proxy_status": "blocked",
     "sin_lite_proxy_state": "normal",
-    "sin_lite_proxy_score": 0.348981,
+    "sin_lite_proxy_score": 0.346905,
     "sin_lite_proxy_usable_ticker_count": 14,
     "sin_lite_proxy_manual_review_required": false,
     "sin_lite_proxy_allow_00631l_add": false,
@@ -159,11 +159,18 @@
     "llm_state_reward_signed_approval_training_queue_allowed": false,
     "llm_state_reward_signed_approval_model_training_allowed": false,
     "llm_state_reward_signed_approval_ppo_training_allowed": false,
-    "llm_state_reward_signed_approval_promote_to_live": false
+    "llm_state_reward_signed_approval_promote_to_live": false,
+    "ncf_decision_calibration_status": "research_only",
+    "ncf_decision_calibration_governance_status": "closed_failed_oos",
+    "ncf_decision_confidence_contract": "predicted_regret_percentile_rank_proxy_not_calibrated_probability",
+    "ncf_decision_calibration_model_default_enabled": false,
+    "ncf_decision_calibration_live_gate_allowed": false,
+    "ncf_decision_calibration_target_weight_change_allowed": false
   },
   "blocking_reasons": [
     "finstressts_snapshot_blocked",
     "trigate_vol_memory_blocks_leverage_add",
+    "systemic_bubble_time_at_risk_blocks_leverage_add",
     "illiquidity_network_readiness_blocked",
     "speculative_influence_network_readiness_blocked",
     "sin_lite_proxy_blocked",
@@ -180,12 +187,12 @@
   "warning_reasons": [
     "llm_state_reward_signed_approval_validation_blocked",
     "trigate_stress_gate_count:3",
-    "systemic_bubble_score:1",
+    "systemic_bubble_score:2",
     "illiquidity_network_status:blocked",
-    "illiquidity_daily_proxy_score:0.0",
+    "illiquidity_daily_proxy_score:0.027777777777777776",
     "illiquidity_daily_proxy_state:normal",
     "speculative_influence_network_status:blocked",
-    "sin_lite_score:0.348981",
+    "sin_lite_score:0.346905",
     "sin_lite_state:normal",
     "hmm_wj_status:blocked",
     "dynamic_cvar_status:blocked",
@@ -217,7 +224,8 @@
     "llm_state_reward_manual_approval_readiness_status:available_for_manual_approval_review",
     "llm_state_reward_manual_approval_readiness:signed_human_exception_approval_record_missing_or_invalid",
     "llm_state_reward_signed_approval_validation_status:blocked",
-    "llm_state_reward_signed_approval_validation:missing_signed_human_exception_approval_record"
+    "llm_state_reward_signed_approval_validation:missing_signed_human_exception_approval_record",
+    "ncf_decision_calibration_governance_status:closed_failed_oos"
   ],
   "decision": {
     "summary": "Research shadow diagnostics do not permit 00631L add: at least one research-only readiness, volatility-memory, systemic bubble time-at-risk, HMM-WJ scenario-readiness, illiquidity-network readiness, speculative-influence-network readiness, SIN-lite proxy, dynamic CVaR tail/cost diagnostic, synthetic augmentation validation gate, or intervention fatigue/risk-budget gate, LETF tracking-error/effective-fee gate, Asian ETF tail-analytics gate, reduced-rank correlation readiness, RL governance, or LLM state-reward interface readiness is blocked.",
@@ -252,6 +260,7 @@
     "llm_state_reward_shadow_training_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_shadow_training_readiness_review.json",
     "llm_state_reward_regime_filtered_micro_tilt": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_regime_filtered_micro_tilt_shadow_backtest.json",
     "llm_state_reward_manual_approval_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_manual_approval_readiness_review.json",
-    "llm_state_reward_signed_approval_validation": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_validation.json"
+    "llm_state_reward_signed_approval_validation": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_validation.json",
+    "ncf_decision_calibration": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_decision_calibration_shadow_20260806.json"
   }
 }

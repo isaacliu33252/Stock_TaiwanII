@@ -15,6 +15,7 @@ import pandas as pd
 from backtest_group_a_plus_policy_signal import TICKERS
 from backtest_group_a_plus_switch_policy import DB_PATH
 from group_a_plus.governance.latest import DEFAULT_LATEST_STRATEGY
+from group_a_plus.core.point_in_time_store import write_json_artifact_snapshot
 from group_a_plus.operations.daily_signal import build_daily_signal
 from group_a_plus.operations.execution_guard import (
     apply_compounding_regime_pre_trade_guard,
@@ -31,6 +32,26 @@ BOND_ETFS = {"00679B.TWO", "00751B.TWO"}
 GROUP_A_PLUS_TICKERS = set(TICKERS)
 PORTFOLIO_VALUE_ABS_TOLERANCE = 100.0
 PORTFOLIO_VALUE_REL_TOLERANCE = 0.005
+
+
+def _execution_plan_pit_asof(payload: dict[str, Any], fallback_as_of: str) -> str:
+    data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+    return str(data.get("actual_data_date") or data.get("requested_as_of_date") or fallback_as_of)
+
+
+def _execution_plan_pit_generated_at(payload: dict[str, Any]) -> str:
+    data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+    metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+    return str(data.get("generated_at") or metadata.get("timestamp") or datetime.now().isoformat(timespec="seconds"))
+
+
+def _write_execution_plan_pit_snapshot(payload: dict[str, Any], *, requested_as_of: str) -> Path:
+    return write_json_artifact_snapshot(
+        "execution_plan",
+        payload,
+        artifact_asof=_execution_plan_pit_asof(payload, requested_as_of),
+        generated_at=_execution_plan_pit_generated_at(payload),
+    )
 
 
 def _extract_code(value: object) -> str | None:
@@ -881,8 +902,10 @@ def main() -> None:
         payload = std.error(exc)
     write_standard_output(payload, args.output)
     write_standard_output(payload, args.latest_pointer)
+    pit_snapshot = _write_execution_plan_pit_snapshot(payload, requested_as_of=args.as_of)
     print(f"Execution plan: {Path(args.output).resolve()}")
     print(f"Latest pointer: {Path(args.latest_pointer).resolve()}")
+    print(f"PIT snapshot: {pit_snapshot.resolve()}")
 
 
 if __name__ == "__main__":

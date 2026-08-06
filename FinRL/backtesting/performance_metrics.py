@@ -60,33 +60,58 @@ def calculate_sharpe_ratio(
 
 def calculate_sortino_ratio(
     returns: np.ndarray,
+    risk_free_rate: float = 0.02,
     target: float = 0.0
 ) -> float:
     """
     計算索提諾比率 (Sortino Ratio)
-    
-    公式：索提諾比率 = (投資組合報酬 - 目標報酬) / 下行標準差
-    
+
+    公式：索提諾比率 = (投資組合年化報酬 - 無風險利率) / 下行標準差（年化）
+
     意義：只考慮下行風險的風險調整報酬
     - 與夏普比率類似，但只計算負報酬的波動
+    - Sortino 修復：扣除無風險利率，標準化目標尺度
+
+    參數：
+        returns: 報酬率陣列（日報酬率）
+        risk_free_rate: 年化無風險利率（預設 0.02 = 2%）
+        target: 年化目標報酬（預設 0.0）
     """
     if len(returns) < 2:
         return 0.0
-    
-    downside_returns = returns[returns < target]
-    
-    if len(downside_returns) == 0:
+
+    # 計算日均無風險利率
+    risk_free_daily = risk_free_rate / 252
+
+    # 計算日均超額報酬（扣除無風險利率）
+    excess_returns = returns - risk_free_daily
+
+    # 只取低於目標的下行超額報酬
+    target_daily = target / 252  # 年化目標轉為日均目標
+    downside_excess = excess_returns[excess_returns < target_daily]
+
+    if len(downside_excess) == 0:
         return 0.0
-    
-    downside_std = np.std(downside_returns, ddof=1)
-    
-    if downside_std == 0:
-        return 0.0
-    
-    mean_return = np.mean(returns)
-    # Sortino Ratio (annualized): (日均超額報酬 - 目標) / 日均下行標準差 * sqrt(252)
-    # 分子：日均超額報酬；分母：日均下行標準差；乘以 sqrt(252) 完成年化
-    return (mean_return - target) / downside_std * np.sqrt(252)
+
+    # 日均下行標準差（使用 ddof=1 與 Sharpe Ratio 一致）
+    downside_std_daily = np.std(downside_excess, ddof=1)
+
+    # 使用絕對容差檢查，避免浮點精度問題
+    if downside_std_daily < 1e-10:
+        # 當下行標準差趨近於 0：
+        # - 若平均超額報酬 > 目標，回報極佳（接近 +inf，但回傳一個大正數）
+        # - 若平均超額報酬 <= 目標，無意義的回報（回傳 0 或負數）
+        mean_excess = np.mean(excess_returns)
+        if mean_excess > target_daily:
+            return float('inf')
+        else:
+            return 0.0
+
+    # 年化：(日均超額報酬 - 日均目標) / 日均下行標準差 × √252
+    mean_excess = np.mean(excess_returns)
+    sortino = (mean_excess - target_daily) / downside_std_daily * np.sqrt(252)
+
+    return sortino
 
 
 def calculate_max_drawdown(

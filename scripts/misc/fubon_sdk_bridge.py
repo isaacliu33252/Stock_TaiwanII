@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import getpass
 import importlib.metadata
 import importlib.util
 import json
@@ -19,29 +20,23 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = PROJECT_ROOT / "results"
 
 ENV_PERSONAL_ID = "FUBON_PERSONAL_ID"
-ENV_PASSWORD = "FUBON_PASSWORD"
 ENV_CERT_PATH = "FUBON_CERT_PATH"
-ENV_CERT_PASSWORD = "FUBON_CERT_PASSWORD"
 ENV_ACCOUNT = "FUBON_ACCOUNT"
 
 
 @dataclass
 class CredentialStatus:
     personal_id: str | None
-    password_present: bool
     cert_path: str | None
     cert_path_exists: bool
-    cert_password_present: bool
     account: str | None
 
     @property
     def ready_for_login(self) -> bool:
         return bool(
             self.personal_id
-            and self.password_present
             and self.cert_path
             and self.cert_path_exists
-            and self.cert_password_present
         )
 
 
@@ -68,10 +63,8 @@ def _load_credential_status() -> CredentialStatus:
     cert_path = os.getenv(ENV_CERT_PATH)
     return CredentialStatus(
         personal_id=os.getenv(ENV_PERSONAL_ID),
-        password_present=bool(os.getenv(ENV_PASSWORD)),
         cert_path=cert_path,
         cert_path_exists=bool(cert_path and Path(cert_path).expanduser().exists()),
-        cert_password_present=bool(os.getenv(ENV_CERT_PASSWORD)),
         account=os.getenv(ENV_ACCOUNT),
     )
 
@@ -265,12 +258,11 @@ def cmd_check(args: argparse.Namespace) -> int:
         "fubon_neo_origin": None if spec is None else spec.origin,
         "credentials": {
             "personal_id_present": bool(credentials.personal_id),
-            "password_present": credentials.password_present,
             "cert_path": credentials.cert_path,
             "cert_path_exists": credentials.cert_path_exists,
-            "cert_password_present": credentials.cert_password_present,
             "account": credentials.account,
             "ready_for_login": credentials.ready_for_login,
+            "passwords": "manual_prompt_required_for_login_check",
         },
         "runtime_probe_skipped": True,
         "runtime_probe_note": (
@@ -328,25 +320,25 @@ def cmd_login_check(args: argparse.Namespace) -> int:
     from fubon_neo.sdk import FubonSDK
 
     personal_id = args.personal_id or os.getenv(ENV_PERSONAL_ID)
-    password = args.password or os.getenv(ENV_PASSWORD)
     cert_path_raw = args.cert_path or os.getenv(ENV_CERT_PATH)
-    cert_password = args.cert_password or os.getenv(ENV_CERT_PASSWORD)
 
     missing = []
     if not personal_id:
         missing.append(ENV_PERSONAL_ID)
-    if not password:
-        missing.append(ENV_PASSWORD)
     if not cert_path_raw:
         missing.append(ENV_CERT_PATH)
-    if not cert_password:
-        missing.append(ENV_CERT_PASSWORD)
     if missing:
         raise SystemExit(f"Missing credential inputs: {', '.join(missing)}")
 
     cert_path = Path(cert_path_raw).expanduser()
     if not cert_path.exists():
         raise SystemExit(f"Certificate not found: {cert_path}")
+    password = getpass.getpass("Fubon login password: ")
+    cert_password = getpass.getpass("Fubon certificate password: ")
+    if not password:
+        raise SystemExit("Fubon login password is required")
+    if not cert_password:
+        raise SystemExit("Fubon certificate password is required")
 
     sdk = FubonSDK()
     try:
@@ -389,9 +381,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Attempt Fubon login and print account payload. Do not use this in an unsupported runtime.",
     )
     login_parser.add_argument("--personal-id", help=f"Override {ENV_PERSONAL_ID}")
-    login_parser.add_argument("--password", help=f"Override {ENV_PASSWORD}")
     login_parser.add_argument("--cert-path", help=f"Override {ENV_CERT_PATH}")
-    login_parser.add_argument("--cert-password", help=f"Override {ENV_CERT_PASSWORD}")
     login_parser.set_defaults(func=cmd_login_check)
 
     return parser

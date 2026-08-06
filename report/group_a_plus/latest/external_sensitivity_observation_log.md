@@ -1,9 +1,9 @@
 # GroupA+ External Sensitivity Observation Log
 
-- Observations: `3`
-- Valid observations: `2`
+- Observations: `7`
+- Valid observations: `6`
 - Stable observations: `0`
-- Latest trigger-critical exceeded: `[]`
+- Latest trigger-critical exceeded: `['h20_prob_up', 'confidence']`
 
 ## Decision Boundary
 

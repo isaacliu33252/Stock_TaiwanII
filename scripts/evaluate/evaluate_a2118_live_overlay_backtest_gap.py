@@ -29,17 +29,10 @@ backtest:
      late-bull-hedge trigger.
   2. TSMC weakness trim (daily_signal.py::_apply_tsmc_weakness_trim) -- an
      extra 25% 00631L cut when ncf_2330 + the 0050-ex-TSMC price proxy both
-     confirm TSMC weakness. CORRECTION (2026-07-23, found while building this
-     script): despite being fully implemented, unit-tested, and even having a
-     dead downstream alert hook waiting on its output flag,
-     _apply_tsmc_weakness_trim is never actually called from
-     build_daily_signal -- grep confirms zero call sites in daily_signal.py
-     outside its own def. It is NOT live; it is very likely the "weight trim"
-     integration attempt already rejected in the 2026-07-05 ncf_2330 five-way
-     rejection (see scripts/misc/ncf_2330_total_risk_score_overlay_sweep.py's
-     docstring, which calls it "already-rejected"). Included here ONLY as an
-     opt-in side variant (--include-tsmc-trim) for completeness; the default
-     run excludes it since it does not affect any real decision today.
+     confirm TSMC weakness. WIRED LIVE (2026-07-30): this trim now runs from
+     build_daily_signal after _apply_bearish_high_risk_trim. This script keeps
+     it as an opt-in side variant (--include-tsmc-trim) so the default report
+     still preserves the pre-wiring baseline used by earlier audits.
   3. Bearish high-risk trim (daily_signal.py::_apply_bearish_high_risk_trim)
      -- needs live signal_alignment, which a2118.py's own
      backtest_live_discrepancy field already documents as "not
@@ -281,7 +274,7 @@ def evaluate(
         "experiment": "a2118_live_overlay_backtest_gap",
         "research_only": True,
         "production_effect": "none",
-        "context": "2026-07-23 Fable audit direction 1 (priority 2): NCF continuous downside overlay (genuinely live, confirmed called from build_daily_signal) reconstructed historically and run through a2118's own price/regime path. TSMC weakness trim included only if --include-tsmc-trim was passed (default off): it is defined and unit-tested but never called from build_daily_signal, so it is not live today. bearish_high_risk_trim intentionally excluded (a2118.py's own backtest_live_discrepancy field already documents it as not reconstructable).",
+        "context": "2026-07-23 Fable audit direction 1 (priority 2): NCF continuous downside overlay (genuinely live, confirmed called from build_daily_signal) reconstructed historically and run through a2118's own price/regime path. TSMC weakness trim is live in build_daily_signal as of 2026-07-30; this backtest includes it only when --include-tsmc-trim is passed so historical comparisons can preserve the pre-wiring baseline. bearish_high_risk_trim intentionally excluded (a2118.py's own backtest_live_discrepancy field already documents it as not reconstructable).",
         "include_tsmc_trim": include_tsmc_trim,
         "no_trade_band": no_trade_band,
         "window": {"start": start, "end": end, "rows": int(len(frame))},
@@ -319,7 +312,7 @@ def main() -> None:
         "--include-tsmc-trim",
         action="store_true",
         default=False,
-        help="Also apply _apply_tsmc_weakness_trim, even though it is not actually called from build_daily_signal today.",
+        help="Also apply _apply_tsmc_weakness_trim. Keep off to preserve the pre-2026-07-30 baseline; turn on to mirror the current live daily_signal path.",
     )
     parser.add_argument(
         "--no-trade-band",

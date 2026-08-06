@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_panel_drift_resolution_progress",
+  "generated_at": "2026-08-04T18:47:56",
+  "status": "blocked",
+  "policy": "diagnostic_only_no_strategy_change_no_weight_change",
+  "active_allocation_impact": "none",
+  "remediation_status": "blocked",
+  "unresolved_action_ids": [
+    "refresh_stale_candidate_sources",
+    "quantify_external_feature_sensitivity"
+  ],
+  "resolved_actions": [
+    {
+      "id": "isolate_model_set_change",
+      "priority": 2,
+      "status": "resolved",
+      "reason": "baseline and candidate NCF panels were generated with different model sets",
+      "recommended_action": "Model-set mismatch is isolated by the same-method no-TabNet comparison; keep promotion blocked while rebuilding the official same-method baseline and clearing deployment/GIFT gates."
+    }
+  ],
+  "unresolved_actions": [
+    {
+      "id": "refresh_stale_candidate_sources",
+      "priority": 1,
+      "status": "required",
+      "reason": "candidate NCF run used degraded or stale sources",
+      "recommended_action": "Refresh stale candidate sources, then rebuild NCF panel, drift audit, diagnosis, and promotion gate."
+    },
+    {
+      "id": "quantify_external_feature_sensitivity",
+      "priority": 4,
+      "status": "required",
+      "reason": "external-feature sensitivity exceeds trigger-critical drift tolerance",
+      "recommended_action": "Keep promotion blocked until external feature freshness and sensitivity are stable across a same-method panel rebuild."
+    }
+  ],
+  "external_sensitivity": {
+    "status": "blocked_observation_required",
+    "required_observation_sessions": 3,
+    "completed_observation_sessions": 4,
+    "remaining_observation_sessions": 0,
+    "stable_observation_sessions": 0,
+    "remaining_stable_observation_sessions": 3,
+    "resolution_allowed": false,
+    "reason": "external-feature sensitivity exceeds trigger-critical limits",
+    "next_action": "Run 3 additional stable same-method external-sensitivity observation session(s) after source freshness is ok before reducing this blocker.",
+    "trigger_critical_exceeded": [
+      "h20_prob_up",
+      "confidence"
+    ],
+    "diagnostic_exceeded": []
+  },
+  "summary": {
+    "resolved_count": 1,
+    "unresolved_count": 2,
+    "remaining_observation_sessions": 0,
+    "remaining_stable_observation_sessions": 3,
+    "next_actions": [
+      "Refresh stale candidate sources, then rebuild NCF panel, drift audit, diagnosis, and promotion gate.",
+      "Keep promotion blocked until external feature freshness and sensitivity are stable across a same-method panel rebuild.",
+      "complete 3 additional stable same-method external-sensitivity observation session(s)"
+    ]
+  },
+  "decision": {
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "training_allowed": false,
+    "model_training_allowed": false,
+    "ppo_training_allowed": false,
+    "promote_to_live": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "remediation_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_remediation_plan_20260804.json",
+    "external_sensitivity_governance": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_external_feature_sensitivity_governance_20260804.json"
+  }
+}

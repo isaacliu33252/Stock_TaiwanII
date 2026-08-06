@@ -15,6 +15,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from group_a_plus.governance.latest import resolve_ncf_00631l_panel_path  # noqa: E402
+from group_a_plus.outputs import output_path, write_json_report  # noqa: E402
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -92,6 +93,42 @@ BEST_EFFORT_STEP_NAMES = frozenset(
         # (research-only; never changes a live decision). A failure here must
         # never block ncf_2330/daily_signal/alert_state below it.
         "ncf_signal_archive",
+        # Diagnostic-only threshold sweep for the 0050 NCF panel. It can
+        # recommend shadow gates such as block_new_0050_add, but never changes
+        # live target weights.
+        "ncf_0050_threshold_eval",
+        # Shadow-only decision_confidence governance report. It records that
+        # empirical probability calibration is closed_failed_oos and must
+        # never block live signal generation.
+        "ncf_decision_calibration_shadow",
+        # 00631L<->0050 relative re-entry opportunity shadow. Research-only
+        # observation of whether a small 0050->00631L shift is favorable after
+        # permission/reliability/slow-bear gates; never changes live weights.
+        "relative_reentry_opportunity_shadow",
+        # Daily gate/readiness wrapper for the relative re-entry opportunity
+        # shadow. It only writes a human-review report with trust/risk/data
+        # blockers and never changes live weights.
+        "relative_reentry_advisory_shadow",
+        # Candidate-review wrapper for historical relative re-entry rows.
+        # It summarizes 5/10/20d realized edges and tail cases for manual
+        # review only; it never changes live weights.
+        "relative_reentry_candidate_review",
+        # Promotion gate for the relative re-entry shadow. It converts the
+        # advisory/candidate-review reports into explicit promote/block/warn
+        # fields for manual review only; it never changes live weights.
+        "relative_reentry_promotion_gate",
+        # Governance-only artifact integrity report. It checks stale/missing
+        # production-sensitive artifacts and PIT coverage, but it must never
+        # change live weights or block daily status generation.
+        "daily_artifact_integrity",
+        # External-feature sensitivity shadow artifacts are diagnostics only:
+        # they preserve paired no-external/external panels so drift root-cause
+        # reviews are reproducible. Missing output is recorded as a blocker by
+        # ncf_panel_external_feature_sensitivity_governance; it must not halt
+        # live signal generation.
+        "ncf_00631l_no_external_shadow",
+        "ncf_panel_drift_no_external_vs_external",
+        "ncf_panel_refresh_recommendation",
         "dfl_active_date_audit",
         # Fable audit (2026-07-16, combination opportunities #2): this whole
         # sub-pipeline was previously never scheduled at all, so
@@ -117,6 +154,11 @@ BEST_EFFORT_STEP_NAMES = frozenset(
         # waiting on more historical proxy data; a failure here must never
         # block anything downstream.
         "trough_override_eligibility_shadow_log",
+        # GJR-GARCH asymmetry shadow (2026-08-02): the 2607.16450v1 review
+        # found in-sample leverage-effect significance for 00631L, but OOS
+        # high-volatility forecast quality did not justify a live rule. Log
+        # model-disagreement evidence only; never block daily signal.
+        "gjr_garch_shadow",
         # Fable independent review (2026-07-17) of 2607.03082v1: the CVaR/
         # Hill/POT-GPD tail-risk diagnostic evaluator only ever ran as a
         # manual one-off with a hardcoded --end date, so
@@ -240,6 +282,10 @@ BEST_EFFORT_STEP_NAMES = frozenset(
         "dfl_shadow_refresh_p50",
         "dfl_shadow_refresh_p70",
         "dfl_shadow_refresh_overlap",
+        "relative_reentry_opportunity_shadow",
+        "relative_reentry_advisory_shadow",
+        "relative_reentry_candidate_review",
+        "relative_reentry_promotion_gate",
         # 2026-07-28 fix: the whole TabNet/no-TabNet model-set-isolation /
         # same-method-baseline / external-feature-sensitivity governance
         # chain tracks a *different* candidate model's promotion-gate
@@ -275,6 +321,15 @@ DEFAULT_TICKERS = (
 
 def _result_path(name: str) -> Path:
     return RESULTS_DIR / name
+
+
+def _infer_no_external_panel_path(panel_path: str | Path) -> str:
+    path = Path(panel_path)
+    if path.suffix.lower() != ".csv":
+        return str(path)
+    if path.stem.endswith("_no_external"):
+        return str(path)
+    return str(path.with_name(f"{path.stem}_no_external{path.suffix}"))
 
 
 def _normalize_project_path(raw: str | Path) -> Path:
@@ -638,6 +693,23 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
     if only_refresh:
         return commands
 
+    if not getattr(args, "skip_ncf_data_validation", False):
+        validation_tickers = "00631L.TW,00632R.TW,2330.TW"
+        commands["ncf_data_validation"] = [
+            sys.executable,
+            "ncf_data_quality.py",
+            "--db",
+            str(DB_PATH),
+            "--tickers",
+            validation_tickers,
+            "--reference-date",
+            "latest",
+            "--max-ohlcv-gap-days",
+            str(getattr(args, "ncf_max_ohlcv_gap_days", 14)),
+            "--output",
+            str(_result_path(f"ncf_data_validation_{stamp}.json")),
+        ]
+
     if args.refresh_external_cache:
         commands["refresh_ncf_2330_checklist_external_cache"] = [
             sys.executable,
@@ -682,6 +754,22 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         str(_result_path(f"ncf_00632r_panel_latest_{stamp}.csv")),
         "--full-panel",
     ]
+    commands["ncf_0050"] = [
+        sys.executable,
+        "scripts/misc/ncf_0050.py",
+        "--train-start",
+        getattr(args, "train_start_0050", "2015-01-01"),
+        "--val-start",
+        args.val_start,
+        "--val-end",
+        args.val_end,
+        "--output",
+        str(_result_path(f"ncf_0050_latest_{stamp}.json")),
+        "--val-predictions-output",
+        str(_result_path(f"ncf_0050_panel_latest_{stamp}.csv")),
+        "--full-panel",
+        "--no-tabnet",
+    ]
     commands["ncf_signal_archive"] = [
         sys.executable,
         "scripts/evaluate/append_ncf_signal_archive.py",
@@ -708,7 +796,26 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
     if args.no_external_features:
         commands["ncf_00631l"].append("--no-external-features")
         commands["ncf_00632r"].append("--no-external-features")
+        commands["ncf_0050"].append("--no-external-features")
         commands["ncf_2330"].append("--no-external-features")
+    else:
+        commands["ncf_00631l_no_external_shadow"] = [
+            sys.executable,
+            "scripts/misc/ncf_00631l.py",
+            "--train-start",
+            args.train_start_00631l,
+            "--val-start",
+            args.val_start,
+            "--val-end",
+            args.val_end,
+            "--output",
+            str(_result_path(f"ncf_00631l_latest_{stamp}_no_external.json")),
+            "--val-predictions-output",
+            str(_result_path(f"ncf_00631l_panel_latest_{stamp}_no_external.csv")),
+            "--full-panel",
+            "--no-tabnet",
+            "--no-external-features",
+        ]
 
     commands["ncf_panel_manifest"] = [
         sys.executable,
@@ -716,29 +823,73 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--panels",
         str(_result_path(f"ncf_00631l_panel_latest_{stamp}.csv")),
         str(_result_path(f"ncf_00632r_panel_latest_{stamp}.csv")),
+        str(_result_path(f"ncf_0050_panel_latest_{stamp}.csv")),
         str(_result_path(f"ncf_2330_panel_latest_{stamp}.csv")),
         "--output",
         str(_result_path(f"ncf_panel_manifest_{stamp}.json")),
     ]
+    commands["ncf_0050_threshold_eval"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_ncf_0050_panel_thresholds.py",
+        "--panel",
+        str(_result_path(f"ncf_0050_panel_latest_{stamp}.csv")),
+        "--output",
+        str(_result_path(f"ncf_0050_threshold_eval_{stamp}.json")),
+        "--output-md",
+        str(_result_path(f"ncf_0050_threshold_eval_{stamp}.md")),
+        "--min-active-rows",
+        "20",
+    ]
+    active_ncf_00631l_panel = getattr(args, "active_ncf_00631l_panel", DEFAULT_ACTIVE_NCF_00631L_PANEL)
     commands["ncf_panel_drift"] = [
         sys.executable,
         "scripts/evaluate/evaluate_ncf_panel_drift.py",
         "--baseline-panel",
-        getattr(args, "active_ncf_00631l_panel", DEFAULT_ACTIVE_NCF_00631L_PANEL),
+        active_ncf_00631l_panel,
         "--candidate-panel",
         str(_result_path(f"ncf_00631l_panel_latest_{stamp}.csv")),
+        "--outcome-aware",
         "--output",
         str(_result_path(f"ncf_panel_drift_active_vs_{stamp}.json")),
         "--csv-output",
         str(_result_path(f"ncf_panel_drift_active_vs_{stamp}.csv")),
     ]
+    commands["ncf_panel_refresh_recommendation"] = [
+        sys.executable,
+        "scripts/evaluate/build_ncf_panel_refresh_recommendation.py",
+        "--drift-audit",
+        str(_result_path(f"ncf_panel_drift_active_vs_{stamp}.json")),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "ncf_panel_refresh_recommendation.json"),
+        "--output-md",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "ncf_panel_refresh_recommendation.md"),
+        "--snapshot-output",
+        str(_result_path(f"ncf_panel_refresh_recommendation_{stamp}.json")),
+    ]
+    if not args.no_external_features:
+        commands["ncf_panel_drift_no_external_vs_external"] = [
+            sys.executable,
+            "scripts/evaluate/evaluate_ncf_panel_drift.py",
+            "--baseline-panel",
+            str(_result_path(f"ncf_00631l_panel_latest_{stamp}_no_external.csv")),
+            "--candidate-panel",
+            str(_result_path(f"ncf_00631l_panel_latest_{stamp}.csv")),
+            "--columns",
+            "h20_prob_up",
+            "confidence",
+            "prob_fwd_mdd_gt5_h20",
+            "prob_fwd_gain_gt5_h20",
+            "--outcome-aware",
+            "--output",
+            str(_result_path(f"ncf_panel_drift_no_external_vs_external_{stamp}.json")),
+        ]
     commands["ncf_panel_drift_diagnosis"] = [
         sys.executable,
         "scripts/evaluate/build_ncf_panel_drift_diagnosis.py",
         "--drift-audit",
         str(_result_path(f"ncf_panel_drift_active_vs_{stamp}.json")),
         "--baseline-panel",
-        getattr(args, "active_ncf_00631l_panel", DEFAULT_ACTIVE_NCF_00631L_PANEL),
+        active_ncf_00631l_panel,
         "--candidate-panel",
         str(_result_path(f"ncf_00631l_panel_latest_{stamp}.csv")),
         "--baseline-signal",
@@ -748,6 +899,17 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--output",
         str(_result_path(f"ncf_panel_drift_diagnosis_{stamp}.json")),
     ]
+    if not args.no_external_features:
+        commands["ncf_panel_drift_diagnosis"].extend(
+            [
+                "--baseline-no-external-panel",
+                _infer_no_external_panel_path(active_ncf_00631l_panel),
+                "--candidate-no-external-panel",
+                str(_result_path(f"ncf_00631l_panel_latest_{stamp}_no_external.csv")),
+                "--sensitivity-audit",
+                str(_result_path(f"ncf_panel_drift_no_external_vs_external_{stamp}.json")),
+            ]
+        )
     commands["panel_drift_triage"] = [
         sys.executable,
         "scripts/evaluate/build_group_a_plus_panel_drift_triage.py",
@@ -923,6 +1085,16 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         str(_result_path(f"00631l_leveraged_compounding_regime_{stamp}.json")),
         "--csv",
         str(_result_path(f"00631l_leveraged_compounding_regime_{stamp}.csv")),
+    ]
+    commands["gjr_garch_shadow"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_gjr_garch_shadow.py",
+        "--as-of",
+        "latest",
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "gjr_garch_shadow.json"),
+        "--log",
+        str(PROJECT_ROOT / "results" / "gjr_garch_shadow_log.jsonl"),
     ]
     commands["a2120_shadow_pipeline"] = [
         sys.executable,
@@ -1267,6 +1439,8 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
             / "latest"
             / "llm_state_reward_human_exception_signed_approval_validation.json"
         ),
+        "--ncf-decision-calibration",
+        str(_result_path(f"ncf_decision_calibration_shadow_{stamp}.json")),
         "--output",
         str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "research_shadow_decision_snapshot.json"),
     ]
@@ -1302,6 +1476,15 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "inflation_2022:2022-01-03:2022-12-30:results/ncf_00631l_panel_latest_20260707.csv:out_of_sample,"
         "live_2024_2026:2024-01-02:2026-07-15:results/ncf_00631l_panel_latest_20260707.csv:tuning_window,"
         "active_2025_2026:2025-01-02:2026-07-15:results/ncf_00631l_panel_latest_20260707.csv:tuning_window,"
+        "2017_bull:2017-01-03:2017-12-29:results/ncf_00631l_panel_backfill_2017_2019_20260710.csv:out_of_sample,"
+        "2018_correction:2018-01-02:2018-12-31:results/ncf_00631l_panel_backfill_2017_2019_20260710.csv:out_of_sample,"
+        "2019_recovery:2019-01-02:2019-12-31:results/ncf_00631l_panel_backfill_2017_2019_20260710.csv:out_of_sample"
+    )
+    relative_reentry_windows = (
+        "covid_2020:2020-01-02:2020-12-31:results/ncf_00631l_panel_backfill_2020_20260716.csv:out_of_sample,"
+        "inflation_2022:2022-01-03:2022-12-30:results/ncf_00631l_panel_latest_20260707.csv:out_of_sample,"
+        f"live_2024_2026:2024-01-02:latest:{_result_path(f'ncf_00631l_panel_latest_{stamp}.csv')}:tuning_window,"
+        f"active_2025_2026:2025-01-02:latest:{_result_path(f'ncf_00631l_panel_latest_{stamp}.csv')}:tuning_window,"
         "2017_bull:2017-01-03:2017-12-29:results/ncf_00631l_panel_backfill_2017_2019_20260710.csv:out_of_sample,"
         "2018_correction:2018-01-02:2018-12-31:results/ncf_00631l_panel_backfill_2017_2019_20260710.csv:out_of_sample,"
         "2019_recovery:2019-01-02:2019-12-31:results/ncf_00631l_panel_backfill_2017_2019_20260710.csv:out_of_sample"
@@ -1418,6 +1601,117 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         "--log",
         str(PROJECT_ROOT / "results" / "a2118_dfl_shadow_ensemble_log.jsonl"),
     ]
+    commands["relative_reentry_opportunity_shadow"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_00631l_0050_relative_reentry_opportunity.py",
+        "--windows",
+        relative_reentry_windows,
+        "--actions",
+        "KEEP,SHIFT_00631L_2,SHIFT_00631L_5",
+        "--min-train-days",
+        "60",
+        "--edge-threshold",
+        "0.0005",
+        "--regret-clip",
+        "0.02",
+        "--selective-reliability",
+        "--reliability-max-error-percentile",
+        "0.7",
+        "--reliability-min-train-days",
+        "60",
+        "--slow-bear-gate",
+        "--slow-bear-drawdown-0050-60d-max",
+        "-0.08",
+        "--slow-bear-ret-0050-20d-max",
+        "0.0",
+        "--slow-bear-spread-00631l-0050-20d-max",
+        "0.0",
+        "--slow-bear-momentum-ret-0050-20d-max",
+        "-0.03",
+        "--risk-up-permission-gate",
+        "--risk-up-permission-min-probability",
+        "0.50",
+        "--risk-up-permission-action",
+        "SHIFT_00631L_5",
+        "--risk-up-permission-min-train-days",
+        "60",
+        "--output",
+        "results/00631l_0050_relative_reentry_opportunity_latest.json",
+        "--latest-output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_opportunity_shadow.json"),
+    ]
+    commands["relative_reentry_advisory_shadow"] = [
+        sys.executable,
+        "scripts/run/build_00631l_0050_relative_reentry_advisory_shadow.py",
+        "--input",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_opportunity_shadow.json"),
+        "--live-signal",
+        live_signal_path,
+        "--strategy-trust-log",
+        str(PROJECT_ROOT / "results" / "strategy_trust_shadow_log.jsonl"),
+        "--risk-mechanism-log",
+        str(PROJECT_ROOT / "results" / "risk_mechanism_shadow_log.jsonl"),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_advisory_shadow.json"),
+        "--output-md",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_advisory_shadow.md"),
+    ]
+    commands["relative_reentry_candidate_review"] = [
+        sys.executable,
+        "scripts/evaluate/build_00631l_0050_relative_reentry_candidate_review.py",
+        "--input",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_opportunity_shadow.json"),
+        "--advisory",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_advisory_shadow.json"),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_candidate_review.json"),
+        "--output-md",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_candidate_review.md"),
+    ]
+    commands["relative_reentry_promotion_gate"] = [
+        sys.executable,
+        "scripts/evaluate/build_00631l_0050_relative_reentry_promotion_gate.py",
+        "--advisory",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_advisory_shadow.json"),
+        "--review",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_candidate_review.json"),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_promotion_gate.json"),
+        "--output-md",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "relative_reentry_promotion_gate.md"),
+    ]
+    commands["ncf_decision_calibration_shadow"] = [
+        sys.executable,
+        "scripts/evaluate/evaluate_ncf_decision_calibration.py",
+        "--panel",
+        str(_result_path(f"ncf_00631l_panel_latest_{stamp}.csv")),
+        "--advisory",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "a2118_dfl_advisory.json"),
+        "--dfl-shadow",
+        dfl_advisory_input,
+        "--output",
+        str(_result_path(f"ncf_decision_calibration_shadow_{stamp}.json")),
+    ]
+    commands["daily_artifact_integrity"] = [
+        sys.executable,
+        "scripts/evaluate/build_group_a_plus_daily_artifact_integrity.py",
+        "--check-date",
+        stamp[:4] + "-" + stamp[4:6] + "-" + stamp[6:],
+        "--live-signal",
+        live_signal_path,
+        "--execution-plan",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "execution_plan.json"),
+        "--panel-refresh-recommendation",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "ncf_panel_refresh_recommendation.json"),
+        "--ncf-decision-calibration",
+        str(_result_path(f"ncf_decision_calibration_shadow_{stamp}.json")),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "daily_artifact_integrity.json"),
+        "--output-md",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "daily_artifact_integrity.md"),
+    ]
+    research_shadow_decision_snapshot = commands.pop("research_shadow_decision_snapshot")
+    commands["research_shadow_decision_snapshot"] = research_shadow_decision_snapshot
     commands["daily_status"] = [
         sys.executable,
         "scripts/misc/check_group_a_plus_daily_status.py",
@@ -1491,6 +1785,8 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         ),
         "--research-shadow-decision-snapshot",
         str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "research_shadow_decision_snapshot.json"),
+        "--daily-artifact-integrity",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "daily_artifact_integrity.json"),
         "--gift-signed-approval-checklist-review",
         str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "gift_signed_approval_checklist_review.json"),
         "--gift-signed-approval-validator-smoke",
@@ -1649,7 +1945,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--fail-on-ohlcv-warning", action="store_true")
     parser.add_argument("--train-start-00631l", default="2020-01-01")
     parser.add_argument("--train-start-00632r", default="2015-01-01")
+    parser.add_argument("--train-start-0050", default="2015-01-01")
     parser.add_argument("--train-start-2330", default="2015-01-01")
+    parser.add_argument("--skip-ncf-data-validation", action="store_true")
+    parser.add_argument("--ncf-max-ohlcv-gap-days", type=int, default=14)
     parser.add_argument(
         "--ncf-2330-feature-mode",
         choices=["pre_open", "after_close"],
@@ -1821,10 +2120,14 @@ def main() -> None:
             {
                 "ncf_00631l": str(_result_path(f"ncf_00631l_latest_{args.date_stamp}.json")),
                 "ncf_00632r": str(_result_path(f"ncf_00632r_latest_{args.date_stamp}.json")),
+                "ncf_0050": str(_result_path(f"ncf_0050_latest_{args.date_stamp}.json")),
                 "panel_00631l": str(_result_path(f"ncf_00631l_panel_latest_{args.date_stamp}.csv")),
                 "panel_00632r": str(_result_path(f"ncf_00632r_panel_latest_{args.date_stamp}.csv")),
+                "panel_0050": str(_result_path(f"ncf_0050_panel_latest_{args.date_stamp}.csv")),
                 "panel_2330": str(_result_path(f"ncf_2330_panel_latest_{args.date_stamp}.csv")),
                 "ncf_panel_manifest": str(_result_path(f"ncf_panel_manifest_{args.date_stamp}.json")),
+                "ncf_0050_threshold_eval": str(_result_path(f"ncf_0050_threshold_eval_{args.date_stamp}.json")),
+                "ncf_0050_threshold_eval_md": str(_result_path(f"ncf_0050_threshold_eval_{args.date_stamp}.md")),
                 "ncf_panel_drift": str(_result_path(f"ncf_panel_drift_active_vs_{args.date_stamp}.json")),
                 "ncf_panel_drift_csv": str(_result_path(f"ncf_panel_drift_active_vs_{args.date_stamp}.csv")),
                 "panel_drift_triage": str(
@@ -1846,6 +2149,9 @@ def main() -> None:
                 "live_signal": live_signal_output,
                 "compounding_regime": str(_result_path(f"00631l_leveraged_compounding_regime_{args.date_stamp}.json")),
                 "compounding_regime_csv": str(_result_path(f"00631l_leveraged_compounding_regime_{args.date_stamp}.csv")),
+                "gjr_garch_shadow": str(
+                    PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "gjr_garch_shadow.json"
+                ),
                 "daily_status": str(_result_path(f"group_a_plus_daily_status_{args.date_stamp}.json")),
                 "daily_status_pointer": str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "daily_status.json"),
                 "securities_lending_0050_source_status": str(
@@ -1896,6 +2202,7 @@ def main() -> None:
         summary["signals"] = {
             "00631L": _signal_summary(_result_path(f"ncf_00631l_latest_{args.date_stamp}.json")),
             "00632R": _signal_summary(_result_path(f"ncf_00632r_latest_{args.date_stamp}.json")),
+            "0050": _signal_summary(_result_path(f"ncf_0050_latest_{args.date_stamp}.json")),
         }
     manifest_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
@@ -1919,6 +2226,13 @@ def main() -> None:
         env_health = build_strategy_env_health()
         DEFAULT_OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
         DEFAULT_OUTPUT_PATH.write_text(json.dumps(env_health, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        canonical_env_path = write_json_report(
+            output_path("strategy_env_health", kind="pipeline", run_mode="production", latest=True),
+            artifact_name="strategy_env_health",
+            kind="pipeline",
+            run_mode="production",
+            payload=env_health,
+        )
         print(
             "  "
             f"status={env_health.get('status')} "
@@ -1926,6 +2240,7 @@ def main() -> None:
             f"warnings={len(env_health.get('warnings', []))}"
         )
         print("  Saved → report/group_a_plus/latest/strategy_env_health.json")
+        print(f"  Canonical → {canonical_env_path.relative_to(PROJECT_ROOT)}")
     except Exception as exc:  # noqa: BLE001
         print(f"  [WARNING] Environment health check failed (non-fatal): {exc}")
 
@@ -1936,6 +2251,13 @@ def main() -> None:
         ops_health = build_ops_health()
         DEFAULT_OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
         DEFAULT_OUTPUT_PATH.write_text(json.dumps(ops_health, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        canonical_ops_path = write_json_report(
+            output_path("ops_health", kind="pipeline", run_mode="production", latest=True),
+            artifact_name="ops_health",
+            kind="pipeline",
+            run_mode="production",
+            payload=ops_health,
+        )
         print(
             "  "
             f"status={ops_health.get('status')} "
@@ -1943,6 +2265,7 @@ def main() -> None:
             f"warnings={len(ops_health.get('warnings', []))}"
         )
         print("  Saved → report/group_a_plus/latest/ops_health.json")
+        print(f"  Canonical → {canonical_ops_path.relative_to(PROJECT_ROOT)}")
     except Exception as exc:  # noqa: BLE001
         print(f"  [WARNING] Ops health check failed (non-fatal): {exc}")
 
@@ -2071,6 +2394,110 @@ def main() -> None:
         print("  Saved → report/group_a_plus/latest/crash_risk_alert.json")
     except Exception as exc:  # noqa: BLE001
         print(f"  [WARNING] Crash-risk alert build failed (non-fatal): {exc}")
+
+    # 2026-08-01 user proposal: split "fast crash" from "persistent
+    # drawdown" risk mechanisms instead of letting total_risk_score alone
+    # (already flagged as fragile near its threshold, see the 2026-07-26 SPO
+    # robustness checklist) stand in for both. Diagnostic/event-attribution
+    # only -- see group_a_plus/integrations/risk_mechanism_classifier.py's
+    # docstring for the arbitration policy (never feeds target_weights).
+    # Reuses market_state (just written by the daily_signal step above) and
+    # crash_risk_alert (just written above) rather than recomputing
+    # overnight/skew/margin features.
+    print("\n[risk-mechanism-classifier]")
+    try:
+        from group_a_plus.integrations.risk_mechanism_classifier import (
+            append_risk_mechanism_shadow_log,
+            classify_risk_mechanism,
+            load_market_state_history_before,
+        )
+
+        live_signal_path = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "live_signal.json"
+        live_signal_envelope = json.loads(live_signal_path.read_text(encoding="utf-8-sig"))
+        # daily_signal.py writes through OutputStandardizer, so the actual
+        # frame is nested under "data" (envelope: success/data/metadata/error).
+        live_signal_payload = live_signal_envelope.get("data") or {}
+        market_state_today = live_signal_payload.get("market_state") or {}
+        as_of_date = str(live_signal_payload.get("actual_data_date") or "")
+
+        crash_alert_path = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "crash_risk_alert.json"
+        crash_alert_today = None
+        if crash_alert_path.exists():
+            crash_alert_payload = json.loads(crash_alert_path.read_text(encoding="utf-8-sig"))
+            # Only trust this as today's evidence if its as_of matches
+            # today's live_signal actual_data_date -- a stale (e.g.
+            # yesterday's, if the crash-risk-alert step above failed) file
+            # must not be read as if it were fresh. Same staleness-masking
+            # bug class already fixed in ops_health/panel-drift elsewhere.
+            if crash_alert_payload.get("as_of") == as_of_date:
+                crash_alert_today = crash_alert_payload
+
+        market_state_log = RESULTS_DIR / "market_state_shadow_log.jsonl"
+        history = load_market_state_history_before(market_state_log, as_of_date) if as_of_date else []
+
+        risk_mechanism = classify_risk_mechanism(market_state_today, crash_alert_today, history)
+        if as_of_date:
+            append_risk_mechanism_shadow_log(
+                RESULTS_DIR / "risk_mechanism_shadow_log.jsonl", risk_mechanism, date=as_of_date
+            )
+        risk_mechanism_output = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "risk_mechanism.json"
+        risk_mechanism_output.parent.mkdir(parents=True, exist_ok=True)
+        risk_mechanism_output.write_text(
+            json.dumps({"as_of": as_of_date, **risk_mechanism}, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        print(f"  as_of={as_of_date} mechanism={risk_mechanism['mechanism']}")
+        print("  Saved → report/group_a_plus/latest/risk_mechanism.json")
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [WARNING] Risk mechanism classifier failed (non-fatal): {exc}")
+
+    # 2026-08-02 user proposal ("strategy trust gate"): diagnostic-only,
+    # shadow-logging composition of risk_mechanism (above), signal_alignment,
+    # and ops_health's data-quality sub-statuses into a coarse
+    # TRUST/SHADOW_ONLY/ABSTAIN label. See
+    # group_a_plus/integrations/strategy_trust_gate.py's docstring for why
+    # this deliberately does NOT implement the user's full 7-input
+    # calibration/RankIC/action-value score (each of those inputs has a
+    # documented OOS-failure or noise history in this codebase). Same
+    # arbitration policy as risk_mechanism_classifier.py: never feeds
+    # target_weights/execution_regime until an out-of-sample evaluation via
+    # scripts/evaluate/evaluate_model_trust_gate.py exists and passes.
+    print("\n[strategy-trust-gate]")
+    try:
+        from group_a_plus.integrations.strategy_trust_gate import (
+            append_strategy_trust_shadow_log,
+            classify_strategy_trust,
+        )
+
+        signal_alignment_path = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "signal_alignment.json"
+        signal_alignment_today: dict[str, Any] = {}
+        if signal_alignment_path.exists():
+            signal_alignment_payload = json.loads(signal_alignment_path.read_text(encoding="utf-8-sig"))
+            # Same staleness-masking guard as crash_alert above: only trust
+            # this as today's evidence if its signal_date matches today.
+            if signal_alignment_payload.get("signal_date") == as_of_date:
+                signal_alignment_today = signal_alignment_payload
+
+        ops_health_path = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "ops_health.json"
+        ops_health_today: dict[str, Any] | None = None
+        if ops_health_path.exists():
+            ops_health_today = json.loads(ops_health_path.read_text(encoding="utf-8-sig"))
+
+        strategy_trust = classify_strategy_trust(risk_mechanism, signal_alignment_today, ops_health_today)
+        if as_of_date:
+            append_strategy_trust_shadow_log(
+                RESULTS_DIR / "strategy_trust_shadow_log.jsonl", strategy_trust, date=as_of_date
+            )
+        strategy_trust_output = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "strategy_trust.json"
+        strategy_trust_output.parent.mkdir(parents=True, exist_ok=True)
+        strategy_trust_output.write_text(
+            json.dumps({"as_of": as_of_date, **strategy_trust}, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        print(f"  as_of={as_of_date} trust_level={strategy_trust['trust_level']}")
+        print("  Saved → report/group_a_plus/latest/strategy_trust.json")
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [WARNING] Strategy trust gate failed (non-fatal): {exc}")
 
     # Fable audit (2026-07-16, combination opportunities #8): signal_alignment's
     # production sources have never included trough_nowcast, compounding_regime,

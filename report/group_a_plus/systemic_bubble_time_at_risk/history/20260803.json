@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_systemic_bubble_time_at_risk_review",
+  "generated_at": "2026-08-04T03:32:54",
+  "policy": "research_only_systemic_bubble_time_at_risk_no_weight_change",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/1212.2833.pdf",
+    "title": "The Illusion of the Perpetual Money Machine",
+    "imported_concepts": [
+      "time_at_risk",
+      "ETF_coupling_network_fragility",
+      "market_reflexivity_proxy",
+      "scenario_discipline_and_ex_post_review"
+    ],
+    "not_imported": [
+      "LPPL_live_trading_signal",
+      "macro_debt_market_timing",
+      "commodity_or_real_asset_allocation_change",
+      "automatic_target_weight_change"
+    ]
+  },
+  "input_window": {
+    "start": "2015-01-06",
+    "end": "2026-08-03",
+    "rows": 2815,
+    "tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "2330.TW"
+    ]
+  },
+  "latest": {
+    "date": "2026-08-03",
+    "00631l_vol20_ann": 1.007805306104785,
+    "00631l_vol20_percentile_252d": 1.0,
+    "00631l_vol20_vs_vol60_ratio": 1.2998099665229161,
+    "0050_return_60d": 0.05154639175257736,
+    "0050_ma120_gap": 0.11576011405914599,
+    "time_at_risk_days_60": 44,
+    "0050_00631l_corr_60d": 0.987310649287163,
+    "0050_00632r_corr_60d": -0.9827460741949282,
+    "2330_0050_corr_60d": 0.9017050837742865,
+    "etf_coupling_score": 0.9572539357522407,
+    "etf_coupling_percentile_252d": 0.7261904761904762,
+    "00631l_volume_z_60d": 0.05367040733000169,
+    "00631l_abs_return_z_60d": -0.051750253343743086,
+    "reflexivity_proxy_score": 0.33455680244333386,
+    "reflexivity_proxy_percentile_252d": 0.39285714285714285
+  },
+  "states": {
+    "time_at_risk_state": "elevated",
+    "etf_coupling_state": "watch",
+    "reflexivity_proxy_state": "normal",
+    "systemic_score": 1,
+    "overall_state": "research_watch"
+  },
+  "decision": {
+    "summary": "Import 1212.2833 as systemic-risk governance only. This diagnostic can support manual review and 00631L add-blocking evidence, but it never unlocks execution or changes target weights.",
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

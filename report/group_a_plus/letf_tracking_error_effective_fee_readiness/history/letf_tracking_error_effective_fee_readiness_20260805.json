@@ -1,0 +1,619 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_letf_tracking_error_effective_fee_readiness_review",
+  "generated_at": "2026-08-05T16:29:27",
+  "as_of": "2026-08-05",
+  "actual_data_end": "2026-08-05",
+  "source_paper": {
+    "path": "C:/Users/isaac/Downloads/1610.09404.pdf",
+    "title": "Understanding the Tracking Errors of Commodity Leveraged ETFs",
+    "imported_concept": "holding-horizon tracking error, realized-variance decay, realized effective-fee proxy"
+  },
+  "policy": "research_only_letf_tracking_error_effective_fee_no_pair_trade_no_weight_change",
+  "status": "blocked",
+  "data": {
+    "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "start": "2020-01-01",
+    "reference_ticker": "0050.TW",
+    "available_tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "required_tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "horizons": [
+      1,
+      5,
+      10,
+      20,
+      30
+    ]
+  },
+  "tracking_error_summary": {
+    "00631L.TW": {
+      "expected_daily_beta": 2.0,
+      "horizon_metrics": {
+        "1": {
+          "horizon_days": 1,
+          "tracking_error": {
+            "count": 1599,
+            "mean": -0.00016841871015745813,
+            "std": 0.007623661461502502,
+            "p05": -0.011383699451487652,
+            "p50": -0.00010700949660852332,
+            "p95": 0.010113172985883784,
+            "latest": -0.0012835332186125967
+          },
+          "effective_drag_proxy": {
+            "count": 1599,
+            "mean": 4.5076429792792474e-05,
+            "std": 0.007527068776288303,
+            "p05": -0.010583067296521765,
+            "p50": 3.2777285186245063e-05,
+            "p95": 0.010169565625610666,
+            "latest": -0.0003338560294825193
+          },
+          "realized_variance": {
+            "count": 1599,
+            "mean": 0.0002134951399502507,
+            "std": 0.0006240168587163415,
+            "p05": 1.5601396787769024e-07,
+            "p50": 5.3098786146310666e-05,
+            "p95": 0.0008818145078032298,
+            "latest": 0.0009496771891300774
+          },
+          "variance_decay_proxy": {
+            "count": 1599,
+            "mean": -0.0002134951399502507,
+            "std": 0.0006240168587163415,
+            "p05": -0.0008818145078032308,
+            "p50": -5.3098786146310666e-05,
+            "p95": -1.560139678776904e-07,
+            "latest": -0.0009496771891300774
+          },
+          "negative_tracking_error_rate": 0.5071919949968731,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.0014949653354326845,
+            "p05_tracking_error": -0.018820977323584814,
+            "mean_effective_drag_proxy": -0.0008823584124059379
+          }
+        },
+        "5": {
+          "horizon_days": 5,
+          "tracking_error": {
+            "count": 1595,
+            "mean": -0.0008242889652575645,
+            "std": 0.015912353678778326,
+            "p05": -0.026835345443447813,
+            "p50": -0.00020613048142033297,
+            "p95": 0.02179372574291489,
+            "latest": -0.024929245508894082
+          },
+          "effective_drag_proxy": {
+            "count": 1595,
+            "mean": 0.000237028400766869,
+            "std": 0.015429024284522983,
+            "p05": -0.02461045866617763,
+            "p50": 0.0004464014948412315,
+            "p95": 0.022681103035894424,
+            "latest": -0.014644585773816582
+          },
+          "realized_variance": {
+            "count": 1595,
+            "mean": 0.0010613173660244332,
+            "std": 0.0018556186174611227,
+            "p05": 0.00011923817383593551,
+            "p50": 0.0005657466720874966,
+            "p95": 0.0031898109995553915,
+            "latest": 0.0102846597350775
+          },
+          "variance_decay_proxy": {
+            "count": 1595,
+            "mean": -0.0010613173660244332,
+            "std": 0.0018556186174611227,
+            "p05": -0.0031898109995553963,
+            "p50": -0.0005657466720874966,
+            "p95": -0.00011923817383593554,
+            "latest": -0.0102846597350775
+          },
+          "negative_tracking_error_rate": 0.509717868338558,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.007165105931732936,
+            "p05_tracking_error": -0.024948150029366033,
+            "mean_effective_drag_proxy": -0.004319386441669392
+          }
+        },
+        "10": {
+          "horizon_days": 10,
+          "tracking_error": {
+            "count": 1590,
+            "mean": -0.0015841139509913868,
+            "std": 0.021927240278180753,
+            "p05": -0.041692245354884534,
+            "p50": -4.426849715400728e-05,
+            "p95": 0.031234626725002886,
+            "latest": -0.017891663164687273
+          },
+          "effective_drag_proxy": {
+            "count": 1590,
+            "mean": 0.0005131566040853183,
+            "std": 0.02119269400685538,
+            "p05": -0.035844404231148874,
+            "p50": 0.0013991726519558528,
+            "p95": 0.032891266301297094,
+            "latest": -0.0039595377059414676
+          },
+          "realized_variance": {
+            "count": 1590,
+            "mean": 0.0020972705550767056,
+            "std": 0.0029135063828720953,
+            "p05": 0.00036677027396182343,
+            "p50": 0.0012345719254082945,
+            "p95": 0.005599154089167187,
+            "latest": 0.013932125458745805
+          },
+          "variance_decay_proxy": {
+            "count": 1590,
+            "mean": -0.0020972705550767056,
+            "std": 0.0029135063828720953,
+            "p05": -0.005599154089167188,
+            "p50": -0.0012345719254082945,
+            "p95": -0.0003667702739618241,
+            "latest": -0.013932125458745805
+          },
+          "negative_tracking_error_rate": 0.5,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.012864835306991734,
+            "p05_tracking_error": -0.030111761402609693,
+            "mean_effective_drag_proxy": -0.00784993007711394
+          }
+        },
+        "20": {
+          "horizon_days": 20,
+          "tracking_error": {
+            "count": 1580,
+            "mean": -0.0033113371824430014,
+            "std": 0.03037603588270156,
+            "p05": -0.05602995554909639,
+            "p50": -0.0012021686199365118,
+            "p95": 0.04759253608286038,
+            "latest": -0.04104248948202266
+          },
+          "effective_drag_proxy": {
+            "count": 1580,
+            "mean": 0.0008269491473426547,
+            "std": 0.02923687406676895,
+            "p05": -0.04897517108814197,
+            "p50": 0.0019600489729683142,
+            "p95": 0.05138177986215367,
+            "latest": -0.021546098101493584
+          },
+          "realized_variance": {
+            "count": 1580,
+            "mean": 0.004138286329785654,
+            "std": 0.004466187354219572,
+            "p05": 0.0009942345784358572,
+            "p50": 0.002786616930466216,
+            "p95": 0.010411369887640012,
+            "latest": 0.019496391380529075
+          },
+          "variance_decay_proxy": {
+            "count": 1580,
+            "mean": -0.004138286329785654,
+            "std": 0.004466187354219572,
+            "p05": -0.010411369887640014,
+            "p50": -0.002786616930466216,
+            "p95": -0.0009942345784358575,
+            "latest": -0.019496391380529075
+          },
+          "negative_tracking_error_rate": 0.5158227848101266,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.028058524095722067,
+            "p05_tracking_error": -0.05160789645081092,
+            "mean_effective_drag_proxy": -0.018910979626372892
+          }
+        },
+        "30": {
+          "horizon_days": 30,
+          "tracking_error": {
+            "count": 1570,
+            "mean": -0.005127147888962812,
+            "std": 0.03765022943622467,
+            "p05": -0.06748198256603492,
+            "p50": -0.002492898114275003,
+            "p95": 0.058796787569692824,
+            "latest": -0.04539915525307657
+          },
+          "effective_drag_proxy": {
+            "count": 1570,
+            "mean": 0.001045721854209527,
+            "std": 0.03615862176551097,
+            "p05": -0.056994769643371246,
+            "p50": 0.0026148355552116096,
+            "p95": 0.0638983321760496,
+            "latest": -0.02260113361407504
+          },
+          "realized_variance": {
+            "count": 1570,
+            "mean": 0.006172869743172341,
+            "std": 0.0057320245393586555,
+            "p05": 0.001677136754353294,
+            "p50": 0.004382797312769743,
+            "p95": 0.022398797633300018,
+            "latest": 0.02279802163900153
+          },
+          "variance_decay_proxy": {
+            "count": 1570,
+            "mean": -0.006172869743172341,
+            "std": 0.0057320245393586555,
+            "p05": -0.022398797633300018,
+            "p50": -0.004382797312769743,
+            "p95": -0.0016771367543532943,
+            "latest": -0.02279802163900153
+          },
+          "negative_tracking_error_rate": 0.5261146496815287,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.044533877461873615,
+            "p05_tracking_error": -0.06908651385744032,
+            "mean_effective_drag_proxy": -0.0309737370041859
+          }
+        }
+      }
+    },
+    "00632R.TW": {
+      "expected_daily_beta": -1.0,
+      "horizon_metrics": {
+        "1": {
+          "horizon_days": 1,
+          "tracking_error": {
+            "count": 1599,
+            "mean": 0.0009280513403796769,
+            "std": 0.04888574789594269,
+            "p05": -0.006147816450826573,
+            "p50": -0.00031291760263576184,
+            "p95": 0.005924092452024517,
+            "latest": -0.0007194564800581359
+          },
+          "effective_drag_proxy": {
+            "count": 1599,
+            "mean": 0.0011415464803299278,
+            "std": 0.04889603822939376,
+            "p05": -0.005890091350690208,
+            "p50": -0.00013740169146996136,
+            "p95": 0.006395111998071251,
+            "latest": 0.00023022070907194152
+          },
+          "realized_variance": {
+            "count": 1599,
+            "mean": 0.0002134951399502507,
+            "std": 0.0006240168587163415,
+            "p05": 1.5601396787769024e-07,
+            "p50": 5.3098786146310666e-05,
+            "p95": 0.0008818145078032298,
+            "latest": 0.0009496771891300774
+          },
+          "variance_decay_proxy": {
+            "count": 1599,
+            "mean": -0.0002134951399502507,
+            "std": 0.0006240168587163415,
+            "p05": -0.0008818145078032308,
+            "p50": -5.3098786146310666e-05,
+            "p95": -1.560139678776904e-07,
+            "latest": -0.0009496771891300774
+          },
+          "negative_tracking_error_rate": 0.5359599749843652,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.0002559950116541821,
+            "p05_tracking_error": -0.006186966843791886,
+            "mean_effective_drag_proxy": 0.0003566119113725643
+          }
+        },
+        "5": {
+          "horizon_days": 5,
+          "tracking_error": {
+            "count": 1595,
+            "mean": 0.004664259152396814,
+            "std": 0.10974946735655564,
+            "p05": -0.01383191554633376,
+            "p50": -0.0014849533830409867,
+            "p95": 0.01123553097966606,
+            "latest": -0.0017297472954947296
+          },
+          "effective_drag_proxy": {
+            "count": 1595,
+            "mean": 0.005725576518421248,
+            "std": 0.1097364663779002,
+            "p05": -0.01252497385822389,
+            "p50": -0.0007027573639048009,
+            "p95": 0.012624600898233756,
+            "latest": 0.00855491243958277
+          },
+          "realized_variance": {
+            "count": 1595,
+            "mean": 0.0010613173660244332,
+            "std": 0.0018556186174611227,
+            "p05": 0.00011923817383593551,
+            "p50": 0.0005657466720874966,
+            "p95": 0.0031898109995553915,
+            "latest": 0.0102846597350775
+          },
+          "variance_decay_proxy": {
+            "count": 1595,
+            "mean": -0.0010613173660244332,
+            "std": 0.0018556186174611227,
+            "p05": -0.0031898109995553963,
+            "p50": -0.0005657466720874966,
+            "p95": -0.00011923817383593554,
+            "latest": -0.0102846597350775
+          },
+          "negative_tracking_error_rate": 0.5862068965517241,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.0007975464374476401,
+            "p05_tracking_error": -0.0100523843146259,
+            "mean_effective_drag_proxy": 0.0020481730526159055
+          }
+        },
+        "10": {
+          "horizon_days": 10,
+          "tracking_error": {
+            "count": 1590,
+            "mean": 0.00935291025000302,
+            "std": 0.15521862456661994,
+            "p05": -0.021064306612752107,
+            "p50": -0.0031433893971196136,
+            "p95": 0.01694999611035571,
+            "latest": -0.00918145989803816
+          },
+          "effective_drag_proxy": {
+            "count": 1590,
+            "mean": 0.01145018080507973,
+            "std": 0.15514278320945332,
+            "p05": -0.01804244904432236,
+            "p50": -0.0012850422261543207,
+            "p95": 0.01978510385851539,
+            "latest": 0.004750665560707645
+          },
+          "realized_variance": {
+            "count": 1590,
+            "mean": 0.0020972705550767056,
+            "std": 0.0029135063828720953,
+            "p05": 0.00036677027396182343,
+            "p50": 0.0012345719254082945,
+            "p95": 0.005599154089167187,
+            "latest": 0.013932125458745805
+          },
+          "variance_decay_proxy": {
+            "count": 1590,
+            "mean": -0.0020972705550767056,
+            "std": 0.0029135063828720953,
+            "p05": -0.005599154089167188,
+            "p50": -0.0012345719254082945,
+            "p95": -0.0003667702739618241,
+            "latest": -0.013932125458745805
+          },
+          "negative_tracking_error_rate": 0.630188679245283,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.0016085907086720813,
+            "p05_tracking_error": -0.010153776549832372,
+            "mean_effective_drag_proxy": 0.003406314521205712
+          }
+        },
+        "20": {
+          "horizon_days": 20,
+          "tracking_error": {
+            "count": 1580,
+            "mean": 0.019011486372007922,
+            "std": 0.21982403906092607,
+            "p05": -0.03277525480411497,
+            "p50": -0.005456979375412622,
+            "p95": 0.022519966492852764,
+            "latest": -0.007759223033437828
+          },
+          "effective_drag_proxy": {
+            "count": 1580,
+            "mean": 0.02314977270179358,
+            "std": 0.2195990215181169,
+            "p05": -0.027847013976020563,
+            "p50": -0.0019298263991465623,
+            "p95": 0.027318479301726133,
+            "latest": 0.011737168347091247
+          },
+          "realized_variance": {
+            "count": 1580,
+            "mean": 0.004138286329785654,
+            "std": 0.004466187354219572,
+            "p05": 0.0009942345784358572,
+            "p50": 0.002786616930466216,
+            "p95": 0.010411369887640012,
+            "latest": 0.019496391380529075
+          },
+          "variance_decay_proxy": {
+            "count": 1580,
+            "mean": -0.004138286329785654,
+            "std": 0.004466187354219572,
+            "p05": -0.010411369887640014,
+            "p50": -0.002786616930466216,
+            "p95": -0.0009942345784358575,
+            "latest": -0.019496391380529075
+          },
+          "negative_tracking_error_rate": 0.6613924050632911,
+          "recent_60_observations": {
+            "mean_tracking_error": -0.0006014716406152678,
+            "p05_tracking_error": -0.010997205402799028,
+            "mean_effective_drag_proxy": 0.00854607282873391
+          }
+        },
+        "30": {
+          "horizon_days": 30,
+          "tracking_error": {
+            "count": 1570,
+            "mean": 0.028863850024414002,
+            "std": 0.2698888334985216,
+            "p05": -0.04187945581538267,
+            "p50": -0.007909186866105587,
+            "p95": 0.027967142224793434,
+            "latest": -0.006196932738566908
+          },
+          "effective_drag_proxy": {
+            "count": 1570,
+            "mean": 0.03503671976758635,
+            "std": 0.2695005887081134,
+            "p05": -0.03483921298235795,
+            "p50": -0.0027941399088166692,
+            "p95": 0.03281517656338422,
+            "latest": 0.016601088900434623
+          },
+          "realized_variance": {
+            "count": 1570,
+            "mean": 0.006172869743172341,
+            "std": 0.0057320245393586555,
+            "p05": 0.001677136754353294,
+            "p50": 0.004382797312769743,
+            "p95": 0.022398797633300018,
+            "latest": 0.02279802163900153
+          },
+          "variance_decay_proxy": {
+            "count": 1570,
+            "mean": -0.006172869743172341,
+            "std": 0.0057320245393586555,
+            "p05": -0.022398797633300018,
+            "p50": -0.004382797312769743,
+            "p95": -0.0016771367543532943,
+            "latest": -0.02279802163900153
+          },
+          "negative_tracking_error_rate": 0.6675159235668789,
+          "recent_60_observations": {
+            "mean_tracking_error": 0.0004737044099180066,
+            "p05_tracking_error": -0.0119012074212663,
+            "mean_effective_drag_proxy": 0.01403384486760572
+          }
+        }
+      }
+    }
+  },
+  "hedge_neutrality": {
+    "00632R.TW": {
+      "status": "review_only",
+      "lookback_days": 60,
+      "realized_beta": -0.9914820020673626,
+      "expected_beta": -1.0,
+      "beta_error": 0.008517997932637411,
+      "absolute_beta_error": 0.008517997932637411,
+      "correlation": -0.9820004745435117
+    }
+  },
+  "parameter_threshold_review": {
+    "policy": "manual_review_thresholds_only_no_live_unlock",
+    "thresholds": {
+      "00631l_30d_mean_tracking_error_floor": -0.003,
+      "00631l_30d_latest_tracking_error_floor": -0.02,
+      "00631l_30d_p05_tracking_error_floor": -0.05,
+      "00631l_30d_latest_realized_variance_ceiling": 0.01,
+      "00632r_60d_abs_beta_error_ceiling": 0.1,
+      "00632r_60d_correlation_ceiling": -0.95,
+      "00632r_30d_p05_tracking_error_floor": -0.03,
+      "minimum_30d_observations": 500
+    },
+    "checks": {
+      "00631l_30d_mean_tracking_error_floor": {
+        "value": -0.005127147888962812,
+        "threshold": -0.003,
+        "passed": false
+      },
+      "00631l_30d_latest_tracking_error_floor": {
+        "value": -0.04539915525307657,
+        "threshold": -0.02,
+        "passed": false
+      },
+      "00631l_30d_p05_tracking_error_floor": {
+        "value": -0.06748198256603492,
+        "threshold": -0.05,
+        "passed": false
+      },
+      "00631l_30d_latest_realized_variance_ceiling": {
+        "value": 0.02279802163900153,
+        "threshold": 0.01,
+        "passed": false
+      },
+      "00631l_minimum_30d_observations": {
+        "value": 1570.0,
+        "threshold": 500,
+        "passed": true
+      },
+      "00632r_60d_abs_beta_error_ceiling": {
+        "value": 0.008517997932637411,
+        "threshold": 0.1,
+        "passed": true
+      },
+      "00632r_60d_correlation_ceiling": {
+        "value": -0.9820004745435117,
+        "threshold": -0.95,
+        "passed": true
+      },
+      "00632r_30d_p05_tracking_error_floor": {
+        "value": -0.04187945581538267,
+        "threshold": -0.03,
+        "passed": false
+      },
+      "00632r_minimum_30d_observations": {
+        "value": 1570.0,
+        "threshold": 500,
+        "passed": true
+      },
+      "effective_fee_proxy_independently_validated": {
+        "value": false,
+        "threshold": true,
+        "passed": false
+      },
+      "live_hedge_policy_validated": {
+        "value": false,
+        "threshold": true,
+        "passed": false
+      }
+    },
+    "failed_checks": [
+      "00631l_30d_mean_tracking_error_floor",
+      "00631l_30d_latest_tracking_error_floor",
+      "00631l_30d_p05_tracking_error_floor",
+      "00631l_30d_latest_realized_variance_ceiling",
+      "00632r_30d_p05_tracking_error_floor",
+      "effective_fee_proxy_independently_validated",
+      "live_hedge_policy_validated"
+    ],
+    "all_thresholds_passed": false,
+    "can_consider_00631l_add_after_manual_review": false,
+    "can_consider_00632r_open_after_manual_review": false,
+    "notes": [
+      "Thresholds are deliberately conservative and advisory-only.",
+      "Passing these thresholds would only permit manual review, not automatic orders.",
+      "Effective-fee proxy and live hedge policy remain hard validation requirements."
+    ]
+  },
+  "blocking_reasons": [
+    "00631l_tw_mean_30d_tracking_error_drag_present",
+    "00632r_hedge_neutrality_not_promoted",
+    "intervention_fatigue_risk_budget_readiness_blocked",
+    "letf_pair_strategy_not_imported",
+    "realized_effective_fee_proxy_not_validated",
+    "research_only_letf_tracking_error_review"
+  ],
+  "decision": {
+    "tracking_error_readiness_ready": false,
+    "realized_effective_fee_proxy_ready": false,
+    "hedge_neutrality_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "letf_pair_trade_allowed": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "intervention_fatigue_risk_budget_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/intervention_fatigue_risk_budget_readiness_review.json"
+  }
+}

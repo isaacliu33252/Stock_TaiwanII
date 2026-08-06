@@ -1,0 +1,21 @@
+{
+  "as_of": "2026-08-05",
+  "mechanism": "FAST_CRASH",
+  "reasons": [
+    "market_state.state=choppy_range_low_risk",
+    "market_state.bucket=choppy_range",
+    "crash_risk_alert 2-of-3 stress score=3 active_families=['cross_market_shock', 'liquidity_forced_selling', 'options_tail']"
+  ],
+  "components": {
+    "market_state_state": "choppy_range_low_risk",
+    "market_state_bucket": "choppy_range",
+    "market_state_crash": false,
+    "crash_alert_available": true,
+    "crash_alert_active": true,
+    "crash_alert_category_score": 3,
+    "persistent_drawdown_days": 0,
+    "prior_drawdown_streak_days": 0,
+    "persistent_min_days": 5,
+    "persistent_drawdown_confirmed": false
+  }
+}

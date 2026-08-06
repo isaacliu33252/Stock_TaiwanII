@@ -5,7 +5,7 @@ from pathlib import Path
 import duckdb
 import pandas as pd
 
-from ncf_data_quality import ncf_data_freshness
+from ncf_data_quality import ncf_data_freshness, validate_ncf_training_data
 from scripts.misc.ncf_00631l import reconcile_latest_panel_row
 
 
@@ -139,6 +139,62 @@ def test_ncf_data_freshness_flags_missing_source(tmp_path: Path) -> None:
 
     assert result["status"] == "degraded_missing"
     assert "institutional" in result["missing_sources"]
+
+
+def test_validate_ncf_training_data_blocks_schema_and_ohlcv_gaps(tmp_path: Path) -> None:
+    db = tmp_path / "test.duckdb"
+    con = duckdb.connect(str(db))
+    con.execute("CREATE TABLE ohlcv (ticker TEXT, dt DATE)")
+    # Missing required ticker column.
+    con.execute("CREATE TABLE institutional_data (dt DATE)")
+    con.execute("CREATE TABLE margin_data (ticker TEXT, dt DATE)")
+    con.execute("CREATE TABLE market_margin_data (dt DATE)")
+    con.execute("CREATE TABLE taifex_futures_daily (contract TEXT, dt DATE)")
+    con.execute("CREATE TABLE taifex_futures_institutional (contract_code TEXT, dt DATE)")
+    con.execute("CREATE TABLE shareholding_distribution (stock_id TEXT, dt DATE)")
+    con.execute("CREATE TABLE external_market_ohlcv (provider TEXT, ticker TEXT, dt DATE)")
+    con.execute("INSERT INTO ohlcv VALUES ('00631L.TW', '2026-07-01')")
+    con.execute("INSERT INTO ohlcv VALUES ('00631L.TW', '2026-07-25')")
+    con.close()
+
+    result = validate_ncf_training_data(
+        db,
+        tickers=["00631L.TW"],
+        max_ohlcv_gap_days=14,
+    )
+
+    assert result["status"] == "failed"
+    assert result["missing_columns"] == {"institutional_data": ["ticker"]}
+    assert "ohlcv_calendar_gap:00631L.TW" in result["blocking_reasons"]
+    assert result["ticker_reports"]["00631L.TW"]["ohlcv_gaps"]["gaps"] == [
+        {"from": "2026-07-01", "to": "2026-07-25", "calendar_days": 24}
+    ]
+
+
+def test_validate_ncf_training_data_passes_clean_minimal_schema(tmp_path: Path) -> None:
+    db = tmp_path / "test.duckdb"
+    con = duckdb.connect(str(db))
+    con.execute("CREATE TABLE ohlcv (ticker TEXT, dt DATE)")
+    con.execute("CREATE TABLE institutional_data (ticker TEXT, dt DATE)")
+    con.execute("CREATE TABLE margin_data (ticker TEXT, dt DATE)")
+    con.execute("CREATE TABLE market_margin_data (dt DATE)")
+    con.execute("CREATE TABLE taifex_futures_daily (contract TEXT, dt DATE)")
+    con.execute("CREATE TABLE taifex_futures_institutional (contract_code TEXT, dt DATE)")
+    con.execute("CREATE TABLE shareholding_distribution (stock_id TEXT, dt DATE)")
+    con.execute("CREATE TABLE external_market_ohlcv (provider TEXT, ticker TEXT, dt DATE)")
+    con.execute("INSERT INTO ohlcv VALUES ('00631L.TW', '2026-07-01')")
+    con.execute("INSERT INTO ohlcv VALUES ('00631L.TW', '2026-07-02')")
+    con.close()
+
+    result = validate_ncf_training_data(
+        db,
+        tickers=["00631L.TW"],
+        max_ohlcv_gap_days=14,
+        fail_on_degraded_freshness=False,
+    )
+
+    assert result["status"] == "ok"
+    assert result["blocking_reasons"] == []
 
 
 def test_reconcile_latest_panel_row_aligns_json_horizon_payload(tmp_path: Path) -> None:

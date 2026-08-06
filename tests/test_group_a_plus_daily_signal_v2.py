@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import inspect
 import sys
 import tempfile
 import unittest
@@ -526,6 +527,76 @@ class DailySignalV2Tests(unittest.TestCase):
 
         self.assertAlmostEqual(0.10, weights["00631L.TW"])
         self.assertNotIn("tsmc_weakness_trim_applied", overlay)
+
+    def test_ncf_0050_is_diagnostic_only_in_live_overlay(self) -> None:
+        base_weights = {"0050.TW": 0.70, "00631L.TW": 0.10, "cash": 0.20}
+        adjusted_weights = {"0050.TW": 0.70, "00631L.TW": 0.08, "cash": 0.22}
+
+        def fake_latest(tag: str, project_root: Path = PROJECT_ROOT) -> Path | None:
+            paths = {
+                "00631l": Path(f"results/ncf_{tag}_latest_20260803.json"),
+                "00632r": Path(f"results/ncf_{tag}_latest_20260803.json"),
+                "0050": Path(f"results/ncf_{tag}_latest_20260803.json"),
+            }
+            return paths.get(tag)
+
+        def fake_signal(path: Path) -> dict:
+            ticker = {
+                "ncf_00631l_latest_20260803.json": "00631L.TW",
+                "ncf_00632r_latest_20260803.json": "00632R.TW",
+                "ncf_0050_latest_20260803.json": "0050.TW",
+            }[path.name]
+            return {
+                "ticker": ticker,
+                "date": "2026-08-03",
+                "direction": "DOWN" if ticker != "00632R.TW" else "UP",
+                "calibrated_prob_up": 0.40,
+                "confidence": 0.50,
+                "confidence_panel_aligned": 0.25,
+                "weighted_return": -0.01,
+                "votes_up": 1,
+                "horizon_prob_up": {"1": 0.45, "5": 0.42, "20": 0.35},
+                "prob_fwd_mdd_gt5_h20": 0.60,
+                "prob_fwd_gain_gt5_h20": 0.30,
+                "direction_magnitude_gate": {"direction": "DOWN"},
+                "direction_conflict": False,
+            }
+
+        with (
+            patch.object(daily_signal, "_latest_ncf_path", side_effect=fake_latest),
+            patch.object(daily_signal, "load_ncf_signal", side_effect=fake_signal),
+            patch.object(
+                daily_signal,
+                "ncf_overlay_summary",
+                return_value={
+                    "adjusted_golden1_weights": adjusted_weights,
+                    "ncf_00631l": {},
+                    "ncf_00632r": {},
+                },
+            ),
+        ):
+            weights, overlay, warnings = daily_signal._apply_ncf_live_overlay(
+                base_weights,
+                "golden1",
+                pd.Timestamp("2026-08-03"),
+                pd.Series({"ma_gap": 0.12}),
+        )
+
+        self.assertEqual([], warnings)
+        self.assertAlmostEqual(0.70, weights["0050.TW"])
+        self.assertAlmostEqual(0.08, weights["00631L.TW"])
+        self.assertAlmostEqual(0.22, weights["cash"])
+        self.assertEqual("available", overlay["ncf_0050"]["status"])
+        self.assertEqual("diagnostic_only_no_weight_change", overlay["ncf_0050"]["trade_policy"])
+        self.assertEqual("DOWN", overlay["ncf_0050"]["direction"])
+
+    def test_daily_signal_wires_tsmc_weakness_trim_after_high_risk_trim(self) -> None:
+        source = inspect.getsource(daily_signal.build_daily_signal)
+
+        high_risk_pos = source.index("_apply_bearish_high_risk_trim")
+        tsmc_pos = source.index("_apply_tsmc_weakness_trim")
+
+        self.assertLess(high_risk_pos, tsmc_pos)
 
     def test_tsmc_reference_guidance_avoids_add_on_narrow_leadership(self) -> None:
         guidance = _tsmc_0050_reference_guidance("tsmc_led_narrow")

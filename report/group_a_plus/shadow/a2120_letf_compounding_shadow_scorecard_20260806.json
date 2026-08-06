@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "report_type": "a2120_letf_compounding_shadow_scorecard",
+  "generated_at": "2026-08-05T19:01:27+00:00",
+  "strategy_id": "A21.20_LETF_COMPOUNDING_REGIME_SHADOW",
+  "candidate": {
+    "name": "score3_ar0_persist50_rev50__base40_mr0_trend100",
+    "baseline_add_fraction": 0.4,
+    "mean_reversion_add_fraction": 0.0,
+    "trend_persistent_add_fraction": 1.0,
+    "trend_score_min": 3,
+    "ar1_trend_min": 0.0,
+    "trend_persistence_min": 0.5,
+    "reversal_speed_trend_max": 0.5
+  },
+  "decision": {
+    "shadow_gate": "pass",
+    "daily_advisory": "enable_daily_advisory_shadow_only",
+    "production": "do_not_promote",
+    "production_upgrade_pass": false,
+    "reason": "Preferred tuned candidate passes the current shadow evidence gate, but production remains blocked because it is research-only and hard guards must retain precedence.",
+    "production_blockers": [
+      "research_only_shadow_candidate",
+      "hard_guards_must_remain_precedence",
+      "requires_daily_ops_integration",
+      "requires_t_plus_1_execution_alignment_audit",
+      "requires_rolling_window_shadow_monitoring_before_production"
+    ]
+  },
+  "checks": [
+    {
+      "name": "seven_window_positive",
+      "passed": true,
+      "actual": {
+        "positive_final_value_windows": 7,
+        "delta_final_value_sum": 27106.570555398706
+      },
+      "required": "7/7 positive windows and positive total final-value delta",
+      "severity": "fail"
+    },
+    {
+      "name": "cost20_positive",
+      "passed": true,
+      "actual": {
+        "transaction_cost_bps": 20.0,
+        "positive_final_value_windows": 7,
+        "delta_final_value_sum": 25359.94387167727
+      },
+      "required": "20 bps cost stress remains 7/7 positive with positive total final-value delta",
+      "severity": "fail"
+    },
+    {
+      "name": "rolling_cost20_stability",
+      "passed": true,
+      "actual": {
+        "windows": 11,
+        "transaction_cost_bps": 20.0,
+        "preferred_positive_rate": 1.0,
+        "preferred_median": 3045.768586114049,
+        "preferred_min": 63.89115976751782,
+        "incremental_positive_rate": 1.0,
+        "incremental_min": 34.067254916531965
+      },
+      "required": "252d/126d rolling stability with 20 bps cost passes preferred final-value gate",
+      "severity": "fail"
+    },
+    {
+      "name": "turnover50_reentry_complete",
+      "passed": true,
+      "actual": {
+        "turnover_ratio": 0.4999642386338296,
+        "target_00631l": 0,
+        "required_00631l": 0
+      },
+      "required": "50% turnover-capped shadow completes the tuned 00631L reentry target",
+      "severity": "fail"
+    },
+    {
+      "name": "a2119_no_conflict",
+      "passed": true,
+      "actual": {
+        "overlap_events": 9,
+        "overlap_no_add_help": 0,
+        "overlap_no_add_hurt": 9
+      },
+      "required": "No A21.20/A21.19 overlap where NO_ADD would help; overlapped events support reentry",
+      "severity": "fail"
+    },
+    {
+      "name": "hard_guards_not_overridden",
+      "passed": true,
+      "actual": {
+        "raw_action": "MAINTAIN",
+        "recommended_action": "BLOCKED_BY_HARD_GUARD",
+        "production_effect": "none",
+        "hard_blockers": [
+          "required strategy sources are stale or missing: ['institutional_0050']",
+          "turnover ratio 80.83% exceeds automatic limit 50.00%"
+        ]
+      },
+      "required": "Replay remains advisory and blocked by hard guards when hard blockers exist",
+      "severity": "fail"
+    }
+  ],
+  "summary": {
+    "seven_window_delta_final_value_sum": 27106.570555398706,
+    "cost20_delta_final_value_sum": 25359.94387167727,
+    "rolling_cost20_windows": 11,
+    "rolling_cost20_preferred_positive_rate": 1.0,
+    "rolling_cost20_preferred_min": 63.89115976751782,
+    "rolling_cost20_incremental_min": 34.067254916531965,
+    "turnover50_target_00631l": 0,
+    "turnover50_ratio": 0.4999642386338296,
+    "a2119_overlap_no_add_help": 0,
+    "replay_raw_action": "MAINTAIN",
+    "replay_recommended_action": "BLOCKED_BY_HARD_GUARD"
+  },
+  "inputs": {
+    "seven_window_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_compounding_regime_tunedtrend_score3_ar0_persist50_rev50_7win_20260715.json",
+    "cost20_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_compounding_regime_tunedtrend_score3_ar0_persist50_rev50_7win_cost20bps_20260715.json",
+    "turnover_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/turnover_capped_execution_shadow_20260806_tunedtrend_00631l0_risk_first.json",
+    "overlap_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2120_a2119_tunedtrend_overlap_audit_20260715.json",
+    "replay_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_compounding_execution_replay_shadow_tunedtrend_score3_ar0_persist50_rev50_20260806.json",
+    "rolling_report": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_compounding_rolling_windows_252d_step126_12win_cost20bps_20260715.json"
+  }
+}

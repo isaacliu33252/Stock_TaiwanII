@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_daily_artifact_integrity",
+  "generated_at": "2026-08-05T16:27:46",
+  "check_date": "2026--0-8-05",
+  "status": "error",
+  "policy": "diagnostic_only_no_strategy_change_no_weight_change",
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_2026-08-05.json",
+    "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+    "panel_refresh_recommendation": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/ncf_panel_refresh_recommendation.json",
+    "ncf_decision_calibration": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_decision_calibration_shadow_2026-08-05.json",
+    "pit_root": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/point_in_time_artifacts"
+  },
+  "dates": {
+    "live_signal_actual_data_date": null,
+    "execution_plan_actual_data_date": "2026-08-04"
+  },
+  "checks": [
+    {
+      "status": "error",
+      "message": "live_signal actual_data_date missing",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_2026-08-05.json"
+    },
+    {
+      "status": "ok",
+      "message": "execution_plan artifact date aligned",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+      "actual_data_date": "2026-08-04"
+    },
+    {
+      "status": "ok",
+      "message": "execution_plan PIT snapshot available",
+      "artifact_name": "execution_plan",
+      "artifact_asof": "2026-08-04",
+      "snapshot_count": 7,
+      "snapshots": [
+        "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/point_in_time_artifacts/execution_plan/2026/08/04/execution_plan_20260804T231839_7126abfa5ed6.json",
+        "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/point_in_time_artifacts/execution_plan/2026/08/04/execution_plan_20260804T232024_714d05c4d3ee.json",
+        "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/point_in_time_artifacts/execution_plan/2026/08/04/execution_plan_20260804T232251_f98a9be3f11b.json",
+        "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/point_in_time_artifacts/execution_plan/2026/08/04/execution_plan_20260804T233225_aa664c87c876.json",
+        "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/point_in_time_artifacts/execution_plan/2026/08/04/execution_plan_20260804T233436_a3c8f760b5cc.json"
+      ]
+    },
+    {
+      "status": "ok",
+      "message": "golden1_0531_release PIT snapshot available",
+      "artifact_name": "golden1_0531_release",
+      "artifact_asof": "2026-05-31",
+      "snapshot_count": 1,
+      "snapshots": [
+        "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/point_in_time_artifacts/golden1_0531_release/2026/05/31/golden1_0531_release_20260730T084600_03a7ee22f97e.json"
+      ]
+    },
+    {
+      "status": "ok",
+      "message": "NCF panel refresh recommendation available",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/ncf_panel_refresh_recommendation.json",
+      "recommendation": "keep_current_pin"
+    },
+    {
+      "status": "ok",
+      "message": "NCF decision calibration realized labels available",
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_decision_calibration_shadow_2026-08-05.json",
+      "readiness_status": "available",
+      "realized_label_rows": null,
+      "total_pairs": 8005
+    }
+  ],
+  "errors": [
+    "live_signal actual_data_date missing"
+  ],
+  "warnings": [],
+  "decision": {
+    "target_weight_change_allowed": false,
+    "creates_orders": false,
+    "recommended_action": "investigate_artifact_integrity"
+  }
+}

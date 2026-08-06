@@ -1,0 +1,16 @@
+{
+  "report_type": "daily_status",
+  "profile": "group_a_plus_live",
+  "check_date": "2026-08-05",
+  "generated_at": "2026-08-05T16:30:46",
+  "overall_status": "block",
+  "html_path": "report/group_a_plus/daily/html/daily_status_group_a_plus_live_20260805_20260805_163046.html",
+  "json_path": "report/group_a_plus/daily/json/daily_status_group_a_plus_live_20260805_20260805_163046.json",
+  "markdown_path": "report/group_a_plus/daily/md/daily_status_group_a_plus_live_20260805_20260805_163046.md",
+  "html_size_bytes": 13226,
+  "json_size_bytes": 144662,
+  "markdown_size_bytes": 16109,
+  "legacy_json_path": "results/group_a_plus_daily_status_20260805.json",
+  "legacy_markdown_path": "results/group_a_plus_daily_status_20260805.md",
+  "baseline_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/GROUP_A_PLUS_CURRENT_BASELINE.json"
+}

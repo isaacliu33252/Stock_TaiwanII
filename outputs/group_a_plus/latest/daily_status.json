@@ -1,0 +1,3437 @@
+{
+  "artifact_kind": "pipeline",
+  "artifact_name": "daily_status",
+  "generated_at": "2026-08-05T19:08:24.029996+00:00",
+  "payload": {
+    "check_date": "2026-08-06",
+    "checks": [
+      {
+        "detail": "live signal loaded",
+        "name": "live_signal_success",
+        "status": "ok"
+      },
+      {
+        "detail": "allowed",
+        "name": "execution_allowed",
+        "status": "ok"
+      },
+      {
+        "detail": "1 business days stale, 1 calendar days stale",
+        "name": "data_freshness",
+        "status": "ok"
+      },
+      {
+        "detail": "strategy_status=active, strategy_id=a2118_a2111_ncf_late_bull_deleverage",
+        "name": "strategy_status",
+        "status": "ok"
+      },
+      {
+        "detail": "all required sources ok",
+        "name": "source_freshness",
+        "status": "ok"
+      },
+      {
+        "detail": "estimated_cash_after_rounding_before_cost=429,231",
+        "name": "cash_constraint",
+        "status": "ok"
+      },
+      {
+        "detail": "pre_trade_guards=active_allowed",
+        "name": "execution_plan_pre_trade_guard",
+        "status": "ok"
+      },
+      {
+        "detail": "frozen backtest last covers 2026-07-15 (22 calendar days behind check_date); matched_decision_count is structurally 0 until this is re-run",
+        "name": "dfl_advisory_frozen_input_staleness",
+        "status": "warn"
+      },
+      {
+        "detail": "status=ok, errors=0, warnings=0",
+        "name": "daily_artifact_integrity",
+        "status": "ok"
+      },
+      {
+        "detail": "deployment_summary_gate=fail, consistency=ok, blockers=['ops_health_errors_present', 'gift_signed_approval_validator_smoke_failed']",
+        "name": "promotion_gate_deployment_summary",
+        "status": "warn"
+      }
+    ],
+    "generated_at": "2026-08-06T03:08:24",
+    "group_a_plus": {
+      "asian_etf_tail_analytics_readiness_review": {
+        "as_of": "2026-07-20",
+        "blocking_reasons": [
+          "asian_29_etf_universe_not_available",
+          "asian_etf_walkforward_validation_missing",
+          "cvar_tail_risk_diagnostic_research_only",
+          "letf_tracking_error_review_disallows_00631l_add",
+          "leverage_10_20_30_percent_not_portable_to_group_a_plus",
+          "long_short_etf_strategy_not_allowed",
+          "market_impact_disallows_auto_rebalance",
+          "market_impact_readiness_blocked",
+          "rachev_starr_hill_optimizer_not_implemented",
+          "rebalance_review_disallows_auto_rebalance",
+          "rebalance_review_disallows_target_weight_change",
+          "transaction_borrow_financing_costs_missing"
+        ],
+        "component_readiness": {
+          "cvar_tail_risk": {
+            "00631l_expected_shortfall_loss_95": 0.08247405550924625,
+            "00631l_hill_xi_95": 0.3197802866295796,
+            "00631l_rachev_95_95": 1.0148925610933104,
+            "golden1_rachev_95_95": 1.0953360658309348,
+            "golden1_starr_95": 14.58608808083165,
+            "promotion_decision": "research_only",
+            "status": "research_only"
+          },
+          "letf_tracking_error": {
+            "allow_00631l_add": false,
+            "allow_00632r_open": false,
+            "status": "blocked"
+          },
+          "market_impact": {
+            "auto_rebalance_allowed": false,
+            "status": "blocked"
+          },
+          "rebalance": {
+            "allow_00631l_add": false,
+            "auto_rebalance_allowed": false,
+            "status": "available",
+            "target_weight_change_allowed": false
+          }
+        },
+        "data_readiness": {
+          "available_ticker_count": 39,
+          "paper_etf_coverage": {
+            "available_paper_etf_count": 1,
+            "available_paper_etfs": [
+              "EWT"
+            ],
+            "missing_paper_etfs": [
+              "AAXJ",
+              "ACWX",
+              "AIA",
+              "ASEA",
+              "CHIQ",
+              "DVYA",
+              "DVYE",
+              "EDIV",
+              "EEM",
+              "EEMA",
+              "EEMS",
+              "EIDO",
+              "EPHE",
+              "EWM",
+              "EWX",
+              "EWY",
+              "FM",
+              "GMF",
+              "GXC",
+              "HAUZ",
+              "HYEM",
+              "INDA",
+              "KBWB",
+              "KWEB",
+              "MCHI",
+              "THD",
+              "VNM",
+              "VWO"
+            ],
+            "paper_etf_count": 29,
+            "paper_universe_ready": false
+          }
+        },
+        "decision": {
+          "allow_00631l_add": false,
+          "allow_00632r_open": false,
+          "auto_rebalance_allowed": false,
+          "keep_golden1_0531_unchanged": true,
+          "optimizer_ready": false,
+          "promote_to_live": false,
+          "summary": "Use 2511.12476 as ETF tail-risk analytics governance only. Current GroupA+ lacks the paper's 29-ETF Asian universe, long-short cost model, and optimizer validation; live weights remain unchanged.",
+          "tail_analytics_ready": false,
+          "target_weight_change_allowed": false
+        },
+        "generated_at": "2026-08-06T03:03:05",
+        "inputs": {
+          "cvar_tail_risk": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/cvar_tail_risk_diagnostic.json",
+          "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+          "letf_tracking_error": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+          "market_impact": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+          "rebalance": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rebalance_review_20260720.json"
+        },
+        "policy": "research_only_asian_etf_tail_analytics_no_optimizer_no_weight_change",
+        "report_type": "group_a_plus_asian_etf_tail_analytics_readiness_review",
+        "schema_version": 1,
+        "source_paper": {
+          "arxiv": "2511.12476v1",
+          "file": "C:/Users/isaac/Downloads/2511.12476.pdf",
+          "imported_concepts": [
+            "equal_weight_etf_benchmark",
+            "markowitz_and_cvar_frontier_as_research_benchmark",
+            "sharpe_rachev_starr_reward_risk_ratios",
+            "hill_tail_index_as_extreme_loss_diagnostic",
+            "friction_cost_caution_for_long_short_leverage"
+          ],
+          "not_imported": [
+            "29_us_listed_asian_etf_allocation",
+            "long_short_10_20_30_percent_leverage",
+            "markowitz_or_cvar_live_optimizer",
+            "automatic_rebalance"
+          ],
+          "title": "Performance and Risk Analytics of Asian Exchange-Traded Funds"
+        },
+        "status": "blocked",
+        "tail_reward_risk_monitor": {
+          "00631l_rachev_95_95": 1.0148925610933104,
+          "00631l_rachev_below_one": false,
+          "golden1_beats_00631l_by_rachev": true,
+          "golden1_rachev_95_95": 1.0953360658309348,
+          "interpretation": "Golden1 has stronger tail gain/loss balance than 00631L; use as research warning only.",
+          "status": "available",
+          "tier": "golden1_preferred"
+        },
+        "validation_readiness": {
+          "cvar_frontier_implemented": false,
+          "hill_tail_index_monitor_implemented": false,
+          "long_short_cost_model_implemented": false,
+          "markowitz_frontier_implemented": false,
+          "starr_rachev_ratio_monitor_implemented": true,
+          "taiwan_group_a_plus_walkforward_validated": false
+        },
+        "warning_reasons": [
+          "rachev_prefers_golden1_over_00631l"
+        ]
+      },
+      "cash_after_cost": 429230.98616600037,
+      "compounding_regime_diagnostic": {
+        "active_allocation_impact": "none",
+        "compounding_regime": "MEAN_REVERTING",
+        "date": "2026-08-05",
+        "features": {
+          "00631L_vs_0050_relative_momentum": -0.05928972984427561,
+          "drawdown_recovery_ratio": 0.6549378791018011,
+          "negative_return_streak": 0.0,
+          "positive_return_streak": 1.0,
+          "reversal_speed": 0.5555555555555556,
+          "rolling_AR1_20d": -0.02453316974155047,
+          "rolling_AR1_5d": -0.46439138112324085,
+          "trend_persistence": 0.5263157894736842,
+          "variance_ratio": 0.40760557162688715
+        },
+        "generated_at": "2026-08-06T03:01:14",
+        "mean_reversion_score": 5,
+        "recommended_policy": "prohibit_new_leverage_or_reduce_rebalance_frequency",
+        "regime_policy": {
+          "MEAN_REVERTING": "Prohibit new leverage or reduce rebalance frequency.",
+          "TRANSITIONAL": "Maintain A21.18; do not actively overlay.",
+          "TREND_PERSISTENT": "Do not reduce 00631L for high volatility alone."
+        },
+        "report_type": "00631l_leveraged_compounding_regime",
+        "source_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_20260806.json",
+        "status": "ok",
+        "trend_score": 0
+      },
+      "compounding_regime_pre_trade_guard": {
+        "allow_00631l_add": false,
+        "blocked_trades": [],
+        "compounding_regime": "MEAN_REVERTING",
+        "current_shares": 0,
+        "date": "2026-08-05",
+        "enforced": false,
+        "guarded_target_shares": 0,
+        "name": "compounding_regime_no_00631l_add",
+        "policy": "diagnostic_no_auto_weight_change",
+        "reason": "compounding_regime_blocks_new_00631l_exposure",
+        "recommended_policy": "prohibit_new_leverage_or_reduce_rebalance_frequency",
+        "requested_target_shares": 0,
+        "status": "active_allowed",
+        "ticker": "00631L.TW"
+      },
+      "daily_artifact_integrity": {
+        "check_count": 6,
+        "check_date": "2026-08-06",
+        "errors": [],
+        "generated_at": "2026-08-06T03:08:09",
+        "policy": "diagnostic_only_no_strategy_change_no_weight_change",
+        "status": "ok",
+        "warnings": []
+      },
+      "dfl_active_date_audit": {
+        "assumptions": {
+          "commission_rate": 0.001425,
+          "equity_etf_sell_tax": 0.001,
+          "initial_value": 1000000.0,
+          "min_trade_notional": 5000.0,
+          "policy": "shadow_only_no_auto_weight_change",
+          "slippage_rate": 0.0005,
+          "turnover_proxy": "CAP10 reduction in 00631L is assumed to move into 0050, so turnover=2*abs(delta_00631L_weight)",
+          "turnover_proxy_note": "For stateful_actions=true, this is a deviation proxy versus A21.18, not exact same-day model turnover."
+        },
+        "conclusion": "review_required_shadow_only",
+        "decisions": [],
+        "generated_at": "2026-08-06T03:07:12",
+        "method": {
+          "actions": [
+            "KEEP",
+            "NO_ADD",
+            "CAP10",
+            "REENTER",
+            "REENTER_00631L_5",
+            "REENTER_00631L_10"
+          ],
+          "model": {
+            "cross_asset_features": false,
+            "features": [
+              "prob_up_h1",
+              "prob_up_h5",
+              "prob_up_h20",
+              "prob_fwd_mdd_gt5_h20",
+              "prob_fwd_gain_gt5_h20",
+              "confidence",
+              "ma_gap",
+              "total_risk_score",
+              "w_0050",
+              "w_00631l",
+              "ret_0050_5d",
+              "ret_00631l_5d",
+              "spread_00631l_0050_5d"
+            ],
+            "min_train_days": 60,
+            "ridge_alpha": 10.0,
+            "train_window_days": 420,
+            "type": "expanding_ridge_linear_per_action"
+          },
+          "stabilizers": {
+            "adjustment_fraction": 0.75,
+            "edge_threshold": 0.0005,
+            "finite_actions_only": true,
+            "reenter_edge_threshold": -0.0005,
+            "regret_clip": 0.02,
+            "reliability_max_error_percentile": 0.7,
+            "reliability_min_train_days": 60,
+            "relief_gate": false,
+            "relief_lookback_days": 20,
+            "relief_min_gap": 0.0,
+            "relief_min_holding_days": 0,
+            "relief_ratio": 0.85,
+            "require_panel_signal": true,
+            "selective_reliability": false,
+            "stateful_actions": true,
+            "turnover_cap": 0.05
+          },
+          "target": "action_regret = Utility(action) - Utility(KEEP)",
+          "utility": {
+            "eta_missed_rebound": 0.3,
+            "gamma_turnover": 0.015,
+            "horizon": 20,
+            "lambda_mdd": 0.35
+          }
+        },
+        "report_type": "a2118_dfl_active_date_audit",
+        "source_status": "research_only",
+        "status": "research_only",
+        "summary": {
+          "action_counts": {},
+          "active_days": 0,
+          "all_checks_pass": true,
+          "existing_guard_overlap_days": 0,
+          "failed_days": 0,
+          "max_estimated_cost_bps_single_day": 0.0,
+          "max_turnover_proxy": 0.0,
+          "total_estimated_cost_bps": 0.0,
+          "total_estimated_cost_per_initial_value": 0.0,
+          "warning_days": 0
+        }
+      },
+      "dfl_advisory": {
+        "action": "KEEP",
+        "active_allocation_impact": "none",
+        "advisory_active": false,
+        "as_of": "2026-08-05",
+        "evidence": {
+          "matched_decision_count": 0,
+          "note": "No DFL non-KEEP action matched the live signal date.",
+          "source_status": "research_only",
+          "summary": {
+            "all_windows_triple_pass": true,
+            "total_candidate_non_keep_days": 0,
+            "total_rejected_to_keep_days": 0,
+            "triple_pass_windows": 7,
+            "windows": 7
+          }
+        },
+        "generated_at": "2026-08-06T03:06:58",
+        "input": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_decision_focused_action_shadow_dfl_main_latest.json",
+        "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260806.json",
+        "method": {
+          "actions": [
+            "KEEP",
+            "NO_ADD",
+            "CAP10",
+            "REENTER",
+            "REENTER_00631L_5",
+            "REENTER_00631L_10"
+          ],
+          "model": {
+            "cross_asset_features": false,
+            "features": [
+              "prob_up_h1",
+              "prob_up_h5",
+              "prob_up_h20",
+              "prob_fwd_mdd_gt5_h20",
+              "prob_fwd_gain_gt5_h20",
+              "confidence",
+              "ma_gap",
+              "total_risk_score",
+              "w_0050",
+              "w_00631l",
+              "ret_0050_5d",
+              "ret_00631l_5d",
+              "spread_00631l_0050_5d"
+            ],
+            "min_train_days": 60,
+            "ridge_alpha": 10.0,
+            "train_window_days": 420,
+            "type": "expanding_ridge_linear_per_action"
+          },
+          "stabilizers": {
+            "adjustment_fraction": 0.75,
+            "edge_threshold": 0.0005,
+            "finite_actions_only": true,
+            "reenter_edge_threshold": -0.0005,
+            "regret_clip": 0.02,
+            "reliability_max_error_percentile": 0.7,
+            "reliability_min_train_days": 60,
+            "relief_gate": false,
+            "relief_lookback_days": 20,
+            "relief_min_gap": 0.0,
+            "relief_min_holding_days": 0,
+            "relief_ratio": 0.85,
+            "require_panel_signal": true,
+            "selective_reliability": false,
+            "stateful_actions": true,
+            "turnover_cap": 0.05
+          },
+          "target": "action_regret = Utility(action) - Utility(KEEP)"
+        },
+        "policy": "advisory_only_no_auto_weight_change",
+        "recommended_action": "keep_a2118",
+        "report_type": "a2118_dfl_advisory",
+        "schema_version": 1,
+        "selected_decision": null,
+        "selective_variants": {
+          "p50": {
+            "action": "KEEP",
+            "active_allocation_impact": "none",
+            "advisory_active": false,
+            "as_of": "2026-08-05",
+            "evidence": {
+              "matched_decision_count": 0,
+              "note": "No DFL non-KEEP action matched the live signal date.",
+              "source_status": "research_only",
+              "summary": {
+                "all_windows_triple_pass": true,
+                "total_candidate_non_keep_days": 0,
+                "total_rejected_to_keep_days": 0,
+                "triple_pass_windows": 7,
+                "windows": 7
+              }
+            },
+            "generated_at": "2026-08-06T03:06:58",
+            "input": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_decision_focused_action_shadow_dfl_selective_p50_latest.json",
+            "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260806.json",
+            "method": {
+              "actions": [
+                "KEEP",
+                "NO_ADD",
+                "CAP10",
+                "REENTER",
+                "REENTER_00631L_5",
+                "REENTER_00631L_10"
+              ],
+              "model": {
+                "cross_asset_features": false,
+                "features": [
+                  "prob_up_h1",
+                  "prob_up_h5",
+                  "prob_up_h20",
+                  "prob_fwd_mdd_gt5_h20",
+                  "prob_fwd_gain_gt5_h20",
+                  "confidence",
+                  "ma_gap",
+                  "total_risk_score",
+                  "w_0050",
+                  "w_00631l",
+                  "ret_0050_5d",
+                  "ret_00631l_5d",
+                  "spread_00631l_0050_5d"
+                ],
+                "min_train_days": 60,
+                "ridge_alpha": 10.0,
+                "train_window_days": 420,
+                "type": "expanding_ridge_linear_per_action"
+              },
+              "stabilizers": {
+                "adjustment_fraction": 0.75,
+                "edge_threshold": 0.0005,
+                "finite_actions_only": true,
+                "reenter_edge_threshold": -0.0005,
+                "regret_clip": 0.02,
+                "reliability_max_error_percentile": 0.5,
+                "reliability_min_train_days": 60,
+                "relief_gate": false,
+                "relief_lookback_days": 20,
+                "relief_min_gap": 0.0,
+                "relief_min_holding_days": 0,
+                "relief_ratio": 0.85,
+                "require_panel_signal": true,
+                "selective_reliability": true,
+                "stateful_actions": true,
+                "turnover_cap": 0.05
+              },
+              "target": "action_regret = Utility(action) - Utility(KEEP)"
+            },
+            "policy": "advisory_only_no_auto_weight_change",
+            "recommended_action": "keep_a2118",
+            "report_type": "a2118_dfl_advisory",
+            "schema_version": 1,
+            "selected_decision": null,
+            "status": "available"
+          },
+          "p70": {
+            "action": "KEEP",
+            "active_allocation_impact": "none",
+            "advisory_active": false,
+            "as_of": "2026-08-05",
+            "evidence": {
+              "matched_decision_count": 0,
+              "note": "No DFL non-KEEP action matched the live signal date.",
+              "source_status": "research_only",
+              "summary": {
+                "all_windows_triple_pass": true,
+                "total_candidate_non_keep_days": 0,
+                "total_rejected_to_keep_days": 0,
+                "triple_pass_windows": 7,
+                "windows": 7
+              }
+            },
+            "generated_at": "2026-08-06T03:06:58",
+            "input": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_decision_focused_action_shadow_dfl_selective_p70_latest.json",
+            "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260806.json",
+            "method": {
+              "actions": [
+                "KEEP",
+                "NO_ADD",
+                "CAP10",
+                "REENTER",
+                "REENTER_00631L_5",
+                "REENTER_00631L_10"
+              ],
+              "model": {
+                "cross_asset_features": false,
+                "features": [
+                  "prob_up_h1",
+                  "prob_up_h5",
+                  "prob_up_h20",
+                  "prob_fwd_mdd_gt5_h20",
+                  "prob_fwd_gain_gt5_h20",
+                  "confidence",
+                  "ma_gap",
+                  "total_risk_score",
+                  "w_0050",
+                  "w_00631l",
+                  "ret_0050_5d",
+                  "ret_00631l_5d",
+                  "spread_00631l_0050_5d"
+                ],
+                "min_train_days": 60,
+                "ridge_alpha": 10.0,
+                "train_window_days": 420,
+                "type": "expanding_ridge_linear_per_action"
+              },
+              "stabilizers": {
+                "adjustment_fraction": 0.75,
+                "edge_threshold": 0.0005,
+                "finite_actions_only": true,
+                "reenter_edge_threshold": -0.0005,
+                "regret_clip": 0.02,
+                "reliability_max_error_percentile": 0.7,
+                "reliability_min_train_days": 60,
+                "relief_gate": false,
+                "relief_lookback_days": 20,
+                "relief_min_gap": 0.0,
+                "relief_min_holding_days": 0,
+                "relief_ratio": 0.85,
+                "require_panel_signal": true,
+                "selective_reliability": true,
+                "stateful_actions": true,
+                "turnover_cap": 0.05
+              },
+              "target": "action_regret = Utility(action) - Utility(KEEP)"
+            },
+            "policy": "advisory_only_no_auto_weight_change",
+            "recommended_action": "keep_a2118",
+            "report_type": "a2118_dfl_advisory",
+            "schema_version": 1,
+            "selected_decision": null,
+            "status": "available"
+          }
+        },
+        "status": "available"
+      },
+      "dfl_frozen_input_staleness": {
+        "calendar_gap_days": 22,
+        "frozen_input_generated_at": "2026-08-06T03:04:37",
+        "frozen_input_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_decision_focused_action_shadow_dfl_main_latest.json",
+        "max_live_window_decision_date": "2026-07-15",
+        "status": "ok"
+      },
+      "dfl_shadow_ensemble": {
+        "active_allocation_impact": "none",
+        "as_of": "2026-08-05",
+        "ensemble_level": "none",
+        "generated_at": "2026-08-06T03:07:12",
+        "manual_review_required": false,
+        "note": "Observation-only DFL ensemble; not an execution instruction.",
+        "policy": "shadow_only_no_auto_weight_change",
+        "report_type": "a2118_dfl_shadow_ensemble",
+        "schema_version": 1,
+        "signals": {
+          "base": {
+            "action": "KEEP",
+            "action_allowed": null,
+            "active": false,
+            "candidate_action_before_reliability": null,
+            "candidate_predicted_regret_before_reliability": null,
+            "predicted_regret": null,
+            "recommended_action": "keep_a2118",
+            "reliability_error_percentile": null,
+            "reliability_gate_pass": null,
+            "source_list": null,
+            "window_label": null
+          },
+          "p50": {
+            "action": "KEEP",
+            "action_allowed": null,
+            "active": false,
+            "candidate_action_before_reliability": null,
+            "candidate_predicted_regret_before_reliability": null,
+            "predicted_regret": null,
+            "recommended_action": "keep_a2118",
+            "reliability_error_percentile": null,
+            "reliability_gate_pass": null,
+            "source_list": null,
+            "window_label": null
+          },
+          "p70": {
+            "action": "KEEP",
+            "action_allowed": null,
+            "active": false,
+            "candidate_action_before_reliability": null,
+            "candidate_predicted_regret_before_reliability": null,
+            "predicted_regret": null,
+            "recommended_action": "keep_a2118",
+            "reliability_error_percentile": null,
+            "reliability_gate_pass": null,
+            "source_list": null,
+            "window_label": null
+          }
+        },
+        "status": "available"
+      },
+      "dynamic_cvar_tail_cost_readiness_review": {
+        "as_of": "2026-07-20",
+        "blocking_reasons": [
+          "cvar_tail_risk_diagnostic_research_only",
+          "00631l_hill_tail_index_positive_heavy_tail",
+          "00631l_pot_gpd_shape_positive_heavy_tail",
+          "density_tail_model_unstable_research_only",
+          "market_impact_readiness_blocked",
+          "market_impact_disallows_auto_rebalance",
+          "rebalance_review_disallows_auto_rebalance",
+          "rebalance_review_disallows_target_weight_change",
+          "systemic_bubble_time_at_risk_blocks_leverage_add",
+          "systemic_bubble_disallows_00631l_add",
+          "hmm_wj_scenario_readiness_blocked",
+          "scenario_generator_not_decision_ready",
+          "dynamic_cvar_optimizer_not_implemented",
+          "taiwan_etf_walkforward_validation_missing"
+        ],
+        "component_readiness": {
+          "cvar_tail_risk": {
+            "00631l_expected_shortfall_loss_95": 0.08247405550924625,
+            "00631l_expected_shortfall_loss_99": 0.13958238180763255,
+            "00631l_hill_xi_95": 0.3197802866295796,
+            "00631l_max_drawdown": -0.5022632537851175,
+            "00631l_pot_gpd_shape_xi_95": 0.07151889364128078,
+            "golden1_expected_shortfall_loss_95": 0.035354669935160135,
+            "golden1_starr_95": 14.58608808083165,
+            "promotion_decision": "research_only",
+            "status": "research_only"
+          },
+          "density_head_tail_risk": {
+            "gmm_status": "unstable_across_windows_research_only",
+            "recommended_research_baseline": "gaussian_residual_head",
+            "status": "available"
+          },
+          "hmm_wj_scenario_readiness": {
+            "all_required_tickers_ready": true,
+            "can_generate_scenarios_for_decision": false,
+            "status": "blocked"
+          },
+          "market_impact": {
+            "allow_00631l_add": false,
+            "auto_rebalance_allowed": false,
+            "status": "blocked",
+            "turnover": 0.808271858826179
+          },
+          "rebalance": {
+            "allow_00631l_add": false,
+            "auto_rebalance_allowed": false,
+            "status": "available",
+            "target_weight_change_allowed": false
+          },
+          "systemic_bubble": {
+            "allow_00631l_add": false,
+            "overall_state": "blocked_for_leverage_add",
+            "systemic_score": 2
+          }
+        },
+        "decision": {
+          "allow_00631l_add": false,
+          "auto_rebalance_allowed": false,
+          "dynamic_optimizer_ready": false,
+          "keep_golden1_0531_unchanged": true,
+          "promote_to_live": false,
+          "summary": "Dynamic CVaR/tail/cost readiness is diagnostic only. Existing tail, turnover, scenario-readiness, and rebalance blockers prevent any optimizer-driven execution.",
+          "tail_cost_readiness_ready": false,
+          "target_weight_change_allowed": false
+        },
+        "generated_at": "2026-08-06T03:02:49",
+        "inputs": {
+          "cvar_tail_risk": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/cvar_tail_risk_diagnostic.json",
+          "density_head_tail_risk": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/density_head_tail_risk_advisory.json",
+          "hmm_wj": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/hmm_wj_synthetic_scenario_readiness_review.json",
+          "market_impact": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+          "rebalance": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rebalance_review_20260720.json",
+          "systemic_bubble": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/systemic_bubble_time_at_risk_review.json"
+        },
+        "policy": "research_only_dynamic_cvar_tail_cost_readiness_no_optimizer_no_weight_change",
+        "report_type": "group_a_plus_dynamic_cvar_tail_cost_readiness_review",
+        "schema_version": 1,
+        "source_paper": {
+          "file": "C:/Users/isaac/Downloads/2606.26625.pdf",
+          "imported_concepts": [
+            "cvar_before_return_seeking_tangency",
+            "evt_hill_tail_diagnostics_after_optimization",
+            "turnover_and_transaction_cost_robustness",
+            "dynamic_arma_garch_student_t_copula_scenario_concept"
+          ],
+          "not_imported": [
+            "commodity_etf_allocation",
+            "arma_garch_student_t_copula_live_optimizer",
+            "dynamic_tangent_portfolio_weights",
+            "automatic_target_weight_change"
+          ],
+          "title": "Portfolio Optimization for Commodity ETFs under Heavy-Tailed Returns"
+        },
+        "status": "blocked",
+        "validation_readiness": {
+          "arma_garch_student_t_copula_validated": false,
+          "dynamic_optimizer_implemented": false,
+          "tail_thickness_improvement_validated": false,
+          "taiwan_etf_walkforward_validated": false,
+          "turnover_cost_walkforward_validated": false
+        },
+        "warning_reasons": []
+      },
+      "execution_plan_cash": {
+        "aligned": true,
+        "available": true,
+        "cash_assumption": "workbook has no cash field; using explicit --cash-balance input",
+        "current_cash_input": 0.0,
+        "execution_allowed": false,
+        "manual_confirmation_required": true,
+        "nonzero_trade_count": 3
+      },
+      "finstressts_decision_snapshot": {
+        "blocking_reasons": [
+          "readiness_review_blocked",
+          "reference_loses_to_no_00631l_under_counterfactuals",
+          "reference_tail_failures_under_counterfactuals",
+          "no_baseline_beats_no_00631l"
+        ],
+        "decision": {
+          "allow_00631l_add": false,
+          "auto_rebalance_allowed": false,
+          "keep_golden1_0531_unchanged": true,
+          "promote_to_live": false,
+          "summary": "FinStressTS consolidated snapshot blocks promotion: readiness is blocked, the 7/20 reference loses to no-00631L under stress, and no tested baseline beats no-00631L on the strict ES95 + max-drawdown rule.",
+          "target_weight_change_allowed": false
+        },
+        "generated_at": "2026-08-06T03:02:22",
+        "inputs": {
+          "baseline": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_baseline_compare_shadow.json",
+          "counterfactual": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_counterfactual_shadow.json",
+          "readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_readiness_review.json"
+        },
+        "policy": "research_only_summary_no_weight_change",
+        "report_type": "group_a_plus_finstressts_decision_snapshot",
+        "schema_version": 1,
+        "source_paper": "C:/Users/isaac/Downloads/2606.03184.pdf",
+        "status": "blocked",
+        "summary": {
+          "baseline_best_shadow_candidate": "combined_vol_trend_gate",
+          "baseline_tail_failures": {
+            "combined_vol_trend_gate": 1,
+            "reduced_leverage": 4,
+            "reference_20260720": 4,
+            "rolling_vol_gate": 2,
+            "trend_gate": 1
+          },
+          "baseline_wins_vs_no_00631l": {
+            "combined_vol_trend_gate": 0,
+            "reduced_leverage": 0,
+            "reference_20260720": 0,
+            "rolling_vol_gate": 0,
+            "trend_gate": 0
+          },
+          "blocked_mechanisms": [
+            "heavy_tailed_shocks",
+            "self_exciting_jumps",
+            "zero_inflated_sparse_jumps",
+            "execution_under_stress"
+          ],
+          "readiness_status": "blocked",
+          "reference_loses_to_no_00631l_scenarios": 5,
+          "reference_tail_failure_scenarios": 4
+        },
+        "upstream_decisions": {
+          "baseline": {
+            "allow_00631l_add": false,
+            "auto_rebalance_allowed": false,
+            "keep_golden1_0531_unchanged": true,
+            "promote_to_live": false,
+            "summary": "No tested baseline is promoted. The comparison is useful for research, but no rule beats no-00631L cleanly enough to unlock 00631L add or rebalance.",
+            "target_weight_change_allowed": false
+          },
+          "counterfactual": {
+            "allow_00631l_add": false,
+            "auto_rebalance_allowed": false,
+            "keep_golden1_0531_unchanged": true,
+            "promote_to_live": false,
+            "reference_loses_to_no_00631l_scenarios": 5,
+            "reference_tail_failure_scenarios": 4,
+            "summary": "Reference 7/20 weights do not pass the FinStressTS-style counterfactual stress review against the no-00631L reference.",
+            "target_weight_change_allowed": false
+          },
+          "readiness": {
+            "allow_00631l_add": false,
+            "auto_rebalance_allowed": false,
+            "keep_golden1_0531_unchanged": true,
+            "next_research_step": "Build a small Taiwan ETF counterfactual stress harness before any model promotion claim.",
+            "promote_to_live": false,
+            "summary": "Import FinStressTS as model-validation governance only. Current GroupA+ gates are blocked, and the paper is a diagnostic benchmark rather than a Taiwan ETF trading signal.",
+            "target_weight_change_allowed": false
+          }
+        },
+        "warning_reasons": [
+          "best_shadow_candidate:combined_vol_trend_gate"
+        ]
+      },
+      "gift_signed_approval_checklist_review": {
+        "as_of": "2026-08-06",
+        "blocking_reasons": [],
+        "checklist_items": [
+          {
+            "id": "copy_template_to_target_signed_record_path",
+            "status": "pending",
+            "target_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_record.json"
+          },
+          {
+            "id": "fill_manual_identity_and_dates",
+            "missing_fields": [
+              "reviewer",
+              "reviewer_role",
+              "approved_at",
+              "expires_at"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "approve_only_non_ppo_offline_shadow_queue_review",
+            "required_true_fields": [
+              "approved_actions.allow_non_ppo_offline_shadow_training_queue_review"
+            ],
+            "status": "pending"
+          },
+          {
+            "forbidden_true_fields": [],
+            "id": "keep_all_live_and_training_permissions_false",
+            "status": "done"
+          },
+          {
+            "id": "acknowledge_all_safety_constraints",
+            "missing_acknowledgements": [
+              "acknowledgements.00631l_and_00632r_remain_excluded",
+              "acknowledgements.golden1_0531_unchanged",
+              "acknowledgements.no_live_action_no_target_weight_no_auto_rebalance",
+              "acknowledgements.non_ppo_offline_shadow_review_only",
+              "acknowledgements.research_shadow_remains_blocked_for_live_allocation",
+              "acknowledgements.training_runner_must_preserve_no_action_outputs"
+            ],
+            "status": "pending"
+          },
+          {
+            "current_blocking_reasons": [
+              "missing_signed_human_exception_approval_record"
+            ],
+            "current_validation_status": "blocked",
+            "id": "run_signed_approval_validator",
+            "status": "pending"
+          }
+        ],
+        "decision": {
+          "allow_00631l_add": false,
+          "allow_00632r_open": false,
+          "auto_rebalance_allowed": false,
+          "checklist_available_for_manual_completion": true,
+          "human_exception_approved": false,
+          "keep_golden1_0531_unchanged": true,
+          "model_training_allowed": false,
+          "non_ppo_shadow_queue_review_allowed": false,
+          "outputs_actions": false,
+          "outputs_target_weights": false,
+          "ppo_training_allowed": false,
+          "promote_to_live": false,
+          "shadow_training_request_allowed": false,
+          "signed_approval_record_valid": false,
+          "target_weight_change_allowed": false,
+          "training_queue_allowed": false
+        },
+        "generated_at": "2026-08-06T03:03:25",
+        "manual_completion_fields": {
+          "acknowledgements_required_true": [
+            "00631l_and_00632r_remain_excluded",
+            "golden1_0531_unchanged",
+            "no_live_action_no_target_weight_no_auto_rebalance",
+            "non_ppo_offline_shadow_review_only",
+            "research_shadow_remains_blocked_for_live_allocation",
+            "training_runner_must_preserve_no_action_outputs"
+          ],
+          "approved_actions_required_false": [
+            "allow_00631l_add",
+            "allow_00632r_open",
+            "allow_auto_rebalance",
+            "allow_live_signal_output",
+            "allow_live_strategy_change",
+            "allow_model_training_command",
+            "allow_ppo_training",
+            "allow_target_weight_output"
+          ],
+          "identity_and_dates": [
+            "reviewer",
+            "reviewer_role",
+            "approved_at",
+            "expires_at"
+          ],
+          "only_field_that_may_be_set_true_in_approved_actions": "allow_non_ppo_offline_shadow_training_queue_review"
+        },
+        "policy": "manual_checklist_only_no_approval_no_training_no_live_action",
+        "report_type": "group_a_plus_gift_signed_approval_checklist_review",
+        "schema_version": 1,
+        "scope_snapshot": {
+          "approval_scope": {
+            "allowed_universe": [
+              "0050.TW",
+              "0056.TW",
+              "00679B.TWO",
+              "00713.TW",
+              "00751B.TWO",
+              "00878.TW"
+            ],
+            "excluded_tickers": [
+              "00631L.TW",
+              "00632R.TW"
+            ],
+            "freeze_id": "group_a_plus_gift_downside_tail_decay_v2_tuned_20260721",
+            "frozen_manifest_sha256": "a1813b27cfea9ef23df3fb4a7789cbc8855eb416e1f98c89fef88dceb2a833ac",
+            "proposal_id": "gift_research_downside_vol_letf_tail_decay_v1",
+            "scope": "non_ppo_offline_shadow_training_queue_review_only"
+          },
+          "excluded_tickers": [
+            "00631L.TW",
+            "00632R.TW"
+          ],
+          "record_id": "gift_non_ppo_shadow_exception_20260806",
+          "source_draft_sha256": "31a763a7e3cdbd0aa0b2af9a7c9daf3e4830cb20ed71c6a8689ddf2f2dd4fbf1"
+        },
+        "sources": {
+          "approval_record_schema": {
+            "exists": true,
+            "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_approval_record_schema.json",
+            "sha256": "ee2dde18b1e63c97f6900ab8d80d4ce471ba6c03bb0f3e5c7bb62723474b1f24"
+          },
+          "human_exception_record_draft": {
+            "exists": true,
+            "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_record_draft.json",
+            "sha256": "31a763a7e3cdbd0aa0b2af9a7c9daf3e4830cb20ed71c6a8689ddf2f2dd4fbf1"
+          },
+          "signed_approval_record_template": {
+            "exists": true,
+            "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_record_TEMPLATE.json",
+            "sha256": "44dd9da7c15a73d56913d18388a8c3fa533034a2b562c1e587ad864e94f0a5c8"
+          },
+          "signed_approval_validation": {
+            "exists": true,
+            "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_validation.json",
+            "sha256": "ba3a7ad62884d9d729dd84a2bdc49eb59b013a0fbf02c865b46d7d40df384315"
+          },
+          "target_signed_approval_record": {
+            "exists": false,
+            "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_record.json",
+            "sha256": null
+          }
+        },
+        "status": "manual_completion_pending",
+        "summary": {
+          "allow_00631l_add": false,
+          "allow_00632r_open": false,
+          "auto_rebalance_allowed": false,
+          "draft_ready": true,
+          "human_exception_approved": false,
+          "keep_golden1_0531_unchanged": true,
+          "manual_completion_pending": true,
+          "manual_completion_ready": true,
+          "model_training_allowed": false,
+          "non_ppo_shadow_queue_review_allowed_by_signed_validation": false,
+          "ppo_training_allowed": false,
+          "promote_to_live": false,
+          "schema_ready": true,
+          "signed_approval_record_valid": false,
+          "signed_record_exists": false,
+          "target_weight_change_allowed": false,
+          "template_ready": true,
+          "training_queue_allowed": false
+        },
+        "target_signed_record_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_record.json",
+        "warning_reasons": []
+      },
+      "gift_signed_approval_governance": {
+        "checklist_available_for_manual_completion": true,
+        "checklist_manual_completion_pending": true,
+        "checklist_manual_completion_ready": true,
+        "checklist_signed_record_exists": false,
+        "checklist_status": "manual_completion_pending",
+        "formal_signed_record_written_by_smoke": false,
+        "human_exception_approved": false,
+        "manual_approval_to_queue_training_allowed": false,
+        "model_training_allowed": false,
+        "non_ppo_shadow_queue_review_allowed": false,
+        "ppo_training_allowed": false,
+        "promote_to_live": false,
+        "signed_approval_record_valid": false,
+        "signed_approval_warnings": [
+          "llm_state_reward_signed_approval_validation_blocked",
+          "llm_state_reward_signed_approval_validation_status:blocked",
+          "llm_state_reward_signed_approval_validation:missing_signed_human_exception_approval_record"
+        ],
+        "source": "research_shadow_decision_snapshot",
+        "training_queue_allowed": false,
+        "training_queue_blocking_reasons": [
+          "signed_human_exception_approval_record_missing_or_invalid"
+        ],
+        "validation_status": "blocked",
+        "validator_smoke_blocks_00631l_add": true,
+        "validator_smoke_blocks_model_training": true,
+        "validator_smoke_passed": false,
+        "validator_smoke_status": "blocked",
+        "validator_smoke_valid_record_accepted": false
+      },
+      "gift_signed_approval_validator_smoke": {
+        "as_of": "2026-08-06",
+        "blocking_reasons": [
+          "valid_non_ppo_shadow_record_not_accepted_safely"
+        ],
+        "decision": {
+          "allow_00631l_add": false,
+          "allow_00632r_open": false,
+          "auto_rebalance_allowed": false,
+          "formal_signed_record_created": false,
+          "human_exception_approved": false,
+          "keep_golden1_0531_unchanged": true,
+          "model_training_allowed": false,
+          "non_ppo_shadow_queue_review_allowed": false,
+          "outputs_actions": false,
+          "outputs_target_weights": false,
+          "ppo_training_allowed": false,
+          "promote_to_live": false,
+          "shadow_training_request_allowed": false,
+          "signed_approval_record_valid": false,
+          "target_weight_change_allowed": false,
+          "training_queue_allowed": false,
+          "validator_smoke_passed": false
+        },
+        "generated_at": "2026-08-06T03:03:31",
+        "policy": "validator_smoke_only_temporary_records_no_formal_approval_no_training_no_live_action",
+        "report_type": "group_a_plus_gift_signed_approval_validator_smoke",
+        "schema_version": 1,
+        "smoke_cases": {
+          "invalid_allow_00631l_add": {
+            "expected_blocking_reason": "signed_record_forbidden_action_not_false:allow_00631l_add",
+            "input_path_was_temporary": true,
+            "validation": {
+              "allow_00631l_add": false,
+              "allow_00632r_open": false,
+              "auto_rebalance_allowed": false,
+              "blocking_reasons": [
+                "signed_record_expired_as_of_validation_date",
+                "signed_record_forbidden_action_not_false:allow_00631l_add"
+              ],
+              "human_exception_approved": false,
+              "model_training_allowed": false,
+              "non_ppo_shadow_queue_review_allowed": false,
+              "ppo_training_allowed": false,
+              "promote_to_live": false,
+              "signed_approval_record_valid": false,
+              "status": "blocked",
+              "target_weight_change_allowed": false,
+              "training_queue_allowed": false,
+              "warning_reasons": []
+            }
+          },
+          "invalid_allow_model_training_command": {
+            "expected_blocking_reason": "signed_record_forbidden_action_not_false:allow_model_training_command",
+            "input_path_was_temporary": true,
+            "validation": {
+              "allow_00631l_add": false,
+              "allow_00632r_open": false,
+              "auto_rebalance_allowed": false,
+              "blocking_reasons": [
+                "signed_record_expired_as_of_validation_date",
+                "signed_record_forbidden_action_not_false:allow_model_training_command"
+              ],
+              "human_exception_approved": false,
+              "model_training_allowed": false,
+              "non_ppo_shadow_queue_review_allowed": false,
+              "ppo_training_allowed": false,
+              "promote_to_live": false,
+              "signed_approval_record_valid": false,
+              "status": "blocked",
+              "target_weight_change_allowed": false,
+              "training_queue_allowed": false,
+              "warning_reasons": []
+            }
+          },
+          "valid_non_ppo_shadow_record": {
+            "input_path_was_temporary": true,
+            "validation": {
+              "allow_00631l_add": false,
+              "allow_00632r_open": false,
+              "auto_rebalance_allowed": false,
+              "blocking_reasons": [
+                "signed_record_expired_as_of_validation_date"
+              ],
+              "human_exception_approved": false,
+              "model_training_allowed": false,
+              "non_ppo_shadow_queue_review_allowed": false,
+              "ppo_training_allowed": false,
+              "promote_to_live": false,
+              "signed_approval_record_valid": false,
+              "status": "blocked",
+              "target_weight_change_allowed": false,
+              "training_queue_allowed": false,
+              "warning_reasons": []
+            }
+          }
+        },
+        "sources": {
+          "approval_record_schema": {
+            "exists": true,
+            "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_approval_record_schema.json"
+          }
+        },
+        "status": "blocked",
+        "summary": {
+          "allow_00631l_add": false,
+          "allow_00632r_open": false,
+          "auto_rebalance_allowed": false,
+          "formal_signed_record_written": false,
+          "human_exception_approved_in_latest": false,
+          "invalid_allow_00631l_add_blocked": true,
+          "invalid_allow_model_training_command_blocked": true,
+          "keep_golden1_0531_unchanged": true,
+          "model_training_allowed": false,
+          "ppo_training_allowed": false,
+          "promote_to_live": false,
+          "signed_approval_record_valid_in_latest": false,
+          "smoke_passed": false,
+          "target_weight_change_allowed": false,
+          "training_queue_allowed": false,
+          "valid_non_ppo_shadow_record_accepted": false
+        },
+        "temporary_record_policy": {
+          "formal_signed_record_written": false,
+          "temporary_directory_example": "/tmp/gift_signed_approval_smoke_t3dvgyip",
+          "temporary_directory_prefix": "gift_signed_approval_smoke_",
+          "temporary_files_removed_after_validation": true
+        },
+        "warning_reasons": []
+      },
+      "hmm_wj_synthetic_scenario_readiness_review": {
+        "as_of": "2026-08-05",
+        "blocking_reasons": [
+          "finstressts_snapshot_blocked",
+          "trigate_vol_memory_blocks_leverage_add",
+          "systemic_bubble_time_at_risk_blocks_leverage_add",
+          "hmm_wj_generator_not_implemented",
+          "taiwan_etf_walkforward_validation_missing"
+        ],
+        "data_readiness": {
+          "all_required_tickers_ready": true,
+          "tickers": {
+            "0050.TW": {
+              "abs_return_acf_1d": 0.17909121642413475,
+              "ann_vol": 0.1990761268736232,
+              "data_ready": true,
+              "excess_kurtosis": 7.960083157587299,
+              "first_date": "2015-01-05",
+              "last_date": "2026-08-05",
+              "return_rows": 2818,
+              "rows": 2819,
+              "tail_obs_high_95pct": 141,
+              "tail_obs_low_5pct": 141,
+              "tail_transition_count": 64
+            },
+            "00631L.TW": {
+              "abs_return_acf_1d": 0.22774960739819425,
+              "ann_vol": 0.39338211955966373,
+              "data_ready": true,
+              "excess_kurtosis": 20.750937205578264,
+              "first_date": "2015-01-05",
+              "last_date": "2026-08-05",
+              "return_rows": 2822,
+              "rows": 2823,
+              "tail_obs_high_95pct": 142,
+              "tail_obs_low_5pct": 142,
+              "tail_transition_count": 60
+            },
+            "00632R.TW": {
+              "abs_return_acf_1d": 0.0012715538156879097,
+              "ann_vol": 1.7660117803682542,
+              "data_ready": true,
+              "excess_kurtosis": 2720.3760738721226,
+              "first_date": "2015-01-05",
+              "last_date": "2026-08-05",
+              "return_rows": 2822,
+              "rows": 2823,
+              "tail_obs_high_95pct": 142,
+              "tail_obs_low_5pct": 142,
+              "tail_transition_count": 62
+            },
+            "2330.TW": {
+              "abs_return_acf_1d": 0.1407138451280442,
+              "ann_vol": 0.2741211304340721,
+              "data_ready": true,
+              "excess_kurtosis": 3.5758518005577895,
+              "first_date": "2015-01-05",
+              "last_date": "2026-07-31",
+              "return_rows": 2814,
+              "rows": 2815,
+              "tail_obs_high_95pct": 141,
+              "tail_obs_low_5pct": 141,
+              "tail_transition_count": 56
+            }
+          }
+        },
+        "decision": {
+          "allow_00631l_add": false,
+          "auto_rebalance_allowed": false,
+          "can_generate_scenarios_for_decision": false,
+          "keep_golden1_0531_unchanged": true,
+          "promote_to_live": false,
+          "summary": "HMM-WJ scenario readiness is diagnostic only. Local data may be sufficient for future research, but no synthetic generator or Taiwan ETF walk-forward validation is available, so it cannot affect execution.",
+          "target_weight_change_allowed": false
+        },
+        "existing_research_blockers": {
+          "finstressts_allow_00631l_add": false,
+          "finstressts_status": "blocked",
+          "systemic_bubble_score": 2,
+          "systemic_bubble_state": "blocked_for_leverage_add",
+          "trigate_state": "blocked_for_leverage_add",
+          "trigate_stress_gate_count": 3
+        },
+        "generated_at": "2026-08-06T03:02:49",
+        "inputs": {
+          "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+          "finstressts": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_decision_snapshot.json",
+          "systemic_bubble_time_at_risk": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/systemic_bubble_time_at_risk_review.json",
+          "trigate_vol_memory": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/trigate_vol_memory_shadow.json"
+        },
+        "policy": "research_only_hmm_wj_readiness_no_synthetic_alpha_no_weight_change",
+        "readiness_thresholds": {
+          "min_high_tail_obs_per_ticker": 50,
+          "min_low_tail_obs_per_ticker": 50,
+          "min_return_rows_per_ticker": 1000,
+          "tail_definition": "empirical 5pct / 95pct returns per ticker"
+        },
+        "report_type": "group_a_plus_hmm_wj_synthetic_scenario_readiness_review",
+        "schema_version": 1,
+        "source_paper": {
+          "file": "C:/Users/isaac/Downloads/2603.10202.pdf",
+          "imported_concepts": [
+            "synthetic_scenario_quality_gate",
+            "jump_duration_tail_state_dwell_times",
+            "direct_counting_quantile_state_transitions",
+            "student_t_copula_dependence_concept"
+          ],
+          "not_imported": [
+            "HMM_WJ_live_trading_signal",
+            "synthetic_paths_as_alpha",
+            "SPY_or_SP500_hyperparameters_for_Taiwan_ETFs",
+            "automatic_target_weight_change"
+          ],
+          "title": "Hybrid Hidden Markov Model for Modeling Equity Excess Growth Rate Dynamics: A Discrete-State Approach with Jump-Diffusion"
+        },
+        "status": "blocked",
+        "validation_readiness": {
+          "generator_implemented": false,
+          "ks_ad_wasserstein_hellinger_acf_mae_available": false,
+          "student_t_copula_validated": false,
+          "synthetic_paths_generated": false,
+          "taiwan_etf_walkforward_validated": false
+        },
+        "warning_reasons": [
+          "readiness_only_no_synthetic_paths_generated"
+        ]
+      },
+      "illiquidity_network_readiness_review": {
+        "actual_data_end": "2026-08-05",
+        "as_of": "2026-08-06",
+        "blocking_reasons": [
+          "china_2015_parameters_not_portable_to_group_a_plus",
+          "crash_warning_not_allowed_to_change_live_weights",
+          "five_day_systemic_failure_signal_not_validated_for_taiwan",
+          "missing_high_frequency_bid_ask",
+          "missing_intraday_minute_liquidity",
+          "missing_market_wide_failure_events",
+          "nmi_illiquidity_network_not_implemented"
+        ],
+        "candidate_imports": {
+          "finance_sector_core_watch": "concept maps to Taiwan finance-heavy systemic-risk watch, but sector/style metadata is missing",
+          "five_day_systemic_failure_count": "paper idea retained, not implemented as live signal",
+          "liquidity_contagion_watch": "possible only after high-frequency bid/ask or reliable intraday spread data exists",
+          "low_degree_trigger_watch": "research-only; requires full universe graph and limit-down/no-bid failure timing"
+        },
+        "daily_ohlcv_liquidity_stress_proxy": {
+          "actual_data_end": "2026-08-05",
+          "component_counts": {
+            "limit_down_proxy": 0,
+            "negative_return": 1,
+            "range_spike": 0,
+            "volume_drought": 0
+          },
+          "coverage_tickers": 9,
+          "latest_rows": [
+            {
+              "daily_return": 0.03129658696596227,
+              "limit_down_proxy_flag": false,
+              "negative_return_flag": false,
+              "range_pct": 0.01838051113834734,
+              "range_spike_flag": false,
+              "ticker": "0050.TW",
+              "volume_drought_flag": false,
+              "volume_ratio_20d": 1.6074956258947224
+            },
+            {
+              "daily_return": 0.016798464712466155,
+              "limit_down_proxy_flag": false,
+              "negative_return_flag": false,
+              "range_pct": 0.01284580495618149,
+              "range_spike_flag": false,
+              "ticker": "0056.TW",
+              "volume_drought_flag": false,
+              "volume_ratio_20d": 1.1410246164052618
+            },
+            {
+              "daily_return": 0.06220839518126042,
+              "limit_down_proxy_flag": false,
+              "negative_return_flag": false,
+              "range_pct": 0.03297049216118311,
+              "range_spike_flag": false,
+              "ticker": "00631L.TW",
+              "volume_drought_flag": false,
+              "volume_ratio_20d": 1.606306911671578
+            },
+            {
+              "daily_return": -0.031044206975853972,
+              "limit_down_proxy_flag": false,
+              "negative_return_flag": true,
+              "range_pct": 0.016933236428779506,
+              "range_spike_flag": false,
+              "ticker": "00632R.TW",
+              "volume_drought_flag": false,
+              "volume_ratio_20d": 1.6852736885943547
+            },
+            {
+              "daily_return": 0.01608751671937192,
+              "limit_down_proxy_flag": false,
+              "negative_return_flag": false,
+              "range_pct": 0.0038610432888131468,
+              "range_spike_flag": false,
+              "ticker": "00646.TW",
+              "volume_drought_flag": false,
+              "volume_ratio_20d": 3.369415910432187
+            },
+            {
+              "daily_return": 0.008317554140215622,
+              "limit_down_proxy_flag": false,
+              "negative_return_flag": false,
+              "range_pct": 0.003402652173605786,
+              "range_spike_flag": false,
+              "ticker": "00679B.TWO",
+              "volume_drought_flag": false,
+              "volume_ratio_20d": 2.188610103626943
+            },
+            {
+              "daily_return": 0.004934198039885596,
+              "limit_down_proxy_flag": false,
+              "negative_return_flag": false,
+              "range_pct": 0.005756553922911116,
+              "range_spike_flag": false,
+              "ticker": "00713.TW",
+              "volume_drought_flag": false,
+              "volume_ratio_20d": 0.5292732353208053
+            },
+            {
+              "daily_return": 0.008085381610062559,
+              "limit_down_proxy_flag": false,
+              "negative_return_flag": false,
+              "range_pct": 0.0025873196477573693,
+              "range_spike_flag": false,
+              "ticker": "00751B.TWO",
+              "volume_drought_flag": false,
+              "volume_ratio_20d": 0.9962775263951734
+            },
+            {
+              "daily_return": 0.01780785497357118,
+              "limit_down_proxy_flag": false,
+              "negative_return_flag": false,
+              "range_pct": 0.011053135208004657,
+              "range_spike_flag": false,
+              "ticker": "00878.TW",
+              "volume_drought_flag": false,
+              "volume_ratio_20d": 1.5249633221166397
+            }
+          ],
+          "limitations": [
+            "Daily OHLCV cannot observe bid/ask spread.",
+            "Daily OHLCV cannot observe no-bid/no-quote intervals.",
+            "ETF-only or small-universe coverage cannot reproduce paper-level market-wide network contagion.",
+            "This proxy is for research dashboard use only."
+          ],
+          "live_strategy_effect": "none",
+          "manual_review_required": false,
+          "paper_equivalent": false,
+          "policy": "daily_ohlcv_proxy_only_no_live_weight_change",
+          "recent_daily_scores": [
+            {
+              "coverage_tickers": 9,
+              "dt": "2026-07-23",
+              "stress_score": 0.06666666666666667
+            },
+            {
+              "coverage_tickers": 9,
+              "dt": "2026-07-24",
+              "stress_score": 0.09444444444444444
+            },
+            {
+              "coverage_tickers": 9,
+              "dt": "2026-07-27",
+              "stress_score": 0.0
+            },
+            {
+              "coverage_tickers": 9,
+              "dt": "2026-07-28",
+              "stress_score": 0.1111111111111111
+            },
+            {
+              "coverage_tickers": 9,
+              "dt": "2026-07-29",
+              "stress_score": 0.27222222222222225
+            },
+            {
+              "coverage_tickers": 9,
+              "dt": "2026-07-30",
+              "stress_score": 0.1388888888888889
+            },
+            {
+              "coverage_tickers": 9,
+              "dt": "2026-07-31",
+              "stress_score": 0.08333333333333333
+            },
+            {
+              "coverage_tickers": 9,
+              "dt": "2026-08-03",
+              "stress_score": 0.05555555555555555
+            },
+            {
+              "coverage_tickers": 9,
+              "dt": "2026-08-04",
+              "stress_score": 0.0
+            },
+            {
+              "coverage_tickers": 9,
+              "dt": "2026-08-05",
+              "stress_score": 0.027777777777777776
+            }
+          ],
+          "state_reasons": [
+            "negative_return_count:1"
+          ],
+          "state_thresholds": {
+            "elevated_gte": 0.2,
+            "normal_lt": 0.1,
+            "stress_gte": 0.35,
+            "watch_gte": 0.1
+          },
+          "status": "available_research_proxy",
+          "stress_score": 0.027777777777777776,
+          "stress_state": "normal"
+        },
+        "data": {
+          "available_tables": [
+            "day_trading_data",
+            "dealer_futures_data",
+            "dealer_options_data",
+            "derivative_institutional_data",
+            "external_data_version",
+            "external_market_ohlcv",
+            "external_options_iv",
+            "foreign_shareholding_data",
+            "institutional_data",
+            "margin_data",
+            "market_margin_data",
+            "ohlcv",
+            "securities_lending_data",
+            "shareholding_distribution",
+            "short_sale_balance_data",
+            "stock_per_data",
+            "taifex_futures_daily",
+            "taifex_futures_institutional",
+            "taifex_options_daily",
+            "ticker_metadata",
+            "total_return_index_data"
+          ],
+          "db_exists": true,
+          "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+          "ohlcv_summary": {
+            "distinct_tickers": 15,
+            "max_dt": "2026-08-05",
+            "min_dt": "2009-01-02",
+            "rows": 30846
+          },
+          "requirements": {
+            "high_frequency_bid_ask": {
+              "available": false,
+              "matched_table_counts": {},
+              "matched_tables": [],
+              "populated_tables": [],
+              "required_any_of": [
+                "intraday_bid_ask_quotes",
+                "order_book_quotes",
+                "twse_best_bid_ask"
+              ]
+            },
+            "intraday_minute_liquidity": {
+              "available": false,
+              "matched_table_counts": {},
+              "matched_tables": [],
+              "populated_tables": [],
+              "required_any_of": [
+                "intraday_minute_illiquidity",
+                "intraday_minute_quotes"
+              ]
+            },
+            "market_wide_failure_events": {
+              "available": false,
+              "matched_table_counts": {},
+              "matched_tables": [],
+              "populated_tables": [],
+              "required_any_of": [
+                "limit_down_events",
+                "no_bid_no_quote_events",
+                "stock_failure_events"
+              ]
+            },
+            "stock_sector_style_mapping": {
+              "available": true,
+              "matched_table_counts": {
+                "ticker_metadata": 16
+              },
+              "matched_tables": [
+                "ticker_metadata"
+              ],
+              "populated_tables": [
+                "ticker_metadata"
+              ],
+              "required_any_of": [
+                "stock_sector_style",
+                "stock_industry_mapping",
+                "ticker_metadata"
+              ]
+            }
+          },
+          "table_counts": {
+            "day_trading_data": 1459,
+            "dealer_futures_data": 39823,
+            "dealer_options_data": 35518,
+            "derivative_institutional_data": 18066,
+            "external_data_version": 346,
+            "external_market_ohlcv": 71185,
+            "external_options_iv": 15,
+            "foreign_shareholding_data": 1456,
+            "institutional_data": 14261,
+            "margin_data": 9779,
+            "market_margin_data": 2475,
+            "ohlcv": 30846,
+            "securities_lending_data": 486,
+            "shareholding_distribution": 693100,
+            "short_sale_balance_data": 1440,
+            "stock_per_data": 867,
+            "taifex_futures_daily": 88131,
+            "taifex_futures_institutional": 78,
+            "taifex_options_daily": 3078034,
+            "ticker_metadata": 16,
+            "total_return_index_data": 704
+          }
+        },
+        "data_backfill_plan": {
+          "current_decision": {
+            "allowed_next_step": "daily_ohlcv_volume_proxy_only_research_dashboard",
+            "decision_date": "2026-07-19",
+            "high_frequency_backfill": "deferred",
+            "live_strategy_effect": "none",
+            "reason": "High-frequency full-market bid/ask data is too large for the current phase."
+          },
+          "minimum_viable_tables": {
+            "intraday_bid_ask_quotes": {
+              "minimum_columns": [
+                "ticker",
+                "dt",
+                "timestamp",
+                "best_bid_price",
+                "best_bid_volume",
+                "best_ask_price",
+                "best_ask_volume"
+              ],
+              "minimum_frequency": "1min_or_better",
+              "preferred_columns": [
+                "bid_price_1_to_5",
+                "bid_volume_1_to_5",
+                "ask_price_1_to_5",
+                "ask_volume_1_to_5"
+              ],
+              "purpose": "Build bid-ask spread or weighted-spread illiquidity at intraday frequency.",
+              "required_universe": "Taiwan listed stocks, not only GroupA+ ETFs"
+            },
+            "intraday_minute_illiquidity": {
+              "dependency": "intraday_bid_ask_quotes",
+              "minimum_columns": [
+                "ticker",
+                "dt",
+                "minute",
+                "spread_pct",
+                "weighted_spread_pct",
+                "source"
+              ],
+              "purpose": "Cache derived minute-level spread or weighted-spread illiquidity."
+            },
+            "stock_failure_events": {
+              "event_types": [
+                "limit_down_touch",
+                "limit_down_lock",
+                "no_bid",
+                "no_quote"
+              ],
+              "minimum_columns": [
+                "ticker",
+                "dt",
+                "timestamp",
+                "event_type",
+                "limit_down_price",
+                "last_price",
+                "no_bid_flag",
+                "no_quote_flag"
+              ],
+              "purpose": "Identify systemic liquidity-failure intervals used by the five-day warning candidate."
+            },
+            "ticker_metadata": {
+              "minimum_columns": [
+                "ticker",
+                "name",
+                "market",
+                "sector",
+                "industry",
+                "market_cap_bucket",
+                "is_financial_sector"
+              ],
+              "purpose": "Inspect sector/style concentration of critical liquidity-stress nodes."
+            }
+          },
+          "priority": [
+            "stock_sector_style_mapping",
+            "daily_ohlcv_volume_proxy",
+            "market_wide_failure_events_proxy",
+            "high_frequency_bid_ask_deferred",
+            "intraday_minute_liquidity_deferred"
+          ],
+          "proxies_allowed_now": {
+            "daily_ohlcv_volume_proxy": {
+              "allowed": true,
+              "paper_equivalent": false,
+              "reason": "Daily OHLCV cannot identify no-bid/no-quote timing or intraday systemic failures.",
+              "use": "coarse monitoring only"
+            },
+            "etf_only_universe": {
+              "allowed": true,
+              "paper_equivalent": false,
+              "reason": "The paper's network relies on a broad stock universe, not a few ETFs.",
+              "use": "sanity-check dashboard only"
+            }
+          },
+          "validation_requirements": [
+            "Build shadow-only signal first; no live target-weight effect.",
+            "Validate on Taiwan crash/stress windows including 2015, 2020, 2022, and 2026.",
+            "Measure one-day-ahead hit rate, false-positive rate, and overlap with SRR-lite crash watch.",
+            "Run randomization/null tests before treating network links as non-spurious.",
+            "Keep China 2015 thresholds separate from Taiwan-calibrated thresholds."
+          ]
+        },
+        "decision": {
+          "allow_00631l_add": false,
+          "allow_00632r_open": false,
+          "auto_rebalance_allowed": false,
+          "crash_guard_allowed": false,
+          "daily_ohlcv_liquidity_stress_proxy_available": true,
+          "high_frequency_liquidity_data_ready": false,
+          "illiquidity_network_ready": false,
+          "keep_golden1_0531_unchanged": true,
+          "promote_to_live": false,
+          "systemic_failure_signal_ready": false,
+          "target_weight_change_allowed": false
+        },
+        "generated_at": "2026-08-06T03:02:39",
+        "policy": "research_only_illiquidity_network_readiness_no_crash_guard_no_weight_change",
+        "report_type": "group_a_plus_illiquidity_network_readiness_review",
+        "schema_version": 1,
+        "source_paper": {
+          "imported_concept": "illiquidity comovement network, systemic liquidity-failure early warning, finance-sector and low-degree trigger inspection",
+          "path": "C:/Users/isaac/Downloads/2004.01917.pdf",
+          "title": "The illiquidity network of stocks in China's market crash"
+        },
+        "status": "blocked"
+      },
+      "intervention_fatigue_risk_budget_readiness_review": {
+        "as_of": "2026-07-20",
+        "blocking_reasons": [
+          "risk_budget_policy_not_promoted",
+          "rl_environment_not_validated",
+          "broker_holdings_time_series_sample_only",
+          "broker_holdings_time_series_has_negative_positions",
+          "broker_holdings_reconciliation_blocked",
+          "broker_holdings_not_order_authoritative",
+          "market_impact_readiness_blocked",
+          "dynamic_cvar_tail_cost_readiness_blocked",
+          "research_shadow_decision_snapshot_blocked",
+          "rebalance_review_disallows_auto_rebalance",
+          "rebalance_review_disallows_target_weight_change",
+          "market_impact_disallows_00631l_add",
+          "tail_cost_readiness_not_ready",
+          "research_shadow_disallows_00631l_add",
+          "turnover_at_or_above_pacing_limit"
+        ],
+        "broker_holdings_reconciliation": {
+          "authoritative_broker_export": false,
+          "broker_holdings_reconciled": false,
+          "can_generate_live_orders": false,
+          "matched_confirmed_count": 1,
+          "mismatched_confirmed_count": 1,
+          "missing_confirmed_count": 0,
+          "negative_position_count": 4,
+          "status": "blocked"
+        },
+        "broker_holdings_time_series": {
+          "authoritative_broker_export": false,
+          "first_transaction_date": "2022-09-14",
+          "history_type": "transaction_derived_incomplete_not_authoritative_broker_positions",
+          "last_transaction_date": "2026-07-17",
+          "latest_position_count": 13,
+          "negative_position_count": 4,
+          "snapshot_count": 116,
+          "status": "sample_available",
+          "transaction_count": 146
+        },
+        "component_readiness": {
+          "dynamic_cvar_tail_cost": {
+            "allow_00631l_add": false,
+            "status": "blocked",
+            "tail_cost_readiness_ready": false
+          },
+          "market_impact": {
+            "allow_00631l_add": false,
+            "auto_rebalance_allowed": false,
+            "status": "blocked",
+            "turnover": 0.808271858826179
+          },
+          "rebalance": {
+            "allow_00631l_add": false,
+            "auto_rebalance_allowed": false,
+            "cash_buffer_gap_reference": 0.30000000000000004,
+            "status": "available",
+            "target_weight_change_allowed": false
+          },
+          "research_shadow": {
+            "allow_00631l_add": false,
+            "status": "blocked"
+          }
+        },
+        "decision": {
+          "allow_00631l_add": false,
+          "allow_00632r_open": false,
+          "auto_rebalance_allowed": false,
+          "intervention_fatigue_ready": false,
+          "keep_golden1_0531_unchanged": true,
+          "promote_to_live": false,
+          "risk_budget_pacing_ready": false,
+          "summary": "Intervention fatigue and risk-budget pacing are governance-only. Current input gates and missing intervention history prevent any automatic rebalance or leverage add.",
+          "target_weight_change_allowed": false
+        },
+        "generated_at": "2026-08-06T03:03:00",
+        "inputs": {
+          "broker_holdings_reconciliation": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/broker_holdings_reconciliation_review.json",
+          "broker_holdings_time_series": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/broker_holdings_time_series_sample.json",
+          "dynamic_cvar_tail_cost": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json",
+          "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+          "intervention_history": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/intervention_history.json",
+          "market_impact": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+          "rebalance": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rebalance_review_20260720.json",
+          "research_shadow": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/research_shadow_decision_snapshot.json"
+        },
+        "intervention_fatigue": {
+          "cooldown_policy_implemented": false,
+          "has_00631l_add_attempt": false,
+          "has_00632r_open_attempt": true,
+          "hedge_change_count": 1,
+          "history_blocked_entry_count": 73,
+          "history_entry_count": 114,
+          "history_hedge_intervention_count": 3,
+          "history_leverage_intervention_count": 92,
+          "leverage_change_count": 0,
+          "normalized_history_available": true,
+          "recent_intervention_window_days": null,
+          "trade_count_nonzero": 3
+        },
+        "intervention_history": {
+          "blocked_entry_count": 73,
+          "entry_count": 114,
+          "first_check_date": "2026-07-06",
+          "hedge_intervention_count": 3,
+          "history_type": "system_observed_daily_status_not_broker_fills",
+          "last_check_date": "2026-08-05",
+          "leverage_intervention_count": 92,
+          "source_file_count": 68,
+          "status": "available"
+        },
+        "policy": "research_only_intervention_fatigue_risk_budget_pacing_no_weight_change",
+        "report_type": "group_a_plus_intervention_fatigue_risk_budget_readiness_review",
+        "risk_budget_pacing": {
+          "cash_budget_target_weight": 0.30000000000000004,
+          "leverage_budget_target_weight": 0.2,
+          "risk_budget_policy_promoted": false,
+          "turnover": 0.808271858826179,
+          "turnover_pacing_limit": 0.5
+        },
+        "schema_version": 1,
+        "source_paper": {
+          "file": "C:/Users/isaac/Downloads/2605.12462.pdf",
+          "imported_concepts": [
+            "modular_gym_style_environment",
+            "multi_objective_reward_with_cvar_penalty",
+            "intervention_fatigue",
+            "finite_risk_budget_pacing",
+            "baseline_policy_comparison_before_promotion"
+          ],
+          "not_imported": [
+            "electricity_market_data",
+            "ercot_caiso_calibration",
+            "ppo_live_policy",
+            "automatic_target_weight_change"
+          ],
+          "title": "Towards Affordable Energy: A Gymnasium Environment for Electric Utility Demand-Response Programs"
+        },
+        "status": "blocked",
+        "warning_reasons": [
+          "pending_intervention_count:3",
+          "cash_buffer_gap_reference:0.30000000000000004"
+        ]
+      },
+      "letf_tracking_error_effective_fee_readiness_review": {
+        "actual_data_end": "2026-08-05",
+        "as_of": "2026-08-06",
+        "blocking_reasons": [
+          "00631l_tw_mean_30d_tracking_error_drag_present",
+          "00632r_hedge_neutrality_not_promoted",
+          "intervention_fatigue_risk_budget_readiness_blocked",
+          "letf_pair_strategy_not_imported",
+          "realized_effective_fee_proxy_not_validated",
+          "research_only_letf_tracking_error_review"
+        ],
+        "data": {
+          "available_tickers": [
+            "0050.TW",
+            "00631L.TW",
+            "00632R.TW"
+          ],
+          "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+          "horizons": [
+            1,
+            5,
+            10,
+            20,
+            30
+          ],
+          "reference_ticker": "0050.TW",
+          "required_tickers": [
+            "0050.TW",
+            "00631L.TW",
+            "00632R.TW"
+          ],
+          "start": "2020-01-01"
+        },
+        "decision": {
+          "allow_00631l_add": false,
+          "allow_00632r_open": false,
+          "auto_rebalance_allowed": false,
+          "hedge_neutrality_ready": false,
+          "keep_golden1_0531_unchanged": true,
+          "letf_pair_trade_allowed": false,
+          "promote_to_live": false,
+          "realized_effective_fee_proxy_ready": false,
+          "target_weight_change_allowed": false,
+          "tracking_error_readiness_ready": false
+        },
+        "generated_at": "2026-08-06T03:03:05",
+        "hedge_neutrality": {
+          "00632R.TW": {
+            "absolute_beta_error": 0.008517997932637411,
+            "beta_error": 0.008517997932637411,
+            "correlation": -0.9820004745435117,
+            "expected_beta": -1.0,
+            "lookback_days": 60,
+            "realized_beta": -0.9914820020673626,
+            "status": "review_only"
+          }
+        },
+        "inputs": {
+          "intervention_fatigue_risk_budget_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/intervention_fatigue_risk_budget_readiness_review.json"
+        },
+        "parameter_threshold_review": {
+          "all_thresholds_passed": false,
+          "can_consider_00631l_add_after_manual_review": false,
+          "can_consider_00632r_open_after_manual_review": false,
+          "checks": {
+            "00631l_30d_latest_realized_variance_ceiling": {
+              "passed": false,
+              "threshold": 0.01,
+              "value": 0.02279802163900153
+            },
+            "00631l_30d_latest_tracking_error_floor": {
+              "passed": false,
+              "threshold": -0.02,
+              "value": -0.04539915525307657
+            },
+            "00631l_30d_mean_tracking_error_floor": {
+              "passed": false,
+              "threshold": -0.003,
+              "value": -0.005127147888962812
+            },
+            "00631l_30d_p05_tracking_error_floor": {
+              "passed": false,
+              "threshold": -0.05,
+              "value": -0.06748198256603492
+            },
+            "00631l_minimum_30d_observations": {
+              "passed": true,
+              "threshold": 500,
+              "value": 1570.0
+            },
+            "00632r_30d_p05_tracking_error_floor": {
+              "passed": false,
+              "threshold": -0.03,
+              "value": -0.04187945581538267
+            },
+            "00632r_60d_abs_beta_error_ceiling": {
+              "passed": true,
+              "threshold": 0.1,
+              "value": 0.008517997932637411
+            },
+            "00632r_60d_correlation_ceiling": {
+              "passed": true,
+              "threshold": -0.95,
+              "value": -0.9820004745435117
+            },
+            "00632r_minimum_30d_observations": {
+              "passed": true,
+              "threshold": 500,
+              "value": 1570.0
+            },
+            "effective_fee_proxy_independently_validated": {
+              "passed": false,
+              "threshold": true,
+              "value": false
+            },
+            "live_hedge_policy_validated": {
+              "passed": false,
+              "threshold": true,
+              "value": false
+            }
+          },
+          "failed_checks": [
+            "00631l_30d_mean_tracking_error_floor",
+            "00631l_30d_latest_tracking_error_floor",
+            "00631l_30d_p05_tracking_error_floor",
+            "00631l_30d_latest_realized_variance_ceiling",
+            "00632r_30d_p05_tracking_error_floor",
+            "effective_fee_proxy_independently_validated",
+            "live_hedge_policy_validated"
+          ],
+          "notes": [
+            "Thresholds are deliberately conservative and advisory-only.",
+            "Passing these thresholds would only permit manual review, not automatic orders.",
+            "Effective-fee proxy and live hedge policy remain hard validation requirements."
+          ],
+          "policy": "manual_review_thresholds_only_no_live_unlock",
+          "thresholds": {
+            "00631l_30d_latest_realized_variance_ceiling": 0.01,
+            "00631l_30d_latest_tracking_error_floor": -0.02,
+            "00631l_30d_mean_tracking_error_floor": -0.003,
+            "00631l_30d_p05_tracking_error_floor": -0.05,
+            "00632r_30d_p05_tracking_error_floor": -0.03,
+            "00632r_60d_abs_beta_error_ceiling": 0.1,
+            "00632r_60d_correlation_ceiling": -0.95,
+            "minimum_30d_observations": 500
+          }
+        },
+        "policy": "research_only_letf_tracking_error_effective_fee_no_pair_trade_no_weight_change",
+        "report_type": "group_a_plus_letf_tracking_error_effective_fee_readiness_review",
+        "schema_version": 1,
+        "source_paper": {
+          "imported_concept": "holding-horizon tracking error, realized-variance decay, realized effective-fee proxy",
+          "path": "C:/Users/isaac/Downloads/1610.09404.pdf",
+          "title": "Understanding the Tracking Errors of Commodity Leveraged ETFs"
+        },
+        "status": "blocked",
+        "tracking_error_summary": {
+          "00631L.TW": {
+            "expected_daily_beta": 2.0,
+            "horizon_metrics": {
+              "1": {
+                "effective_drag_proxy": {
+                  "count": 1599,
+                  "latest": -0.0003338560294825193,
+                  "mean": 4.5076429792792474e-05,
+                  "p05": -0.010583067296521765,
+                  "p50": 3.2777285186245063e-05,
+                  "p95": 0.010169565625610666,
+                  "std": 0.007527068776288303
+                },
+                "horizon_days": 1,
+                "negative_tracking_error_rate": 0.5071919949968731,
+                "realized_variance": {
+                  "count": 1599,
+                  "latest": 0.0009496771891300774,
+                  "mean": 0.0002134951399502507,
+                  "p05": 1.5601396787769024e-07,
+                  "p50": 5.3098786146310666e-05,
+                  "p95": 0.0008818145078032298,
+                  "std": 0.0006240168587163415
+                },
+                "recent_60_observations": {
+                  "mean_effective_drag_proxy": -0.0008823584124059379,
+                  "mean_tracking_error": -0.0014949653354326845,
+                  "p05_tracking_error": -0.018820977323584814
+                },
+                "tracking_error": {
+                  "count": 1599,
+                  "latest": -0.0012835332186125967,
+                  "mean": -0.00016841871015745813,
+                  "p05": -0.011383699451487652,
+                  "p50": -0.00010700949660852332,
+                  "p95": 0.010113172985883784,
+                  "std": 0.007623661461502502
+                },
+                "variance_decay_proxy": {
+                  "count": 1599,
+                  "latest": -0.0009496771891300774,
+                  "mean": -0.0002134951399502507,
+                  "p05": -0.0008818145078032308,
+                  "p50": -5.3098786146310666e-05,
+                  "p95": -1.560139678776904e-07,
+                  "std": 0.0006240168587163415
+                }
+              },
+              "10": {
+                "effective_drag_proxy": {
+                  "count": 1590,
+                  "latest": -0.0039595377059414676,
+                  "mean": 0.0005131566040853183,
+                  "p05": -0.035844404231148874,
+                  "p50": 0.0013991726519558528,
+                  "p95": 0.032891266301297094,
+                  "std": 0.02119269400685538
+                },
+                "horizon_days": 10,
+                "negative_tracking_error_rate": 0.5,
+                "realized_variance": {
+                  "count": 1590,
+                  "latest": 0.013932125458745805,
+                  "mean": 0.0020972705550767056,
+                  "p05": 0.00036677027396182343,
+                  "p50": 0.0012345719254082945,
+                  "p95": 0.005599154089167187,
+                  "std": 0.0029135063828720953
+                },
+                "recent_60_observations": {
+                  "mean_effective_drag_proxy": -0.00784993007711394,
+                  "mean_tracking_error": -0.012864835306991734,
+                  "p05_tracking_error": -0.030111761402609693
+                },
+                "tracking_error": {
+                  "count": 1590,
+                  "latest": -0.017891663164687273,
+                  "mean": -0.0015841139509913868,
+                  "p05": -0.041692245354884534,
+                  "p50": -4.426849715400728e-05,
+                  "p95": 0.031234626725002886,
+                  "std": 0.021927240278180753
+                },
+                "variance_decay_proxy": {
+                  "count": 1590,
+                  "latest": -0.013932125458745805,
+                  "mean": -0.0020972705550767056,
+                  "p05": -0.005599154089167188,
+                  "p50": -0.0012345719254082945,
+                  "p95": -0.0003667702739618241,
+                  "std": 0.0029135063828720953
+                }
+              },
+              "20": {
+                "effective_drag_proxy": {
+                  "count": 1580,
+                  "latest": -0.021546098101493584,
+                  "mean": 0.0008269491473426547,
+                  "p05": -0.04897517108814197,
+                  "p50": 0.0019600489729683142,
+                  "p95": 0.05138177986215367,
+                  "std": 0.02923687406676895
+                },
+                "horizon_days": 20,
+                "negative_tracking_error_rate": 0.5158227848101266,
+                "realized_variance": {
+                  "count": 1580,
+                  "latest": 0.019496391380529075,
+                  "mean": 0.004138286329785654,
+                  "p05": 0.0009942345784358572,
+                  "p50": 0.002786616930466216,
+                  "p95": 0.010411369887640012,
+                  "std": 0.004466187354219572
+                },
+                "recent_60_observations": {
+                  "mean_effective_drag_proxy": -0.018910979626372892,
+                  "mean_tracking_error": -0.028058524095722067,
+                  "p05_tracking_error": -0.05160789645081092
+                },
+                "tracking_error": {
+                  "count": 1580,
+                  "latest": -0.04104248948202266,
+                  "mean": -0.0033113371824430014,
+                  "p05": -0.05602995554909639,
+                  "p50": -0.0012021686199365118,
+                  "p95": 0.04759253608286038,
+                  "std": 0.03037603588270156
+                },
+                "variance_decay_proxy": {
+                  "count": 1580,
+                  "latest": -0.019496391380529075,
+                  "mean": -0.004138286329785654,
+                  "p05": -0.010411369887640014,
+                  "p50": -0.002786616930466216,
+                  "p95": -0.0009942345784358575,
+                  "std": 0.004466187354219572
+                }
+              },
+              "30": {
+                "effective_drag_proxy": {
+                  "count": 1570,
+                  "latest": -0.02260113361407504,
+                  "mean": 0.001045721854209527,
+                  "p05": -0.056994769643371246,
+                  "p50": 0.0026148355552116096,
+                  "p95": 0.0638983321760496,
+                  "std": 0.03615862176551097
+                },
+                "horizon_days": 30,
+                "negative_tracking_error_rate": 0.5261146496815287,
+                "realized_variance": {
+                  "count": 1570,
+                  "latest": 0.02279802163900153,
+                  "mean": 0.006172869743172341,
+                  "p05": 0.001677136754353294,
+                  "p50": 0.004382797312769743,
+                  "p95": 0.022398797633300018,
+                  "std": 0.0057320245393586555
+                },
+                "recent_60_observations": {
+                  "mean_effective_drag_proxy": -0.0309737370041859,
+                  "mean_tracking_error": -0.044533877461873615,
+                  "p05_tracking_error": -0.06908651385744032
+                },
+                "tracking_error": {
+                  "count": 1570,
+                  "latest": -0.04539915525307657,
+                  "mean": -0.005127147888962812,
+                  "p05": -0.06748198256603492,
+                  "p50": -0.002492898114275003,
+                  "p95": 0.058796787569692824,
+                  "std": 0.03765022943622467
+                },
+                "variance_decay_proxy": {
+                  "count": 1570,
+                  "latest": -0.02279802163900153,
+                  "mean": -0.006172869743172341,
+                  "p05": -0.022398797633300018,
+                  "p50": -0.004382797312769743,
+                  "p95": -0.0016771367543532943,
+                  "std": 0.0057320245393586555
+                }
+              },
+              "5": {
+                "effective_drag_proxy": {
+                  "count": 1595,
+                  "latest": -0.014644585773816582,
+                  "mean": 0.000237028400766869,
+                  "p05": -0.02461045866617763,
+                  "p50": 0.0004464014948412315,
+                  "p95": 0.022681103035894424,
+                  "std": 0.015429024284522983
+                },
+                "horizon_days": 5,
+                "negative_tracking_error_rate": 0.509717868338558,
+                "realized_variance": {
+                  "count": 1595,
+                  "latest": 0.0102846597350775,
+                  "mean": 0.0010613173660244332,
+                  "p05": 0.00011923817383593551,
+                  "p50": 0.0005657466720874966,
+                  "p95": 0.0031898109995553915,
+                  "std": 0.0018556186174611227
+                },
+                "recent_60_observations": {
+                  "mean_effective_drag_proxy": -0.004319386441669392,
+                  "mean_tracking_error": -0.007165105931732936,
+                  "p05_tracking_error": -0.024948150029366033
+                },
+                "tracking_error": {
+                  "count": 1595,
+                  "latest": -0.024929245508894082,
+                  "mean": -0.0008242889652575645,
+                  "p05": -0.026835345443447813,
+                  "p50": -0.00020613048142033297,
+                  "p95": 0.02179372574291489,
+                  "std": 0.015912353678778326
+                },
+                "variance_decay_proxy": {
+                  "count": 1595,
+                  "latest": -0.0102846597350775,
+                  "mean": -0.0010613173660244332,
+                  "p05": -0.0031898109995553963,
+                  "p50": -0.0005657466720874966,
+                  "p95": -0.00011923817383593554,
+                  "std": 0.0018556186174611227
+                }
+              }
+            }
+          },
+          "00632R.TW": {
+            "expected_daily_beta": -1.0,
+            "horizon_metrics": {
+              "1": {
+                "effective_drag_proxy": {
+                  "count": 1599,
+                  "latest": 0.00023022070907194152,
+                  "mean": 0.0011415464803299278,
+                  "p05": -0.005890091350690208,
+                  "p50": -0.00013740169146996136,
+                  "p95": 0.006395111998071251,
+                  "std": 0.04889603822939376
+                },
+                "horizon_days": 1,
+                "negative_tracking_error_rate": 0.5359599749843652,
+                "realized_variance": {
+                  "count": 1599,
+                  "latest": 0.0009496771891300774,
+                  "mean": 0.0002134951399502507,
+                  "p05": 1.5601396787769024e-07,
+                  "p50": 5.3098786146310666e-05,
+                  "p95": 0.0008818145078032298,
+                  "std": 0.0006240168587163415
+                },
+                "recent_60_observations": {
+                  "mean_effective_drag_proxy": 0.0003566119113725643,
+                  "mean_tracking_error": -0.0002559950116541821,
+                  "p05_tracking_error": -0.006186966843791886
+                },
+                "tracking_error": {
+                  "count": 1599,
+                  "latest": -0.0007194564800581359,
+                  "mean": 0.0009280513403796769,
+                  "p05": -0.006147816450826573,
+                  "p50": -0.00031291760263576184,
+                  "p95": 0.005924092452024517,
+                  "std": 0.04888574789594269
+                },
+                "variance_decay_proxy": {
+                  "count": 1599,
+                  "latest": -0.0009496771891300774,
+                  "mean": -0.0002134951399502507,
+                  "p05": -0.0008818145078032308,
+                  "p50": -5.3098786146310666e-05,
+                  "p95": -1.560139678776904e-07,
+                  "std": 0.0006240168587163415
+                }
+              },
+              "10": {
+                "effective_drag_proxy": {
+                  "count": 1590,
+                  "latest": 0.004750665560707645,
+                  "mean": 0.01145018080507973,
+                  "p05": -0.01804244904432236,
+                  "p50": -0.0012850422261543207,
+                  "p95": 0.01978510385851539,
+                  "std": 0.15514278320945332
+                },
+                "horizon_days": 10,
+                "negative_tracking_error_rate": 0.630188679245283,
+                "realized_variance": {
+                  "count": 1590,
+                  "latest": 0.013932125458745805,
+                  "mean": 0.0020972705550767056,
+                  "p05": 0.00036677027396182343,
+                  "p50": 0.0012345719254082945,
+                  "p95": 0.005599154089167187,
+                  "std": 0.0029135063828720953
+                },
+                "recent_60_observations": {
+                  "mean_effective_drag_proxy": 0.003406314521205712,
+                  "mean_tracking_error": -0.0016085907086720813,
+                  "p05_tracking_error": -0.010153776549832372
+                },
+                "tracking_error": {
+                  "count": 1590,
+                  "latest": -0.00918145989803816,
+                  "mean": 0.00935291025000302,
+                  "p05": -0.021064306612752107,
+                  "p50": -0.0031433893971196136,
+                  "p95": 0.01694999611035571,
+                  "std": 0.15521862456661994
+                },
+                "variance_decay_proxy": {
+                  "count": 1590,
+                  "latest": -0.013932125458745805,
+                  "mean": -0.0020972705550767056,
+                  "p05": -0.005599154089167188,
+                  "p50": -0.0012345719254082945,
+                  "p95": -0.0003667702739618241,
+                  "std": 0.0029135063828720953
+                }
+              },
+              "20": {
+                "effective_drag_proxy": {
+                  "count": 1580,
+                  "latest": 0.011737168347091247,
+                  "mean": 0.02314977270179358,
+                  "p05": -0.027847013976020563,
+                  "p50": -0.0019298263991465623,
+                  "p95": 0.027318479301726133,
+                  "std": 0.2195990215181169
+                },
+                "horizon_days": 20,
+                "negative_tracking_error_rate": 0.6613924050632911,
+                "realized_variance": {
+                  "count": 1580,
+                  "latest": 0.019496391380529075,
+                  "mean": 0.004138286329785654,
+                  "p05": 0.0009942345784358572,
+                  "p50": 0.002786616930466216,
+                  "p95": 0.010411369887640012,
+                  "std": 0.004466187354219572
+                },
+                "recent_60_observations": {
+                  "mean_effective_drag_proxy": 0.00854607282873391,
+                  "mean_tracking_error": -0.0006014716406152678,
+                  "p05_tracking_error": -0.010997205402799028
+                },
+                "tracking_error": {
+                  "count": 1580,
+                  "latest": -0.007759223033437828,
+                  "mean": 0.019011486372007922,
+                  "p05": -0.03277525480411497,
+                  "p50": -0.005456979375412622,
+                  "p95": 0.022519966492852764,
+                  "std": 0.21982403906092607
+                },
+                "variance_decay_proxy": {
+                  "count": 1580,
+                  "latest": -0.019496391380529075,
+                  "mean": -0.004138286329785654,
+                  "p05": -0.010411369887640014,
+                  "p50": -0.002786616930466216,
+                  "p95": -0.0009942345784358575,
+                  "std": 0.004466187354219572
+                }
+              },
+              "30": {
+                "effective_drag_proxy": {
+                  "count": 1570,
+                  "latest": 0.016601088900434623,
+                  "mean": 0.03503671976758635,
+                  "p05": -0.03483921298235795,
+                  "p50": -0.0027941399088166692,
+                  "p95": 0.03281517656338422,
+                  "std": 0.2695005887081134
+                },
+                "horizon_days": 30,
+                "negative_tracking_error_rate": 0.6675159235668789,
+                "realized_variance": {
+                  "count": 1570,
+                  "latest": 0.02279802163900153,
+                  "mean": 0.006172869743172341,
+                  "p05": 0.001677136754353294,
+                  "p50": 0.004382797312769743,
+                  "p95": 0.022398797633300018,
+                  "std": 0.0057320245393586555
+                },
+                "recent_60_observations": {
+                  "mean_effective_drag_proxy": 0.01403384486760572,
+                  "mean_tracking_error": 0.0004737044099180066,
+                  "p05_tracking_error": -0.0119012074212663
+                },
+                "tracking_error": {
+                  "count": 1570,
+                  "latest": -0.006196932738566908,
+                  "mean": 0.028863850024414002,
+                  "p05": -0.04187945581538267,
+                  "p50": -0.007909186866105587,
+                  "p95": 0.027967142224793434,
+                  "std": 0.2698888334985216
+                },
+                "variance_decay_proxy": {
+                  "count": 1570,
+                  "latest": -0.02279802163900153,
+                  "mean": -0.006172869743172341,
+                  "p05": -0.022398797633300018,
+                  "p50": -0.004382797312769743,
+                  "p95": -0.0016771367543532943,
+                  "std": 0.0057320245393586555
+                }
+              },
+              "5": {
+                "effective_drag_proxy": {
+                  "count": 1595,
+                  "latest": 0.00855491243958277,
+                  "mean": 0.005725576518421248,
+                  "p05": -0.01252497385822389,
+                  "p50": -0.0007027573639048009,
+                  "p95": 0.012624600898233756,
+                  "std": 0.1097364663779002
+                },
+                "horizon_days": 5,
+                "negative_tracking_error_rate": 0.5862068965517241,
+                "realized_variance": {
+                  "count": 1595,
+                  "latest": 0.0102846597350775,
+                  "mean": 0.0010613173660244332,
+                  "p05": 0.00011923817383593551,
+                  "p50": 0.0005657466720874966,
+                  "p95": 0.0031898109995553915,
+                  "std": 0.0018556186174611227
+                },
+                "recent_60_observations": {
+                  "mean_effective_drag_proxy": 0.0020481730526159055,
+                  "mean_tracking_error": -0.0007975464374476401,
+                  "p05_tracking_error": -0.0100523843146259
+                },
+                "tracking_error": {
+                  "count": 1595,
+                  "latest": -0.0017297472954947296,
+                  "mean": 0.004664259152396814,
+                  "p05": -0.01383191554633376,
+                  "p50": -0.0014849533830409867,
+                  "p95": 0.01123553097966606,
+                  "std": 0.10974946735655564
+                },
+                "variance_decay_proxy": {
+                  "count": 1595,
+                  "latest": -0.0102846597350775,
+                  "mean": -0.0010613173660244332,
+                  "p05": -0.0031898109995553963,
+                  "p50": -0.0005657466720874966,
+                  "p95": -0.00011923817383593554,
+                  "std": 0.0018556186174611227
+                }
+              }
+            }
+          }
+        }
+      },
+      "overlay_00679b_weight": 0.0,
+      "overlay_regime": "golden1",
+      "pre_trade_guard": {
+        "allow_00631l_add": true,
+        "blocked_trades": [],
+        "current_shares": 0,
+        "enforced": false,
+        "guarded_target_shares": 0,
+        "name": "volatility_gate_no_00631l_add",
+        "policy": "advisory_no_auto_weight_change",
+        "requested_target_shares": 0,
+        "status": "inactive",
+        "ticker": "00631L.TW"
+      },
+      "pre_trade_guards": [
+        {
+          "allow_00631l_add": true,
+          "blocked_trades": [],
+          "current_shares": 0,
+          "enforced": false,
+          "guarded_target_shares": 0,
+          "name": "volatility_gate_no_00631l_add",
+          "policy": "advisory_no_auto_weight_change",
+          "requested_target_shares": 0,
+          "status": "inactive",
+          "ticker": "00631L.TW"
+        },
+        {
+          "blocked_trades": [],
+          "name": "a2118_extreme_risk_no_new_adds",
+          "policy": "warning_only_no_weight_change",
+          "recommended_action": "none",
+          "source_alert_type": null,
+          "status": "inactive",
+          "tickers": [
+            "0050.TW",
+            "00631L.TW"
+          ]
+        },
+        {
+          "allow_00631l_add": false,
+          "blocked_trades": [],
+          "compounding_regime": "MEAN_REVERTING",
+          "current_shares": 0,
+          "date": "2026-08-05",
+          "enforced": false,
+          "guarded_target_shares": 0,
+          "name": "compounding_regime_no_00631l_add",
+          "policy": "diagnostic_no_auto_weight_change",
+          "reason": "compounding_regime_blocks_new_00631l_exposure",
+          "recommended_policy": "prohibit_new_leverage_or_reduce_rebalance_frequency",
+          "requested_target_shares": 0,
+          "status": "active_allowed",
+          "ticker": "00631L.TW"
+        }
+      ],
+      "promotion_gate": {
+        "blocking_gates": [
+          "panel_drift",
+          "multi_window",
+          "deployment_consistency",
+          "deployment_summary"
+        ],
+        "decision": "blocked_deployment_consistency_and_model_gates",
+        "deployment_summary_consistency_errors": [],
+        "deployment_summary_consistency_status": "ok",
+        "deployment_summary_gate_blocking_reasons": [
+          "ops_health_errors_present",
+          "gift_signed_approval_validator_smoke_failed"
+        ],
+        "deployment_summary_gate_reason": "deployment summary governance blocks promotion",
+        "deployment_summary_gate_status": "fail",
+        "source_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_promotion_gate_20260806.json",
+        "status": "available"
+      },
+      "research_shadow_decision_snapshot": {
+        "blocking_reasons": [
+          "finstressts_snapshot_blocked",
+          "trigate_vol_memory_blocks_leverage_add",
+          "systemic_bubble_time_at_risk_blocks_leverage_add",
+          "illiquidity_network_readiness_blocked",
+          "speculative_influence_network_readiness_blocked",
+          "sin_lite_proxy_blocked",
+          "hmm_wj_synthetic_scenario_readiness_blocked",
+          "dynamic_cvar_tail_cost_readiness_blocked",
+          "synthetic_augmentation_validation_readiness_blocked",
+          "intervention_fatigue_risk_budget_readiness_blocked",
+          "letf_tracking_error_effective_fee_readiness_blocked",
+          "asian_etf_tail_analytics_readiness_blocked",
+          "reduced_rank_correlation_readiness_blocked",
+          "rl_governance_readiness_blocked",
+          "llm_state_reward_interface_readiness_blocked"
+        ],
+        "decision": {
+          "allow_00631l_add": false,
+          "allow_00632r_open": false,
+          "auto_rebalance_allowed": false,
+          "keep_golden1_0531_unchanged": true,
+          "promote_to_live": false,
+          "summary": "Research shadow diagnostics do not permit 00631L add: at least one research-only readiness, volatility-memory, systemic bubble time-at-risk, HMM-WJ scenario-readiness, illiquidity-network readiness, speculative-influence-network readiness, SIN-lite proxy, dynamic CVaR tail/cost diagnostic, synthetic augmentation validation gate, or intervention fatigue/risk-budget gate, LETF tracking-error/effective-fee gate, Asian ETF tail-analytics gate, reduced-rank correlation readiness, RL governance, or LLM state-reward interface readiness is blocked.",
+          "target_weight_change_allowed": false
+        },
+        "generated_at": "2026-08-06T03:08:10",
+        "inputs": {
+          "asian_etf_tail_analytics_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/asian_etf_tail_analytics_readiness_review.json",
+          "dynamic_cvar_tail_cost_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json",
+          "finstressts": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_decision_snapshot.json",
+          "hmm_wj_synthetic_scenario_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/hmm_wj_synthetic_scenario_readiness_review.json",
+          "illiquidity_network_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/illiquidity_network_readiness_review.json",
+          "intervention_fatigue_risk_budget_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/intervention_fatigue_risk_budget_readiness_review.json",
+          "letf_tracking_error_effective_fee_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+          "llm_state_reward_interface_diagnostic_refinement": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_diagnostic_refinement_review.json",
+          "llm_state_reward_interface_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_interface_readiness_review.json",
+          "llm_state_reward_manual_approval_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_manual_approval_readiness_review.json",
+          "llm_state_reward_regime_filtered_micro_tilt": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_regime_filtered_micro_tilt_shadow_backtest.json",
+          "llm_state_reward_shadow_training_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_shadow_training_readiness_review.json",
+          "llm_state_reward_signed_approval_validation": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_validation.json",
+          "ncf_decision_calibration": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_decision_calibration_shadow_20260806.json",
+          "reduced_rank_confirmation_overlap_backtest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/reduced_rank_confirmation_overlap_backtest.json",
+          "reduced_rank_correlation_crash_window_backtest": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/reduced_rank_correlation_crash_window_backtest.json",
+          "reduced_rank_correlation_proxy": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/reduced_rank_correlation_proxy.json",
+          "reduced_rank_correlation_proxy_param_sweep": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/reduced_rank_correlation_proxy_param_sweep.json",
+          "reduced_rank_correlation_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/reduced_rank_correlation_readiness_review.json",
+          "rl_governance_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rl_governance_readiness_review.json",
+          "sin_lite_proxy": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/sin_lite_proxy.json",
+          "speculative_influence_network_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/speculative_influence_network_readiness_review.json",
+          "synthetic_augmentation_validation_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/synthetic_augmentation_validation_readiness_review.json",
+          "systemic_bubble_time_at_risk": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/systemic_bubble_time_at_risk_review.json",
+          "trigate_vol_memory": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/trigate_vol_memory_shadow.json"
+        },
+        "policy": "research_shadow_summary_no_weight_change",
+        "report_type": "group_a_plus_research_shadow_decision_snapshot",
+        "schema_version": 1,
+        "status": "blocked",
+        "summary": {
+          "asian_etf_allow_00631l_add": false,
+          "asian_etf_available_paper_etf_count": 1,
+          "asian_etf_optimizer_ready": false,
+          "asian_etf_tail_analytics_ready": false,
+          "asian_etf_tail_analytics_status": "blocked",
+          "directional_synthetic_alpha_allowed": false,
+          "dynamic_cvar_allow_00631l_add": false,
+          "dynamic_cvar_optimizer_ready": false,
+          "dynamic_cvar_status": "blocked",
+          "dynamic_cvar_tail_cost_ready": false,
+          "feature_proposal_governance_imported": true,
+          "finstressts_allow_00631l_add": false,
+          "finstressts_status": "blocked",
+          "hmm_wj_allow_00631l_add": false,
+          "hmm_wj_can_generate_scenarios_for_decision": false,
+          "hmm_wj_data_ready": true,
+          "hmm_wj_status": "blocked",
+          "illiquidity_daily_proxy_coverage_tickers": 9,
+          "illiquidity_daily_proxy_manual_review_required": false,
+          "illiquidity_daily_proxy_paper_equivalent": false,
+          "illiquidity_daily_proxy_status": "available_research_proxy",
+          "illiquidity_daily_proxy_stress_score": 0.027777777777777776,
+          "illiquidity_daily_proxy_stress_state": "normal",
+          "illiquidity_network_allow_00631l_add": false,
+          "illiquidity_network_crash_guard_allowed": false,
+          "illiquidity_network_ready": false,
+          "illiquidity_network_status": "blocked",
+          "intervention_fatigue_allow_00631l_add": false,
+          "intervention_fatigue_ready": false,
+          "intervention_fatigue_status": "blocked",
+          "letf_allow_00631l_add": false,
+          "letf_allow_00632r_open": false,
+          "letf_effective_fee_proxy_ready": false,
+          "letf_hedge_neutrality_ready": false,
+          "letf_tracking_error_readiness_ready": false,
+          "letf_tracking_status": "blocked",
+          "live_llm_trading_allowed": false,
+          "live_ppo_allocator_allowed": false,
+          "live_rl_allocator_allowed": false,
+          "llm_state_reward_diagnostic_allow_00631l_add": false,
+          "llm_state_reward_diagnostic_allow_00632r_open": false,
+          "llm_state_reward_diagnostic_grade": "red",
+          "llm_state_reward_diagnostic_mean_reward_future_downside_alignment": -0.03972849249282377,
+          "llm_state_reward_diagnostic_mean_reward_future_return_alignment": -0.014168007561183181,
+          "llm_state_reward_diagnostic_mean_reward_snr": 2.151707054898388,
+          "llm_state_reward_diagnostic_ppo_training_queue_allowed": false,
+          "llm_state_reward_diagnostic_refinement_ready": true,
+          "llm_state_reward_diagnostic_refinement_status": "available_for_manual_offline_review",
+          "llm_state_reward_diagnostic_warning_count": 10,
+          "llm_state_reward_interface_allow_00631l_add": false,
+          "llm_state_reward_interface_ready": false,
+          "llm_state_reward_interface_status": "blocked",
+          "llm_state_reward_manual_approval_model_training_allowed": false,
+          "llm_state_reward_manual_approval_ppo_training_allowed": false,
+          "llm_state_reward_manual_approval_promote_to_live": false,
+          "llm_state_reward_manual_approval_queue_blocking_reasons": [
+            "signed_human_exception_approval_record_missing_or_invalid"
+          ],
+          "llm_state_reward_manual_approval_readiness_status": "available_for_manual_approval_review",
+          "llm_state_reward_manual_approval_review_ready": true,
+          "llm_state_reward_manual_approval_to_queue_training_allowed": false,
+          "llm_state_reward_regime_filter_resolves_5bps_warning": true,
+          "llm_state_reward_regime_filtered_micro_tilt_status": "available_for_manual_offline_review",
+          "llm_state_reward_regime_filtered_model_training_allowed": false,
+          "llm_state_reward_regime_filtered_promote_to_live": false,
+          "llm_state_reward_regime_filtered_recommended_candidate": {
+            "aggregate": {
+              "available_fold_count": 6,
+              "fold_count": 6,
+              "mean_delta_final_value": 0.00030346868071762234,
+              "mean_delta_max_drawdown": -1.4211215278521946e-05,
+              "mean_delta_sharpe_ratio": 0.004525255442848708,
+              "non_worse_drawdown_folds": 4,
+              "positive_final_value_folds": 5,
+              "positive_sharpe_folds": 4
+            },
+            "cost_bps": 5.0,
+            "high_score": 1.03,
+            "mean_active_day_ratio": 0.5132275132275133,
+            "rank_score": 106.03751548694456,
+            "regime_rule": "trend_above_train_median"
+          },
+          "llm_state_reward_shadow_training_allow_00631l_add": false,
+          "llm_state_reward_shadow_training_allow_00632r_open": false,
+          "llm_state_reward_shadow_training_model_training_allowed": false,
+          "llm_state_reward_shadow_training_ppo_training_allowed": false,
+          "llm_state_reward_shadow_training_promote_to_live": false,
+          "llm_state_reward_shadow_training_readiness_status": "available_for_manual_offline_review",
+          "llm_state_reward_shadow_training_ready": true,
+          "llm_state_reward_shadow_training_request_allowed": false,
+          "llm_state_reward_signed_approval_human_exception_approved": false,
+          "llm_state_reward_signed_approval_model_training_allowed": false,
+          "llm_state_reward_signed_approval_non_ppo_shadow_queue_review_allowed": false,
+          "llm_state_reward_signed_approval_ppo_training_allowed": false,
+          "llm_state_reward_signed_approval_promote_to_live": false,
+          "llm_state_reward_signed_approval_record_valid": false,
+          "llm_state_reward_signed_approval_training_queue_allowed": false,
+          "llm_state_reward_signed_approval_validation_status": "blocked",
+          "ncf_decision_calibration_governance_status": "closed_failed_oos",
+          "ncf_decision_calibration_live_gate_allowed": false,
+          "ncf_decision_calibration_model_default_enabled": false,
+          "ncf_decision_calibration_status": "research_only",
+          "ncf_decision_calibration_target_weight_change_allowed": false,
+          "ncf_decision_confidence_contract": "predicted_regret_percentile_rank_proxy_not_calibrated_probability",
+          "reduced_rank_allow_00631l_add": false,
+          "reduced_rank_confirmation_overlap_allow_00631l_add": false,
+          "reduced_rank_confirmation_overlap_status": "blocked",
+          "reduced_rank_confirmed_non_window_watch_rate": 0.08492855217039633,
+          "reduced_rank_confirmed_stress_to_non_ratio": 2.2722918407128936,
+          "reduced_rank_confirmed_stress_watch_rate": 0.19298245614035087,
+          "reduced_rank_correlation_ready": false,
+          "reduced_rank_correlation_status": "blocked",
+          "reduced_rank_crash_backtest_allow_00631l_add": false,
+          "reduced_rank_crash_backtest_non_window_elevated_rate": 0.197358,
+          "reduced_rank_crash_backtest_non_window_watch_rate": 0.424373,
+          "reduced_rank_crash_backtest_status": "blocked",
+          "reduced_rank_crash_backtest_stress_elevated_rate": 0.016447,
+          "reduced_rank_crash_backtest_stress_watch_rate": 0.246711,
+          "reduced_rank_paper_equivalent_ready": false,
+          "reduced_rank_proxy_allow_00631l_add": false,
+          "reduced_rank_proxy_manual_review_required": false,
+          "reduced_rank_proxy_state": "normal",
+          "reduced_rank_proxy_status": "available_for_manual_review",
+          "reduced_rank_proxy_sweep_allow_00631l_add": false,
+          "reduced_rank_proxy_sweep_available_candidate_count": 24,
+          "reduced_rank_proxy_sweep_manual_review_candidate_count": 8,
+          "reduced_rank_proxy_sweep_state_counts": {
+            "normal": 16,
+            "watch": 8
+          },
+          "reduced_rank_proxy_sweep_status": "blocked",
+          "reduced_rank_proxy_usable_ticker_count": 35,
+          "reduced_rank_weak_proxy_ready": true,
+          "reward_shaping_governance_imported": true,
+          "risk_budget_pacing_ready": false,
+          "rl_component_promotable": false,
+          "rl_governance_allow_00631l_add": false,
+          "rl_governance_ready": false,
+          "rl_governance_status": "blocked",
+          "sin_lite_proxy_allow_00631l_add": false,
+          "sin_lite_proxy_manual_review_required": false,
+          "sin_lite_proxy_score": 0.346905,
+          "sin_lite_proxy_state": "normal",
+          "sin_lite_proxy_status": "blocked",
+          "sin_lite_proxy_usable_ticker_count": 14,
+          "speculative_influence_allow_00631l_add": false,
+          "speculative_influence_hmm_bubble_state_ready": false,
+          "speculative_influence_maxloss_validation_ready": false,
+          "speculative_influence_network_ready": false,
+          "speculative_influence_network_status": "blocked",
+          "speculative_influence_transfer_entropy_ready": false,
+          "synthetic_augmentation_allow_00631l_add": false,
+          "synthetic_augmentation_status": "blocked",
+          "synthetic_generator_promotion_allowed": false,
+          "synthetic_validation_ready": false,
+          "systemic_bubble_allow_00631l_add": false,
+          "systemic_bubble_score": 2,
+          "systemic_bubble_state": "blocked_for_leverage_add",
+          "trigate_allow_00631l_add": false,
+          "trigate_state": "blocked_for_leverage_add",
+          "trigate_stress_gate_count": 3
+        },
+        "warning_reasons": [
+          "llm_state_reward_signed_approval_validation_blocked",
+          "trigate_stress_gate_count:3",
+          "systemic_bubble_score:2",
+          "illiquidity_network_status:blocked",
+          "illiquidity_daily_proxy_score:0.027777777777777776",
+          "illiquidity_daily_proxy_state:normal",
+          "speculative_influence_network_status:blocked",
+          "sin_lite_score:0.346905",
+          "sin_lite_state:normal",
+          "hmm_wj_status:blocked",
+          "dynamic_cvar_status:blocked",
+          "synthetic_augmentation_status:blocked",
+          "intervention_fatigue_status:blocked",
+          "letf_tracking_status:blocked",
+          "asian_etf_tail_analytics_status:blocked",
+          "reduced_rank_correlation_status:blocked",
+          "reduced_rank_proxy_status:available_for_manual_review",
+          "reduced_rank_proxy_sweep_status:blocked",
+          "reduced_rank_crash_backtest_status:blocked",
+          "reduced_rank_confirmation_overlap_status:blocked",
+          "rl_governance_status:blocked",
+          "llm_state_reward_interface_status:blocked",
+          "llm_state_reward_diagnostic_refinement_status:available_for_manual_offline_review",
+          "llm_state_reward_diagnostic_refinement:feature_stability:00631L.TW:high_positive_benchmark_correlation",
+          "llm_state_reward_diagnostic_refinement:weak_reward_future_return_alignment:-0.0142",
+          "llm_state_reward_diagnostic_refinement:windowed_stability:recent_0050_drawdown_zscore_extreme_days_present",
+          "llm_state_reward_diagnostic_refinement:windowed_stability:recent_0050_reward_zscore_extreme_days_present",
+          "llm_state_reward_diagnostic_refinement:windowed_stability:taiwan_2015_china_crash:00632r_not_stable_high_negative_hedge",
+          "llm_state_reward_diagnostic_refinement:windowed_stability:taiwan_2018_trade_war_correction:00631l_amplified_benchmark_exposure",
+          "llm_state_reward_diagnostic_refinement:windowed_stability:taiwan_2020_covid_crash:00631l_amplified_benchmark_exposure",
+          "llm_state_reward_diagnostic_refinement:windowed_stability:taiwan_2022_rate_hike_stress:00631l_amplified_benchmark_exposure",
+          "llm_state_reward_diagnostic_refinement:windowed_stability:taiwan_2026_q1q2_stress:00631l_amplified_benchmark_exposure",
+          "llm_state_reward_diagnostic_refinement:windowed_stability:taiwan_2026_recent:00631l_amplified_benchmark_exposure",
+          "llm_state_reward_shadow_training_readiness_status:available_for_manual_offline_review",
+          "llm_state_reward_shadow_training_readiness:cost_warning_resolved_by_regime_filtered_micro_tilt",
+          "llm_state_reward_regime_filtered_micro_tilt_status:available_for_manual_offline_review",
+          "llm_state_reward_manual_approval_readiness_status:available_for_manual_approval_review",
+          "llm_state_reward_manual_approval_readiness:signed_human_exception_approval_record_missing_or_invalid",
+          "llm_state_reward_signed_approval_validation_status:blocked",
+          "llm_state_reward_signed_approval_validation:missing_signed_human_exception_approval_record",
+          "ncf_decision_calibration_governance_status:closed_failed_oos"
+        ]
+      },
+      "sin_lite_proxy": {
+        "actual_data_end": "2026-08-05",
+        "as_of": "2026-08-06",
+        "blocking_reasons": [
+          "sin_lite_proxy_not_validated_for_live_weight_change"
+        ],
+        "coverage": {
+          "latest_dt": "2026-08-05",
+          "lookback_observations": 120,
+          "metadata_included_tickers": [
+            "0050.TW",
+            "0056.TW",
+            "00631L.TW",
+            "00632R.TW",
+            "00646.TW",
+            "00679B.TWO",
+            "00713.TW",
+            "00751B.TWO",
+            "00878.TW",
+            "2308.TW",
+            "2317.TW",
+            "2330.TW",
+            "2382.TW",
+            "2454.TW"
+          ],
+          "usable_ticker_count": 14,
+          "usable_tickers": [
+            "0050.TW",
+            "0056.TW",
+            "00631L.TW",
+            "00632R.TW",
+            "00646.TW",
+            "00679B.TWO",
+            "00713.TW",
+            "00751B.TWO",
+            "00878.TW",
+            "2308.TW",
+            "2317.TW",
+            "2330.TW",
+            "2382.TW",
+            "2454.TW"
+          ]
+        },
+        "decision": {
+          "allow_00631l_add": false,
+          "allow_00632r_open": false,
+          "auto_rebalance_allowed": false,
+          "keep_golden1_0531_unchanged": true,
+          "paper_equivalent": false,
+          "promote_to_live": false,
+          "sin_lite_available_for_shadow_review": true,
+          "target_weight_change_allowed": false
+        },
+        "generated_at": "2026-08-06T03:02:44",
+        "latest": {
+          "avg_abs_corr": 0.526254,
+          "components": {
+            "correlation_density": 0.701672,
+            "downside_comovement": 0.636804,
+            "edge_density": 0.0,
+            "influence_concentration": null,
+            "tsmc_lead_risk": 0.049144
+          },
+          "downside_density": 0.636804,
+          "edge_count": 0,
+          "edge_density": 0.0,
+          "lead_2330_to_0050_corr": 0.049144,
+          "lead_2330_to_00631l_corr": 0.017529,
+          "manual_review_required": false,
+          "max_abs_corr": 0.986181,
+          "recent_2330_ret5": 0.031915,
+          "sin_lite_score": 0.346905,
+          "state": "normal",
+          "state_reasons": [
+            "sin_lite_score=0.3469"
+          ],
+          "top_edges": []
+        },
+        "method": {
+          "edge_threshold": 0.35,
+          "lookback": 120,
+          "min_history": 80,
+          "paper_equivalent": false,
+          "proxy_type": "daily_ohlcv_correlation_lag_downside_comovement"
+        },
+        "policy": "research_only_sin_lite_proxy_no_weight_change",
+        "report_type": "group_a_plus_sin_lite_proxy",
+        "schema_version": 1,
+        "status": "blocked",
+        "warning_reasons": [
+          "daily_ohlcv_proxy_not_full_sin_no_hmm_no_transfer_entropy"
+        ]
+      },
+      "speculative_influence_network_readiness_review": {
+        "actual_data_end": "2026-08-05",
+        "as_of": "2026-08-06",
+        "blocking_reasons": [
+          "broad_stock_universe_insufficient_for_sin",
+          "china_2006_2008_parameters_not_portable_to_group_a_plus",
+          "missing_crash_maxloss_validation",
+          "missing_hmm_bubble_state_probabilities",
+          "missing_sector_index_history",
+          "missing_transfer_entropy_network",
+          "nsii_maxloss_validation_missing_for_taiwan",
+          "sornette_andersen_hmm_not_implemented",
+          "speculative_influence_signal_not_allowed_to_change_live_weights",
+          "transfer_entropy_sin_not_implemented"
+        ],
+        "candidate_imports": {
+          "bubble_state_probability": "concept overlaps with systemic bubble time-at-risk; not implemented as HMM live signal",
+          "finance_vs_industry_asymmetry_check": "research-only sector diagnostic after metadata backfill",
+          "nsii_ranked_maxloss_validation": "useful validation design; no current Taiwan labels",
+          "speculative_influence_network": "possible only after sector/firm universe and transfer entropy validation exist"
+        },
+        "data": {
+          "available_tables": [
+            "day_trading_data",
+            "dealer_futures_data",
+            "dealer_options_data",
+            "derivative_institutional_data",
+            "external_data_version",
+            "external_market_ohlcv",
+            "external_options_iv",
+            "foreign_shareholding_data",
+            "institutional_data",
+            "margin_data",
+            "market_margin_data",
+            "ohlcv",
+            "securities_lending_data",
+            "shareholding_distribution",
+            "short_sale_balance_data",
+            "stock_per_data",
+            "taifex_futures_daily",
+            "taifex_futures_institutional",
+            "taifex_options_daily",
+            "ticker_metadata",
+            "total_return_index_data"
+          ],
+          "broad_universe_min_tickers": 50,
+          "broad_universe_ready": false,
+          "db_exists": true,
+          "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+          "ohlcv_summary": {
+            "distinct_tickers": 15,
+            "max_dt": "2026-08-05",
+            "min_dt": "2009-01-02",
+            "rows": 30846
+          },
+          "requirements": {
+            "crash_maxloss_validation": {
+              "available": false,
+              "matched_table_counts": {},
+              "matched_tables": [],
+              "populated_tables": [],
+              "required_any_of": [
+                "crash_window_maxloss_labels",
+                "maxloss_validation_labels"
+              ]
+            },
+            "hmm_bubble_state_probabilities": {
+              "available": false,
+              "matched_table_counts": {},
+              "matched_tables": [],
+              "populated_tables": [],
+              "required_any_of": [
+                "hmm_bubble_state_probabilities",
+                "bubble_state_probabilities"
+              ]
+            },
+            "sector_index_history": {
+              "available": false,
+              "matched_table_counts": {},
+              "matched_tables": [],
+              "populated_tables": [],
+              "required_any_of": [
+                "sector_index_ohlcv",
+                "twse_sector_indices",
+                "industry_index_ohlcv"
+              ]
+            },
+            "sector_or_style_mapping": {
+              "available": true,
+              "matched_table_counts": {
+                "ticker_metadata": 16
+              },
+              "matched_tables": [
+                "ticker_metadata"
+              ],
+              "populated_tables": [
+                "ticker_metadata"
+              ],
+              "required_any_of": [
+                "ticker_metadata",
+                "stock_sector_style",
+                "stock_industry_mapping"
+              ]
+            },
+            "transfer_entropy_network": {
+              "available": false,
+              "matched_table_counts": {},
+              "matched_tables": [],
+              "populated_tables": [],
+              "required_any_of": [
+                "transfer_entropy_network",
+                "speculative_influence_network",
+                "nsii_network"
+              ]
+            }
+          },
+          "table_counts": {
+            "day_trading_data": 1459,
+            "dealer_futures_data": 39823,
+            "dealer_options_data": 35518,
+            "derivative_institutional_data": 18066,
+            "external_data_version": 346,
+            "external_market_ohlcv": 71185,
+            "external_options_iv": 15,
+            "foreign_shareholding_data": 1456,
+            "institutional_data": 14261,
+            "margin_data": 9779,
+            "market_margin_data": 2475,
+            "ohlcv": 30846,
+            "securities_lending_data": 486,
+            "shareholding_distribution": 693100,
+            "short_sale_balance_data": 1440,
+            "stock_per_data": 867,
+            "taifex_futures_daily": 88131,
+            "taifex_futures_institutional": 78,
+            "taifex_options_daily": 3078034,
+            "ticker_metadata": 16,
+            "total_return_index_data": 704
+          }
+        },
+        "data_backfill_plan": {
+          "minimum_viable_tables": {
+            "crash_window_maxloss_labels": {
+              "minimum_columns": [
+                "node_id",
+                "window_start",
+                "window_end",
+                "max_loss",
+                "label_source"
+              ],
+              "purpose": "Validate whether influence metrics predict later maximum loss."
+            },
+            "hmm_bubble_state_probabilities": {
+              "minimum_columns": [
+                "node_id",
+                "node_type",
+                "dt",
+                "bubble_probability",
+                "model_version"
+              ],
+              "purpose": "Cache per-node probability of speculative bubble state."
+            },
+            "sector_index_ohlcv": {
+              "minimum_columns": [
+                "sector",
+                "dt",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume"
+              ],
+              "purpose": "Build sector-level bubble-state nodes comparable to the paper's sector indices."
+            },
+            "ticker_metadata": {
+              "minimum_columns": [
+                "ticker",
+                "name",
+                "sector",
+                "industry",
+                "is_financial_sector",
+                "market_cap_bucket"
+              ],
+              "purpose": "Map stocks to sector, industry, financial/non-financial group, and market-cap bucket."
+            },
+            "transfer_entropy_network": {
+              "minimum_columns": [
+                "source_node",
+                "target_node",
+                "window_start",
+                "window_end",
+                "transfer_entropy",
+                "nsii"
+              ],
+              "purpose": "Store directional speculative influence among bubble-qualified nodes."
+            }
+          },
+          "priority": [
+            "sector_or_style_mapping",
+            "broad_taiwan_stock_ohlcv_universe",
+            "sector_index_history",
+            "hmm_bubble_state_probabilities",
+            "transfer_entropy_network",
+            "crash_maxloss_validation_labels"
+          ],
+          "validation_requirements": [
+            "Use shadow-only review first; no live target-weight effect.",
+            "Validate separately on Taiwan 2015, 2018, 2020, 2022, and 2026 stress windows.",
+            "Compare incremental value against SRR-lite and systemic bubble time-at-risk review.",
+            "Reject thresholds that improve recall only by raising false positives materially.",
+            "Keep China 2006-2008 findings separate from Taiwan-calibrated thresholds."
+          ]
+        },
+        "decision": {
+          "allow_00631l_add": false,
+          "allow_00632r_open": false,
+          "auto_rebalance_allowed": false,
+          "hmm_bubble_state_ready": false,
+          "keep_golden1_0531_unchanged": true,
+          "maxloss_validation_ready": false,
+          "promote_to_live": false,
+          "speculative_influence_network_ready": false,
+          "target_weight_change_allowed": false,
+          "transfer_entropy_network_ready": false
+        },
+        "generated_at": "2026-08-06T03:02:40",
+        "policy": "research_only_speculative_influence_network_readiness_no_weight_change",
+        "report_type": "group_a_plus_speculative_influence_network_readiness_review",
+        "schema_version": 1,
+        "source_paper": {
+          "imported_concept": "HMM bubble-state probability, transfer-entropy speculative influence network, net speculative influence intensity, maximum-loss validation",
+          "path": "C:/Users/isaac/Downloads/1510.08162.pdf",
+          "title": "Speculative Influence Network during financial bubbles: application to Chinese Stock Markets"
+        },
+        "status": "blocked"
+      },
+      "synthetic_augmentation_validation_readiness_review": {
+        "as_of": "2026-07-20",
+        "blocking_reasons": [
+          "synthetic_augmentation_validation_audit_failed",
+          "directional_synthetic_alpha_default_blocked",
+          "finstressts_snapshot_blocked",
+          "hmm_wj_scenario_readiness_blocked",
+          "scenario_generator_not_decision_ready",
+          "dynamic_cvar_tail_cost_readiness_blocked",
+          "tail_cost_readiness_not_ready",
+          "density_tail_model_unstable_research_only"
+        ],
+        "component_readiness": {
+          "density_head_tail_risk": {
+            "gmm_status": "unstable_across_windows_research_only",
+            "recommended_research_baseline": "gaussian_residual_head",
+            "status": "available"
+          },
+          "dynamic_cvar_tail_cost": {
+            "dynamic_optimizer_ready": false,
+            "status": "blocked",
+            "tail_cost_readiness_ready": false
+          },
+          "finstressts": {
+            "allow_00631l_add": false,
+            "status": "blocked"
+          },
+          "hmm_wj": {
+            "all_required_tickers_ready": true,
+            "can_generate_scenarios_for_decision": false,
+            "status": "blocked"
+          },
+          "promotion_gate": {
+            "decision": null,
+            "promotion_decision": null,
+            "raw_status": null,
+            "status": null
+          },
+          "validation_audit": {
+            "directional_synthetic_alpha_tested": true,
+            "directional_validation_passed": false,
+            "passed_task_count": 2,
+            "rare_validation_passed": true,
+            "status": "failed",
+            "task_count": 3,
+            "validation_passed": false
+          }
+        },
+        "decision": {
+          "allow_00631l_add": false,
+          "auto_rebalance_allowed": false,
+          "directional_synthetic_alpha_allowed": false,
+          "keep_golden1_0531_unchanged": true,
+          "promote_to_live": false,
+          "summary": "Synthetic augmentation is validation-governance only. Directional synthetic alpha and generator promotion remain blocked until size-matched null augmentation, walk-forward OOS, and block permutation tests are implemented and passed.",
+          "synthetic_generator_promotion_allowed": false,
+          "synthetic_validation_ready": false,
+          "target_weight_change_allowed": false
+        },
+        "generated_at": "2026-08-06T03:02:54",
+        "inputs": {
+          "density_head_tail_risk": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/density_head_tail_risk_advisory.json",
+          "dynamic_cvar_tail_cost": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json",
+          "finstressts": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_decision_snapshot.json",
+          "hmm_wj": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/hmm_wj_synthetic_scenario_readiness_review.json",
+          "promotion_gate": null,
+          "validation_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/synthetic_augmentation_validation_audit.json"
+        },
+        "policy": "research_only_synthetic_augmentation_validation_no_synthetic_alpha_no_weight_change",
+        "report_type": "group_a_plus_synthetic_augmentation_validation_readiness_review",
+        "schema_version": 1,
+        "source_paper": {
+          "file": "C:/Users/isaac/Downloads/2604.14498.pdf",
+          "imported_concepts": [
+            "size_matched_null_augmentation_gate",
+            "finite_sample_block_permutation_test",
+            "task_type_restriction_for_synthetic_data",
+            "rare_regime_metric_alignment"
+          ],
+          "not_imported": [
+            "synthetic_directional_alpha",
+            "bootstrap_copula_vae_diffusion_timegan_live_signals",
+            "automatic_target_weight_change",
+            "unvalidated_generator_promotion"
+          ],
+          "title": "Improving Machine Learning Performance with Synthetic Augmentation"
+        },
+        "status": "blocked",
+        "validation_readiness": {
+          "block_permutation_test_implemented": true,
+          "directional_audit_passed": false,
+          "directional_audit_tested": true,
+          "directional_synthetic_alpha_allowed": false,
+          "rare_regime_audit_passed": true,
+          "rare_regime_metric_alignment_documented": true,
+          "size_matched_null_augmentation_implemented": true,
+          "walk_forward_oos_synthetic_validation_passed": false
+        },
+        "warning_reasons": [
+          "promotion_gate_unavailable_optional"
+        ]
+      },
+      "systemic_bubble_time_at_risk_review": {
+        "decision": {
+          "allow_00631l_add": false,
+          "auto_rebalance_allowed": false,
+          "keep_golden1_0531_unchanged": true,
+          "promote_to_live": false,
+          "summary": "Import 1212.2833 as systemic-risk governance only. This diagnostic can support manual review and 00631L add-blocking evidence, but it never unlocks execution or changes target weights.",
+          "target_weight_change_allowed": false
+        },
+        "generated_at": "2026-08-06T03:02:32",
+        "input_window": {
+          "end": "2026-08-05",
+          "rows": 2817,
+          "start": "2015-01-06",
+          "tickers": [
+            "0050.TW",
+            "00631L.TW",
+            "00632R.TW",
+            "2330.TW"
+          ]
+        },
+        "latest": {
+          "0050_00631l_corr_60d": 0.9874013298792714,
+          "0050_00632r_corr_60d": -0.9820004745435117,
+          "0050_ma120_gap": 0.12923773616560497,
+          "0050_return_60d": 0.0717605027066035,
+          "00631l_abs_return_z_60d": 0.7825281480500859,
+          "00631l_vol20_ann": 1.0290008416028817,
+          "00631l_vol20_percentile_252d": 1.0,
+          "00631l_vol20_vs_vol60_ratio": 1.3092462310438195,
+          "00631l_volume_z_60d": 0.5694600995437282,
+          "2330_0050_corr_60d": 0.9097801249722307,
+          "date": "2026-08-05",
+          "etf_coupling_percentile_252d": 0.8293650793650794,
+          "etf_coupling_score": 0.9597273097984501,
+          "reflexivity_proxy_percentile_252d": 0.7698412698412699,
+          "reflexivity_proxy_score": 0.7673294158646047,
+          "time_at_risk_days_60": 46
+        },
+        "policy": "research_only_systemic_bubble_time_at_risk_no_weight_change",
+        "report_type": "group_a_plus_systemic_bubble_time_at_risk_review",
+        "schema_version": 1,
+        "source_paper": {
+          "file": "C:/Users/isaac/Downloads/1212.2833.pdf",
+          "imported_concepts": [
+            "time_at_risk",
+            "ETF_coupling_network_fragility",
+            "market_reflexivity_proxy",
+            "scenario_discipline_and_ex_post_review"
+          ],
+          "not_imported": [
+            "LPPL_live_trading_signal",
+            "macro_debt_market_timing",
+            "commodity_or_real_asset_allocation_change",
+            "automatic_target_weight_change"
+          ],
+          "title": "The Illusion of the Perpetual Money Machine"
+        },
+        "states": {
+          "etf_coupling_state": "elevated",
+          "overall_state": "blocked_for_leverage_add",
+          "reflexivity_proxy_state": "normal",
+          "systemic_score": 2,
+          "time_at_risk_state": "elevated"
+        }
+      },
+      "target_shares": {
+        "0050.TW": 2890,
+        "00631L.TW": 0,
+        "00632R.TW": 26290,
+        "00679B.TWO": 0
+      },
+      "trigate_vol_memory_shadow": {
+        "decision": {
+          "allow_00631l_add": false,
+          "auto_rebalance_allowed": false,
+          "keep_golden1_0531_unchanged": true,
+          "promote_to_live": false,
+          "summary": "Import level/shape/tempo volatility-memory decomposition as a shadow diagnostic only. It does not overcome existing GroupA+ execution, rebalance, option-state, and FinStressTS blockers.",
+          "target_weight_change_allowed": false
+        },
+        "generated_at": "2026-08-06T03:02:28",
+        "input_window": {
+          "end": "2026-07-17",
+          "rows": 2804,
+          "start": "2015-01-06"
+        },
+        "latest": {
+          "0050_00631l_return_corr_60d": 0.9806113566378623,
+          "date": "2026-07-17",
+          "memory_shape_percentile_252d": 0.9761904761904762,
+          "memory_shape_score": 0.8211102762806298,
+          "tempo_percentile_252d": 1.0,
+          "tempo_score": 7.458049376627731,
+          "vol20_vs_vol60_ratio": 1.127032566628849,
+          "vol_level_20d_ann": 0.7395145955984148,
+          "vol_level_percentile_252d": 0.9325396825396826
+        },
+        "policy": "research_only_vol_memory_decomposition_no_weight_change",
+        "report_type": "group_a_plus_trigate_vol_memory_shadow",
+        "schema_version": 1,
+        "source_paper": {
+          "file": "C:/Users/isaac/Downloads/2512.02166.pdf",
+          "imported_concepts": [
+            "volatility_memory_level_gate",
+            "volatility_memory_shape_or_long_memory_proxy",
+            "volatility_memory_tempo_or_business_time_proxy",
+            "equity_volatility_memory_can_be_regime_and_tempo_dominated"
+          ],
+          "not_imported": [
+            "full_TG_Vol_QMLE_estimator",
+            "G_FIGARCH_fractional_order_estimation",
+            "SPY_EURUSD_empirical_parameters",
+            "automatic_target_weight_change"
+          ],
+          "title": "The Three-Dimensional Decomposition of Volatility Memory"
+        },
+        "tri_gate_state": {
+          "level_gate_active": true,
+          "shape_gate_active": true,
+          "state": "blocked_for_leverage_add",
+          "stress_gate_count": 3,
+          "tempo_gate_active": true
+        }
+      }
+    },
+    "mode": "live_signal",
+    "overall_status": "warn",
+    "profile": "a2118_a2111_ncf_late_bull_deleverage",
+    "signal": {
+      "actual_data_date": "2026-08-05",
+      "business_stale_days": 1,
+      "calendar_stale_days": 1,
+      "requested_as_of_date": "2026-08-06",
+      "signal_reason": "A20.7 formal defensive state is inactive",
+      "signal_status": "hold_or_align_to_target"
+    },
+    "source_paths": {
+      "asian_etf_tail_analytics_readiness_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/asian_etf_tail_analytics_readiness_review.json",
+      "compounding_regime": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/00631l_leveraged_compounding_regime_20260806.json",
+      "daily_artifact_integrity": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/daily_artifact_integrity.json",
+      "dfl_active_date_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_dfl_active_date_audit_20260806.json",
+      "dfl_advisory": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/a2118_dfl_advisory.json",
+      "dfl_shadow_ensemble": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/a2118_dfl_shadow_ensemble.json",
+      "dynamic_cvar_tail_cost_readiness_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json",
+      "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+      "finstressts_decision_snapshot": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/finstressts_decision_snapshot.json",
+      "gift_signed_approval_checklist_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/gift_signed_approval_checklist_review.json",
+      "gift_signed_approval_validator_smoke": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/gift_signed_approval_validator_smoke.json",
+      "hmm_wj_synthetic_scenario_readiness_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/hmm_wj_synthetic_scenario_readiness_review.json",
+      "illiquidity_network_readiness_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/illiquidity_network_readiness_review.json",
+      "intervention_fatigue_risk_budget_readiness_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/intervention_fatigue_risk_budget_readiness_review.json",
+      "letf_tracking_error_effective_fee_readiness_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+      "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260806.json",
+      "promotion_gate": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_promotion_gate_20260806.json",
+      "research_shadow_decision_snapshot": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/research_shadow_decision_snapshot.json",
+      "sin_lite_proxy": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/sin_lite_proxy.json",
+      "speculative_influence_network_readiness_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/speculative_influence_network_readiness_review.json",
+      "synthetic_augmentation_validation_readiness_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/synthetic_augmentation_validation_readiness_review.json",
+      "systemic_bubble_time_at_risk_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/systemic_bubble_time_at_risk_review.json",
+      "trigate_vol_memory_shadow": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/trigate_vol_memory_shadow.json"
+    },
+    "status_stage": "final"
+  },
+  "run_mode": "production",
+  "schema_version": 1
+}

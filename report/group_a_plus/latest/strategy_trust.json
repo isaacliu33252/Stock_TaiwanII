@@ -1,0 +1,21 @@
+{
+  "as_of": "2026-08-05",
+  "trust_level": "ABSTAIN",
+  "reasons": [
+    "risk_mechanism=FAST_CRASH",
+    "signal_alignment=bullish_alignment",
+    "regime FAST_CRASH is a historically hard-to-model mechanism",
+    "data-quality sub-status not ok: module_health=warning feature_table_sync=ok external_data_freshness=error"
+  ],
+  "components": {
+    "risk_mechanism": "FAST_CRASH",
+    "signal_alignment": "bullish_alignment",
+    "divergent_sources": [],
+    "module_health_status": "warning",
+    "feature_table_sync_status": "ok",
+    "external_data_freshness_status": "error",
+    "uncertain_regime": true,
+    "ensemble_disagrees": false,
+    "data_quality_problem": true
+  }
+}

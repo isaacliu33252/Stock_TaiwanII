@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "registry_type": "model_checkpoint_registry",
+  "generated_at": "2026-07-29T00:00:00+08:00",
+  "policy": {
+    "metadata_status": {
+      "complete": "training range, evaluation metrics, lineage, and file identity are all known",
+      "partial": "file identity is verified, but some training/evaluation lineage fields are unknown",
+      "stub": "placeholder only; do not use for production decisions"
+    },
+    "required_for_new_models": [
+      "model_id",
+      "status",
+      "role",
+      "model_path",
+      "sha256",
+      "size_bytes",
+      "modified_at",
+      "training",
+      "evaluation",
+      "lineage",
+      "metadata_status"
+    ]
+  },
+  "models": [
+    {
+      "model_id": "group_a_oos_2020_2024_cap20_llm_pva_tripletv4_inst_localregime_20260526",
+      "status": "frozen_release",
+      "role": "Golden1_0531 source-of-truth release checkpoint",
+      "model_path": "models/portfolio/group_a_oos_2020_2024_cap20_llm_pva_tripletv4_inst_localregime_20260526.zip",
+      "sha256": "cd8603f40fce7227c74ab61b50bbbddd263125bd587726621f1a5281da1c0efb",
+      "size_bytes": 216763,
+      "modified_at": 1786447970860396800,
+      "training": {
+        "algorithm": "PPO",
+        "train_start": "2020-01-01",
+        "train_end": "2024-12-31",
+        "features": [
+          "institutional",
+          "llm_sentiment",
+          "pva_sjm",
+          "local_twii_0050_regime"
+        ],
+        "action_schema": "triplet_v4"
+      },
+      "evaluation": {
+        "oos_start": "2025-01-02",
+        "oos_end": "2026-05-25",
+        "metrics_source": "results/group_a_backtest_20250101_20260525_20260526_193252.json",
+        "final_value": 2058975.61,
+        "total_return_pct": 105.8976,
+        "annual_return_pct": 72.726,
+        "sharpe": 2.303933,
+        "max_drawdown_pct": -24.9939
+      },
+      "lineage": {
+        "release": "Golden1_0531",
+        "release_manifest": "results/group_a_release_Golden1_0531.json",
+        "release_doc": "GROUP_A_GOLDEN1_0531_RELEASE.md",
+        "notes": "Frozen release artifact. Do not overwrite in place."
+      },
+      "metadata_status": "complete"
+    },
+    {
+      "model_id": "group_a_production_2020_2025_100k",
+      "status": "legacy_runtime_reference",
+      "role": "Group A signal payload model reference used by many historical results/signal_group_a*.json files",
+      "model_path": "models/portfolio/group_a_production_2020_2025_100k.zip",
+      "sha256": "ef9f363b98c03969601bc5a090a14f34a5df83ddda727f1dba26a211b03a9cf3",
+      "size_bytes": 207057,
+      "modified_at": 1787655622827576800,
+      "training": {
+        "algorithm": "PPO",
+        "train_start": "2020-01-01",
+        "train_end": "2025-12-31",
+        "features": "unknown",
+        "action_schema": "unknown"
+      },
+      "evaluation": {
+        "metrics_source": "unknown",
+        "known_consumers": [
+          "results/signal_group_a_*.json",
+          "results/signal_group_a_golden1_0531_predict_*.json"
+        ]
+      },
+      "lineage": {
+        "release": "legacy_group_a_runtime",
+        "notes": "Historical signal payloads reference this file. Training details require separate reconstruction before promotion decisions."
+      },
+      "metadata_status": "partial"
+    },
+    {
+      "model_id": "group_a_plus_4tickers_2020_2025",
+      "status": "shadow_diagnostic_reference",
+      "role": "Default model for read-only model weight health diagnostics",
+      "model_path": "models/portfolio/group_a_plus_4tickers_2020_2025.zip",
+      "sha256": "91b44c8ecb85b4ab40cc4a1734719a63386c9cf64356224c0bc516d80ce8fb01",
+      "size_bytes": 198672,
+      "modified_at": 1788830878166889500,
+      "training": {
+        "algorithm": "PPO",
+        "train_start": "2020-01-01",
+        "train_end": "2025-12-31",
+        "features": "unknown",
+        "action_schema": "unknown"
+      },
+      "evaluation": {
+        "metrics_source": "GROUP_A_PLUS_MODEL_WEIGHT_HEALTH_HANDOFF_20260701.md",
+        "diagnostic": "Weight health analysis target only; no active allocation impact."
+      },
+      "lineage": {
+        "release": "none",
+        "notes": "Used by group_a_plus.operations.model_weight_health as DEFAULT_MODEL_PATH."
+      },
+      "metadata_status": "partial"
+    }
+  ]
+}
+

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "report_type": "group_a_plus_finstressts_readiness_review",
   "status": "blocked",
-  "generated_at": "2026-07-28T07:14:19",
+  "generated_at": "2026-08-06T03:02:13",
   "policy": "research_model_validation_only_no_weight_change",
   "as_of": "2026-07-20",
   "source_paper": {

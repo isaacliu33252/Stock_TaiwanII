@@ -16,14 +16,11 @@ scoping). Two fields:
   `scripts/evaluate/evaluate_a2118_composite_confidence_sweep.py::_composite_confidence`,
   itself documented there as recomputing an older live-JSON formula) --
   purely about H1/H5/H20 direction agreement, unaware of cost or utility.
-- `decision_confidence`: originally (Phase 1, 2026-07-26) a percentile-rank
-  proxy against 46 pooled `predicted_regret` values, explicitly NOT an
-  outcome-calibrated probability. **Phase 2 (2026-07-27) replaces this with
-  a real empirical calibration when data is available**, falling back to
-  the Phase 1 rank proxy otherwise -- see `RegretCalibrationModel` /
-  `fit_regret_calibration()` / `predict_calibrated_probability()` below.
+- `decision_confidence`: a percentile-rank proxy against pooled
+  `predicted_regret` values, explicitly NOT an outcome-calibrated
+  probability.
 
-Phase 2: `scripts/evaluate/evaluate_a2118_decision_focused_action_shadow.py`
+Closed Phase 2 probability-calibration attempt: `scripts/evaluate/evaluate_a2118_decision_focused_action_shadow.py`
 now exports a `calibration_pairs` field per window (added 2026-07-27) --
 every (date, action) pair with sufficient training history gets both its
 `predicted_regret` (from the same expanding-window ridge model that drives
@@ -37,7 +34,13 @@ in-sample/out-of-sample split -- see `DEFAULT_WINDOWS` in that evaluator)
 and computes each bin's empirical `P(realized_regret > 0)`. This is
 deliberately a simple, auditable binned-empirical-rate model (consistent
 with this evaluator's own "First version deliberately avoids neural
-networks" design choice), not a parametric fit.
+networks" design choice), not a parametric fit. However, CAP10 empirical
+calibration failed out-of-sample validation and the later
+`total_risk_score` regime-conditioned calibration also failed to improve it
+(documented OOS error worsened from 0.129 to 0.158). Therefore this path is
+formally closed as `closed_failed_oos`: it may be used only to reproduce
+research diagnostics, not as production `decision_confidence`, not as a
+promotion gate, and not as a target-weight or rebalance input.
 
 Sample-size caveat (Phase 1, retained for the fallback path): the rank-
 proxy distribution has only 46 candidate decisions total across all 7
@@ -62,6 +65,25 @@ import pandas as pd
 from group_a_plus.paths import PROJECT_ROOT
 
 DEFAULT_DFL_SHADOW_PATH = PROJECT_ROOT / "results" / "a2118_decision_focused_action_shadow_dfl_main_latest.json"
+CALIBRATION_MODEL_GOVERNANCE = {
+    "status": "closed_failed_oos",
+    "closed_at": "2026-07-29",
+    "closed_reason": (
+        "Empirical realized-regret probability calibration failed OOS validation; "
+        "the total_risk_score regime-conditioned attempt worsened error from 0.129 to 0.158."
+    ),
+    "decision_confidence_contract": "predicted_regret_percentile_rank_proxy_not_calibrated_probability",
+    "calibration_model_default_enabled": False,
+    "promotion_allowed": False,
+    "training_allowed": False,
+    "target_weight_change_allowed": False,
+    "auto_rebalance_allowed": False,
+    "live_gate_allowed": False,
+}
+
+
+def calibration_governance_summary() -> dict[str, Any]:
+    return dict(CALIBRATION_MODEL_GOVERNANCE)
 
 
 @dataclass(frozen=True)
@@ -87,6 +109,7 @@ class DecisionCalibrationSnapshot:
             "basis": self.basis,
             "extra": self.extra,
             "calibration_method": self.calibration_method,
+            "governance": calibration_governance_summary(),
         }
 
 
@@ -182,6 +205,85 @@ def load_calibration_pairs(dfl_shadow_path: Path = DEFAULT_DFL_SHADOW_PATH) -> p
     if not rows:
         return pd.DataFrame(columns=columns)
     return pd.DataFrame(rows)
+
+
+def calibration_pair_readiness_summary(dfl_shadow_path: Path = DEFAULT_DFL_SHADOW_PATH) -> dict[str, Any]:
+    """Machine-readable check that the DFL shadow artifact carries the
+    realized-regret labels needed for outcome probability calibration.
+
+    This deliberately does not bless the closed_failed_oos calibration model
+    for production use. It only prevents a stale/pre-2026-07-27 DFL result
+    from looking equivalent to one that actually contains the realized-label
+    export (`calibration_pairs`).
+    """
+    if not dfl_shadow_path.exists():
+        return {
+            "status": "missing_dfl_shadow",
+            "dfl_shadow_path": str(dfl_shadow_path),
+            "window_count": 0,
+            "windows_with_calibration_pairs_key": 0,
+            "total_pairs": 0,
+            "pairs_with_realized_regret": 0,
+            "pairs_with_total_risk_score": 0,
+            "actions": {},
+            "recommended_action": "regenerate_dfl_shadow_with_current_evaluator",
+        }
+    import json
+
+    payload = json.loads(dfl_shadow_path.read_text(encoding="utf-8"))
+    windows = payload.get("results", []) or []
+    windows_with_key = 0
+    total_pairs = 0
+    realized_pairs = 0
+    total_risk_pairs = 0
+    actions: dict[str, int] = {}
+    missing_realized_examples: list[dict[str, Any]] = []
+    for window in windows:
+        if not isinstance(window, dict):
+            continue
+        if "calibration_pairs" in window:
+            windows_with_key += 1
+        for pair in window.get("calibration_pairs", []) or []:
+            if not isinstance(pair, dict):
+                continue
+            total_pairs += 1
+            action = str(pair.get("action", "unknown"))
+            actions[action] = actions.get(action, 0) + 1
+            if pair.get("realized_regret") is not None:
+                realized_pairs += 1
+            elif len(missing_realized_examples) < 5:
+                missing_realized_examples.append(
+                    {
+                        "window": window.get("label"),
+                        "date": pair.get("date"),
+                        "action": pair.get("action"),
+                    }
+                )
+            if pair.get("total_risk_score") is not None:
+                total_risk_pairs += 1
+
+    if total_pairs <= 0:
+        status = "missing_calibration_pairs"
+        recommended_action = "regenerate_dfl_shadow_with_current_evaluator"
+    elif realized_pairs < total_pairs:
+        status = "partial_realized_labels"
+        recommended_action = "inspect_dfl_calibration_pairs_missing_realized_regret"
+    else:
+        status = "available"
+        recommended_action = "no_data_export_action_needed"
+
+    return {
+        "status": status,
+        "dfl_shadow_path": str(dfl_shadow_path),
+        "window_count": int(len(windows)),
+        "windows_with_calibration_pairs_key": int(windows_with_key),
+        "total_pairs": int(total_pairs),
+        "pairs_with_realized_regret": int(realized_pairs),
+        "pairs_with_total_risk_score": int(total_risk_pairs),
+        "actions": actions,
+        "missing_realized_examples": missing_realized_examples,
+        "recommended_action": recommended_action,
+    }
 
 
 GLOBAL_REGIME_LABEL = "__all__"
@@ -381,7 +483,8 @@ def build_snapshot(
         basis = (
             f"decision_confidence is P(realized_regret > 0) from a {calibration_model.n_bins}-bin "
             f"empirical calibration fit on {calibration_model.fit_sample_size} {calibration_model.fit_bucket} "
-            f"pairs (regime={regime_label}, this action/regime's bin n={entry.get('counts')})"
+            f"pairs (regime={regime_label}, this action/regime's bin n={entry.get('counts')}); "
+            "closed_failed_oos research reproduction only, not a production calibrated probability"
         )
     elif decision_conf is None:
         basis = f"no historical predicted_regret distribution for action={dfl_action} yet"

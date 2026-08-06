@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_type": "group_a_plus_dynamic_cvar_tail_cost_readiness_review",
-  "generated_at": "2026-07-28T07:15:02",
+  "generated_at": "2026-08-06T03:02:49",
   "policy": "research_only_dynamic_cvar_tail_cost_readiness_no_optimizer_no_weight_change",
   "status": "blocked",
   "as_of": "2026-07-20",
@@ -25,13 +25,13 @@
     "cvar_tail_risk": {
       "status": "research_only",
       "promotion_decision": "research_only",
-      "00631l_expected_shortfall_loss_95": 0.0811159172627952,
+      "00631l_expected_shortfall_loss_95": 0.08247405550924625,
       "00631l_expected_shortfall_loss_99": 0.13958238180763255,
       "00631l_max_drawdown": -0.5022632537851175,
-      "00631l_hill_xi_95": 0.32640882039719776,
-      "00631l_pot_gpd_shape_xi_95": 0.11247465716736604,
-      "golden1_starr_95": 14.727766403153364,
-      "golden1_expected_shortfall_loss_95": 0.03457081702818987
+      "00631l_hill_xi_95": 0.3197802866295796,
+      "00631l_pot_gpd_shape_xi_95": 0.07151889364128078,
+      "golden1_starr_95": 14.58608808083165,
+      "golden1_expected_shortfall_loss_95": 0.035354669935160135
     },
     "density_head_tail_risk": {
       "status": "available",
@@ -40,7 +40,7 @@
     },
     "market_impact": {
       "status": "blocked",
-      "turnover": 0.2365042071391168,
+      "turnover": 0.808271858826179,
       "auto_rebalance_allowed": false,
       "allow_00631l_add": false
     },
@@ -51,8 +51,8 @@
       "allow_00631l_add": false
     },
     "systemic_bubble": {
-      "overall_state": "research_watch",
-      "systemic_score": 1,
+      "overall_state": "blocked_for_leverage_add",
+      "systemic_score": 2,
       "allow_00631l_add": false
     },
     "hmm_wj_scenario_readiness": {
@@ -77,6 +77,7 @@
     "market_impact_disallows_auto_rebalance",
     "rebalance_review_disallows_auto_rebalance",
     "rebalance_review_disallows_target_weight_change",
+    "systemic_bubble_time_at_risk_blocks_leverage_add",
     "systemic_bubble_disallows_00631l_add",
     "hmm_wj_scenario_readiness_blocked",
     "scenario_generator_not_decision_ready",

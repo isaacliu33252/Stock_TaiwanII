@@ -94,6 +94,7 @@ NCF_TICKER_TAGS = {
     "00631L.TW": "00631l",
     "00632R.TW": "00632r",
 }
+NCF_0050_TAG = "0050"
 TSMC_NCF_TAG = "2330"
 # M5 (2026-07-02 Fable 5 audit): previously only 2026-06-19 was listed here.
 # Expanded to a best-effort TWSE trading-holiday calendar for 2025-2026
@@ -238,6 +239,47 @@ def _apply_ncf_live_overlay(
     )
     summary["status"] = "applied" if execution_regime == "golden1" else "not_applicable"
     summary["files"] = {ticker: str(path) for ticker, path in paths.items() if path is not None}
+    ncf_0050_path = _latest_ncf_path(NCF_0050_TAG, project_root)
+    if ncf_0050_path is not None:
+        try:
+            sig_0050 = load_ncf_signal(ncf_0050_path)
+            summary["files"]["0050.TW"] = str(ncf_0050_path)
+            if str(sig_0050.get("date")) == actual:
+                summary["ncf_0050"] = {
+                    "status": "available",
+                    "trade_policy": "diagnostic_only_no_weight_change",
+                    "direction": sig_0050["direction"],
+                    "calibrated_prob_up": sig_0050["calibrated_prob_up"],
+                    "confidence": sig_0050["confidence"],
+                    "confidence_panel_aligned": sig_0050.get("confidence_panel_aligned"),
+                    "weighted_return": sig_0050["weighted_return"],
+                    "votes_up": sig_0050["votes_up"],
+                    "horizon_prob_up": sig_0050.get("horizon_prob_up"),
+                    "prob_fwd_mdd_gt5_h20": sig_0050.get("prob_fwd_mdd_gt5_h20"),
+                    "prob_fwd_gain_gt5_h20": sig_0050.get("prob_fwd_gain_gt5_h20"),
+                    "direction_magnitude_gate": sig_0050.get("direction_magnitude_gate"),
+                    "direction_conflict": sig_0050.get("direction_conflict", False),
+                }
+            else:
+                summary["ncf_0050"] = {
+                    "status": "stale",
+                    "trade_policy": "diagnostic_only_no_weight_change",
+                    "signal_date": sig_0050.get("date"),
+                    "actual_data_date": actual,
+                }
+        except Exception as exc:
+            summary["ncf_0050"] = {
+                "status": "error",
+                "trade_policy": "diagnostic_only_no_weight_change",
+                "reason": str(exc),
+                "file": str(ncf_0050_path),
+            }
+    else:
+        summary["ncf_0050"] = {
+            "status": "unavailable",
+            "trade_policy": "diagnostic_only_no_weight_change",
+            "reason": "missing_ncf_0050_file",
+        }
     tsmc_path = _latest_ncf_path(TSMC_NCF_TAG, project_root)
     if tsmc_path is not None:
         try:
@@ -1605,6 +1647,10 @@ def build_daily_signal(
         target_weights,
         latest_features,
         signal_alignment,
+        ncf_live_overlay,
+    )
+    target_weights, ncf_live_overlay = _apply_tsmc_weakness_trim(
+        target_weights,
         ncf_live_overlay,
     )
     market_state = classify_market_state(

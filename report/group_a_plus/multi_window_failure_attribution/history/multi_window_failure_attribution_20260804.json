@@ -1,0 +1,297 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_multi_window_failure_attribution",
+  "generated_at": "2026-08-04T18:56:04",
+  "status": "blocked",
+  "policy": "diagnostic_only_no_strategy_change_no_weight_change",
+  "active_allocation_impact": "none",
+  "source_decision": "research_only_no_multi_window_pass",
+  "criteria": {
+    "min_pass_ratio": 1.0,
+    "max_final_drawdown_pct": 0.02,
+    "min_sharpe_delta": 0.0,
+    "require_mdd_nonworse": true
+  },
+  "candidate_count": 6,
+  "row_count": 10,
+  "summary": {
+    "passed_candidates": [],
+    "nearest_candidates": [
+      "garch_guard_frozen",
+      "garch_selector_frozen",
+      "shadow_2008_candidate"
+    ],
+    "top_failure_reasons": [
+      {
+        "reason": "final_value_drag",
+        "count": 4
+      },
+      {
+        "reason": "max_drawdown_worse",
+        "count": 3
+      },
+      {
+        "reason": "sharpe_delta",
+        "count": 2
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "candidate": "garch_guard_frozen",
+      "decision": "research_only_multi_window_unstable",
+      "window_count": 3,
+      "pass_count": 2,
+      "pass_ratio": 0.6666666666666666,
+      "required_pass_ratio": 1.0,
+      "pass_ratio_shortfall": 0.33333333333333337,
+      "primary_failure_reason": "final_value_drag",
+      "failure_reason_counts": {
+        "final_value_drag": 1,
+        "sharpe_delta": 1
+      },
+      "worst_delta_final_pct": -0.03334677042837009,
+      "worst_delta_sharpe": -0.027099999999999902,
+      "worst_delta_max_drawdown": 0.005900000000000016,
+      "drag_windows": [
+        {
+          "window": "2020-01-01_2020-12-31",
+          "experiment": "garch_proxy_specialist_routing_2020_fold",
+          "baseline": "static_best_frozen",
+          "candidate": "garch_guard_frozen",
+          "window_pass": false,
+          "fail_reasons": [
+            "final_value_drag",
+            "sharpe_delta"
+          ],
+          "delta_final_pct": -0.03334677042837009,
+          "final_value_threshold": -0.02,
+          "final_value_shortfall": 0.013346770428370087,
+          "delta_sharpe": -0.027099999999999902,
+          "sharpe_threshold": 0.0,
+          "sharpe_shortfall": 0.027099999999999902,
+          "delta_max_drawdown": 0.014000000000000012,
+          "max_drawdown_threshold": 0.0,
+          "max_drawdown_shortfall": 0.0
+        }
+      ]
+    },
+    {
+      "candidate": "garch_selector_frozen",
+      "decision": "research_only_multi_window_unstable",
+      "window_count": 3,
+      "pass_count": 1,
+      "pass_ratio": 0.3333333333333333,
+      "required_pass_ratio": 1.0,
+      "pass_ratio_shortfall": 0.6666666666666667,
+      "primary_failure_reason": "max_drawdown_worse",
+      "failure_reason_counts": {
+        "max_drawdown_worse": 2
+      },
+      "worst_delta_final_pct": 0.016907509514146435,
+      "worst_delta_sharpe": 0.012699999999999989,
+      "worst_delta_max_drawdown": -0.012299999999999978,
+      "drag_windows": [
+        {
+          "window": "2007-07-01_2009-12-31",
+          "experiment": "garch_proxy_specialist_routing_2008_fold",
+          "baseline": "static_best_frozen",
+          "candidate": "garch_selector_frozen",
+          "window_pass": false,
+          "fail_reasons": [
+            "max_drawdown_worse"
+          ],
+          "delta_final_pct": 0.09170938826523023,
+          "final_value_threshold": -0.02,
+          "final_value_shortfall": 0.0,
+          "delta_sharpe": 0.0667,
+          "sharpe_threshold": 0.0,
+          "sharpe_shortfall": 0.0,
+          "delta_max_drawdown": -0.012299999999999978,
+          "max_drawdown_threshold": 0.0,
+          "max_drawdown_shortfall": 0.012299999999999978
+        },
+        {
+          "window": "2020-01-01_2020-12-31",
+          "experiment": "garch_proxy_specialist_routing_2020_fold",
+          "baseline": "static_best_frozen",
+          "candidate": "garch_selector_frozen",
+          "window_pass": false,
+          "fail_reasons": [
+            "max_drawdown_worse"
+          ],
+          "delta_final_pct": 0.016907509514146435,
+          "final_value_threshold": -0.02,
+          "final_value_shortfall": 0.0,
+          "delta_sharpe": 0.027000000000000135,
+          "sharpe_threshold": 0.0,
+          "sharpe_shortfall": 0.0,
+          "delta_max_drawdown": -0.003599999999999992,
+          "max_drawdown_threshold": 0.0,
+          "max_drawdown_shortfall": 0.003599999999999992
+        }
+      ]
+    },
+    {
+      "candidate": "shadow_2008_candidate",
+      "decision": "research_only_multi_window_unstable",
+      "window_count": 1,
+      "pass_count": 0,
+      "pass_ratio": 0.0,
+      "required_pass_ratio": 1.0,
+      "pass_ratio_shortfall": 1.0,
+      "primary_failure_reason": "sharpe_delta",
+      "failure_reason_counts": {
+        "max_drawdown_worse": 1,
+        "sharpe_delta": 1
+      },
+      "worst_delta_final_pct": -0.0031493608445614107,
+      "worst_delta_sharpe": -0.033195658806802086,
+      "worst_delta_max_drawdown": -5.759282762973772e-05,
+      "drag_windows": [
+        {
+          "window": "2025-01-02_2026-06-05",
+          "experiment": "group_a_plus_2008_shadow_candidate_vs_active_2025_2026_verify",
+          "baseline": "current_active",
+          "candidate": "shadow_2008_candidate",
+          "window_pass": false,
+          "fail_reasons": [
+            "sharpe_delta",
+            "max_drawdown_worse"
+          ],
+          "delta_final_pct": -0.0031493608445614107,
+          "final_value_threshold": -0.02,
+          "final_value_shortfall": 0.0,
+          "delta_sharpe": -0.033195658806802086,
+          "sharpe_threshold": 0.0,
+          "sharpe_shortfall": 0.033195658806802086,
+          "delta_max_drawdown": -5.759282762973772e-05,
+          "max_drawdown_threshold": 0.0,
+          "max_drawdown_shortfall": 5.759282762973772e-05
+        }
+      ]
+    },
+    {
+      "candidate": "best_by_final_value",
+      "decision": "research_only_multi_window_unstable",
+      "window_count": 1,
+      "pass_count": 0,
+      "pass_ratio": 0.0,
+      "required_pass_ratio": 1.0,
+      "pass_ratio_shortfall": 1.0,
+      "primary_failure_reason": "final_value_drag",
+      "failure_reason_counts": {
+        "final_value_drag": 1
+      },
+      "worst_delta_final_pct": -0.024551983720055404,
+      "worst_delta_sharpe": 0.035092789934434876,
+      "worst_delta_max_drawdown": 0.0,
+      "drag_windows": [
+        {
+          "window": "2025-01-02_2026-07-02",
+          "experiment": "a2118_ncf_2330_tsmc_overlay_sweep",
+          "baseline": "baseline",
+          "candidate": "best_by_final_value",
+          "window_pass": false,
+          "fail_reasons": [
+            "final_value_drag"
+          ],
+          "delta_final_pct": -0.024551983720055404,
+          "final_value_threshold": -0.02,
+          "final_value_shortfall": 0.004551983720055403,
+          "delta_sharpe": 0.035092789934434876,
+          "sharpe_threshold": 0.0,
+          "sharpe_shortfall": 0.0,
+          "delta_max_drawdown": 0.0,
+          "max_drawdown_threshold": 0.0,
+          "max_drawdown_shortfall": 0.0
+        }
+      ]
+    },
+    {
+      "candidate": "best_by_sharpe",
+      "decision": "research_only_multi_window_unstable",
+      "window_count": 1,
+      "pass_count": 0,
+      "pass_ratio": 0.0,
+      "required_pass_ratio": 1.0,
+      "pass_ratio_shortfall": 1.0,
+      "primary_failure_reason": "final_value_drag",
+      "failure_reason_counts": {
+        "final_value_drag": 1
+      },
+      "worst_delta_final_pct": -0.02865515544175734,
+      "worst_delta_sharpe": 0.03970118279523316,
+      "worst_delta_max_drawdown": 0.0,
+      "drag_windows": [
+        {
+          "window": "2025-01-02_2026-07-02",
+          "experiment": "a2118_ncf_2330_tsmc_overlay_sweep",
+          "baseline": "baseline",
+          "candidate": "best_by_sharpe",
+          "window_pass": false,
+          "fail_reasons": [
+            "final_value_drag"
+          ],
+          "delta_final_pct": -0.02865515544175734,
+          "final_value_threshold": -0.02,
+          "final_value_shortfall": 0.00865515544175734,
+          "delta_sharpe": 0.03970118279523316,
+          "sharpe_threshold": 0.0,
+          "sharpe_shortfall": 0.0,
+          "delta_max_drawdown": 0.0,
+          "max_drawdown_threshold": 0.0,
+          "max_drawdown_shortfall": 0.0
+        }
+      ]
+    },
+    {
+      "candidate": "best_by_max_drawdown",
+      "decision": "research_only_multi_window_unstable",
+      "window_count": 1,
+      "pass_count": 0,
+      "pass_ratio": 0.0,
+      "required_pass_ratio": 1.0,
+      "pass_ratio_shortfall": 1.0,
+      "primary_failure_reason": "final_value_drag",
+      "failure_reason_counts": {
+        "final_value_drag": 1
+      },
+      "worst_delta_final_pct": -0.028915350014717234,
+      "worst_delta_sharpe": 0.010749121406604445,
+      "worst_delta_max_drawdown": 0.0,
+      "drag_windows": [
+        {
+          "window": "2025-01-02_2026-07-02",
+          "experiment": "a2118_ncf_2330_tsmc_overlay_sweep",
+          "baseline": "baseline",
+          "candidate": "best_by_max_drawdown",
+          "window_pass": false,
+          "fail_reasons": [
+            "final_value_drag"
+          ],
+          "delta_final_pct": -0.028915350014717234,
+          "final_value_threshold": -0.02,
+          "final_value_shortfall": 0.008915350014717233,
+          "delta_sharpe": 0.010749121406604445,
+          "sharpe_threshold": 0.0,
+          "sharpe_shortfall": 0.0,
+          "delta_max_drawdown": 0.0,
+          "max_drawdown_threshold": 0.0,
+          "max_drawdown_shortfall": 0.0
+        }
+      ]
+    }
+  ],
+  "decision": {
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "inputs": {
+    "multi_window_gate": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_multi_window_gate_20260706.json"
+  }
+}

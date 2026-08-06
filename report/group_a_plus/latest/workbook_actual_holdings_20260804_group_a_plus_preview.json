@@ -1,0 +1,10 @@
+{
+  "source_workbook": "taiwan_stock_20260804.xlsx",
+  "row_label": "即時庫存",
+  "holdings": {
+    "0050.TW": 3834,
+    "00631L.TW": 800,
+    "00679B.TWO": 3000,
+    "00632R.TW": 0
+  }
+}

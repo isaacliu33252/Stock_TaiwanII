@@ -12,6 +12,7 @@ from collections import namedtuple
 from group_a_plus.operations.ops_health import (
     build_ops_health,
     collect_external_data_freshness,
+    collect_feature_table_sync,
     collect_pipeline_health,
     collect_system_resources,
     collect_tsmc_weight_assumption_health,
@@ -25,6 +26,34 @@ def _today_stamp() -> str:
 def _write(path: Path, content: str = "x") -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
+
+
+def _write_sync_test_db(root: Path, *, institutional_0050_date: str = "2026-07-28") -> None:
+    import duckdb
+
+    db = root / "FinRL/data/stock_data.db"
+    db.parent.mkdir(parents=True, exist_ok=True)
+    con = duckdb.connect(str(db))
+    try:
+        con.execute("CREATE TABLE ohlcv (ticker VARCHAR, dt DATE, volume BIGINT)")
+        con.execute("CREATE TABLE institutional_data (ticker VARCHAR, dt DATE)")
+        con.execute("CREATE TABLE margin_data (ticker VARCHAR, dt DATE)")
+        con.execute("CREATE TABLE market_margin_data (dt DATE)")
+        con.execute(
+            "CREATE TABLE derivative_institutional_data (product_id VARCHAR, institutional_investors VARCHAR, dt DATE)"
+        )
+        for ticker in ("0050.TW", "00631L.TW", "00632R.TW"):
+            con.execute("INSERT INTO ohlcv VALUES (?, DATE '2026-07-28', 100)", [ticker])
+        con.execute("INSERT INTO institutional_data VALUES ('0050.TW', ?)", [institutional_0050_date])
+        con.execute("INSERT INTO institutional_data VALUES ('00631L.TW', DATE '2026-07-28')")
+        con.execute("INSERT INTO institutional_data VALUES ('00632R.TW', DATE '2026-07-28')")
+        con.execute("INSERT INTO margin_data VALUES ('00631L.TW', DATE '2026-07-28')")
+        con.execute("INSERT INTO margin_data VALUES ('00632R.TW', DATE '2026-07-28')")
+        con.execute("INSERT INTO market_margin_data VALUES (DATE '2026-07-28')")
+        con.execute("INSERT INTO derivative_institutional_data VALUES ('TX', '外資', DATE '2026-07-28')")
+        con.execute("INSERT INTO derivative_institutional_data VALUES ('TXO', '外資', DATE '2026-07-28')")
+    finally:
+        con.close()
 
 
 def _minimal_live_signal() -> str:
@@ -92,6 +121,7 @@ def test_ops_health_reports_no_active_allocation_impact(tmp_path: Path) -> None:
     _write(tmp_path / "run_daily.bat", "echo daily\n")
     _write(tmp_path / "run_fetch.bat", "echo fetch\n")
     _write(tmp_path / "task_scheduler_setup.xml", "<Task />\n")
+    _write_sync_test_db(tmp_path)
     _write(tmp_path / "results/ncf_00631l_latest_20260630.json", "{}")
     _write(tmp_path / "results/ncf_00632r_latest_20260630.json", "{}")
     _write(tmp_path / "results/group_a_plus_factor_lens_20260630.json", "{}")
@@ -119,6 +149,31 @@ def test_ops_health_reports_no_active_allocation_impact(tmp_path: Path) -> None:
     assert report["artifact_health"]["missing_required"] == []
     assert report["pipeline_health"]["date_stamp"] == stamp
     assert report["module_health"]["modules"]["finbert_sentiment"]["status"] == "ok"
+    assert report["feature_table_sync"]["status"] == "ok"
+
+
+def test_feature_table_sync_errors_when_institutional_lags_ohlcv(tmp_path: Path) -> None:
+    _write_sync_test_db(tmp_path, institutional_0050_date="2026-07-27")
+
+    report = collect_feature_table_sync(tmp_path)
+
+    check = report["checks"]["institutional_0050"]
+    assert report["status"] == "error"
+    assert "institutional_0050" in report["errors"]
+    assert check["latest_date"] == "2026-07-27"
+    assert check["reference_ohlcv_date"] == "2026-07-28"
+    assert check["lag_days"] == 1
+    assert check["reason"] == "feature_table_lags_ohlcv"
+
+
+def test_feature_table_sync_ok_when_tables_match_ohlcv(tmp_path: Path) -> None:
+    _write_sync_test_db(tmp_path)
+
+    report = collect_feature_table_sync(tmp_path)
+
+    assert report["status"] == "ok"
+    assert report["errors"] == []
+    assert all(check["status"] == "ok" for check in report["checks"].values())
 
 
 def test_ops_health_errors_when_required_artifacts_are_missing(tmp_path: Path) -> None:

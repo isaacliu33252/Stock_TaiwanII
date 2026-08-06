@@ -398,6 +398,7 @@ class TaiwanStockTradingEnv(gym.Env):
                     total_shares = self.portfolio.position + executed_shares
                     total_cost_basis = self.portfolio.position * self.portfolio.avg_cost + turnover
                     self.portfolio.avg_cost = total_cost_basis / total_shares if total_shares > 0 else 0
+                    self.portfolio.position += executed_shares  # BUG FIX: missing position update
                     
                     # 扣減現金
                     self.portfolio.cash -= (turnover + commission)
@@ -501,6 +502,7 @@ class TaiwanStockTradingEnv(gym.Env):
                     total_shares = self.portfolio.position + executed_shares
                     total_cost_basis = self.portfolio.position * self.portfolio.avg_cost + turnover
                     self.portfolio.avg_cost = total_cost_basis / total_shares if total_shares > 0 else 0
+                    self.portfolio.position += executed_shares  # BUG FIX: missing position update
                     
                     self.portfolio.cash -= (turnover + commission)
                     self.portfolio.total_trades += 1
@@ -541,6 +543,7 @@ class TaiwanStockTradingEnv(gym.Env):
                     total_shares = self.portfolio.position + executed_shares
                     total_cost_basis = self.portfolio.position * self.portfolio.avg_cost + turnover
                     self.portfolio.avg_cost = total_cost_basis / total_shares if total_shares > 0 else 0
+                    self.portfolio.position += executed_shares  # BUG FIX: missing position update
                     
                     self.portfolio.cash -= (turnover + commission)
                     self.portfolio.total_trades += 1
