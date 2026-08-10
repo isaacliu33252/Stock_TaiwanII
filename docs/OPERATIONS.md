@@ -49,6 +49,14 @@ python3 scripts/misc/audit_worktree_artifacts.py --tracked-counts --cleanup-cand
 python3 scripts/misc/audit_worktree_artifacts.py --cleanup-candidates --write-cleanup-candidates /tmp/group_a_plus_artifact_cleanup_candidates.txt
 ```
 
+若要盤點根目錄 layout 壓力，找出未來可搬到 `docs/`、`handoff/`、`scripts/`、`config/` 或本機 artifact store 的候選檔案：
+
+```bash
+python3 scripts/misc/audit_repo_layout.py
+```
+
+這個工具同樣只讀取檔案清單，不會移動、刪除或重新命名任何既有入口。
+
 變更特定邏輯時，優先跑對應的 focused tests：
 
 ```bash
