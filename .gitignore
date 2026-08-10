@@ -17,6 +17,7 @@ venv/
 *.log
 *.p12
 *.pfx
+*.bak
 .DS_Store
 
 
@@ -24,14 +25,21 @@ venv/
 /models/*
 !/models/MODEL_REGISTRY.json
 /results/
+/outputs/
 /log/
 /logs/
 /news/
 /catboost_info/
+/report/**/*.json
+/report/**/*.html
+/report/**/*.csv
+/report/**/*.png
+/report/group_a_plus/daily/
 FinRL/models/
 FinRL/results/
 FinRL/log/
 FinRL/logs/
+FinRL/catboost_info/
 FinRL/.venv-backtest/
 FinRL/FinRL/
 FinRL/test_integration.py

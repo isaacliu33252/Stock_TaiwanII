@@ -27,6 +27,7 @@
 - `data/cache/`、`data/raw/`、`data/portfolio_cache/`、`data/taifex/` 等本機 cache。
 - `news/` 底下下載或生成的新聞語料。
 - `logs/` 與 `log/` 底下的 runtime logs。
+- `outputs/` 與 `report/` 底下每日生成的 JSON、HTML、CSV、PNG 報表；若需要升級為 handoff artifact，應整理成 `docs/` 或具名 `.md` 摘要。
 - 每日生成的 HTML、JSON、MD 報表，除非明確升級為 handoff artifact。
 
 需要理由才建議追蹤：

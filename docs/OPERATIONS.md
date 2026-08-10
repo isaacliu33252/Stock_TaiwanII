@@ -23,6 +23,32 @@ git status --short
 
 原因：這個 repository 經常會有生成報表變更。先看 worktree 可以避免把生成輸出與 source code 變更混在同一個提交中。
 
+若需要快速判斷目前變更中有多少是生成產物，可跑：
+
+```bash
+python3 scripts/misc/audit_worktree_artifacts.py
+```
+
+若要同時盤點仍被 Git 追蹤的 artifact prefix：
+
+```bash
+python3 scripts/misc/audit_worktree_artifacts.py --tracked-counts
+```
+
+若要列出「可能適合從 Git index 移除、但保留在本機」的 tracked artifact candidates：
+
+```bash
+python3 scripts/misc/audit_worktree_artifacts.py --tracked-counts --cleanup-candidates
+```
+
+這個工具只讀取 Git 狀態，不會刪除、移動或 untrack 檔案。它的用途是讓 source code 變更與每日報表、cache、model output 在 commit 前更容易分開。`--cleanup-candidates` 預設排除 Markdown 文件與 `models/MODEL_REGISTRY.json`，避免把明顯治理/說明用途的檔案混入第一批 cleanup。
+
+若要把完整候選清單寫到暫存檔，再人工檢查後用於 index cleanup：
+
+```bash
+python3 scripts/misc/audit_worktree_artifacts.py --cleanup-candidates --write-cleanup-candidates /tmp/group_a_plus_artifact_cleanup_candidates.txt
+```
+
 變更特定邏輯時，優先跑對應的 focused tests：
 
 ```bash
@@ -34,6 +60,8 @@ pytest tests/path_to_relevant_test.py -q
 ```bash
 pytest tests/ --collect-only -q
 ```
+
+目前 `pytest.ini` 已宣告 test markers，但多數測試尚未實際標記。因此現階段不要假設 `pytest -m unit` 能代表完整快速測試集合；在 marker 補齊前，維持「focused test + collect-only + CI ignore list」作為主要安全網。
 
 ## 常用入口區域
 
