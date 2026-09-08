@@ -303,6 +303,48 @@ rule/basket.
 
 Memory: `project_fable_direction5_and_8_audit_confirmation_20260908.md`.
 
+### Full threshold sweep: `momentum_fast_exit_min=0.07` sits in a real plateau, not a lucky single point
+
+`scripts/misc/test_reentry_momentum_threshold_sweep_20260908.py`
+(`results/reentry_momentum_threshold_sweep_20260908.json`) swept
+`momentum_fast_exit_min` over 19 points from 0.02 to 0.15 (fixed
+`momentum_fast_exit_ma_gap_min=-0.08`, `risk_score_lookback_days=5`, correct
+`bond0_cash60` basket), same 4 windows. Findings:
+
+- **inflation_2022 has a sharp cliff between 0.05 and 0.055**: 0.02-0.05 all
+  cost -9.8pp to -11.6pp MDD; 0.055 through 0.10 (baseline) are all
+  perfectly flat (zero cost) -- a wide, genuine safe plateau, not a single
+  lucky value.
+- **covid_2020 has one small pothole exactly at 0.055** (-5,251, an extra
+  false exit) but is flat everywhere else from 0.06 to 0.15.
+- **live_2024_2026 / active_2025_2026 gains (+170,008 / +127,018) hold
+  across 0.03-0.07 and disappear (drop to baseline) at 0.075 and above.**
+- **The intersection where all 4 windows are simultaneously safe AND
+  capture the upside is 0.06-0.07** (three consecutive grid points at 0.005
+  resolution) -- `momentum_fast_exit_min=0.07` sits inside this plateau, not
+  at its fragile edge. `0.075` is safe but loses all the upside; `0.055` is
+  the wrong edge (still has the covid pothole).
+
+This is meaningfully stronger evidence than the original two-point (0.05 vs
+0.07) test suggested: the earlier audit correctly flagged that a two-point
+test can't distinguish a real plateau from a lucky single value, and this
+sweep resolves that -- it's a plateau, not luck.
+
+**Still not a promotion case, for two reasons that no threshold sweep can
+fix:** (1) `live_2024_2026` and `active_2025_2026` are not independent
+evidence -- `active_2025_2026` (2025-01-02..2026-09-04) is almost entirely
+contained within `live_2024_2026` (2024-01-02..2026-09-04), so this is
+really 3 independent windows (covid_2020, inflation_2022, one 2024-2026
+window), not 4. (2) All 3 are still windows this same research round already
+looked at -- there is still no true out-of-sample test, and
+[[feedback_overfitting_fixed_window_tuning]]'s core warning (tuning and
+evaluating on the same fixed set of historical windows) still applies at the
+window level even though it no longer applies at the threshold-selection
+level. **Recommended framing: direction 5's `momentum_fast_exit_min=0.07`
+lever is a legitimate shadow candidate for further tracking (e.g. paper-track
+it against future switch events), not a closed_negative dead end, and not
+ready to promote.**
+
 ## Production State
 
 Unchanged by this entire research round. The only real production change
