@@ -1,0 +1,394 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_golden2_promotion_candidate_review",
+  "generated_at": "2026-09-12T07:20:51",
+  "status": "blocked_prepare_multi_window_backtest",
+  "policy": "diagnostic_only_no_strategy_change_no_weight_change_no_orders",
+  "baseline": {
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_ncf_2330_tsmc_overlay_sweep_20260704.json",
+    "window": {
+      "start": "2025-01-02",
+      "end": "2026-07-02",
+      "rows": 361
+    },
+    "metrics": {
+      "final_value": 2138725.8857552735,
+      "sharpe_ratio": 2.5258172333902,
+      "max_drawdown": -0.1381589112184799
+    }
+  },
+  "golden2_release": {
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_release_golden2_0830.json",
+    "release_date": "2026-08-30",
+    "status": "frozen_release",
+    "source_actual_data_date": "2026-08-28",
+    "latest_live_actual_data_date": "2026-08-31"
+  },
+  "candidate_compatibility": [
+    {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/golden2_0830/last_ppo_group_a_backtest_golden2_0830.json",
+      "exists": true,
+      "experiment": "dual_group_0050_vs_multi",
+      "window": {},
+      "metrics_available": false,
+      "candidate_row_count": 0,
+      "promotion_candidate_compatible": false,
+      "reason": "no candidate rows for compare_candidates",
+      "metrics": {
+        "final_value": null,
+        "sharpe_ratio": null,
+        "max_drawdown": null
+      }
+    },
+    {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_latest_backtest_2024_2026_after_20260813_refresh.json",
+      "exists": true,
+      "experiment": "group_a_plus_a2118_ncf_late_bull_deleverage",
+      "window": {
+        "start": "2024-01-02",
+        "end": "2026-08-13",
+        "rows": 613
+      },
+      "metrics_available": true,
+      "candidate_row_count": 0,
+      "promotion_candidate_compatible": false,
+      "reason": "no candidate rows for compare_candidates",
+      "metrics": {
+        "final_value": 2299183.5173535612,
+        "sharpe_ratio": 1.8147607357301585,
+        "max_drawdown": -0.16696005001194136
+      }
+    },
+    {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_latest_backtest_2025_2026_after_20260813_refresh.json",
+      "exists": true,
+      "experiment": "group_a_plus_a2118_ncf_late_bull_deleverage",
+      "window": {
+        "start": "2025-01-02",
+        "end": "2026-08-13",
+        "rows": 381
+      },
+      "metrics_available": true,
+      "candidate_row_count": 0,
+      "promotion_candidate_compatible": false,
+      "reason": "no candidate rows for compare_candidates",
+      "metrics": {
+        "final_value": 1772296.9852607478,
+        "sharpe_ratio": 1.9444030579896516,
+        "max_drawdown": -0.13803073237587127
+      }
+    },
+    {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/golden2_same_window_candidate_backtests/2020_covid.json",
+      "exists": true,
+      "experiment": "group_a_plus_golden2_same_window_candidate_backtest",
+      "window": {
+        "start": "2020-01-02",
+        "end": "2020-12-31",
+        "rows": 245
+      },
+      "metrics_available": true,
+      "candidate_row_count": 1,
+      "promotion_candidate_compatible": true,
+      "reason": "candidate rows available",
+      "metrics": {
+        "final_value": 1285395.023316632,
+        "sharpe_ratio": 1.8146570754282392,
+        "max_drawdown": -0.14646335304695457
+      }
+    },
+    {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/golden2_same_window_candidate_backtests/2022_rate_hike.json",
+      "exists": true,
+      "experiment": "group_a_plus_golden2_same_window_candidate_backtest",
+      "window": {
+        "start": "2022-01-03",
+        "end": "2022-12-30",
+        "rows": 246
+      },
+      "metrics_available": true,
+      "candidate_row_count": 1,
+      "promotion_candidate_compatible": true,
+      "reason": "candidate rows available",
+      "metrics": {
+        "final_value": 899705.9724713366,
+        "sharpe_ratio": -0.9309418058882271,
+        "max_drawdown": -0.1645481132973975
+      }
+    },
+    {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/golden2_same_window_candidate_backtests/active_2025_2026.json",
+      "exists": true,
+      "experiment": "group_a_plus_golden2_same_window_candidate_backtest",
+      "window": {
+        "start": "2025-01-02",
+        "end": "2026-09-10",
+        "rows": 411
+      },
+      "metrics_available": true,
+      "candidate_row_count": 1,
+      "promotion_candidate_compatible": true,
+      "reason": "candidate rows available",
+      "metrics": {
+        "final_value": 2142398.7829739237,
+        "sharpe_ratio": 2.064465574330502,
+        "max_drawdown": -0.16414651001697744
+      }
+    },
+    {
+      "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/golden2_same_window_candidate_backtests/live_2024_2026.json",
+      "exists": true,
+      "experiment": "group_a_plus_golden2_same_window_candidate_backtest",
+      "window": {
+        "start": "2024-01-02",
+        "end": "2026-09-10",
+        "rows": 653
+      },
+      "metrics_available": true,
+      "candidate_row_count": 1,
+      "promotion_candidate_compatible": true,
+      "reason": "candidate rows available",
+      "metrics": {
+        "final_value": 2897657.766723666,
+        "sharpe_ratio": 1.856624215271025,
+        "max_drawdown": -0.204613182671041
+      }
+    }
+  ],
+  "compatible_candidate_count": 4,
+  "comparison": {
+    "candidate_row_count": 4,
+    "formal_upgrade_pass_count": 0,
+    "research_watchlist_pass_count": 0,
+    "top_candidates": [
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/golden2_same_window_candidate_backtests/live_2024_2026.json",
+        "experiment": "group_a_plus_golden2_same_window_candidate_backtest",
+        "variant": "golden2_latest_ncf_panel",
+        "final_value": 2725589.2470637616,
+        "sharpe_ratio": 1.8899426144042544,
+        "sortino_ratio": 1.8616881664395644,
+        "max_drawdown": -0.204613182671041,
+        "trigger_days": 3,
+        "override_days": 3,
+        "defense_days": 0,
+        "delta_final": 586863.3613084881,
+        "delta_sharpe": -0.6358746189859457,
+        "delta_mdd": -0.06645427145256111,
+        "final_value_floor": 2095951.368040168,
+        "final_value_floor_pass": true,
+        "max_drawdown_non_worse_pass": false,
+        "sharpe_non_worse_pass": false,
+        "promotion_objective_status": "fail:max_drawdown_non_worse,sharpe_non_worse",
+        "formal_eligible": true,
+        "formal_ineligible_reason": null,
+        "formal_upgrade_pass": false,
+        "research_watchlist_pass": false,
+        "tail_risk_metrics": {
+          "expected_shortfall_95": 0.032354063389825424,
+          "starr_95": 0.05055950245521473,
+          "rachev_95_95": 0.9913289735259923,
+          "negative_semivariance": 0.04902870837307555,
+          "worst_5d_return": -0.11817781252684167,
+          "worst_10d_return": -0.1632466745675596,
+          "max_drawdown_duration": 243.0,
+          "recovery_duration": 229.0,
+          "transaction_cost": 16034.616111240086
+        },
+        "promotion_utility": 586863.3613084881,
+        "promotion_utility_starr_delta": null,
+        "promotion_utility_expected_shortfall_delta": null,
+        "promotion_utility_transaction_cost_delta": null,
+        "promotion_utility_components_used": [
+          "final_value_delta"
+        ],
+        "promotion_utility_equals_final_value_delta": true
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/golden2_same_window_candidate_backtests/active_2025_2026.json",
+        "experiment": "group_a_plus_golden2_same_window_candidate_backtest",
+        "variant": "golden2_latest_ncf_panel",
+        "final_value": 2015179.001762728,
+        "sharpe_ratio": 2.150462768483582,
+        "sortino_ratio": 2.2597148480398013,
+        "max_drawdown": -0.13932686342199097,
+        "trigger_days": 3,
+        "override_days": 3,
+        "defense_days": 0,
+        "delta_final": -123546.88399254554,
+        "delta_sharpe": -0.37535446490661784,
+        "delta_mdd": -0.001167952203511069,
+        "final_value_floor": 2095951.368040168,
+        "final_value_floor_pass": false,
+        "max_drawdown_non_worse_pass": false,
+        "sharpe_non_worse_pass": false,
+        "promotion_objective_status": "fail:final_value_floor,max_drawdown_non_worse,sharpe_non_worse",
+        "formal_eligible": true,
+        "formal_ineligible_reason": null,
+        "formal_upgrade_pass": false,
+        "research_watchlist_pass": false,
+        "tail_risk_metrics": {
+          "expected_shortfall_95": 0.02934902048216685,
+          "starr_95": 0.06140116753859639,
+          "rachev_95_95": 1.1212127456356729,
+          "negative_semivariance": 0.04038632020611035,
+          "worst_5d_return": -0.07737122227227389,
+          "worst_10d_return": -0.09766862475789262,
+          "max_drawdown_duration": 114.0,
+          "recovery_duration": null,
+          "transaction_cost": 11979.056973987688
+        },
+        "promotion_utility": -123546.88399254554,
+        "promotion_utility_starr_delta": null,
+        "promotion_utility_expected_shortfall_delta": null,
+        "promotion_utility_transaction_cost_delta": null,
+        "promotion_utility_components_used": [
+          "final_value_delta"
+        ],
+        "promotion_utility_equals_final_value_delta": true
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/golden2_same_window_candidate_backtests/2020_covid.json",
+        "experiment": "group_a_plus_golden2_same_window_candidate_backtest",
+        "variant": "golden2_latest_ncf_panel",
+        "final_value": 1285395.023316632,
+        "sharpe_ratio": 1.8146570754282392,
+        "sortino_ratio": 1.6927220469815485,
+        "max_drawdown": -0.14646335304695457,
+        "trigger_days": 0,
+        "override_days": 0,
+        "defense_days": 0,
+        "delta_final": -853330.8624386415,
+        "delta_sharpe": -0.7111601579619609,
+        "delta_mdd": -0.008304441828474673,
+        "final_value_floor": 2095951.368040168,
+        "final_value_floor_pass": false,
+        "max_drawdown_non_worse_pass": false,
+        "sharpe_non_worse_pass": false,
+        "promotion_objective_status": "fail:final_value_floor,max_drawdown_non_worse,sharpe_non_worse",
+        "formal_eligible": true,
+        "formal_ineligible_reason": null,
+        "formal_upgrade_pass": false,
+        "research_watchlist_pass": false,
+        "tail_risk_metrics": {
+          "expected_shortfall_95": 0.019745951144594688,
+          "starr_95": 0.05467115234451879,
+          "rachev_95_95": 1.0483716054514827,
+          "negative_semivariance": 0.025828688359035148,
+          "worst_5d_return": -0.062178525978344834,
+          "worst_10d_return": -0.09546904972245684,
+          "max_drawdown_duration": 111.0,
+          "recovery_duration": 73.0,
+          "transaction_cost": 4099.314220989144
+        },
+        "promotion_utility": -853330.8624386415,
+        "promotion_utility_starr_delta": null,
+        "promotion_utility_expected_shortfall_delta": null,
+        "promotion_utility_transaction_cost_delta": null,
+        "promotion_utility_components_used": [
+          "final_value_delta"
+        ],
+        "promotion_utility_equals_final_value_delta": true
+      },
+      {
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/golden2_same_window_candidate_backtests/2022_rate_hike.json",
+        "experiment": "group_a_plus_golden2_same_window_candidate_backtest",
+        "variant": "golden2_latest_ncf_panel",
+        "final_value": 899705.9724713366,
+        "sharpe_ratio": -0.9309418058882271,
+        "sortino_ratio": -0.9060389791370828,
+        "max_drawdown": -0.1645481132973975,
+        "trigger_days": 0,
+        "override_days": 0,
+        "defense_days": 0,
+        "delta_final": -1239019.913283937,
+        "delta_sharpe": -3.456759039278427,
+        "delta_mdd": -0.026389202078917595,
+        "final_value_floor": 2095951.368040168,
+        "final_value_floor_pass": false,
+        "max_drawdown_non_worse_pass": false,
+        "sharpe_non_worse_pass": false,
+        "promotion_objective_status": "fail:final_value_floor,max_drawdown_non_worse,sharpe_non_worse",
+        "formal_eligible": true,
+        "formal_ineligible_reason": null,
+        "formal_upgrade_pass": false,
+        "research_watchlist_pass": false,
+        "tail_risk_metrics": {
+          "expected_shortfall_95": 0.01565425211587379,
+          "starr_95": -0.02570226357888346,
+          "rachev_95_95": 0.9331172444131027,
+          "negative_semivariance": 0.012523182551125108,
+          "worst_5d_return": -0.03525287384833853,
+          "worst_10d_return": -0.053361438647849146,
+          "max_drawdown_duration": 235.0,
+          "recovery_duration": null,
+          "transaction_cost": 2787.8012738609127
+        },
+        "promotion_utility": -1239019.913283937,
+        "promotion_utility_starr_delta": null,
+        "promotion_utility_expected_shortfall_delta": null,
+        "promotion_utility_transaction_cost_delta": null,
+        "promotion_utility_components_used": [
+          "final_value_delta"
+        ],
+        "promotion_utility_equals_final_value_delta": true
+      }
+    ]
+  },
+  "current_gates": {
+    "daily_status": "ok",
+    "promotion_gate_decision": "blocked_model_gates_manual_approval_pending",
+    "promotion_blocking_gates": [
+      "panel_drift",
+      "multi_window"
+    ],
+    "panel_drift": {
+      "status": "fail",
+      "h20_prob_up_max_abs_delta": 0.19939213758051952,
+      "h20_prob_up_max_abs_delta_date": "2026-02-10",
+      "confidence_max_abs_delta": 0.25329496779317384,
+      "confidence_max_abs_delta_date": "2026-05-11"
+    },
+    "multi_window_decision": "research_only_no_multi_window_pass",
+    "dfl_all_checks_pass": false,
+    "dfl_conclusion": "review_required_shadow_only",
+    "dynamic_cvar_forward_status": "blocked_for_live_promotion",
+    "dynamic_cvar_forward_passed": null
+  },
+  "blocking_reasons": [
+    "promotion_metrics_gate_failed",
+    "panel_drift_gate_failed",
+    "multi_window_gate_failed",
+    "no_multi_window_candidate_available",
+    "dfl_latest_audit_not_promotion_ready",
+    "dynamic_cvar_forward_validation_blocks_live_weight_change"
+  ],
+  "warning_reasons": [
+    "golden2_release_is_frozen_before_latest_20260831_data"
+  ],
+  "next_required_work": [
+    "candidate rows are available (4 compatible files); remaining work is the blockers below",
+    "resolve the promotion_gate metrics_gate failure before reconsidering golden2",
+    "resolve the promotion_gate panel_drift_gate failure before reconsidering golden2",
+    "resolve the promotion_gate multi_window_gate failure before reconsidering golden2",
+    "golden2 does not pass the multi-window stability gate (see golden2_multi_window_gate.json); it must reach multi_window_pass on all evaluated windows before this blocker clears",
+    "resolve the DFL active-date audit before reconsidering golden2",
+    "resolve the 2608.20179 dynamic-CVaR forward validation block before reconsidering golden2"
+  ],
+  "decision": {
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "creates_orders": false
+  },
+  "inputs": {
+    "baseline": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_ncf_2330_tsmc_overlay_sweep_20260704.json",
+    "promotion_gate": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_promotion_gate_20260831.json",
+    "multi_window_gate": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/golden2_multi_window_gate.json",
+    "golden2_release": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_release_golden2_0830.json",
+    "panel_drift": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_panel_drift_active_vs_20260831.json",
+    "dfl_audit": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_dfl_active_date_audit_20260831.json",
+    "cvar_forward": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/2608_20179_dynamic_cvar_forward_validation.json",
+    "daily_status": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_daily_status_final_20260831.json"
+  }
+}

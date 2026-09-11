@@ -1,0 +1,96 @@
+{
+  "label": "active_2025_2026",
+  "bucket": "tuning_window",
+  "experiment": "group_a_plus_golden2_same_window_candidate_backtest",
+  "window": {
+    "start": "2025-01-02",
+    "end": "2026-09-10",
+    "rows": 411
+  },
+  "baseline": {
+    "name": "a2118_without_ncf_panel",
+    "metrics": {
+      "initial_value": 1000000.0,
+      "final_value": 2142398.7829739237,
+      "total_return": 1.1423987829739235,
+      "annual_return": 0.5710987131591176,
+      "volatility": 0.2415553071356857,
+      "downside_deviation": 0.23100853957068146,
+      "sharpe_ratio": 2.064465574330502,
+      "sortino_ratio": 2.158719399747007,
+      "max_drawdown": -0.16414651001697744,
+      "max_drawdown_duration": 114,
+      "recovery_duration": null,
+      "value_at_risk_5pct": -0.022161331544656496,
+      "expected_tail_loss_5pct": -0.03437074174115921,
+      "starr_ratio_5pct": 0.057575110955176145,
+      "var_breach_count_5pct": 21,
+      "var_breach_ratio_5pct": 0.05121951219512195,
+      "kupiec_lr_5pct": 0.012739289667024423,
+      "kupiec_pvalue_5pct": 0.9101348403619358,
+      "volatility_weighted_var_5pct": -0.017952170716979594,
+      "volatility_weighted_etl_5pct": -0.027117206058673033,
+      "worst_daily_return": -0.07432359391612187,
+      "worst_5d_return": -0.09485235510878365,
+      "worst_10d_return": -0.11474673073997188,
+      "worst_20d_return": -0.14348846419772399,
+      "negative_semivariance": 0.05336494535457909,
+      "expected_shortfall_loss_95": 0.03437074174115921,
+      "starr_95": 0.057575110955176145,
+      "expected_tail_gain_95pct": 0.03836754928443272,
+      "rachev_95_95": 1.1162851699091296,
+      "rebalance_count": 7,
+      "transaction_cost": 9069.844367572437
+    }
+  },
+  "rows": [
+    {
+      "name": "golden2_latest_ncf_panel",
+      "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_panel_latest_20260831.csv",
+      "bucket": "tuning_window",
+      "metrics": {
+        "initial_value": 1000000.0,
+        "final_value": 2015179.001762728,
+        "total_return": 1.015179001762728,
+        "annual_return": 0.5150927132707053,
+        "volatility": 0.2111732255180922,
+        "downside_deviation": 0.20096347978204984,
+        "sharpe_ratio": 2.150462768483582,
+        "sortino_ratio": 2.2597148480398013,
+        "max_drawdown": -0.13932686342199097,
+        "max_drawdown_duration": 114,
+        "recovery_duration": null,
+        "value_at_risk_5pct": -0.018298828094739726,
+        "expected_tail_loss_5pct": -0.02934902048216685,
+        "starr_ratio_5pct": 0.06140116753859639,
+        "var_breach_count_5pct": 21,
+        "var_breach_ratio_5pct": 0.05121951219512195,
+        "kupiec_lr_5pct": 0.012739289667024423,
+        "kupiec_pvalue_5pct": 0.9101348403619358,
+        "volatility_weighted_var_5pct": -0.01639626959170324,
+        "volatility_weighted_etl_5pct": -0.024583448946681925,
+        "worst_daily_return": -0.06131348096081024,
+        "worst_5d_return": -0.07737122227227389,
+        "worst_10d_return": -0.09766862475789262,
+        "worst_20d_return": -0.12192601216829246,
+        "negative_semivariance": 0.04038632020611035,
+        "expected_shortfall_loss_95": 0.02934902048216685,
+        "starr_95": 0.06140116753859639,
+        "expected_tail_gain_95pct": 0.032906495836527896,
+        "rachev_95_95": 1.1212127456356729,
+        "rebalance_count": 13,
+        "transaction_cost": 11979.056973987688
+      },
+      "trigger_days": 3,
+      "override_days": 3
+    }
+  ],
+  "baseline_report_summary": {
+    "backtest_mode": "base_a2111_no_ncf_panel",
+    "strategy": "a2118_a2111_ncf_late_bull_deleverage"
+  },
+  "candidate_report_summary": {
+    "backtest_mode": "ncf_late_bull_regime_overlay",
+    "strategy": "a2118_a2111_ncf_late_bull_deleverage"
+  }
+}

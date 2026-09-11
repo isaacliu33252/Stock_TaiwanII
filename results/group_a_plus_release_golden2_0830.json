@@ -1,0 +1,150 @@
+{
+  "release_name": "golden2_0830",
+  "release_date": "2026-08-30",
+  "status": "frozen_release",
+  "immutability": {
+    "fixed": true,
+    "do_not_modify_or_overwrite": true,
+    "instruction": "This release is a frozen copy of the latest GroupA+ strategy state as of 2026-08-30 and must not be changed after creation."
+  },
+  "scope": "GroupA+ latest strategy snapshot",
+  "source_state": {
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "strategy_status": "active",
+    "requested_as_of_date": "2026-08-31",
+    "actual_data_date": "2026-08-28",
+    "base_regime": "golden1",
+    "execution_regime": "golden1",
+    "market_state": "bull_trend",
+    "market_state_label_zh": "多頭趨勢",
+    "risk_level": "risk_on",
+    "action": "hold_or_align_to_target",
+    "target_weights_total_1m": {
+      "0050.TW": 0.47,
+      "00631L.TW": 0.10097866268837428,
+      "00632R.TW": 0.1647819321951561,
+      "00679B.TWO": 0.0,
+      "cash": 0.2642394051164696
+    },
+    "group_a_combined_target_weights": {
+      "0050.TW": 0.47,
+      "00631L.TW": 0.10103928626013037,
+      "00632R.TW": 0.1647819321951561,
+      "00679B.TWO": 0.0,
+      "cash": 0.2641787815447135
+    },
+    "latest_prices": {
+      "0050.TW": 106.94999694824219,
+      "00631L.TW": 36.29999923706055,
+      "00632R.TW": 9.890000343322754,
+      "00679B.TWO": 25.850000381469727
+    }
+  },
+  "frozen_files": [
+    {
+      "path": "releases/golden2_0830/group_a_plus_strategy_golden2_0830.json",
+      "source": "report/group_a_plus/latest/strategy.json",
+      "sha256": "60b9e84d6998d53b8e3f475e764812c987968106f13679c066f86ba23dc3d875"
+    },
+    {
+      "path": "releases/golden2_0830/group_a_plus_live_signal_golden2_0830_20260831.json",
+      "source": "report/group_a_plus/latest/live_signal.json",
+      "sha256": "466782bc7c30ae7efa2dc4331e58887b2beed25952a0e9988c8fc3aa463e344e"
+    },
+    {
+      "path": "results/golden2_0830/group_a_combined_live_golden2_0830.json",
+      "source": "results/group_a_combined_live_latest.json",
+      "sha256": "7fc886ab87f89e2b7aff8717d9dd7241fb0a7189db98e22e8d5c092a8085d40a"
+    },
+    {
+      "path": "results/golden2_0830/group_a_combined_live_golden2_0830.csv",
+      "source": "results/group_a_combined_live_latest.csv",
+      "sha256": "69b4a99d674e60e8ed4c88dbc30c5d4333e77823464c2659fa14351ee8eac962"
+    },
+    {
+      "path": "results/golden2_0830/group_a_combined_bundle_golden2_0830.json",
+      "source": "results/group_a_combined_bundle_latest.json",
+      "sha256": "056f4e6e4e105a7044dcc5dd6b6d984ff54162defcb55b33e6e85d700130597b"
+    },
+    {
+      "path": "results/golden2_0830/signal_group_a_golden2_0830_20260831.json",
+      "source": "results/signal_group_a_20260830_230344.json",
+      "sha256": "75828e1befa4af3fd29196e809d9917d800642da5c1b4cacb78ee5d70774c67f"
+    },
+    {
+      "path": "results/golden2_0830/signal_group_a_golden2_0830_20260831.csv",
+      "source": "results/signal_group_a_20260830_230344.csv",
+      "sha256": "1171a5b783264584af71c438a18aa8636b51f42fbb5e18d9f065990e1a557c9f"
+    },
+    {
+      "path": "results/golden2_0830/group_a_plus_live_signal_v2_golden2_0830_20260831_total_1m.json",
+      "source": "results/group_a_plus_live_signal_v2_20260831_total_1m_from_taiwan_stock_20260830.json",
+      "sha256": "466782bc7c30ae7efa2dc4331e58887b2beed25952a0e9988c8fc3aa463e344e"
+    },
+    {
+      "path": "models/portfolio/golden2_0830/last_ppo_group_a_100k_golden2_0830.zip",
+      "source": "models/portfolio/last_ppo_group_a_100k.zip",
+      "sha256": "ef9f363b98c03969601bc5a090a14f34a5df83ddda727f1dba26a211b03a9cf3"
+    },
+    {
+      "path": "results/golden2_0830/last_ppo_group_a_backtest_golden2_0830.json",
+      "source": "results/last_ppo_group_a_backtest_20250101_20260531_20260609_214023.json",
+      "sha256": "dafad717971dc097959e0f1f4b8746ae3ae48e84c62a1edd2caa5faa1403bc33"
+    },
+    {
+      "path": "results/golden2_0830/ncf_0050_golden2_0830.json",
+      "source": "results/ncf_0050_latest_20260830.json",
+      "sha256": "8f7672de1f0795f7ee021828debea958bc01dc467db93d1e49045aa91d95009e"
+    },
+    {
+      "path": "results/golden2_0830/ncf_0050_panel_golden2_0830.csv",
+      "source": "results/ncf_0050_panel_latest_20260830.csv",
+      "sha256": "54d216ff639ff2c4b123b91b99be29a9e0d216cbf0f43317c5cdfe8a3ec29c0d"
+    },
+    {
+      "path": "results/golden2_0830/ncf_00631l_golden2_0830.json",
+      "source": "results/ncf_00631l_latest_20260830.json",
+      "sha256": "58b81e1aaf1a920a456fcf25d73d6b1cc612ef3fe017e7de113463ff6e0a47c4"
+    },
+    {
+      "path": "results/golden2_0830/ncf_00631l_panel_golden2_0830.csv",
+      "source": "results/ncf_00631l_panel_latest_20260830.csv",
+      "sha256": "6d782fa048b30fbff6707e95ef4cac184ec47890a422d130b85ff72c9ab15cc3"
+    },
+    {
+      "path": "results/golden2_0830/ncf_00632r_golden2_0830.json",
+      "source": "results/ncf_00632r_latest_20260830.json",
+      "sha256": "e5c7d97427c0a6ac69da1599095f18827cd22f99501a8cb481183870ad78fe7e"
+    },
+    {
+      "path": "results/golden2_0830/ncf_00632r_panel_golden2_0830.csv",
+      "source": "results/ncf_00632r_panel_latest_20260830.csv",
+      "sha256": "3052eb1991405702973907a258e9b1afe1cb6c806502cdd91398e6fbf0c6d704"
+    },
+    {
+      "path": "results/golden2_0830/ncf_2330_golden2_0830.json",
+      "source": "results/ncf_2330_latest_20260830.json",
+      "sha256": "5549bd630f11ca252d240fc4ed156f6b2b85b05b3f9fe32661b30d28c1f6a4eb"
+    },
+    {
+      "path": "results/golden2_0830/ncf_2330_panel_golden2_0830.csv",
+      "source": "results/ncf_2330_panel_latest_20260830.csv",
+      "sha256": "96b2a86009548cb99a72e56a2d8f3abcf824d0bd8434e615290b66feb5935c37"
+    },
+    {
+      "path": "results/golden2_0830/ncf_advisory_panel_golden2_0830.csv",
+      "source": "results/ncf_advisory_panel_latest_20260830.csv",
+      "sha256": "7a6872c402372f2f2fc00d045568159c255c81ccf4694be10289ef6d1ea0de5a"
+    },
+    {
+      "path": "results/golden2_0830/ncf_panel_manifest_golden2_0830.json",
+      "source": "results/ncf_panel_manifest_20260830.json",
+      "sha256": "079dcb833ef24c96b454b2b080246503180c3aade1193e113175575890edcab7"
+    }
+  ],
+  "notes": [
+    "golden1_0531 was not modified.",
+    "Daily latest pointers may continue to update separately; golden2_0830 files are fixed snapshots and should not be overwritten.",
+    "The frozen total-1m live signal uses the 2026-08-28 market data snapshot for requested execution date 2026-08-31."
+  ]
+}

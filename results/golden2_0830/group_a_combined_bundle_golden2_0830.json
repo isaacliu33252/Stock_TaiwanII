@@ -1,0 +1,23 @@
+{
+  "bundle": "group_a_combined",
+  "release_name": "latest_group_a_improved_0050_step0300bp_stepgate105_ma60_brake30_631l0_tdcc18",
+  "release_handoff_md": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/GROUP_A_GOLDEN1_0531_RELEASE.md",
+  "description": "Institutional-only Group A PPO mainline with local TWII/0050 regime gate that can override into defensive templates.",
+  "result_json": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/last_ppo_group_a_backtest_20250101_20260531_20260609_214023.json",
+  "live_mode": "live_start",
+  "stable_signal_json": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_combined_live_latest.json",
+  "stable_signal_csv": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_combined_live_latest.csv",
+  "generated_signal_json": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/signal_group_a_20260830_230344.json",
+  "generated_signal_csv": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/signal_group_a_20260830_230344.csv",
+  "actual_data_date": "2026-08-28",
+  "signal_status": "rebalance",
+  "signal_reason": "pva_overlay_m; limited_0050_target_weight_step",
+  "tdcc_state": "normal",
+  "tdcc_overlay_changed": false,
+  "target_shares": {
+    "0050.TW": 5572,
+    "00631L.TW": 3529,
+    "00679B.TWO": 0,
+    "00632R.TW": 21127
+  }
+}

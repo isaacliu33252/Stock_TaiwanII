@@ -1,0 +1,578 @@
+{
+  "ticker": "2330.TW",
+  "generated_at": "2026-08-30T21:16:24",
+  "last_close_date": "2026-08-28",
+  "last_close": 2420.0,
+  "current_regime": "BULL",
+  "data_freshness": {
+    "reference_last_close_date": "2026-08-28",
+    "sources": {
+      "ohlcv": null,
+      "institutional": null,
+      "margin": null,
+      "market_margin": "2026-08-28",
+      "taifex_futures": "2026-08-28",
+      "taifex_institutional": "2026-08-28",
+      "tdcc_shareholding": "2026-08-28",
+      "external_market_ohlcv": "2026-08-27"
+    },
+    "source_details": {
+      "external_market_ohlcv": {
+        "ticker_dates": {
+          "2308.TW": "2026-08-28",
+          "2317.TW": "2026-08-28",
+          "2330.TW": "2026-08-28",
+          "2382.TW": "2026-08-28",
+          "2454.TW": "2026-08-28",
+          "AMD": "2026-08-27",
+          "ASML": "2026-08-27",
+          "AVGO": "2026-08-27",
+          "DX-Y.NYB": "2026-08-27",
+          "EWT": "2026-08-27",
+          "GC=F": "2026-08-28",
+          "HYG": "2026-08-27",
+          "JPY=X": "2026-08-28",
+          "NVDA": "2026-08-27",
+          "QQQ": "2026-08-27",
+          "SHY": "2026-08-27",
+          "SOXX": "2026-08-27",
+          "SPY": "2026-08-28",
+          "TSM": "2026-08-27",
+          "TWD=X": "2026-08-28",
+          "XLE": "2026-08-28",
+          "XLF": "2026-08-28",
+          "XLK": "2026-08-28",
+          "XLV": "2026-08-28",
+          "^GSPC": "2026-08-27",
+          "^HSI": "2026-08-27",
+          "^IRX": "2026-08-27",
+          "^IXIC": "2026-08-27",
+          "^KS11": "2026-08-27",
+          "^N225": "2026-08-28",
+          "^TNX": "2026-08-27",
+          "^TWII": "2026-08-27",
+          "^VIX": "2026-08-27"
+        },
+        "ticker_lag_days_vs_reference": {
+          "2308.TW": 0,
+          "2317.TW": 0,
+          "2330.TW": 0,
+          "2382.TW": 0,
+          "2454.TW": 0,
+          "AMD": 1,
+          "ASML": 1,
+          "AVGO": 1,
+          "DX-Y.NYB": 1,
+          "EWT": 1,
+          "GC=F": 0,
+          "HYG": 1,
+          "JPY=X": 0,
+          "NVDA": 1,
+          "QQQ": 1,
+          "SHY": 1,
+          "SOXX": 1,
+          "SPY": 0,
+          "TSM": 1,
+          "TWD=X": 0,
+          "XLE": 0,
+          "XLF": 0,
+          "XLK": 0,
+          "XLV": 0,
+          "^GSPC": 1,
+          "^HSI": 1,
+          "^IRX": 1,
+          "^IXIC": 1,
+          "^KS11": 1,
+          "^N225": 0,
+          "^TNX": 1,
+          "^TWII": 1,
+          "^VIX": 1
+        }
+      }
+    },
+    "lag_days_vs_reference": {
+      "ohlcv": null,
+      "institutional": null,
+      "margin": null,
+      "market_margin": 0,
+      "taifex_futures": 0,
+      "taifex_institutional": 0,
+      "tdcc_shareholding": 0,
+      "external_market_ohlcv": 1
+    },
+    "missing_sources": [
+      "ohlcv",
+      "institutional",
+      "margin"
+    ],
+    "stale_sources": [],
+    "sources_ahead_of_ohlcv": [],
+    "status": "degraded_missing"
+  },
+  "data_limitations": [
+    "no per-stock institutional_data/margin_data/foreign_shareholding_data for 2330.TW in local DB (only ETF tickers are populated) — per-stock chip features are loaded from FinMind CSV caches",
+    "OHLCV sourced from external_market_ohlcv (yfinance), not the `ohlcv` table"
+  ],
+  "feature_selection": false,
+  "external_features": true,
+  "feature_mode": "after_close",
+  "tsmc_leadership_features": [
+    "tsmc_leadership_ret_5d",
+    "tsmc_leadership_ret_20d",
+    "tsmc_leadership_adr_overnight",
+    "tsmc_leadership_soxx_ret",
+    "tsmc_leadership_peer_semis_ret",
+    "tsmc_leadership_vs_0050_ex_tsmc",
+    "tsmc_leadership_0050_contribution",
+    "tsmc_leadership_foreign_net",
+    "tsmc_leadership_usdtwd_change",
+    "TSMC_Leadership_Score"
+  ],
+  "tsmc_leadership_redundant_features_excluded": [
+    "tsmc_leadership_vs_0050_ex_tsmc",
+    "tsmc_leadership_0050_contribution"
+  ],
+  "leadership_mode": "full",
+  "tsmc_0050_weight": 0.5831,
+  "tbrain_features": true,
+  "fourier_features": true,
+  "global_features": true,
+  "labeling_mode": "auto",
+  "labeling_per_horizon": {
+    "1": "simple",
+    "5": "triple_barrier",
+    "20": "simple"
+  },
+  "tbl_mult": 1.0,
+  "direction_threshold": 0.0,
+  "probability_calibration": {
+    "method": "isotonic_regression",
+    "n_fit": 1420,
+    "n_calib": 354,
+    "applied": true,
+    "n_models_calibrated": 5
+  },
+  "models": {
+    "regression": [
+      "rf",
+      "et",
+      "elasticnet"
+    ],
+    "classification": [
+      "rf",
+      "et",
+      "hgb",
+      "gb",
+      "lgb",
+      "xgb",
+      "cat"
+    ]
+  },
+  "horizons": {
+    "1": {
+      "prediction_date": "2026-08-31",
+      "regression": {
+        "predicted_return": 0.003897,
+        "predicted_close": 2429.4298,
+        "model_returns": {
+          "rf": 0.006803,
+          "et": 0.00372,
+          "en": 0.001167
+        },
+        "val_mae_return": 0.0140065,
+        "val_r2": 0.149185,
+        "confidence_68_return": {
+          "low": -0.014425,
+          "high": 0.022219
+        },
+        "confidence_68_price": {
+          "low": 2385.0908,
+          "high": 2473.7688
+        }
+      },
+      "classification": {
+        "direction": "UP",
+        "probability_up": 0.8408,
+        "model_probabilities": {
+          "rf": 0.6872,
+          "et": 0.9545,
+          "hgb": 0.8951,
+          "gb": 0.7356,
+          "lgb": 0.7841,
+          "xgb": 0.8333,
+          "cat": 1.0
+        },
+        "ensemble_weights": {
+          "rf": 0.147,
+          "et": 0.1412,
+          "hgb": 0.1296,
+          "gb": 0.1539,
+          "lgb": 0.1243,
+          "xgb": 0.1543,
+          "cat": 0.1497
+        },
+        "best_model": "gb",
+        "val_accuracy": 0.6735,
+        "val_auc": 0.7417,
+        "val_auc_raw": 0.7417,
+        "ensemble_val_brier": 0.2068,
+        "model_brier": {
+          "rf": 0.214,
+          "et": 0.2158,
+          "hgb": 0.2245,
+          "gb": 0.2104,
+          "lgb": 0.2281,
+          "xgb": 0.2082,
+          "cat": 0.2109
+        },
+        "model_brier_raw": {
+          "rf": 0.214,
+          "et": 0.2241,
+          "hgb": 0.2425,
+          "gb": 0.2104,
+          "lgb": 0.2402,
+          "xgb": 0.224,
+          "cat": 0.2185
+        }
+      }
+    },
+    "5": {
+      "prediction_date": "2026-09-04",
+      "regression": {
+        "predicted_return": 0.00458,
+        "predicted_close": 2431.0842,
+        "model_returns": {
+          "rf": 0.002107,
+          "et": 0.005908,
+          "en": 0.005727
+        },
+        "val_mae_return": 0.02850801,
+        "val_r2": 0.050055,
+        "confidence_68_return": {
+          "low": -0.032151,
+          "high": 0.041312
+        },
+        "confidence_68_price": {
+          "low": 2342.1935,
+          "high": 2519.975
+        }
+      },
+      "classification": {
+        "direction": "DOWN",
+        "probability_up": 0.4284,
+        "model_probabilities": {
+          "rf": 0.4923,
+          "et": 0.4571,
+          "hgb": 0.4412,
+          "gb": 0.1918,
+          "lgb": 0.475,
+          "xgb": 0.4474,
+          "cat": 0.3784
+        },
+        "ensemble_weights": {
+          "rf": 0.2069,
+          "et": 0.241,
+          "hgb": 0.1026,
+          "gb": 0.1026,
+          "lgb": 0.1238,
+          "xgb": 0.1197,
+          "cat": 0.1033
+        },
+        "best_model": "cat",
+        "val_accuracy": 0.6224,
+        "val_auc": 0.644,
+        "val_auc_raw": 0.644,
+        "ensemble_val_brier": 0.2305,
+        "model_brier": {
+          "rf": 0.2293,
+          "et": 0.2284,
+          "hgb": 0.2457,
+          "gb": 0.2529,
+          "lgb": 0.2391,
+          "xgb": 0.24,
+          "cat": 0.2425
+        },
+        "model_brier_raw": {
+          "rf": 0.2293,
+          "et": 0.2295,
+          "hgb": 0.3011,
+          "gb": 0.2529,
+          "lgb": 0.2897,
+          "xgb": 0.2696,
+          "cat": 0.2425
+        }
+      }
+    },
+    "20": {
+      "prediction_date": "2026-09-25",
+      "regression": {
+        "predicted_return": 0.033854,
+        "predicted_close": 2501.927,
+        "model_returns": {
+          "rf": 0.038636,
+          "et": 0.037824,
+          "en": 0.025102
+        },
+        "val_mae_return": 0.06635549,
+        "val_r2": -0.010372,
+        "confidence_68_return": {
+          "low": -0.047624,
+          "high": 0.115332
+        },
+        "confidence_68_price": {
+          "low": 2304.7496,
+          "high": 2699.1043
+        }
+      },
+      "classification": {
+        "direction": "UP",
+        "probability_up": 0.7413,
+        "model_probabilities": {
+          "rf": 0.6863,
+          "et": 0.5883,
+          "hgb": 0.6818,
+          "gb": 0.7143,
+          "lgb": 0.8333,
+          "xgb": 0.7812,
+          "cat": 0.8462,
+          "stable_rf": 0.8019
+        },
+        "ensemble_weights": {
+          "rf": 0.155,
+          "et": 0.0956,
+          "hgb": 0.1599,
+          "gb": 0.0956,
+          "lgb": 0.0956,
+          "xgb": 0.0956,
+          "cat": 0.0956,
+          "stable_rf": 0.2072
+        },
+        "best_model": "et",
+        "val_accuracy": 0.6759,
+        "val_auc": 0.6754,
+        "val_auc_raw": 0.6754,
+        "ensemble_val_brier": 0.2011,
+        "model_brier": {
+          "rf": 0.1925,
+          "et": 0.2055,
+          "hgb": 0.1979,
+          "gb": 0.2234,
+          "lgb": 0.2113,
+          "xgb": 0.2103,
+          "cat": 0.2252,
+          "stable_rf": 0.1975
+        },
+        "model_brier_raw": {
+          "rf": 0.2179,
+          "et": 0.2055,
+          "hgb": 0.2958,
+          "gb": 0.2691,
+          "lgb": 0.3073,
+          "xgb": 0.2716,
+          "cat": 0.2726,
+          "stable_rf": 0.2086
+        }
+      }
+    }
+  },
+  "horizon_ensemble": {
+    "direction": "UP",
+    "combined_probability_up": 0.7051,
+    "calibrated_probability_up": 0.6319,
+    "confidence": 0.4902,
+    "shrinkage": 0.6431,
+    "weighted_return": 0.005063,
+    "predicted_close": 2432.2523,
+    "votes_up": 2,
+    "direction_weights": {
+      "1": 0.4484,
+      "5": 0.2583,
+      "20": 0.2934
+    },
+    "return_weights": {
+      "1": 0.7776,
+      "5": 0.1877,
+      "20": 0.0346
+    },
+    "horizon_aucs": {
+      "1": 0.7384,
+      "5": 0.6373,
+      "20": 0.656
+    },
+    "wf_h1_rf_accuracy": null,
+    "wf_confidence_component": null,
+    "wf_confidence_used": false
+  },
+  "tsmc_market_state": {
+    "state": 4,
+    "label_zh": "拉回整理",
+    "bias": "pullback_in_uptrend",
+    "policy": "diagnostic_only_no_weight_change",
+    "rule_version": "tsmc_market_state_v1",
+    "reasons": [
+      "H20 is still UP",
+      "short/medium horizon is pulling back",
+      "tail risk is not high enough to confirm trend weakening"
+    ],
+    "inputs": {
+      "h1_direction": "UP",
+      "h5_direction": "DOWN",
+      "h20_direction": "UP",
+      "h1_probability_up": 0.840777,
+      "h5_probability_up": 0.428442,
+      "h20_probability_up": 0.741266,
+      "h1_return": 0.003897,
+      "h5_return": 0.00458,
+      "h20_return": 0.033854,
+      "combined_probability_up": 0.705095,
+      "calibrated_probability_up": 0.631904,
+      "confidence": 0.490196,
+      "weighted_return": 0.005063,
+      "prob_fwd_mdd_gt5_h20": 0.286641,
+      "prob_fwd_mdd_gt8_h20": 0.072718,
+      "prob_fwd_gain_gt5_h20": 0.587635,
+      "tail_reward_risk_score": 0.300993
+    },
+    "state_map": {
+      "1": "強勢領漲",
+      "2": "高檔震盪",
+      "3": "假突破",
+      "4": "拉回整理",
+      "5": "趨勢轉弱"
+    }
+  },
+  "forward_drawdown_risk": {
+    "available": true,
+    "horizon_days": 20,
+    "threshold": 0.05,
+    "probability": 0.286641,
+    "direction": "RISK_OFF",
+    "confidence": 0.426718,
+    "auc": 0.702969,
+    "brier": 0.191241,
+    "train_rows": 2195,
+    "val_rows": 400,
+    "train_positive_rate": 0.257859,
+    "val_positive_rate": 0.2825,
+    "excluded_features": [
+      "txo_foreign_put_oi",
+      "txo_foreign_call_oi",
+      "txo_foreign_pc_spread",
+      "txo_total_pcr",
+      "txo_foreign_pc_spread_ma5",
+      "txo_pcr_x_ma_gap",
+      "txo_foreign_pc_x_vix"
+    ],
+    "feature_policy": "tail_risk_exclude_txo_features",
+    "model_probas": {
+      "rf": 0.3884558806265767,
+      "et": 0.21739130434782608,
+      "hgb": 0.2733451270285296,
+      "gb": 0.34405855646372296,
+      "lgb": 0.1116728779326537,
+      "xgb": 0.25925925374031067,
+      "cat": 0.39482813545144
+    },
+    "model_weights": {
+      "rf": 0.18967984311730718,
+      "et": 0.24257505146889663,
+      "hgb": 0.09252747252747252,
+      "gb": 0.09252747252747252,
+      "lgb": 0.09252747252747252,
+      "xgb": 0.1607951814972461,
+      "cat": 0.12936750633413258
+    }
+  },
+  "forward_severe_drawdown_risk": {
+    "available": true,
+    "horizon_days": 20,
+    "threshold": 0.08,
+    "probability": 0.072718,
+    "direction": "RISK_OFF",
+    "confidence": 0.854564,
+    "auc": 0.775108,
+    "brier": 0.130713,
+    "train_rows": 2195,
+    "val_rows": 400,
+    "train_positive_rate": 0.117995,
+    "val_positive_rate": 0.175,
+    "excluded_features": [
+      "txo_foreign_put_oi",
+      "txo_foreign_call_oi",
+      "txo_foreign_pc_spread",
+      "txo_total_pcr",
+      "txo_foreign_pc_spread_ma5",
+      "txo_pcr_x_ma_gap",
+      "txo_foreign_pc_x_vix"
+    ],
+    "feature_policy": "tail_risk_exclude_txo_features",
+    "model_probas": {
+      "rf": 0.1590909090909091,
+      "et": 0.1154514189763093,
+      "hgb": 0.006943902960192231,
+      "gb": 0.14285714285714285,
+      "lgb": 0.0027148171213509974,
+      "xgb": 0.005889376625418663,
+      "cat": 0.04848713682714488
+    },
+    "model_weights": {
+      "rf": 0.1617951021509267,
+      "et": 0.14372425679184922,
+      "hgb": 0.09252747252747252,
+      "gb": 0.09252747252747252,
+      "lgb": 0.09252747252747252,
+      "xgb": 0.09252747252747252,
+      "cat": 0.324370750947334
+    }
+  },
+  "forward_upside_reward": {
+    "available": true,
+    "horizon_days": 20,
+    "threshold": 0.05,
+    "probability": 0.587635,
+    "direction": "REWARD_ON",
+    "confidence": 0.175269,
+    "auc": 0.614574,
+    "brier": 0.238325,
+    "train_rows": 2195,
+    "val_rows": 400,
+    "train_positive_rate": 0.456948,
+    "val_positive_rate": 0.62,
+    "model_probas": {
+      "rf": 0.55,
+      "et": 0.4368588583029647,
+      "hgb": 0.7373249696997785,
+      "gb": 0.5938864628820961,
+      "lgb": 0.588235294117647,
+      "xgb": 0.5301523208618164,
+      "cat": 0.8202821462480493
+    },
+    "model_weights": {
+      "rf": 0.44483516483516483,
+      "et": 0.09252747252747252,
+      "hgb": 0.09252747252747252,
+      "gb": 0.09252747252747252,
+      "lgb": 0.09252747252747252,
+      "xgb": 0.09252747252747252,
+      "cat": 0.09252747252747252
+    }
+  },
+  "tail_reward_risk_score": 0.300993,
+  "top_features": {
+    "tsmc_leadership_adr_overnight": 0.093805,
+    "tsmc_leadership_soxx_ret": 0.083485,
+    "tsmc_leadership_peer_semis_ret": 0.065399,
+    "TSMC_Leadership_Score": 0.030153,
+    "vix_change_x_return1d": 0.009818,
+    "twii_ret": 0.009098,
+    "macd_diff": 0.008959,
+    "twii_ret_x_return1d": 0.007483,
+    "twii5d_x_close_ma200_dist": 0.007174,
+    "ma60_ma200_ratio": 0.006988,
+    "tx_night_x_gap": 0.006868,
+    "return5_x_vol20": 0.006598,
+    "trading_days_since_earnings": 0.006558,
+    "us_soxx_ret": 0.006406,
+    "kospi_5d_ret": 0.006248
+  }
+}
