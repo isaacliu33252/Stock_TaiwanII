@@ -345,6 +345,61 @@ lever is a legitimate shadow candidate for further tracking (e.g. paper-track
 it against future switch events), not a closed_negative dead end, and not
 ready to promote.**
 
+## Direction 6 deeper analysis (2026-09-08, second pass): production already has this gate
+
+Requested follow-up: "no-trade band 能做更詳細的分析" (can the no-trade-band
+analysis go deeper). Before sweeping band widths further, checked whether
+the original direction-6 proxy's premise -- that production applies PVA
+leverage_scale continuously with no filtering at all -- is actually true.
+**It is not.**
+
+`train_dual_group_2024_2026.py` (the environment that trains/generates the
+golden1_0531 signal), lines ~2785-2795: the PVA-rescaled candidate weights
+are only actually applied when `pva_drift = sum(abs(candidate_target_weights
+- self.weights))` (full-portfolio L1 weight distance between the PVA
+candidate and the currently-held weights) is `>= self.pva_drift_threshold`.
+`GROUP_A_GOLDEN1_0531_RELEASE.md` section 4 documents the live production
+value: **`pva_drift_threshold = 0.05`** (5% L1). Below that, the PVA
+adjustment is skipped for that step entirely. **This is a no-trade band.
+Production already has one.** There is also a separate, unmodeled
+`min_rebalance_days` cooldown (5 or 15 trading days depending on which
+training preset golden1_0531 used) gating rebalance frequency independent
+of magnitude -- not corrected in this pass, see caveat below.
+
+Rebuilt the proxy in `scripts/misc/test_no_trade_band_production_gate_corrected_20260908.py`
+(`results/no_trade_band_production_gate_corrected_20260908.json`) with the
+real 5% L1-drift gate modeled (converting the original single-asset
+`band` into the L1-equivalent used in production: for this 2-asset-moving
+proxy, L1 drift = 2x the 00631L weight change), then swept L1 thresholds
+0%-20% around it. Findings:
+
+- **The original "89% of days trigger rebalancing, 85% noise-sized" headline
+  was measuring the ungated (0%) baseline, which production has never
+  actually run.** At production's real 5% threshold, the true trigger rate
+  is only **3.7%-8.6% of days** depending on window -- an order of magnitude
+  lower than the original framing implied.
+- **Production's existing 5% threshold is not badly mis-calibrated.** Modest
+  further widening (toward 6-8%) shows small additional gains in 3 of 4
+  windows (e.g. covid_2020 final value +4.2%, Sharpe 1.32->1.51 at 8%) without
+  much additional MDD cost there. But going wider (15-20%) starts trading off
+  real risk in `live_2024_2026` specifically (MDD -22.94% at 5% ->
+  -26.00% at 20%), while `active_2025_2026` and `inflation_2022` stay
+  comparatively flat/noisy across most of the range (inflation_2022 only
+  sees 14-27 rebalance events across most thresholds tested -- too few to
+  read a clean signal from, the same small-n caution as everywhere else in
+  this round).
+- **Direction 6, as originally scoped ("should GroupA+ add a no-trade band"),
+  is largely moot** -- the mechanism it proposed already exists in
+  production. The live open question is narrower: whether 5% is exactly
+  optimal, or whether something in the 6-8% range would be modestly better.
+  That narrower question is not resolved here -- it inherits the same
+  window-overlap and small-sample caveats as direction 5's threshold sweep
+  above, and additionally has NOT been checked against the still-unmodeled
+  `min_rebalance_days` cooldown, so even this corrected proxy likely still
+  overstates true production turnover somewhat.
+
+Memory: `project_direction6_no_trade_band_production_gate_correction_20260908.md`.
+
 ## Production State
 
 Unchanged by this entire research round. The only real production change
