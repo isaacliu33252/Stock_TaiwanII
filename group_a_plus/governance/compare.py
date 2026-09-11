@@ -1,4 +1,31 @@
-"""Compare GroupA+ candidate result JSON files against an A20.7 baseline."""
+"""Compare GroupA+ candidate result JSON files against an A20.7 baseline.
+
+2026-09-11: arXiv:2603.20319 ("Implementation Risk in Portfolio Backtesting")
+was desk-reviewed by sanity-checking this repo's own cost engine
+(_simulate_costed_curve / _trade_cost in backtest_group_a_plus_defensive_basket.py)
+-- no bug matching the paper's 7 documented defect classes was found. But the
+review surfaced a real, previously un-surfaced piece of evidence already
+sitting in this repo: results/a2118_m6_dual_engine_reconciliation_20260703.json,
+a 2026-07-02 audit that fed a2118's actual daily target weights into an
+independent FinRL/bt-based engine and compared it against this repo's own
+engine over the same window (2025-01-02 to 2026-07-02). total_return diverged
+by 8.9 percentage points (113.9% own engine vs 103.7% FinRL engine) --
+larger than the paper's own flagged high-turnover threshold (3.71%) -- while
+Sharpe/MDD diverged by a much smaller 2.3%/0.67pp and every metric's SIGN
+agreed across both engines (directional conclusions unaffected). The
+divergence traces to known, listed methodology differences (FinRL doesn't
+model slippage; a single tax_rate approximation; bt's own rebalance-day
+semantics), not a bug in either engine -- exactly the paper's central claim
+that two independently "correct" engines still diverge on absolute numbers.
+IMPLEMENTATION_UNCERTAINTY_NOTE below formalizes this as the standard caveat
+promised in that desk review (project memory
+project_2603_20319_implementation_risk_m6_engine_uncertainty_20260911): every
+compare_candidates() report carries it so a reader treats single-engine
+absolute metrics (final_value, Sharpe, MDD) as having a real-but-bounded
+engine-implementation error band, while still trusting the RELATIVE
+comparisons this module makes (candidate vs baseline, same engine both sides)
+at face value -- systematic engine bias mostly cancels in a same-engine delta.
+"""
 
 from __future__ import annotations
 
@@ -12,6 +39,25 @@ from typing import Any
 import pandas as pd
 
 from tw_output_standard import OutputStandardizer, write_standard_output
+
+
+IMPLEMENTATION_UNCERTAINTY_NOTE: dict[str, Any] = {
+    "source": "results/a2118_m6_dual_engine_reconciliation_20260703.json (2026-07-02 audit)",
+    "paper_reference": "arXiv:2603.20319 (Implementation Risk in Portfolio Backtesting)",
+    "window": {"start": "2025-01-02", "end": "2026-07-02"},
+    "observed_divergence": {
+        "total_return_pp": 8.9,
+        "sharpe_ratio_pct": 2.3,
+        "max_drawdown_pp": 0.67,
+    },
+    "sign_agreement": True,
+    "cause": "known methodology differences (slippage modeling, tax_rate approximation, "
+    "rebalance-day semantics), not a bug in either engine",
+    "guidance": "absolute single-engine metrics (final_value/Sharpe/MDD) carry roughly a "
+    "single-digit-to-~9%-magnitude implementation-uncertainty band; candidate-vs-baseline "
+    "RELATIVE deltas computed within this same engine remain trustworthy since systematic "
+    "engine bias mostly cancels in the delta.",
+}
 
 
 def _unwrap(payload: dict[str, Any]) -> dict[str, Any]:
@@ -95,13 +141,18 @@ def _effective_override(row: dict[str, Any]) -> int:
 # constraints above) can rank candidates very differently from tail-sensitive
 # measures. These field names match what scripts/evaluate/evaluate_cvar_tail_risk_
 # diagnostic_shadow.py and evaluate_a2118_h20_tail_score_shadow.py already compute
-# as shadow-only research diagnostics -- no current candidate report populates them
-# into its `metrics` dict yet, so promotion_utility below is forward-looking
-# infrastructure, not something already influencing real candidates today.
+# as shadow-only research diagnostics. As of 2026-08-18,
+# backtest_group_a_plus_switch_policy.py::_metrics() and
+# backtest_group_a_plus_overlay.py::_metrics() also emit these exact field
+# names, so real `rule_reports` candidates now populate this block with
+# actual numbers instead of None -- promotion_utility itself is still
+# observe-only (lambda_starr/lambda_es default 0.0) until deliberately
+# calibrated and OOS-validated.
 TAIL_RISK_METRIC_KEYS = {
     "expected_shortfall_95": "expected_shortfall_loss_95",
     "starr_95": "starr_95",
     "rachev_95_95": "rachev_95_95",
+    "negative_semivariance": "negative_semivariance",
     "worst_5d_return": "worst_5d_return",
     "worst_10d_return": "worst_10d_return",
     "max_drawdown_duration": "max_drawdown_duration",
@@ -320,7 +371,108 @@ def compare_candidates(
         "research_watchlist_pass_count": sum(1 for row in rows if row.get("research_watchlist_pass")),
         "top_candidates": ranked[:25],
         "rows": rows,
+        "implementation_uncertainty_note": IMPLEMENTATION_UNCERTAINTY_NOTE,
     }
+
+
+def _fmt(value: Any, digits: int = 4) -> str:
+    if value is None:
+        return "-"
+    try:
+        if pd.isna(value):
+            return "-"
+        return f"{float(value):.{digits}f}"
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def _write_md(report: dict[str, Any], path: Path) -> None:
+    """Human-readable render of compare_candidates()'s JSON report.
+
+    Two tables: the existing final_value/Sharpe/MDD promotion gate (unchanged
+    decision logic -- this is display-only), and the tail-risk diagnostic
+    block (arXiv:2607.16450) side by side so a reviewer can see "final value
+    barely moved but tail risk improved/worsened" without reading raw JSON.
+    Tail-risk columns are advisory-only, same posture as promotion_utility:
+    they do not gate formal_upgrade_pass/research_watchlist_pass.
+    """
+    baseline_metrics = report["baseline_metrics"]
+    baseline_tail = report["baseline_tail_risk_metrics"]
+    lines = [
+        "# Group A+ Candidate Comparison",
+        "",
+        f"- Generated: `{report['generated_at']}`",
+        f"- Baseline: `{report['baseline_path']}`",
+        f"- Candidates compared: `{report['candidate_row_count']}` (from {report['candidate_file_count']} files)",
+        f"- Formal upgrade pass: `{report['formal_upgrade_pass_count']}`",
+        f"- Research watchlist pass: `{report['research_watchlist_pass_count']}`",
+        f"- Tail-risk lambdas: `starr={report['tail_risk_lambda_starr']}`, `es={report['tail_risk_lambda_es']}` "
+        "(0.0 = advisory-only, does not affect promotion decision)",
+        "",
+        "## Promotion Gate (final_value / Sharpe / MDD -- unchanged decision logic)",
+        "",
+        "| Row | Final Value | Sharpe | MDD | Delta Final | Delta Sharpe | Delta MDD | Status |",
+        "|---|---:|---:|---:|---:|---:|---:|---|",
+        f"| baseline | {_fmt(baseline_metrics.get('final_value'), 2)} | "
+        f"{_fmt(baseline_metrics.get('sharpe_ratio'))} | {_fmt(baseline_metrics.get('max_drawdown'))} | "
+        "- | - | - | baseline |",
+    ]
+    for row in report["top_candidates"]:
+        label = f"{row.get('experiment', '?')}/{row.get('variant', '?')}"
+        lines.append(
+            f"| {label} | {_fmt(row.get('final_value'), 2)} | {_fmt(row.get('sharpe_ratio'))} | "
+            f"{_fmt(row.get('max_drawdown'))} | {_fmt(row.get('delta_final'), 2)} | "
+            f"{_fmt(row.get('delta_sharpe'))} | {_fmt(row.get('delta_mdd'))} | "
+            f"{row.get('promotion_objective_status', '-')} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Tail-Risk Diagnostic (arXiv:2607.16450 -- advisory only, not a promotion gate)",
+            "",
+            "| Row | ES95 | STARR95 | Rachev95 | NegSemivar | Worst5d | Worst10d | DD Duration | Recovery Duration |",
+            "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+            f"| baseline | {_fmt(baseline_tail.get('expected_shortfall_95'))} | "
+            f"{_fmt(baseline_tail.get('starr_95'))} | {_fmt(baseline_tail.get('rachev_95_95'))} | "
+            f"{_fmt(baseline_tail.get('negative_semivariance'))} | {_fmt(baseline_tail.get('worst_5d_return'))} | "
+            f"{_fmt(baseline_tail.get('worst_10d_return'))} | {_fmt(baseline_tail.get('max_drawdown_duration'), 0)} | "
+            f"{_fmt(baseline_tail.get('recovery_duration'), 0)} |",
+        ]
+    )
+    for row in report["top_candidates"]:
+        label = f"{row.get('experiment', '?')}/{row.get('variant', '?')}"
+        tail = row.get("tail_risk_metrics", {}) or {}
+        lines.append(
+            f"| {label} | {_fmt(tail.get('expected_shortfall_95'))} | {_fmt(tail.get('starr_95'))} | "
+            f"{_fmt(tail.get('rachev_95_95'))} | {_fmt(tail.get('negative_semivariance'))} | "
+            f"{_fmt(tail.get('worst_5d_return'))} | {_fmt(tail.get('worst_10d_return'))} | "
+            f"{_fmt(tail.get('max_drawdown_duration'), 0)} | {_fmt(tail.get('recovery_duration'), 0)} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Notes",
+            "",
+            "- ES95 (`expected_shortfall_loss_95`) and CVaR95 are the same statistic under two names "
+            "for a continuous loss distribution; only one estimator is implemented here.",
+            "- OOS validation (2026-08-18, 4 independent year-splits 2020-2023): ES95 and "
+            "negative_semivariance are the only metrics directionally consistent across all 4 splits, "
+            "but p=0.07-0.11 (not significant at 0.05). Sharpe/STARR/final_value reversed sign in 2022. "
+            "`tail_risk_lambda_starr`/`tail_risk_lambda_es` should stay 0.0 pending stronger evidence.",
+            "- **Implementation uncertainty** (arXiv:2603.20319, 2026-09-11 desk review): a 2026-07-02 "
+            "dual-engine audit found this repo's own engine vs an independent FinRL/bt engine diverge by "
+            "~8.9pp on total_return (2.3%/0.67pp on Sharpe/MDD) for the SAME a2118 daily weights, though "
+            "both agree on every metric's sign. Read absolute final_value/Sharpe/MDD above as having a "
+            "real single-digit-to-~9%-magnitude engine-implementation error band; the delta_* columns "
+            "(candidate vs baseline, same engine both sides) are not subject to this -- systematic engine "
+            "bias mostly cancels in a same-engine comparison.",
+            "",
+        ]
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def _expand_patterns(patterns: list[str]) -> list[Path]:
@@ -339,6 +491,12 @@ def main() -> None:
     parser.add_argument("--baseline", required=True)
     parser.add_argument("--candidates", nargs="+", required=True)
     parser.add_argument("--output", default="results/group_a_plus_compare_20260619.json")
+    parser.add_argument(
+        "--output-md",
+        default=None,
+        help="Optional human-readable markdown render of the same comparison. "
+        "No file written unless this is explicitly passed (default: None, no behavior change).",
+    )
     parser.add_argument(
         "--tail-risk-lambda-starr",
         type=float,
@@ -361,6 +519,8 @@ def main() -> None:
             tail_risk_lambda_es=args.tail_risk_lambda_es,
         )
         payload = std.success(report)
+        if args.output_md:
+            _write_md(report, Path(args.output_md))
     except Exception as exc:
         payload = std.error(exc)
     write_standard_output(payload, args.output)

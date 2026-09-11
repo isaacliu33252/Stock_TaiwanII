@@ -56,6 +56,26 @@ class GroupAPlusGovernanceCompareTests(unittest.TestCase):
         self.assertFalse(report["rows"][0]["formal_eligible"])
         self.assertEqual(report["rows"][0]["formal_ineligible_reason"], "insufficient_sources")
 
+    def test_report_carries_implementation_uncertainty_note(self) -> None:
+        """2026-09-11 desk review (arXiv:2603.20319): every compare_candidates()
+        report must carry the M6 dual-engine divergence caveat so a reader does
+        not treat absolute final_value/Sharpe/MDD as engine-exact truth."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            baseline = root / "baseline.json"
+            baseline.write_text(
+                json.dumps({"metrics": {"final_value": 100.0, "sharpe_ratio": 1.0, "max_drawdown": -0.2}}),
+                encoding="utf-8",
+            )
+
+            report = compare_candidates(baseline, [])
+
+        note = report["implementation_uncertainty_note"]
+        self.assertIn("a2118_m6_dual_engine_reconciliation", note["source"])
+        self.assertEqual(note["paper_reference"], "arXiv:2603.20319 (Implementation Risk in Portfolio Backtesting)")
+        self.assertTrue(note["sign_agreement"])
+        self.assertAlmostEqual(note["observed_divergence"]["total_return_pp"], 8.9)
+
 
 if __name__ == "__main__":
     unittest.main()
