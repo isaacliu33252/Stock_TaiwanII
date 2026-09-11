@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2609_07946_adoption_matrix",
+  "generated_at": "2026-09-12T07:45:57",
+  "policy": "research_summary_no_orders_no_live_weight_change",
+  "source_paper": "2609.07946",
+  "candidates": [
+    {
+      "candidate": "short_window_volatility_control_cash_scaler_monthly",
+      "evidence": {
+        "robust_combo_count": 0,
+        "top_combo": null
+      },
+      "verdict": "reject",
+      "reason": "No robust pass; return drag is not compensated enough by drawdown improvement.",
+      "latest_strategy_import": false
+    },
+    {
+      "candidate": "short_window_volatility_control_cash_scaler_daily",
+      "evidence": {
+        "robust_combo_count": 0,
+        "top_combo": null
+      },
+      "verdict": "reject",
+      "reason": "No robust pass; daily scaling increases operational churn without stable net benefit.",
+      "latest_strategy_import": false
+    },
+    {
+      "candidate": "stock_bond_gold_complementarity_sleeve",
+      "evidence": {
+        "robust_combo_count": 20,
+        "top_combo": {
+          "universe": "bond_plus_00635u",
+          "threshold": 1.8,
+          "shift_weight": 0.04,
+          "window_count": 5,
+          "pass_count": 5,
+          "positive_return_count": 5,
+          "positive_sharpe_count": 5,
+          "non_worse_drawdown_count": 5,
+          "avg_delta_total_return": 0.05196532027915919,
+          "avg_delta_sharpe": 0.21435616095695184,
+          "avg_delta_max_drawdown": 0.0186901552957502,
+          "avg_total_turnover": 5.184000000000001
+        },
+        "latest_forward_signal": {
+          "triggered": false,
+          "best_complement": "00679B.TWO",
+          "best_complement_type": "bond",
+          "score_00631l": -0.8242249802687978,
+          "best_complement_score": 0.896280438844179,
+          "score_gap": 1.7205054191129767,
+          "threshold_passes": false,
+          "momentum_gate_passes": false,
+          "momentum_5d_00631l": 0.04913870900775974,
+          "ann_vol_00631l": 0.7463843817655855,
+          "corr_best_0050": 0.02304700123809493,
+          "corr_best_00631l": 0.03301589575162353
+        },
+        "instrument_review": {
+          "instrument_ready_for_live_core": false,
+          "instrument_ready_for_forward_shadow": true,
+          "allow_watchlist_add_without_user_approval": false,
+          "allow_target_weight_change": false,
+          "allow_order_generation": false,
+          "golden1_0531_lockdown": true,
+          "golden2_0830_lockdown": true,
+          "reason": "00635U has enough local price/liquidity data for forward shadow, but it is a futures ETF outside the current GroupA++ watchlist/tradable core; live use needs explicit instrument approval, news/monitoring coverage, and execution rules."
+        },
+        "promotion_gate": {
+          "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/2609_07946_stock_bond_gold_forward_shadow_log.jsonl",
+          "observation_count": 1,
+          "trigger_count": 0,
+          "realized_trigger_count": 0,
+          "positive_realized_trigger_count": 0,
+          "avg_realized_net_delta_return": null,
+          "latest_signal_date": "2026-09-10",
+          "latest_triggered": false,
+          "passes_observation_count": false,
+          "passes_trigger_count": false,
+          "passes_realized_positive": false
+        }
+      },
+      "verdict": "forward_shadow_continue",
+      "reason": "Backtest is robust, but 00635U is a futures ETF outside current watchlist/tradable core; latest 2026-09-10 signal is not triggered.",
+      "latest_strategy_import": false
+    },
+    {
+      "candidate": "bond_only_complementarity_sleeve",
+      "evidence": {
+        "robust_combo_count": 20,
+        "bond_only_forward_signal": {
+          "triggered": false,
+          "best_complement": "00679B.TWO",
+          "best_complement_type": "bond",
+          "score_00631l": -0.8242249802687978,
+          "best_complement_score": 0.896280438844179,
+          "score_gap": 1.7205054191129767,
+          "threshold_passes": false,
+          "momentum_gate_passes": false,
+          "momentum_5d_00631l": 0.04913870900775974,
+          "ann_vol_00631l": 0.7463843817655855,
+          "corr_best_0050": 0.02304700123809493,
+          "corr_best_00631l": 0.03301589575162353
+        },
+        "promotion_gate": {
+          "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/2609_07946_bond_only_forward_shadow_log.jsonl",
+          "observation_count": 2,
+          "trigger_count": 0,
+          "realized_trigger_count": 0,
+          "positive_realized_trigger_count": 0,
+          "avg_realized_net_delta_return": null,
+          "latest_signal_date": "2026-09-10",
+          "latest_triggered": false,
+          "passes_observation_count": false,
+          "passes_trigger_count": false,
+          "passes_realized_positive": false
+        }
+      },
+      "verdict": "forward_shadow_continue",
+      "reason": "Uses existing pipeline tickers and has robust historical evidence, but latest 2026-09-10 signal is not triggered and no forward live log exists yet.",
+      "latest_strategy_import": false
+    },
+    {
+      "candidate": "monthly_constrained_markowitz",
+      "evidence": {
+        "robust_combo_count": 0,
+        "top_combo": {
+          "risk_aversion": 0.5,
+          "trust_region": 0.06,
+          "turnover_penalty": 0.0005,
+          "window_count": 5,
+          "pass_count": 3,
+          "positive_return_count": 4,
+          "positive_sharpe_count": 3,
+          "non_worse_drawdown_count": 4,
+          "avg_delta_total_return": 0.00341469369653864,
+          "avg_delta_sharpe": 0.010461042042213264,
+          "avg_delta_max_drawdown": 0.0012826664715761104,
+          "avg_total_turnover": 0.16183740199426996
+        }
+      },
+      "verdict": "reject",
+      "reason": "Best screened combo only passes 3/5 windows; improvement is too small for optimizer complexity.",
+      "latest_strategy_import": false
+    }
+  ],
+  "decision": {
+    "adopt_into_latest_strategy_now": false,
+    "promotion_gate_ready": false,
+    "continue_forward_shadow": [
+      "stock_bond_gold_complementarity_sleeve",
+      "bond_only_complementarity_sleeve"
+    ],
+    "reject": [
+      "short_window_volatility_control_cash_scaler_monthly",
+      "short_window_volatility_control_cash_scaler_daily",
+      "monthly_constrained_markowitz"
+    ],
+    "golden1_0531_lockdown": true,
+    "golden2_0830_lockdown": true,
+    "reason": "No 2609.07946 candidate clears live-promotion requirements today; best candidates remain forward shadow only."
+  }
+}

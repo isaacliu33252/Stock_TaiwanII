@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2609_07946_complementarity_promotion_gate",
+  "generated_at": "2026-09-12T07:45:57",
+  "policy": "promotion_governance_only_no_orders_no_live_weight_change",
+  "source_paper": "2609.07946",
+  "thresholds": {
+    "min_observations": 20,
+    "min_triggers": 3,
+    "require_all_realized_triggers_positive": true,
+    "stock_bond_gold_requires_00635u_live_instrument_ready": true
+  },
+  "stock_bond_gold_complementarity": {
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/2609_07946_stock_bond_gold_forward_shadow_log.jsonl",
+    "observation_count": 1,
+    "trigger_count": 0,
+    "realized_trigger_count": 0,
+    "positive_realized_trigger_count": 0,
+    "avg_realized_net_delta_return": null,
+    "latest_signal_date": "2026-09-10",
+    "latest_triggered": false,
+    "passes_observation_count": false,
+    "passes_trigger_count": false,
+    "passes_realized_positive": false
+  },
+  "bond_only_complementarity": {
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/2609_07946_bond_only_forward_shadow_log.jsonl",
+    "observation_count": 2,
+    "trigger_count": 0,
+    "realized_trigger_count": 0,
+    "positive_realized_trigger_count": 0,
+    "avg_realized_net_delta_return": null,
+    "latest_signal_date": "2026-09-10",
+    "latest_triggered": false,
+    "passes_observation_count": false,
+    "passes_trigger_count": false,
+    "passes_realized_positive": false
+  },
+  "instrument_live_ready": false,
+  "decision": {
+    "stock_bond_gold_ready_for_live_review": false,
+    "bond_only_ready_for_live_review": false,
+    "any_ready_for_live_review": false,
+    "allow_target_weight_change": false,
+    "allow_order_generation": false,
+    "golden1_0531_lockdown": true,
+    "golden2_0830_lockdown": true,
+    "reason": "Forward-shadow evidence is insufficient for live review until observation, trigger, realized-performance, and instrument-readiness gates pass."
+  }
+}

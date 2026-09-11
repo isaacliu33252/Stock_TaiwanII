@@ -1,0 +1,3700 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2609_07946_stock_bond_gold_complementarity_shadow",
+  "generated_at": "2026-09-12T07:44:09",
+  "policy": "shadow_only_no_orders_no_live_weight_change",
+  "source_paper": "2609.07946",
+  "base_weights": {
+    "0050.TW": 0.5299999999999999,
+    "00631L.TW": 0.17166845262777064,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.0,
+    "00713.TW": 0.12,
+    "00751B.TWO": 0.0,
+    "00878.TW": 0.0,
+    "00635U.TW": 0.0,
+    "GC=F": 0.0,
+    "cash": 0.17833154737222945
+  },
+  "inputs": {
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "window": 42,
+    "thresholds": [
+      1.8,
+      2.0,
+      2.2
+    ],
+    "shift_weights": [
+      0.02,
+      0.03,
+      0.04
+    ],
+    "cost_bps": 10.0,
+    "momentum_5d_max": 0.0,
+    "candidate_universes": {
+      "bond_only": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "bond_plus_gold_proxy": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "bond_plus_00635u": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ]
+    },
+    "gold_proxy_note": "GC=F is data-only and not a directly executable GroupA++ instrument.",
+    "00635u_note": "00635U.TW is a Taiwan gold-futures ETF in DB but not in current GroupA++ tradable core/watchlist."
+  },
+  "combos": [
+    {
+      "universe": "bond_only",
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.0206211538840944,
+      "avg_delta_sharpe": 0.08433511353028858,
+      "avg_delta_max_drawdown": 0.007420240579861348,
+      "avg_total_turnover": 2.0879999999999996
+    },
+    {
+      "universe": "bond_only",
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.031061364691171867,
+      "avg_delta_sharpe": 0.12804418682373417,
+      "avg_delta_max_drawdown": 0.01116024914699203,
+      "avg_total_turnover": 3.132
+    },
+    {
+      "universe": "bond_only",
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.04158889346295478,
+      "avg_delta_sharpe": 0.17280713662206953,
+      "avg_delta_max_drawdown": 0.014920323640648903,
+      "avg_total_turnover": 4.176
+    },
+    {
+      "universe": "bond_only",
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.017701663119022305,
+      "avg_delta_sharpe": 0.07286649818411842,
+      "avg_delta_max_drawdown": 0.006637856151495813,
+      "avg_total_turnover": 1.6959999999999997
+    },
+    {
+      "universe": "bond_only",
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.026648812338753138,
+      "avg_delta_sharpe": 0.11059045596422426,
+      "avg_delta_max_drawdown": 0.009983890564828268,
+      "avg_total_turnover": 2.544
+    },
+    {
+      "universe": "bond_only",
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.03566068613556681,
+      "avg_delta_sharpe": 0.1491949606216722,
+      "avg_delta_max_drawdown": 0.013348124032014953,
+      "avg_total_turnover": 3.392000000000001
+    },
+    {
+      "universe": "bond_only",
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "window_count": 5,
+      "pass_count": 4,
+      "positive_return_count": 4,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.009598224986152148,
+      "avg_delta_sharpe": 0.0386861556435215,
+      "avg_delta_max_drawdown": 0.003931465130565681,
+      "avg_total_turnover": 1.0719999999999998
+    },
+    {
+      "universe": "bond_only",
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 4,
+      "positive_return_count": 4,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.014424016729483546,
+      "avg_delta_sharpe": 0.05848664456111137,
+      "avg_delta_max_drawdown": 0.0059072524174510034,
+      "avg_total_turnover": 1.6079999999999999
+    },
+    {
+      "universe": "bond_only",
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 3,
+      "positive_return_count": 4,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 4,
+      "avg_delta_total_return": 0.019267608601215923,
+      "avg_delta_sharpe": 0.0785934992661437,
+      "avg_delta_max_drawdown": 0.007889763432905261,
+      "avg_total_turnover": 2.1440000000000006
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.025653061116372868,
+      "avg_delta_sharpe": 0.10083892645019266,
+      "avg_delta_max_drawdown": 0.00888092128901281,
+      "avg_total_turnover": 2.4559999999999995
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.03869585659954293,
+      "avg_delta_sharpe": 0.15341360332230672,
+      "avg_delta_max_drawdown": 0.013367166834008981,
+      "avg_total_turnover": 3.684
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.05188503549659358,
+      "avg_delta_sharpe": 0.20747233337523974,
+      "avg_delta_max_drawdown": 0.017884235256805003,
+      "avg_total_turnover": 4.912000000000001
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.023155124977140496,
+      "avg_delta_sharpe": 0.09092497163226261,
+      "avg_delta_max_drawdown": 0.00848288380130562,
+      "avg_total_turnover": 2.0399999999999996
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.03491077306667596,
+      "avg_delta_sharpe": 0.13831044497591077,
+      "avg_delta_max_drawdown": 0.012769651195798492,
+      "avg_total_turnover": 3.0599999999999996
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.04678671524784443,
+      "avg_delta_sharpe": 0.18701817838603807,
+      "avg_delta_max_drawdown": 0.017086941017015755,
+      "avg_total_turnover": 4.08
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.019313250519087388,
+      "avg_delta_sharpe": 0.0712379944472288,
+      "avg_delta_max_drawdown": 0.0070125366188263484,
+      "avg_total_turnover": 1.4879999999999998
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.029103672633231548,
+      "avg_delta_sharpe": 0.10812060356199238,
+      "avg_delta_max_drawdown": 0.010554835332390034,
+      "avg_total_turnover": 2.232
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 4,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 4,
+      "avg_delta_total_return": 0.03898434743053884,
+      "avg_delta_sharpe": 0.14586523946086524,
+      "avg_delta_max_drawdown": 0.014121389288905717,
+      "avg_total_turnover": 2.9760000000000004
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.02571698304131855,
+      "avg_delta_sharpe": 0.10400468776420921,
+      "avg_delta_max_drawdown": 0.009288520594004201,
+      "avg_total_turnover": 2.5919999999999996
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.0387740619779561,
+      "avg_delta_sharpe": 0.15836611067653955,
+      "avg_delta_max_drawdown": 0.013975109265379393,
+      "avg_total_turnover": 3.8880000000000003
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.05196532027915919,
+      "avg_delta_sharpe": 0.21435616095695184,
+      "avg_delta_max_drawdown": 0.0186901552957502,
+      "avg_total_turnover": 5.184000000000001
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.02450235796635125,
+      "avg_delta_sharpe": 0.1007039770006,
+      "avg_delta_max_drawdown": 0.009250638018390567,
+      "avg_total_turnover": 2.4559999999999995
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.03692966301965619,
+      "avg_delta_sharpe": 0.1532552884949982,
+      "avg_delta_max_drawdown": 0.01391938228958145,
+      "avg_total_turnover": 3.684
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.04947582028290021,
+      "avg_delta_sharpe": 0.20732158940035378,
+      "avg_delta_max_drawdown": 0.01861733616644028,
+      "avg_total_turnover": 4.912000000000001
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "window_count": 5,
+      "pass_count": 4,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 4,
+      "avg_delta_total_return": 0.015559619590628727,
+      "avg_delta_sharpe": 0.06298028412544722,
+      "avg_delta_max_drawdown": 0.006335085758499637,
+      "avg_total_turnover": 1.6959999999999997
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 4,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 4,
+      "avg_delta_total_return": 0.02341417681111706,
+      "avg_delta_sharpe": 0.09557268563791681,
+      "avg_delta_max_drawdown": 0.00952340047347695,
+      "avg_total_turnover": 2.544
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 4,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 4,
+      "avg_delta_total_return": 0.031318882423447866,
+      "avg_delta_sharpe": 0.12891560313046715,
+      "avg_delta_max_drawdown": 0.01272563075015778,
+      "avg_total_turnover": 3.3920000000000003
+    }
+  ],
+  "windows": [
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 53,
+      "event_type_counts": {
+        "bond": 53
+      },
+      "delta_total_return": 0.00691328270363456,
+      "delta_sharpe": 0.04346192913455005,
+      "delta_max_drawdown": 0.0024888869317341022,
+      "total_turnover": 1.3599999999999999,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 53,
+      "event_type_counts": {
+        "bond": 53
+      },
+      "delta_total_return": 0.010386666025853475,
+      "delta_sharpe": 0.06550764495290928,
+      "delta_max_drawdown": 0.0037353803686456244,
+      "total_turnover": 2.04,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 53,
+      "event_type_counts": {
+        "bond": 53
+      },
+      "delta_total_return": 0.013871251285349384,
+      "delta_sharpe": 0.08776067409763394,
+      "delta_max_drawdown": 0.004983241719005216,
+      "total_turnover": 2.7200000000000006,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 16,
+      "event_type_counts": {
+        "bond": 16
+      },
+      "delta_total_return": 0.0023364998240373858,
+      "delta_sharpe": 0.014520064535144206,
+      "delta_max_drawdown": 0.0006969570837470629,
+      "total_turnover": 0.31999999999999995,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 16,
+      "event_type_counts": {
+        "bond": 16
+      },
+      "delta_total_return": 0.0035059662208662967,
+      "delta_sharpe": 0.02182607709594442,
+      "delta_max_drawdown": 0.0010454961088633974,
+      "total_turnover": 0.48,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 16,
+      "event_type_counts": {
+        "bond": 16
+      },
+      "delta_total_return": 0.0046762433278888516,
+      "delta_sharpe": 0.02916212331658591,
+      "delta_max_drawdown": 0.0013940754534546018,
+      "total_turnover": 0.6400000000000001,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 4,
+      "event_type_counts": {
+        "bond": 4
+      },
+      "delta_total_return": 0.0008308087370891837,
+      "delta_sharpe": 0.005012151780737384,
+      "delta_max_drawdown": 1.1102230246251565e-16,
+      "total_turnover": 0.15999999999999998,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 4,
+      "event_type_counts": {
+        "bond": 4
+      },
+      "delta_total_return": 0.0012459900330943352,
+      "delta_sharpe": 0.007529204838894188,
+      "delta_max_drawdown": 2.220446049250313e-16,
+      "total_turnover": 0.24,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 4,
+      "event_type_counts": {
+        "bond": 4
+      },
+      "delta_total_return": 0.00166102242002375,
+      "delta_sharpe": 0.01005345916909739,
+      "delta_max_drawdown": -1.1102230246251565e-16,
+      "total_turnover": 0.32000000000000006,
+      "pass": false
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 53,
+      "event_type_counts": {
+        "bond": 53
+      },
+      "delta_total_return": 0.00691328270363456,
+      "delta_sharpe": 0.04346192913455005,
+      "delta_max_drawdown": 0.0024888869317341022,
+      "total_turnover": 1.3599999999999999,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 53,
+      "event_type_counts": {
+        "bond": 53
+      },
+      "delta_total_return": 0.010386666025853475,
+      "delta_sharpe": 0.06550764495290928,
+      "delta_max_drawdown": 0.0037353803686456244,
+      "total_turnover": 2.04,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 53,
+      "event_type_counts": {
+        "bond": 53
+      },
+      "delta_total_return": 0.013871251285349384,
+      "delta_sharpe": 0.08776067409763394,
+      "delta_max_drawdown": 0.004983241719005216,
+      "total_turnover": 2.7200000000000006,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 16,
+      "event_type_counts": {
+        "bond": 16
+      },
+      "delta_total_return": 0.0023364998240373858,
+      "delta_sharpe": 0.014520064535144206,
+      "delta_max_drawdown": 0.0006969570837470629,
+      "total_turnover": 0.31999999999999995,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 16,
+      "event_type_counts": {
+        "bond": 16
+      },
+      "delta_total_return": 0.0035059662208662967,
+      "delta_sharpe": 0.02182607709594442,
+      "delta_max_drawdown": 0.0010454961088633974,
+      "total_turnover": 0.48,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 16,
+      "event_type_counts": {
+        "bond": 16
+      },
+      "delta_total_return": 0.0046762433278888516,
+      "delta_sharpe": 0.02916212331658591,
+      "delta_max_drawdown": 0.0013940754534546018,
+      "total_turnover": 0.6400000000000001,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 4,
+      "event_type_counts": {
+        "bond": 4
+      },
+      "delta_total_return": 0.0008308087370891837,
+      "delta_sharpe": 0.005012151780737384,
+      "delta_max_drawdown": 1.1102230246251565e-16,
+      "total_turnover": 0.15999999999999998,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 4,
+      "event_type_counts": {
+        "bond": 4
+      },
+      "delta_total_return": 0.0012459900330943352,
+      "delta_sharpe": 0.007529204838894188,
+      "delta_max_drawdown": 2.220446049250313e-16,
+      "total_turnover": 0.24,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 4,
+      "event_type_counts": {
+        "bond": 4
+      },
+      "delta_total_return": 0.00166102242002375,
+      "delta_sharpe": 0.01005345916909739,
+      "delta_max_drawdown": -1.1102230246251565e-16,
+      "total_turnover": 0.32000000000000006,
+      "pass": false
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 104,
+      "event_type_counts": {
+        "gold_etf": 83,
+        "bond": 21
+      },
+      "delta_total_return": 0.012728000327812405,
+      "delta_sharpe": 0.07392067763551519,
+      "delta_max_drawdown": 0.006853137007682086,
+      "total_turnover": 1.9999999999999996,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 104,
+      "event_type_counts": {
+        "gold_etf": 83,
+        "bond": 21
+      },
+      "delta_total_return": 0.01914378211331258,
+      "delta_sharpe": 0.11302630072912351,
+      "delta_max_drawdown": 0.010293757380299362,
+      "total_turnover": 3.0,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 104,
+      "event_type_counts": {
+        "gold_etf": 83,
+        "bond": 21
+      },
+      "delta_total_return": 0.025594261605445534,
+      "delta_sharpe": 0.1536337094188037,
+      "delta_max_drawdown": 0.013743760896870127,
+      "total_turnover": 4.000000000000001,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 85,
+      "event_type_counts": {
+        "gold_etf": 71,
+        "bond": 14
+      },
+      "delta_total_return": 0.013434933558223894,
+      "delta_sharpe": 0.07912189744923553,
+      "delta_max_drawdown": 0.00673993760441205,
+      "total_turnover": 1.9999999999999996,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 85,
+      "event_type_counts": {
+        "gold_etf": 71,
+        "bond": 14
+      },
+      "delta_total_return": 0.020212099509664627,
+      "delta_sharpe": 0.12091736608350717,
+      "delta_max_drawdown": 0.010123299043810818,
+      "total_turnover": 3.0,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 85,
+      "event_type_counts": {
+        "gold_etf": 71,
+        "bond": 14
+      },
+      "delta_total_return": 0.027029307717924,
+      "delta_sharpe": 0.16427213048446912,
+      "delta_max_drawdown": 0.01351560187277645,
+      "total_turnover": 4.000000000000001,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 51,
+      "event_type_counts": {
+        "gold_etf": 47,
+        "bond": 4
+      },
+      "delta_total_return": 0.009368943535803753,
+      "delta_sharpe": 0.05335642050957362,
+      "delta_max_drawdown": 0.005624507857659999,
+      "total_turnover": 1.6799999999999997,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 51,
+      "event_type_counts": {
+        "gold_etf": 47,
+        "bond": 4
+      },
+      "delta_total_return": 0.014078312448800312,
+      "delta_sharpe": 0.08125609018077162,
+      "delta_max_drawdown": 0.008444897911493277,
+      "total_turnover": 2.52,
+      "pass": true
+    },
+    {
+      "window": "2018",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 51,
+      "event_type_counts": {
+        "gold_etf": 47,
+        "bond": 4
+      },
+      "delta_total_return": 0.01880431780173364,
+      "delta_sharpe": 0.10999633169575079,
+      "delta_max_drawdown": 0.011270713731433624,
+      "total_turnover": 3.3600000000000008,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 64,
+      "event_type_counts": {
+        "bond": 64
+      },
+      "delta_total_return": 0.010946560717647102,
+      "delta_sharpe": 0.07390284265933711,
+      "delta_max_drawdown": 0.004092304568787397,
+      "total_turnover": 1.8399999999999999,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 64,
+      "event_type_counts": {
+        "bond": 64
+      },
+      "delta_total_return": 0.016434406567924498,
+      "delta_sharpe": 0.11163765589281205,
+      "delta_max_drawdown": 0.006145675321561739,
+      "total_turnover": 2.76,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 64,
+      "event_type_counts": {
+        "bond": 64
+      },
+      "delta_total_return": 0.021931888568005764,
+      "delta_sharpe": 0.1498909902992862,
+      "delta_max_drawdown": 0.008203870107259537,
+      "total_turnover": 3.6800000000000006,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 55,
+      "event_type_counts": {
+        "bond": 55
+      },
+      "delta_total_return": 0.008471692660005914,
+      "delta_sharpe": 0.06093044921867796,
+      "delta_max_drawdown": 0.0027372962753647867,
+      "total_turnover": 1.5999999999999999,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 55,
+      "event_type_counts": {
+        "bond": 55
+      },
+      "delta_total_return": 0.012710206376142397,
+      "delta_sharpe": 0.09189662032474,
+      "delta_max_drawdown": 0.004108735380891737,
+      "total_turnover": 2.4,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 55,
+      "event_type_counts": {
+        "bond": 55
+      },
+      "delta_total_return": 0.01695041632776273,
+      "delta_sharpe": 0.12318901050386977,
+      "delta_max_drawdown": 0.005482037198847767,
+      "total_turnover": 3.2000000000000006,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 29,
+      "event_type_counts": {
+        "bond": 29
+      },
+      "delta_total_return": -2.0379063137010434e-06,
+      "delta_sharpe": 0.007010647745047116,
+      "delta_max_drawdown": 0.0,
+      "total_turnover": 0.9599999999999999,
+      "pass": false
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 29,
+      "event_type_counts": {
+        "bond": 29
+      },
+      "delta_total_return": -8.400286709120408e-06,
+      "delta_sharpe": 0.010412096398612958,
+      "delta_max_drawdown": 0.0,
+      "total_turnover": 1.44,
+      "pass": false
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 29,
+      "event_type_counts": {
+        "bond": 29
+      },
+      "delta_total_return": -1.832622652764293e-05,
+      "delta_sharpe": 0.013742379489651624,
+      "delta_max_drawdown": 0.0,
+      "total_turnover": 1.9200000000000004,
+      "pass": false
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 73,
+      "event_type_counts": {
+        "bond": 55,
+        "gold_proxy": 18
+      },
+      "delta_total_return": 0.014463945349099117,
+      "delta_sharpe": 0.09515741342072159,
+      "delta_max_drawdown": 0.0060731421630039195,
+      "total_turnover": 2.2399999999999993,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 73,
+      "event_type_counts": {
+        "bond": 55,
+        "gold_proxy": 18
+      },
+      "delta_total_return": 0.021728823742180436,
+      "delta_sharpe": 0.14408854694502726,
+      "delta_max_drawdown": 0.009125400267160133,
+      "total_turnover": 3.36,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 73,
+      "event_type_counts": {
+        "bond": 55,
+        "gold_proxy": 18
+      },
+      "delta_total_return": 0.029015571356481473,
+      "delta_sharpe": 0.19392505229863,
+      "delta_max_drawdown": 0.012188154044934563,
+      "total_turnover": 4.48,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 66,
+      "event_type_counts": {
+        "bond": 52,
+        "gold_proxy": 14
+      },
+      "delta_total_return": 0.015277702246460745,
+      "delta_sharpe": 0.09860387972089057,
+      "delta_max_drawdown": 0.006026486469757786,
+      "total_turnover": 1.8799999999999994,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 66,
+      "event_type_counts": {
+        "bond": 52,
+        "gold_proxy": 14
+      },
+      "delta_total_return": 0.02295628030346175,
+      "delta_sharpe": 0.14933904901813966,
+      "delta_max_drawdown": 0.00905512076191095,
+      "total_turnover": 2.82,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 66,
+      "event_type_counts": {
+        "bond": 52,
+        "gold_proxy": 14
+      },
+      "delta_total_return": 0.030661305950805184,
+      "delta_sharpe": 0.20103507976744406,
+      "delta_max_drawdown": 0.01209405209108938,
+      "total_turnover": 3.7600000000000007,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 40,
+      "event_type_counts": {
+        "bond": 29,
+        "gold_proxy": 11
+      },
+      "delta_total_return": 0.009287382252269438,
+      "delta_sharpe": 0.05353711359380586,
+      "delta_max_drawdown": 0.002293629525627061,
+      "total_turnover": 1.3199999999999998,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 40,
+      "event_type_counts": {
+        "bond": 29,
+        "gold_proxy": 11
+      },
+      "delta_total_return": 0.013943450786667144,
+      "delta_sharpe": 0.0805098733063272,
+      "delta_max_drawdown": 0.0034421911956517004,
+      "total_turnover": 1.98,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 40,
+      "event_type_counts": {
+        "bond": 29,
+        "gold_proxy": 11
+      },
+      "delta_total_return": 0.018607747704290967,
+      "delta_sharpe": 0.10760921587848071,
+      "delta_max_drawdown": 0.004591917991558447,
+      "total_turnover": 2.6400000000000006,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 69,
+      "event_type_counts": {
+        "bond": 60,
+        "gold_etf": 9
+      },
+      "delta_total_return": 0.015307757534501976,
+      "delta_sharpe": 0.09566993976047344,
+      "delta_max_drawdown": 0.006022004147130611,
+      "total_turnover": 1.9599999999999995,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 69,
+      "event_type_counts": {
+        "bond": 60,
+        "gold_etf": 9
+      },
+      "delta_total_return": 0.02300549245168093,
+      "delta_sharpe": 0.14481263147055334,
+      "delta_max_drawdown": 0.009049448433844587,
+      "total_turnover": 2.94,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 69,
+      "event_type_counts": {
+        "bond": 60,
+        "gold_etf": 9
+      },
+      "delta_total_return": 0.03073248408921625,
+      "delta_sharpe": 0.19483232731835964,
+      "delta_max_drawdown": 0.012087898332808544,
+      "total_turnover": 3.920000000000001,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 61,
+      "event_type_counts": {
+        "bond": 53,
+        "gold_etf": 8
+      },
+      "delta_total_return": 0.013829086939968427,
+      "delta_sharpe": 0.08803292827330855,
+      "delta_max_drawdown": 0.005185613906337649,
+      "total_turnover": 1.7199999999999998,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 61,
+      "event_type_counts": {
+        "bond": 53,
+        "gold_etf": 8
+      },
+      "delta_total_return": 0.020776739475731,
+      "delta_sharpe": 0.1331598607528064,
+      "delta_max_drawdown": 0.007790259353693929,
+      "total_turnover": 2.58,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 61,
+      "event_type_counts": {
+        "bond": 53,
+        "gold_etf": 8
+      },
+      "delta_total_return": 0.02774644407614102,
+      "delta_sharpe": 0.17902890110848824,
+      "delta_max_drawdown": 0.010402822604878459,
+      "total_turnover": 3.440000000000001,
+      "pass": true
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 32,
+      "event_type_counts": {
+        "bond": 29,
+        "gold_etf": 3
+      },
+      "delta_total_return": 0.0004087630084628202,
+      "delta_sharpe": 0.009135257914588024,
+      "delta_max_drawdown": -0.00017959640314957337,
+      "total_turnover": 1.1999999999999997,
+      "pass": false
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 32,
+      "event_type_counts": {
+        "bond": 29,
+        "gold_etf": 3
+      },
+      "delta_total_return": 0.0006075701431689229,
+      "delta_sharpe": 0.013602214553817937,
+      "delta_max_drawdown": -0.00026942573861665764,
+      "total_turnover": 1.8,
+      "pass": false
+    },
+    {
+      "window": "2020_covid",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 32,
+      "event_type_counts": {
+        "bond": 29,
+        "gold_etf": 3
+      },
+      "delta_total_return": 0.0008026575657307244,
+      "delta_sharpe": 0.017999820794520893,
+      "delta_max_drawdown": -0.0003592758258852413,
+      "total_turnover": 2.4000000000000004,
+      "pass": false
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 104,
+      "event_type_counts": {
+        "bond": 104
+      },
+      "delta_total_return": 0.013926231539530431,
+      "delta_sharpe": 0.040298267277903976,
+      "delta_max_drawdown": 0.012576412617664401,
+      "total_turnover": 2.2399999999999998,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 104,
+      "event_type_counts": {
+        "bond": 104
+      },
+      "delta_total_return": 0.020979339456632218,
+      "delta_sharpe": 0.062196827414119804,
+      "delta_max_drawdown": 0.018941270104791075,
+      "total_turnover": 3.3600000000000003,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 104,
+      "event_type_counts": {
+        "bond": 104
+      },
+      "delta_total_return": 0.028093037999305404,
+      "delta_sharpe": 0.08532619154432397,
+      "delta_max_drawdown": 0.025357698864675426,
+      "total_turnover": 4.48,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 85,
+      "event_type_counts": {
+        "bond": 85
+      },
+      "delta_total_return": 0.013797593441596256,
+      "delta_sharpe": 0.0417282967863275,
+      "delta_max_drawdown": 0.012454522713704397,
+      "total_turnover": 2.2399999999999998,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 85,
+      "event_type_counts": {
+        "bond": 85
+      },
+      "delta_total_return": 0.020785117974194356,
+      "delta_sharpe": 0.0643121995729743,
+      "delta_max_drawdown": 0.0187573204822995,
+      "total_turnover": 3.3600000000000003,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 85,
+      "event_type_counts": {
+        "bond": 85
+      },
+      "delta_total_return": 0.02783238370760832,
+      "delta_sharpe": 0.0881016568858739,
+      "delta_max_drawdown": 0.025110941515625207,
+      "total_turnover": 4.480000000000001,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 56,
+      "event_type_counts": {
+        "bond": 56
+      },
+      "delta_total_return": 0.009064770047028547,
+      "delta_sharpe": 0.022836478036705188,
+      "delta_max_drawdown": 0.008125816603994473,
+      "total_turnover": 1.5599999999999996,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 56,
+      "event_type_counts": {
+        "bond": 56
+      },
+      "delta_total_return": 0.013632219802088286,
+      "delta_sharpe": 0.03514873904859139,
+      "delta_max_drawdown": 0.012217834038301567,
+      "total_turnover": 2.34,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 56,
+      "event_type_counts": {
+        "bond": 56
+      },
+      "delta_total_return": 0.01822316100058874,
+      "delta_sharpe": 0.04808133602352371,
+      "delta_max_drawdown": 0.01632934054169255,
+      "total_turnover": 3.1200000000000006,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 119,
+      "event_type_counts": {
+        "gold_proxy": 63,
+        "bond": 56
+      },
+      "delta_total_return": 0.017355774643753707,
+      "delta_sharpe": 0.05358439892512745,
+      "delta_max_drawdown": 0.0163203543041468,
+      "total_turnover": 2.6799999999999997,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 119,
+      "event_type_counts": {
+        "gold_proxy": 63,
+        "bond": 56
+      },
+      "delta_total_return": 0.026176228813292735,
+      "delta_sharpe": 0.0829843296929591,
+      "delta_max_drawdown": 0.024613273223564214,
+      "total_turnover": 4.0200000000000005,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 119,
+      "event_type_counts": {
+        "gold_proxy": 63,
+        "bond": 56
+      },
+      "delta_total_return": 0.03509296905155468,
+      "delta_sharpe": 0.11423636973447637,
+      "delta_max_drawdown": 0.032995828768129565,
+      "total_turnover": 5.360000000000001,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 111,
+      "event_type_counts": {
+        "gold_proxy": 58,
+        "bond": 53
+      },
+      "delta_total_return": 0.017518532076007842,
+      "delta_sharpe": 0.055354034860669143,
+      "delta_max_drawdown": 0.0165567352818643,
+      "total_turnover": 2.6799999999999997,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 111,
+      "event_type_counts": {
+        "gold_proxy": 58,
+        "bond": 53
+      },
+      "delta_total_return": 0.02642354779941014,
+      "delta_sharpe": 0.08567626175441845,
+      "delta_max_drawdown": 0.024972306515068543,
+      "total_turnover": 4.02,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 111,
+      "event_type_counts": {
+        "gold_proxy": 58,
+        "bond": 53
+      },
+      "delta_total_return": 0.03542702252596264,
+      "delta_sharpe": 0.11787478364763615,
+      "delta_max_drawdown": 0.03348055788388404,
+      "total_turnover": 5.360000000000001,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 83,
+      "event_type_counts": {
+        "gold_proxy": 45,
+        "bond": 38
+      },
+      "delta_total_return": 0.01629151245156657,
+      "delta_sharpe": 0.053143762504239245,
+      "delta_max_drawdown": 0.01539312651872915,
+      "total_turnover": 2.2399999999999998,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 83,
+      "event_type_counts": {
+        "gold_proxy": 45,
+        "bond": 38
+      },
+      "delta_total_return": 0.024562922027254186,
+      "delta_sharpe": 0.08204573042565588,
+      "delta_max_drawdown": 0.023207908334433536,
+      "total_turnover": 3.3600000000000003,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 83,
+      "event_type_counts": {
+        "gold_proxy": 45,
+        "bond": 38
+      },
+      "delta_total_return": 0.03291912891145998,
+      "delta_sharpe": 0.1125871998050465,
+      "delta_max_drawdown": 0.03110246517930637,
+      "total_turnover": 4.48,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 119,
+      "event_type_counts": {
+        "bond": 89,
+        "gold_etf": 30
+      },
+      "delta_total_return": 0.016440227243286754,
+      "delta_sharpe": 0.05175960734646101,
+      "delta_max_drawdown": 0.014872253549997883,
+      "total_turnover": 2.88,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 119,
+      "event_type_counts": {
+        "bond": 89,
+        "gold_etf": 30
+      },
+      "delta_total_return": 0.024788766872153478,
+      "delta_sharpe": 0.07996062494999756,
+      "delta_max_drawdown": 0.022418435664428804,
+      "total_turnover": 4.32,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 119,
+      "event_type_counts": {
+        "bond": 89,
+        "gold_etf": 30
+      },
+      "delta_total_return": 0.03322399323531766,
+      "delta_sharpe": 0.1098021477522193,
+      "delta_max_drawdown": 0.030038846752133752,
+      "total_turnover": 5.760000000000002,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 106,
+      "event_type_counts": {
+        "bond": 78,
+        "gold_etf": 28
+      },
+      "delta_total_return": 0.016791339675505612,
+      "delta_sharpe": 0.05496351372369768,
+      "delta_max_drawdown": 0.015204906016761943,
+      "total_turnover": 2.9999999999999996,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 106,
+      "event_type_counts": {
+        "bond": 78,
+        "gold_etf": 28
+      },
+      "delta_total_return": 0.02532177690627635,
+      "delta_sharpe": 0.08484368724899527,
+      "delta_max_drawdown": 0.02292316280366613,
+      "total_turnover": 4.5,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 106,
+      "event_type_counts": {
+        "bond": 78,
+        "gold_etf": 28
+      },
+      "delta_total_return": 0.03394322270393402,
+      "delta_sharpe": 0.11641589553558362,
+      "delta_max_drawdown": 0.030719562117603738,
+      "total_turnover": 6.000000000000002,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 69,
+      "event_type_counts": {
+        "bond": 52,
+        "gold_etf": 17
+      },
+      "delta_total_return": 0.010469786177343954,
+      "delta_sharpe": 0.02884056850373251,
+      "delta_max_drawdown": 0.00950006822862004,
+      "total_turnover": 1.8799999999999997,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 69,
+      "event_type_counts": {
+        "bond": 52,
+        "gold_etf": 17
+      },
+      "delta_total_return": 0.01575349642360524,
+      "delta_sharpe": 0.04436087403217148,
+      "delta_max_drawdown": 0.014292008970613668,
+      "total_turnover": 2.8200000000000003,
+      "pass": true
+    },
+    {
+      "window": "2022_rate",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 69,
+      "event_type_counts": {
+        "bond": 52,
+        "gold_etf": 17
+      },
+      "delta_total_return": 0.02106996635329028,
+      "delta_sharpe": 0.06064577698674811,
+      "delta_max_drawdown": 0.01911205755218448,
+      "total_turnover": 3.7600000000000007,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 83,
+      "event_type_counts": {
+        "bond": 83
+      },
+      "delta_total_return": 0.01728293192847752,
+      "delta_sharpe": 0.1231285935302171,
+      "delta_max_drawdown": 0.007479865890337334,
+      "total_turnover": 1.6399999999999997,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 83,
+      "event_type_counts": {
+        "bond": 83
+      },
+      "delta_total_return": 0.025979661015648192,
+      "delta_sharpe": 0.1871229029548318,
+      "delta_max_drawdown": 0.011237039449497277,
+      "total_turnover": 2.46,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 83,
+      "event_type_counts": {
+        "bond": 83
+      },
+      "delta_total_return": 0.03471327276691438,
+      "delta_sharpe": 0.25278201348804474,
+      "delta_max_drawdown": 0.015005731772528397,
+      "total_turnover": 3.2800000000000007,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 67,
+      "event_type_counts": {
+        "bond": 67
+      },
+      "delta_total_return": 0.018142026920829002,
+      "delta_sharpe": 0.12575179779387957,
+      "delta_max_drawdown": 0.007479865890337445,
+      "total_turnover": 1.5199999999999998,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 67,
+      "event_type_counts": {
+        "bond": 67
+      },
+      "delta_total_return": 0.027277683233276395,
+      "delta_sharpe": 0.19106930241804254,
+      "delta_max_drawdown": 0.011237039449497166,
+      "total_turnover": 2.28,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 67,
+      "event_type_counts": {
+        "bond": 67
+      },
+      "delta_total_return": 0.036456542125949065,
+      "delta_sharpe": 0.2580568017878495,
+      "delta_max_drawdown": 0.015005731772528619,
+      "total_turnover": 3.04,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 38,
+      "event_type_counts": {
+        "bond": 38
+      },
+      "delta_total_return": 0.01244643902814313,
+      "delta_sharpe": 0.08833756286263927,
+      "delta_max_drawdown": 0.006651150958172369,
+      "total_turnover": 0.9599999999999999,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 38,
+      "event_type_counts": {
+        "bond": 38
+      },
+      "delta_total_return": 0.018692341015100533,
+      "delta_sharpe": 0.13358857389151613,
+      "delta_max_drawdown": 0.009988739327688845,
+      "total_turnover": 1.44,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 38,
+      "event_type_counts": {
+        "bond": 38
+      },
+      "delta_total_return": 0.024953329633737642,
+      "delta_sharpe": 0.17955869920196266,
+      "delta_max_drawdown": 0.013334343663489068,
+      "total_turnover": 1.9200000000000004,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 91,
+      "event_type_counts": {
+        "bond": 63,
+        "gold_proxy": 28
+      },
+      "delta_total_return": 0.02082023912387787,
+      "delta_sharpe": 0.1418820991717522,
+      "delta_max_drawdown": 0.00752578483910038,
+      "total_turnover": 2.2799999999999994,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 91,
+      "event_type_counts": {
+        "bond": 63,
+        "gold_proxy": 28
+      },
+      "delta_total_return": 0.03132164214119215,
+      "delta_sharpe": 0.21593617414375954,
+      "delta_max_drawdown": 0.011306237016348475,
+      "total_turnover": 3.42,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 91,
+      "event_type_counts": {
+        "bond": 63,
+        "gold_proxy": 28
+      },
+      "delta_total_return": 0.04188416805356843,
+      "delta_sharpe": 0.29213635098067536,
+      "delta_max_drawdown": 0.015098422031021519,
+      "total_turnover": 4.5600000000000005,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 77,
+      "event_type_counts": {
+        "bond": 55,
+        "gold_proxy": 22
+      },
+      "delta_total_return": 0.01883936656641616,
+      "delta_sharpe": 0.13102356481487143,
+      "delta_max_drawdown": 0.007525784839100491,
+      "total_turnover": 1.9599999999999997,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 77,
+      "event_type_counts": {
+        "bond": 55,
+        "gold_proxy": 22
+      },
+      "delta_total_return": 0.02832958944440289,
+      "delta_sharpe": 0.1992311536031206,
+      "delta_max_drawdown": 0.011306237016348808,
+      "total_turnover": 2.94,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 77,
+      "event_type_counts": {
+        "bond": 55,
+        "gold_proxy": 22
+      },
+      "delta_total_return": 0.03786696992194316,
+      "delta_sharpe": 0.2692901304956028,
+      "delta_max_drawdown": 0.015098422031021852,
+      "total_turnover": 3.920000000000001,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 45,
+      "event_type_counts": {
+        "bond": 34,
+        "gold_proxy": 11
+      },
+      "delta_total_return": 0.015524376433333043,
+      "delta_sharpe": 0.10906016050034428,
+      "delta_max_drawdown": 0.006651150958172591,
+      "total_turnover": 1.4,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 45,
+      "event_type_counts": {
+        "bond": 34,
+        "gold_proxy": 11
+      },
+      "delta_total_return": 0.023329237867357522,
+      "delta_sharpe": 0.16537561327917238,
+      "delta_max_drawdown": 0.009988739327688845,
+      "total_turnover": 2.0999999999999996,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 45,
+      "event_type_counts": {
+        "bond": 34,
+        "gold_proxy": 11
+      },
+      "delta_total_return": 0.03116256010451357,
+      "delta_sharpe": 0.2228984754890191,
+      "delta_max_drawdown": 0.013334343663489179,
+      "total_turnover": 2.8000000000000007,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 91,
+      "event_type_counts": {
+        "bond": 52,
+        "gold_etf": 39
+      },
+      "delta_total_return": 0.020391772185919255,
+      "delta_sharpe": 0.13955089657004383,
+      "delta_max_drawdown": 0.007606119573853709,
+      "total_turnover": 2.2799999999999994,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 91,
+      "event_type_counts": {
+        "bond": 52,
+        "gold_etf": 39
+      },
+      "delta_total_return": 0.03067438265106559,
+      "delta_sharpe": 0.21235244277443943,
+      "delta_max_drawdown": 0.011427265494666217,
+      "total_turnover": 3.42,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 91,
+      "event_type_counts": {
+        "bond": 52,
+        "gold_etf": 39
+      },
+      "delta_total_return": 0.04101504589911409,
+      "delta_sharpe": 0.28723913574503035,
+      "delta_max_drawdown": 0.015260497078710022,
+      "total_turnover": 4.5600000000000005,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 77,
+      "event_type_counts": {
+        "bond": 47,
+        "gold_etf": 30
+      },
+      "delta_total_return": 0.019909018769172615,
+      "delta_sharpe": 0.13547964845913607,
+      "delta_max_drawdown": 0.00760611957385382,
+      "total_turnover": 2.1199999999999997,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 77,
+      "event_type_counts": {
+        "bond": 47,
+        "gold_etf": 30
+      },
+      "delta_total_return": 0.02994600489603072,
+      "delta_sharpe": 0.20602499091389181,
+      "delta_max_drawdown": 0.01142726549466666,
+      "total_turnover": 3.1799999999999997,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 77,
+      "event_type_counts": {
+        "bond": 47,
+        "gold_etf": 30
+      },
+      "delta_total_return": 0.04003819498989247,
+      "delta_sharpe": 0.2784970555281172,
+      "delta_max_drawdown": 0.015260497078710134,
+      "total_turnover": 4.24,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 52,
+      "event_type_counts": {
+        "bond": 32,
+        "gold_etf": 20
+      },
+      "delta_total_return": 0.01742194243006745,
+      "delta_sharpe": 0.1193661743123633,
+      "delta_max_drawdown": 0.007163275818703574,
+      "total_turnover": 1.4,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 52,
+      "event_type_counts": {
+        "bond": 32,
+        "gold_etf": 20
+      },
+      "delta_total_return": 0.02619228799715434,
+      "delta_sharpe": 0.18117381617047013,
+      "delta_max_drawdown": 0.010760083878350368,
+      "total_turnover": 2.1,
+      "pass": true
+    },
+    {
+      "window": "2024",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 52,
+      "event_type_counts": {
+        "bond": 32,
+        "gold_etf": 20
+      },
+      "delta_total_return": 0.03500231255657349,
+      "delta_sharpe": 0.2444260084625003,
+      "delta_max_drawdown": 0.0143670228546805,
+      "total_turnover": 2.8000000000000003,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 134,
+      "event_type_counts": {
+        "bond": 134
+      },
+      "delta_total_return": 0.05403676253118239,
+      "delta_sharpe": 0.14088393504943464,
+      "delta_max_drawdown": 0.010463732890783506,
+      "total_turnover": 3.3599999999999994,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 134,
+      "event_type_counts": {
+        "bond": 134
+      },
+      "delta_total_return": 0.08152675038980095,
+      "delta_sharpe": 0.21375590290399793,
+      "delta_max_drawdown": 0.015741880490464433,
+      "total_turnover": 5.04,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 134,
+      "event_type_counts": {
+        "bond": 134
+      },
+      "delta_total_return": 0.10933501669519896,
+      "delta_sharpe": 0.2882758136810588,
+      "delta_max_drawdown": 0.021051075739775937,
+      "total_turnover": 6.720000000000001,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 111,
+      "event_type_counts": {
+        "bond": 111
+      },
+      "delta_total_return": 0.04576050274864296,
+      "delta_sharpe": 0.12140188258656281,
+      "delta_max_drawdown": 0.009820638794325376,
+      "total_turnover": 2.8,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 111,
+      "event_type_counts": {
+        "bond": 111
+      },
+      "delta_total_return": 0.06896508788928624,
+      "delta_sharpe": 0.18384808040942002,
+      "delta_max_drawdown": 0.014770861402589541,
+      "total_turnover": 4.2,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 111,
+      "event_type_counts": {
+        "bond": 111
+      },
+      "delta_total_return": 0.09238784518862508,
+      "delta_sharpe": 0.24746521061418192,
+      "delta_max_drawdown": 0.019747834219618565,
+      "total_turnover": 5.600000000000001,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 59,
+      "event_type_counts": {
+        "bond": 59
+      },
+      "delta_total_return": 0.025651145024813582,
+      "delta_sharpe": 0.07023393779247855,
+      "delta_max_drawdown": 0.004880358090661452,
+      "total_turnover": 1.7199999999999998,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 59,
+      "event_type_counts": {
+        "bond": 59
+      },
+      "delta_total_return": 0.0385579330838437,
+      "delta_sharpe": 0.10575460862794217,
+      "delta_max_drawdown": 0.007329688721264382,
+      "total_turnover": 2.58,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_only",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 59,
+      "event_type_counts": {
+        "bond": 59
+      },
+      "delta_total_return": 0.05151885617825713,
+      "delta_sharpe": 0.1415316224464831,
+      "delta_max_drawdown": 0.0097851329593448,
+      "total_turnover": 3.440000000000001,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 150,
+      "event_type_counts": {
+        "bond": 94,
+        "gold_proxy": 56
+      },
+      "delta_total_return": 0.06871206376149908,
+      "delta_sharpe": 0.17010879159881198,
+      "delta_max_drawdown": 0.011996438207078852,
+      "total_turnover": 3.7199999999999998,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 150,
+      "event_type_counts": {
+        "bond": 94,
+        "gold_proxy": 56
+      },
+      "delta_total_return": 0.10386592227519587,
+      "delta_sharpe": 0.2585513208768784,
+      "delta_max_drawdown": 0.01805554329432646,
+      "total_turnover": 5.58,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 150,
+      "event_type_counts": {
+        "bond": 94,
+        "gold_proxy": 56
+      },
+      "delta_total_return": 0.13956121773601393,
+      "delta_sharpe": 0.34930321976478296,
+      "delta_max_drawdown": 0.024155529720934155,
+      "total_turnover": 7.440000000000001,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 132,
+      "event_type_counts": {
+        "bond": 84,
+        "gold_proxy": 48
+      },
+      "delta_total_return": 0.061803524172780344,
+      "delta_sharpe": 0.15512331422973769,
+      "delta_max_drawdown": 0.011608455332058454,
+      "total_turnover": 3.3599999999999994,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 132,
+      "event_type_counts": {
+        "bond": 84,
+        "gold_proxy": 48
+      },
+      "delta_total_return": 0.09333848156523872,
+      "delta_sharpe": 0.23547968340793068,
+      "delta_max_drawdown": 0.017469095576800764,
+      "total_turnover": 5.039999999999999,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 132,
+      "event_type_counts": {
+        "bond": 84,
+        "gold_proxy": 48
+      },
+      "delta_total_return": 0.12530203451262234,
+      "delta_sharpe": 0.3177287747029214,
+      "delta_max_drawdown": 0.0233675976256289,
+      "total_turnover": 6.720000000000001,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 86,
+      "event_type_counts": {
+        "bond": 50,
+        "gold_proxy": 36
+      },
+      "delta_total_return": 0.05463217272117871,
+      "delta_sharpe": 0.13543678385701718,
+      "delta_max_drawdown": 0.010724776091602828,
+      "total_turnover": 2.3199999999999994,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 86,
+      "event_type_counts": {
+        "bond": 50,
+        "gold_proxy": 36
+      },
+      "delta_total_return": 0.08243676245178455,
+      "delta_sharpe": 0.20514259595991224,
+      "delta_max_drawdown": 0.016135337804175864,
+      "total_turnover": 3.48,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_gold_proxy",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "GC=F"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 86,
+      "event_type_counts": {
+        "bond": 50,
+        "gold_proxy": 36
+      },
+      "delta_total_return": 0.11057127801240596,
+      "delta_sharpe": 0.27617784696268255,
+      "delta_max_drawdown": 0.021578219610174698,
+      "total_turnover": 4.640000000000001,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 148,
+      "event_type_counts": {
+        "bond": 94,
+        "gold_etf": 54
+      },
+      "delta_total_return": 0.06371715791507238,
+      "delta_sharpe": 0.15912231750855255,
+      "delta_max_drawdown": 0.011089088691356719,
+      "total_turnover": 3.8399999999999994,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 148,
+      "event_type_counts": {
+        "bond": 94,
+        "gold_etf": 54
+      },
+      "delta_total_return": 0.09625788580156791,
+      "delta_sharpe": 0.2416785534585839,
+      "delta_max_drawdown": 0.016686639353657995,
+      "total_turnover": 5.76,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 148,
+      "event_type_counts": {
+        "bond": 94,
+        "gold_etf": 54
+      },
+      "delta_total_return": 0.1292608165667024,
+      "delta_sharpe": 0.3262734845503463,
+      "delta_max_drawdown": 0.02231977341822855,
+      "total_turnover": 7.680000000000001,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 127,
+      "event_type_counts": {
+        "bond": 83,
+        "gold_etf": 44
+      },
+      "delta_total_return": 0.05854741088888571,
+      "delta_sharpe": 0.14592189709762216,
+      "delta_max_drawdown": 0.011516612990587372,
+      "total_turnover": 3.4399999999999995,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 127,
+      "event_type_counts": {
+        "bond": 83,
+        "gold_etf": 44
+      },
+      "delta_total_return": 0.08839169431057825,
+      "delta_sharpe": 0.22133053747579035,
+      "delta_max_drawdown": 0.01733292475206971,
+      "total_turnover": 5.16,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 127,
+      "event_type_counts": {
+        "bond": 83,
+        "gold_etf": 44
+      },
+      "delta_total_return": 0.11862193192660953,
+      "delta_sharpe": 0.29839396434511056,
+      "delta_max_drawdown": 0.023188197158232615,
+      "total_turnover": 6.880000000000002,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.02,
+      "cost_bps": 10.0,
+      "event_count": 77,
+      "event_type_counts": {
+        "bond": 50,
+        "gold_etf": 27
+      },
+      "delta_total_return": 0.04012866280146565,
+      "delta_sharpe": 0.10420299938697863,
+      "delta_max_drawdown": 0.009567173290664144,
+      "total_turnover": 2.3199999999999994,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.03,
+      "cost_bps": 10.0,
+      "event_count": 77,
+      "event_type_counts": {
+        "bond": 50,
+        "gold_etf": 27
+      },
+      "delta_total_return": 0.060439217042856486,
+      "delta_sharpe": 0.15747043325235288,
+      "delta_max_drawdown": 0.014389437345544098,
+      "total_turnover": 3.48,
+      "pass": true
+    },
+    {
+      "window": "2025_2026",
+      "start": "2025-01-02",
+      "end": "2026-09-10",
+      "universe": "bond_plus_00635u",
+      "candidates": [
+        "00679B.TWO",
+        "00751B.TWO",
+        "00635U.TW"
+      ],
+      "threshold": 2.2,
+      "shift_weight": 0.04,
+      "cost_bps": 10.0,
+      "event_count": 77,
+      "event_type_counts": {
+        "bond": 50,
+        "gold_etf": 27
+      },
+      "delta_total_return": 0.08091515783991121,
+      "delta_sharpe": 0.2115100777128156,
+      "delta_max_drawdown": 0.019237635438375533,
+      "total_turnover": 4.640000000000001,
+      "pass": true
+    }
+  ],
+  "robust_combo_count": 20,
+  "top_screened_combos": [
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.05196532027915919,
+      "avg_delta_sharpe": 0.21435616095695184,
+      "avg_delta_max_drawdown": 0.0186901552957502,
+      "avg_total_turnover": 5.184000000000001
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.05188503549659358,
+      "avg_delta_sharpe": 0.20747233337523974,
+      "avg_delta_max_drawdown": 0.017884235256805003,
+      "avg_total_turnover": 4.912000000000001
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.04947582028290021,
+      "avg_delta_sharpe": 0.20732158940035378,
+      "avg_delta_max_drawdown": 0.01861733616644028,
+      "avg_total_turnover": 4.912000000000001
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 2.0,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.04678671524784443,
+      "avg_delta_sharpe": 0.18701817838603807,
+      "avg_delta_max_drawdown": 0.017086941017015755,
+      "avg_total_turnover": 4.08
+    },
+    {
+      "universe": "bond_only",
+      "threshold": 1.8,
+      "shift_weight": 0.04,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.04158889346295478,
+      "avg_delta_sharpe": 0.17280713662206953,
+      "avg_delta_max_drawdown": 0.014920323640648903,
+      "avg_total_turnover": 4.176
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.0387740619779561,
+      "avg_delta_sharpe": 0.15836611067653955,
+      "avg_delta_max_drawdown": 0.013975109265379393,
+      "avg_total_turnover": 3.8880000000000003
+    },
+    {
+      "universe": "bond_plus_gold_proxy",
+      "threshold": 1.8,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.03869585659954293,
+      "avg_delta_sharpe": 0.15341360332230672,
+      "avg_delta_max_drawdown": 0.013367166834008981,
+      "avg_total_turnover": 3.684
+    },
+    {
+      "universe": "bond_plus_00635u",
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "window_count": 5,
+      "pass_count": 5,
+      "positive_return_count": 5,
+      "positive_sharpe_count": 5,
+      "non_worse_drawdown_count": 5,
+      "avg_delta_total_return": 0.03692966301965619,
+      "avg_delta_sharpe": 0.1532552884949982,
+      "avg_delta_max_drawdown": 0.01391938228958145,
+      "avg_total_turnover": 3.684
+    }
+  ],
+  "decision": {
+    "promotion_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "order_generation_allowed": false,
+    "golden1_0531_lockdown": true,
+    "golden2_0830_lockdown": true,
+    "reason": "Stock/bond/gold complementarity is research-only; gold proxy/executable mapping and Taiwan OOS evidence are insufficient for live use."
+  }
+}
