@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2609_08106_complementarity_sleeve_backtest",
+  "generated_at": "2026-09-10T13:20:51",
+  "status": "research_only",
+  "policy": "shadow_only_no_orders_no_live_weight_change",
+  "inputs": {
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "start": "2020-01-02",
+    "end": "2020-06-30",
+    "window": 42,
+    "threshold": 2.0,
+    "shift_weight": 0.03,
+    "cost_bps": 10.0,
+    "base_weights": {
+      "0050.TW": 0.5262536057168191,
+      "00631L.TW": 0.17374639428318092,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "00713.TW": 0.12,
+      "00751B.TWO": 0.0,
+      "00878.TW": 0.0,
+      "cash": 0.18
+    }
+  },
+  "simulation": {
+    "baseline_metrics": {
+      "rows": 116,
+      "final_value_ratio": 1.0238289659948676,
+      "total_return": 0.023828965994867612,
+      "annual_return": 0.05249046901833365,
+      "annual_volatility": 0.29893806787853616,
+      "sharpe_ratio": 0.17558977814649374,
+      "max_drawdown": -0.2953702423140989,
+      "mean_daily_turnover": 0.0,
+      "total_turnover": 0.0
+    },
+    "shadow_metrics": {
+      "rows": 116,
+      "final_value_ratio": 1.0241209435940546,
+      "total_return": 0.02412094359405459,
+      "annual_return": 0.053142630947521585,
+      "annual_volatility": 0.28921753026691366,
+      "sharpe_ratio": 0.18374623038401997,
+      "max_drawdown": -0.2892251572452881,
+      "mean_daily_turnover": 0.006206896551724138,
+      "total_turnover": 0.72
+    },
+    "delta_shadow_minus_baseline": {
+      "final_value_ratio": 0.00029197759918697663,
+      "total_return": 0.00029197759918697663,
+      "annual_return": 0.0006521619291879333,
+      "annual_volatility": -0.009720537611622504,
+      "sharpe_ratio": 0.00815645223752623,
+      "max_drawdown": 0.0061450850688108405,
+      "total_turnover": 0.72
+    },
+    "event_count": 51,
+    "recent_events": [
+      {
+        "dt": "2020-06-15",
+        "best_bond": "00751B.TWO",
+        "best_bond_score": 1.442058,
+        "score_00631l": -0.780635,
+        "shift_from_00631l": 0.03
+      },
+      {
+        "dt": "2020-06-16",
+        "best_bond": "00751B.TWO",
+        "best_bond_score": 1.468461,
+        "score_00631l": -0.752381,
+        "shift_from_00631l": 0.03
+      },
+      {
+        "dt": "2020-06-17",
+        "best_bond": "00751B.TWO",
+        "best_bond_score": 1.51091,
+        "score_00631l": -0.759916,
+        "shift_from_00631l": 0.03
+      },
+      {
+        "dt": "2020-06-18",
+        "best_bond": "00751B.TWO",
+        "best_bond_score": 1.463477,
+        "score_00631l": -0.604354,
+        "shift_from_00631l": 0.03
+      },
+      {
+        "dt": "2020-06-19",
+        "best_bond": "00751B.TWO",
+        "best_bond_score": 1.441045,
+        "score_00631l": -0.622309,
+        "shift_from_00631l": 0.03
+      },
+      {
+        "dt": "2020-06-22",
+        "best_bond": "00751B.TWO",
+        "best_bond_score": 1.447353,
+        "score_00631l": -0.620016,
+        "shift_from_00631l": 0.03
+      },
+      {
+        "dt": "2020-06-23",
+        "best_bond": "00751B.TWO",
+        "best_bond_score": 1.472464,
+        "score_00631l": -0.634631,
+        "shift_from_00631l": 0.03
+      },
+      {
+        "dt": "2020-06-24",
+        "best_bond": "00751B.TWO",
+        "best_bond_score": 1.425953,
+        "score_00631l": -0.617542,
+        "shift_from_00631l": 0.03
+      },
+      {
+        "dt": "2020-06-29",
+        "best_bond": "00751B.TWO",
+        "best_bond_score": 1.462189,
+        "score_00631l": -0.732125,
+        "shift_from_00631l": 0.03
+      },
+      {
+        "dt": "2020-06-30",
+        "best_bond": "00751B.TWO",
+        "best_bond_score": 1.451684,
+        "score_00631l": -0.63632,
+        "shift_from_00631l": 0.03
+      }
+    ],
+    "total_turnover": 0.72
+  },
+  "latest_scores": {
+    "dt": "2020-06-30",
+    "score_00631l": -0.6363203265676255,
+    "score_00713": -0.22681099137115404,
+    "best_bond": "00751B.TWO",
+    "best_bond_score": 1.4516842118634414,
+    "corr_00631l_0050": 0.9791396948114461,
+    "corr_00713_0050": 0.874474344926109
+  },
+  "decision": {
+    "promotion_ready": true,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "order_generation_allowed": false,
+    "keep_golden1_0531_unchanged": true,
+    "keep_golden2_0830_unchanged": true,
+    "reason": "Shadow needs multi-window and parameter robustness before it can influence live GroupA++."
+  }
+}

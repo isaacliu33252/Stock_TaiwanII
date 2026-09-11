@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2609_08106_complementarity_forward_shadow_entry",
+  "generated_at": "2026-09-12T07:28:09",
+  "policy": "forward_shadow_only_no_orders_no_live_weight_change",
+  "source_paper": "2609.08106",
+  "strategy": {
+    "name": "complementarity_sleeve_window42_threshold2_shift3pct_momentum5_weak",
+    "window": 42,
+    "threshold": 2.0,
+    "shift_weight": 0.03,
+    "cost_bps": 10.0,
+    "risk_gate": "momentum5_weak",
+    "momentum_5d_max": 0.0
+  },
+  "as_of_requested": "2026-09-10",
+  "signal_date": "2026-09-10",
+  "data_end": "2026-09-10",
+  "signal": {
+    "triggered": false,
+    "best_bond": "00679B.TWO",
+    "score_00631l": -0.7563187954085041,
+    "best_bond_score": 1.193898233154829,
+    "score_gap": 1.950217028563333,
+    "threshold_passes": false,
+    "risk_gate_passes": false,
+    "momentum_5d_00631l": 0.04913870900775974,
+    "drawdown_window_00631l": -0.018234635938863653,
+    "ann_vol_00631l": 0.7463843817655855
+  },
+  "baseline_weights": {
+    "0050.TW": 0.5262536057168191,
+    "00631L.TW": 0.17374639428318092,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.0,
+    "00713.TW": 0.12,
+    "00751B.TWO": 0.0,
+    "00878.TW": 0.0,
+    "cash": 0.18
+  },
+  "shadow_weights": {
+    "0050.TW": 0.5262536057168191,
+    "00631L.TW": 0.17374639428318092,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.0,
+    "00713.TW": 0.12,
+    "00751B.TWO": 0.0,
+    "00878.TW": 0.0,
+    "cash": 0.18
+  },
+  "weights_delta": {
+    "0050.TW": 0.0,
+    "00631L.TW": 0.0,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.0,
+    "00713.TW": 0.0,
+    "00751B.TWO": 0.0,
+    "00878.TW": 0.0,
+    "cash": 0.0
+  },
+  "realized_next_day": {
+    "next_date": null,
+    "available": false,
+    "reason": "next_trading_day_not_available_yet",
+    "gross_delta_return": null,
+    "turnover": null,
+    "cost_return": null,
+    "net_delta_return": null
+  },
+  "decision": {
+    "promotion_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "order_generation_allowed": false,
+    "golden1_0531_lockdown": true,
+    "golden2_0830_lockdown": true,
+    "reason": "Forward shadow logging only; lockdown Golden1_0531 and Golden2_0830 are comparators and cannot be modified."
+  }
+}

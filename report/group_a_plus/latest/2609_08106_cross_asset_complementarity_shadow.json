@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2609_08106_cross_asset_complementarity_shadow",
+  "generated_at": "2026-09-12T07:27:23",
+  "as_of": "2026-09-09",
+  "actual_data_end": "2026-09-09",
+  "policy": "shadow_only_no_orders_no_weight_change",
+  "method": {
+    "source_paper": "2609.08106",
+    "paper_equivalent": false,
+    "window_trading_days": 42,
+    "interpretation": "Proxy for dynamic complementarity, not a trained Nyström/Master attention model.",
+    "sparse_graph_masks_allowed": false
+  },
+  "coverage": {
+    "requested_tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW",
+      "2330.TW",
+      "TSM",
+      "QQQ",
+      "SOXX",
+      "^TWII",
+      "^GSPC",
+      "^IXIC",
+      "^VIX",
+      "^TNX",
+      "GC=F"
+    ],
+    "usable_tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "00679B.TWO",
+      "00713.TW",
+      "00751B.TWO",
+      "00878.TW",
+      "2330.TW",
+      "GC=F",
+      "QQQ",
+      "SOXX",
+      "TSM",
+      "^GSPC",
+      "^IXIC",
+      "^TNX",
+      "^TWII",
+      "^VIX"
+    ],
+    "usable_ticker_count": 17,
+    "return_observations": 42
+  },
+  "candidates": [
+    {
+      "ticker": "00679B.TWO",
+      "close": 25.58,
+      "corr_to_0050": 0.019057,
+      "corr_to_00631l": 0.02887,
+      "ann_vol": 0.111166,
+      "momentum_5d": -0.002729,
+      "momentum_20d": -0.030693,
+      "complementarity_score": 0.990908
+    },
+    {
+      "ticker": "00751B.TWO",
+      "close": 30.06,
+      "corr_to_0050": 0.178266,
+      "corr_to_00631l": 0.1889,
+      "ann_vol": 0.086962,
+      "momentum_5d": -0.004965,
+      "momentum_20d": -0.022121,
+      "complementarity_score": 0.692931
+    },
+    {
+      "ticker": "00713.TW",
+      "close": 63.65,
+      "corr_to_0050": 0.653824,
+      "corr_to_00631l": 0.668936,
+      "ann_vol": 0.086816,
+      "momentum_5d": 0.013535,
+      "momentum_20d": 0.040033,
+      "complementarity_score": -0.130555
+    },
+    {
+      "ticker": "00878.TW",
+      "close": 34.13,
+      "corr_to_0050": 0.881977,
+      "corr_to_00631l": 0.866108,
+      "ann_vol": 0.255598,
+      "momentum_5d": 0.014264,
+      "momentum_20d": 0.018198,
+      "complementarity_score": -0.699214
+    },
+    {
+      "ticker": "00631L.TW",
+      "close": 37.54,
+      "corr_to_0050": 0.989201,
+      "corr_to_00631l": 1.0,
+      "ann_vol": 0.749072,
+      "momentum_5d": 0.044809,
+      "momentum_20d": 0.058956,
+      "complementarity_score": -1.110606
+    },
+    {
+      "ticker": "00632R.TW",
+      "close": 9.7,
+      "corr_to_0050": -0.985642,
+      "corr_to_00631l": -0.996502,
+      "ann_vol": 0.378738,
+      "momentum_5d": -0.021191,
+      "momentum_20d": -0.035785,
+      "complementarity_score": -1.168258
+    }
+  ],
+  "latest": {
+    "best_complement": {
+      "ticker": "00679B.TWO",
+      "close": 25.58,
+      "corr_to_0050": 0.019057,
+      "corr_to_00631l": 0.02887,
+      "ann_vol": 0.111166,
+      "momentum_5d": -0.002729,
+      "momentum_20d": -0.030693,
+      "complementarity_score": 0.990908
+    },
+    "sleeve_reference": "defensive_complement_available",
+    "allow_live_change": false,
+    "allow_00631l_add_change": false,
+    "allow_00713_weight_change": false
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "shadow_only_no_live_weight_change",
+    "not_paper_equivalent_no_trained_attention"
+  ],
+  "decision": {
+    "shadow_available": true,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "keep_golden1_0531_unchanged": true,
+    "keep_golden2_0830_unchanged": true,
+    "next_step": "Backtest this complementarity score as a no-add/resize diagnostic before any live integration."
+  }
+}

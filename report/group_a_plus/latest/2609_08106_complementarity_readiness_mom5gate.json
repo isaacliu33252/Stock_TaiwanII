@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2609_08106_complementarity_readiness",
+  "generated_at": "2026-09-12T07:28:06",
+  "policy": "readiness_summary_only_no_orders_no_weight_change",
+  "candidate": {
+    "name": "complementarity_sleeve_window42_threshold2_shift3%_momentum5_weak",
+    "source_paper": "2609.08106",
+    "live_effect_if_ever_promoted": "small capped shift from 00631L to best bond complement"
+  },
+  "windows": [
+    {
+      "path": "report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2018_thr2_shift3_mom5gate.json",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "window": 42,
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "risk_gate": "momentum5_weak",
+      "event_count": 100,
+      "delta_total_return": 0.02129954435744208,
+      "delta_sharpe": 0.12699468984026424,
+      "delta_max_drawdown": 0.010963417217455751,
+      "total_turnover": 2.5200000000000005,
+      "promotion_ready_in_single_window": true
+    },
+    {
+      "path": "report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2020covid_thr2_shift3_mom5gate.json",
+      "start": "2020-01-02",
+      "end": "2020-12-31",
+      "window": 42,
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "risk_gate": "momentum5_weak",
+      "event_count": 52,
+      "delta_total_return": 0.017295387572162868,
+      "delta_sharpe": 0.11735763332054105,
+      "delta_max_drawdown": 0.0061450850688108405,
+      "total_turnover": 2.2800000000000002,
+      "promotion_ready_in_single_window": true
+    },
+    {
+      "path": "report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2022rate_thr2_shift3_mom5gate.json",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "window": 42,
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "risk_gate": "momentum5_weak",
+      "event_count": 107,
+      "delta_total_return": 0.020956997832503155,
+      "delta_sharpe": 0.058223255544124886,
+      "delta_max_drawdown": 0.018921587537994777,
+      "total_turnover": 3.24,
+      "promotion_ready_in_single_window": true
+    },
+    {
+      "path": "report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2024_thr2_shift3_mom5gate.json",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "window": 42,
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "risk_gate": "momentum5_weak",
+      "event_count": 76,
+      "delta_total_return": 0.026526157380174498,
+      "delta_sharpe": 0.20124564488965868,
+      "delta_max_drawdown": 0.010800635280701965,
+      "total_turnover": 2.1,
+      "promotion_ready_in_single_window": true
+    },
+    {
+      "path": "report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2025_2026_thr2_shift3_mom5gate.json",
+      "start": "2025-01-02",
+      "end": "2026-09-09",
+      "window": 42,
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "risk_gate": "momentum5_weak",
+      "event_count": 127,
+      "delta_total_return": 0.06968212096246895,
+      "delta_sharpe": 0.19715738037373765,
+      "delta_max_drawdown": 0.012783741204181132,
+      "total_turnover": 4.5600000000000005,
+      "promotion_ready_in_single_window": true
+    }
+  ],
+  "aggregate": {
+    "window_count": 5,
+    "positive_return_windows": 5,
+    "positive_sharpe_windows": 5,
+    "non_worse_drawdown_windows": 5,
+    "single_window_pass_count": 5
+  },
+  "blocking_reasons": [],
+  "decision": {
+    "shadow_candidate_survives_initial_screen": true,
+    "promotion_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "order_generation_allowed": false,
+    "golden1_0531_lockdown": true,
+    "golden2_0830_lockdown": true,
+    "next_step": "Continue daily forward shadow logging with realized after-cost attribution; do not promote without enough live-period observations."
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2609_08106_adoption_matrix",
+  "generated_at": "2026-09-12T07:29:04",
+  "policy": "research_summary_no_orders_no_live_weight_change",
+  "source_paper": "2609.08106",
+  "latest_strategy_context": {
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "status": "active",
+    "runner": "group_a_plus.runners.a2118"
+  },
+  "forward_evidence_gate": {
+    "min_forward_samples": 20,
+    "min_triggered_forward_samples": 5,
+    "passed": false,
+    "sample_count": 2,
+    "triggered_count": 0,
+    "realized_count": 0,
+    "positive_realized_count": 0,
+    "latest_signal_date": "2026-09-10"
+  },
+  "candidates": [
+    {
+      "candidate": "nystrom_attention_replacement",
+      "verdict": "broad_universe_research_only",
+      "advisory_import_allowed": false,
+      "live_weight_change_allowed": false,
+      "evidence": {
+        "review_decision": {
+          "can_import_to_group_a_plusplus": true,
+          "import_mode": "shadow_only",
+          "changes_latest_strategy": false,
+          "changes_golden1_0531": false,
+          "changes_golden2_0830": false,
+          "order_generation_allowed": false,
+          "recommended_next_step": "Build cross_asset_low_rank_attention_shadow with Taiwan PIT data and cost-aware forward validation."
+        },
+        "active_strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+        "watchlist_size": null
+      },
+      "reason": "Current GroupA++ is a small ETF sleeve; Nystrom's practical edge is scaling large cross-sections, not improving a 6-asset live allocation directly."
+    },
+    {
+      "candidate": "graph_or_topk_sparse_masks",
+      "verdict": "reject",
+      "advisory_import_allowed": false,
+      "live_weight_change_allowed": false,
+      "evidence": {
+        "paper_takeaway": "Sparse, top-K, and graph-masked attention variants degraded performance in the paper review."
+      },
+      "reason": "The paper's useful cross-sectional signal is near-global and low-rank; hard sparsification is the wrong import path."
+    },
+    {
+      "candidate": "cross_asset_complementarity_score",
+      "verdict": "advisory_ready",
+      "advisory_import_allowed": true,
+      "live_weight_change_allowed": false,
+      "evidence": {
+        "readiness_passed_without_blockers": true,
+        "robust_combo_count": 18,
+        "latest_triggered": false,
+        "forward_stats": {
+          "sample_count": 2,
+          "triggered_count": 0,
+          "realized_count": 0,
+          "positive_realized_count": 0,
+          "latest_signal_date": "2026-09-10"
+        }
+      },
+      "reason": "The anti-correlation/complementarity insight fits the current 0050/00631L/bond sleeve as a daily diagnostic without mutating target weights."
+    },
+    {
+      "candidate": "mom5_gated_bond_sleeve",
+      "verdict": "continue_forward_shadow",
+      "advisory_import_allowed": true,
+      "live_weight_change_allowed": false,
+      "evidence": {
+        "readiness_decision": {
+          "shadow_candidate_survives_initial_screen": true,
+          "promotion_ready": false,
+          "promote_to_live": false,
+          "target_weight_change_allowed": false,
+          "order_generation_allowed": false,
+          "golden1_0531_lockdown": true,
+          "golden2_0830_lockdown": true,
+          "next_step": "Continue daily forward shadow logging with realized after-cost attribution; do not promote without enough live-period observations."
+        },
+        "robustness_decision": {
+          "promotion_ready": false,
+          "promote_to_live": false,
+          "target_weight_change_allowed": false,
+          "order_generation_allowed": false,
+          "golden1_0531_lockdown": true,
+          "golden2_0830_lockdown": true,
+          "reason": "Parameter screen is positive, but this remains research-only until enough forward daily logging with realized after-cost attribution is accumulated."
+        },
+        "latest_target_weight_replay": {
+          "event_count": 79,
+          "days_with_00631l_weight": 287,
+          "delta_total_return": 0.041290163792510715,
+          "delta_sharpe": 0.2124716276846388,
+          "blockers": []
+        },
+        "latest_target_weight_param_sweep": {
+          "grid_count": 100,
+          "positive_core_metric_count": 80,
+          "positive_core_metric_rate": 0.8,
+          "best_by_delta_sharpe": {
+            "cost_bps": 5.0,
+            "days_with_00631l_weight": 287,
+            "delta_annual_return": 0.06857865071359148,
+            "delta_max_drawdown": 0.002619725359200853,
+            "delta_sharpe": 0.42777022158318756,
+            "delta_total_return": 0.08808962041269863,
+            "delta_total_turnover": 5.900000000000002,
+            "event_count": 87,
+            "positive_core_metrics": true,
+            "shift_weight": 0.05,
+            "threshold": 1.5
+          }
+        },
+        "latest_triggered": false,
+        "forward_stats": {
+          "sample_count": 2,
+          "triggered_count": 0,
+          "realized_count": 0,
+          "positive_realized_count": 0,
+          "latest_signal_date": "2026-09-10"
+        },
+        "forward_gate_satisfied": false
+      },
+      "reason": "Historical mom5-gated tests, latest-target replay, and parameter sweep are encouraging, but live forward evidence is still insufficient."
+    }
+  ],
+  "decision": {
+    "adopt_into_latest_strategy_now": false,
+    "advisory_import_allowed": true,
+    "live_weight_change_allowed": false,
+    "continue_forward_shadow": true,
+    "attach_to_daily_pipeline": true,
+    "golden1_0531_lockdown": true,
+    "golden2_0830_lockdown": true,
+    "reason": "2609.08106 has a useful complementarity diagnostic for GroupA++, but current forward evidence is too thin for live target-weight changes."
+  }
+}

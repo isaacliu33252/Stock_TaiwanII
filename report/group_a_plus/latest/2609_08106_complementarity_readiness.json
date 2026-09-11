@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2609_08106_complementarity_readiness",
+  "generated_at": "2026-09-10T13:21:55",
+  "policy": "readiness_summary_only_no_orders_no_weight_change",
+  "candidate": {
+    "name": "complementarity_sleeve_window42_threshold2_shift3pct",
+    "source_paper": "2609.08106",
+    "live_effect_if_ever_promoted": "small capped shift from 00631L to best bond complement"
+  },
+  "windows": [
+    {
+      "path": "report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2018_thr2_shift3.json",
+      "start": "2018-01-02",
+      "end": "2018-12-28",
+      "window": 42,
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "event_count": 151,
+      "delta_total_return": 0.018784694609832897,
+      "delta_sharpe": 0.10762926902819514,
+      "delta_max_drawdown": 0.011186390468031937,
+      "total_turnover": 2.2199999999999998,
+      "promotion_ready_in_single_window": true
+    },
+    {
+      "path": "report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2020covid_thr2_shift3.json",
+      "start": "2020-01-02",
+      "end": "2020-06-30",
+      "window": 42,
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "event_count": 51,
+      "delta_total_return": 0.00029197759918697663,
+      "delta_sharpe": 0.00815645223752623,
+      "delta_max_drawdown": 0.0061450850688108405,
+      "total_turnover": 0.72,
+      "promotion_ready_in_single_window": true
+    },
+    {
+      "path": "report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2022rate_thr2_shift3.json",
+      "start": "2022-01-03",
+      "end": "2022-10-31",
+      "window": 42,
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "event_count": 167,
+      "delta_total_return": 0.011018243427471153,
+      "delta_sharpe": -0.028503866841267822,
+      "delta_max_drawdown": 0.010576234160530995,
+      "total_turnover": 1.26,
+      "promotion_ready_in_single_window": false
+    },
+    {
+      "path": "report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2024_thr2_shift3.json",
+      "start": "2024-01-02",
+      "end": "2024-12-31",
+      "window": 42,
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "event_count": 128,
+      "delta_total_return": 0.008840852910314778,
+      "delta_sharpe": 0.12453745967615637,
+      "delta_max_drawdown": 0.010800635280702187,
+      "total_turnover": 1.7399999999999998,
+      "promotion_ready_in_single_window": true
+    },
+    {
+      "path": "report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_thr2_shift3.json",
+      "start": "2025-01-02",
+      "end": "2026-09-09",
+      "window": 42,
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "event_count": 224,
+      "delta_total_return": 0.014721060211640546,
+      "delta_sharpe": 0.12280767063652931,
+      "delta_max_drawdown": 0.012086082495502914,
+      "total_turnover": 4.68,
+      "promotion_ready_in_single_window": true
+    },
+    {
+      "path": "report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_w63_thr2_shift3.json",
+      "start": "2025-01-02",
+      "end": "2026-09-09",
+      "window": 63,
+      "threshold": 2.0,
+      "shift_weight": 0.03,
+      "event_count": 218,
+      "delta_total_return": 0.011591062943831387,
+      "delta_sharpe": 0.11489688082042271,
+      "delta_max_drawdown": 0.009533097569153215,
+      "total_turnover": 4.02,
+      "promotion_ready_in_single_window": true
+    }
+  ],
+  "aggregate": {
+    "window_count": 6,
+    "positive_return_windows": 6,
+    "positive_sharpe_windows": 5,
+    "non_worse_drawdown_windows": 6,
+    "single_window_pass_count": 5
+  },
+  "blocking_reasons": [
+    "not_all_windows_positive_sharpe",
+    "not_all_windows_pass_single_window_gate"
+  ],
+  "decision": {
+    "shadow_candidate_survives_initial_screen": true,
+    "promotion_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "order_generation_allowed": false,
+    "next_step": "Run OOS-forward logging and parameter robustness; investigate 2022 Sharpe failure before promotion."
+  }
+}

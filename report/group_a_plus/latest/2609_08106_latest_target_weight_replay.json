@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2609_08106_latest_target_weight_replay",
+  "generated_at": "2026-09-12T07:28:14",
+  "policy": "shadow_only_no_orders_no_live_weight_change",
+  "inputs": {
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "target_weights": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/latest_strategy_historical_target_weights.csv",
+    "start": "2025-07-01",
+    "end": "2026-09-10",
+    "window": 42,
+    "threshold": 2.0,
+    "shift_weight": 0.03,
+    "cost_bps": 10.0,
+    "risk_gate": "momentum5_weak",
+    "momentum_5d_max": 0.0,
+    "initial_value": 1000000.0
+  },
+  "coverage": {
+    "target_weight_rows": 290,
+    "price_rows": 295,
+    "score_rows": 295,
+    "days_with_00631l_weight": 287
+  },
+  "event_count": 79,
+  "recent_events": [
+    {
+      "date": "2026-07-22",
+      "best_bond": "00679B.TWO",
+      "shift_from_00631l": 0.03,
+      "00631l_before": 0.1950777870770121,
+      "00631l_after": 0.1650777870770121,
+      "score_gap": 2.3527427596691712,
+      "momentum_5d_00631l": -0.060475205807237864
+    },
+    {
+      "date": "2026-07-23",
+      "best_bond": "00679B.TWO",
+      "shift_from_00631l": 0.03,
+      "00631l_before": 0.1950777870770121,
+      "00631l_after": 0.1650777870770121,
+      "score_gap": 2.3286049307632846,
+      "momentum_5d_00631l": -0.057004544505743326
+    },
+    {
+      "date": "2026-08-03",
+      "best_bond": "00751B.TWO",
+      "shift_from_00631l": 0.03,
+      "00631l_before": 0.1950777870770121,
+      "00631l_after": 0.1650777870770121,
+      "score_gap": 2.1981540261187638,
+      "momentum_5d_00631l": -0.027429992800526826
+    },
+    {
+      "date": "2026-08-07",
+      "best_bond": "00679B.TWO",
+      "shift_from_00631l": 0.03,
+      "00631l_before": 0.1950777870770121,
+      "00631l_after": 0.1650777870770121,
+      "score_gap": 2.1106499628548256,
+      "momentum_5d_00631l": -0.0005934853801448092
+    },
+    {
+      "date": "2026-08-19",
+      "best_bond": "00679B.TWO",
+      "shift_from_00631l": 0.03,
+      "00631l_before": 0.1950777870770121,
+      "00631l_after": 0.1650777870770121,
+      "score_gap": 2.1931243087500696,
+      "momentum_5d_00631l": -0.04203107606204881
+    },
+    {
+      "date": "2026-08-20",
+      "best_bond": "00679B.TWO",
+      "shift_from_00631l": 0.03,
+      "00631l_before": 0.1950777870770121,
+      "00631l_after": 0.1650777870770121,
+      "score_gap": 2.290181297837543,
+      "momentum_5d_00631l": -0.055662728211709034
+    },
+    {
+      "date": "2026-08-21",
+      "best_bond": "00679B.TWO",
+      "shift_from_00631l": 0.03,
+      "00631l_before": 0.1950777870770121,
+      "00631l_after": 0.1650777870770121,
+      "score_gap": 2.0698242481535303,
+      "momentum_5d_00631l": -0.023816153175332144
+    },
+    {
+      "date": "2026-08-24",
+      "best_bond": "00679B.TWO",
+      "shift_from_00631l": 0.03,
+      "00631l_before": 0.1950777870770121,
+      "00631l_after": 0.1650777870770121,
+      "score_gap": 2.1345340203651695,
+      "momentum_5d_00631l": -0.05118220065476964
+    },
+    {
+      "date": "2026-08-25",
+      "best_bond": "00679B.TWO",
+      "shift_from_00631l": 0.03,
+      "00631l_before": 0.1950777870770121,
+      "00631l_after": 0.1650777870770121,
+      "score_gap": 2.105348752757422,
+      "momentum_5d_00631l": -0.003734589571575908
+    },
+    {
+      "date": "2026-09-03",
+      "best_bond": "00679B.TWO",
+      "shift_from_00631l": 0.03,
+      "00631l_before": 0.1950777870770121,
+      "00631l_after": 0.1650777870770121,
+      "score_gap": 2.0686946306221854,
+      "momentum_5d_00631l": -0.01502088745667085
+    }
+  ],
+  "baseline_metrics": {
+    "rows": 290,
+    "final_value": 2266583.786772353,
+    "total_return": 1.2665837867723533,
+    "annual_return": 1.0361314908341241,
+    "annual_volatility": 0.2615110648318474,
+    "sharpe_ratio": 3.9620942674083817,
+    "max_drawdown": -0.1225554841951223,
+    "total_turnover": 2.974693557089355,
+    "mean_daily_turnover": 0.010257563989963293
+  },
+  "sleeve_metrics": {
+    "rows": 290,
+    "final_value": 2307873.950564864,
+    "total_return": 1.307873950564864,
+    "annual_return": 1.0683249817267728,
+    "annual_volatility": 0.2559128322737777,
+    "sharpe_ratio": 4.1745658950930205,
+    "max_drawdown": -0.12118750596720262,
+    "total_turnover": 6.214693557089355,
+    "mean_daily_turnover": 0.02142997778306674
+  },
+  "delta_sleeve_minus_baseline": {
+    "final_value": 41290.16379251098,
+    "total_return": 0.041290163792510715,
+    "annual_return": 0.03219349089264867,
+    "annual_volatility": -0.005598232558069682,
+    "sharpe_ratio": 0.2124716276846388,
+    "max_drawdown": 0.001367978227919675,
+    "total_turnover": 3.2399999999999998,
+    "mean_daily_turnover": 0.011172413793103447
+  },
+  "decision": {
+    "promotion_ready": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "order_generation_allowed": false,
+    "advisory_import_allowed": true,
+    "blockers": [],
+    "reason": "Latest target-weight replay is validation evidence only; no live target weights, execution plans, or orders are changed."
+  }
+}
