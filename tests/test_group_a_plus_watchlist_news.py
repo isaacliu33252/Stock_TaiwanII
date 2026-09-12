@@ -62,6 +62,37 @@ def test_watchlist_news_selects_articles_round_robin(tmp_path: Path, monkeypatch
     assert summary["article_count"] == 4
 
 
+def test_watchlist_news_accepts_multiple_source_globs(tmp_path: Path, monkeypatch) -> None:
+    config = tmp_path / "watchlist.json"
+    news_dir = tmp_path / "news"
+    _write_config(config)
+    _write_jsonl(
+        news_dir / "ltn_mainstream_test.jsonl",
+        [
+            {"date": "2026-06-29", "source": "自由時報", "title": "台股收漲 台積電領軍", "url": "u1", "category": "財經", "snippet": "台股強勢"},
+        ],
+    )
+    _write_jsonl(
+        news_dir / "yahoo_news_rss_test.jsonl",
+        [
+            {"date": "2026-06-29", "source": "Yahoo奇摩股市", "title": "美債殖利率下滑", "url": "u2", "category": "財經", "snippet": "美債反彈"},
+            {"date": "2026-06-29", "source": "Yahoo奇摩股市", "title": "重複新聞", "url": "u1", "category": "財經", "snippet": "同網址應去重"},
+        ],
+    )
+    monkeypatch.setattr("group_a_plus.integrations.watchlist_news.PROJECT_ROOT", tmp_path)
+
+    summary = build_watchlist_news_summary(
+        signal_date="2026-06-29",
+        config_path=config,
+        news_glob=("news/ltn_mainstream_*.jsonl", "news/yahoo_news_rss_*.jsonl"),
+        per_symbol_limit=1,
+        max_articles=2,
+    )
+
+    assert summary["news_glob"] == ["news/ltn_mainstream_*.jsonl", "news/yahoo_news_rss_*.jsonl"]
+    assert [article["url"] for article in summary["articles"]] == ["u1", "u2"]
+
+
 def test_watchlist_news_uses_market_fallback_when_symbol_news_is_short(tmp_path: Path, monkeypatch) -> None:
     config = tmp_path / "watchlist.json"
     news_dir = tmp_path / "news"

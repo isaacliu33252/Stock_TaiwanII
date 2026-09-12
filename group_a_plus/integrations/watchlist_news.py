@@ -6,15 +6,26 @@ import json
 from collections import defaultdict
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 from group_a_plus.outputs import output_path as canonical_output_path
 from group_a_plus.outputs import write_json_report
 from group_a_plus.paths import PROJECT_ROOT
+from tw_output_standard import backup_latest_pointer_before_overwrite
 
 
 DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config/group_a_plus_watchlist.json"
-DEFAULT_NEWS_GLOB = "news/ltn_mainstream_*.jsonl"
+# 2026-08-17: widened from LTN-only to the three sources that actually run
+# daily (LTN scraper, Yahoo RSS, SETN-via-Google-News-RSS). FinMind is
+# deliberately excluded here -- it is the fallback-only source used when
+# these three yield zero articles for the day (see the pipeline step in
+# run_ncf_daily_pipeline.py), not a fourth always-on source.
+DEFAULT_NEWS_GLOBS: tuple[str, ...] = (
+    "news/ltn_mainstream_*.jsonl",
+    "news/yahoo_news_rss_*.jsonl",
+    "news/setn_news_rss_*.jsonl",
+)
+DEFAULT_NEWS_GLOB = DEFAULT_NEWS_GLOBS
 DEFAULT_OUTPUT_PATH = PROJECT_ROOT / "report/group_a_plus/latest/watchlist_news.json"
 
 
@@ -31,8 +42,15 @@ def load_watchlist_config(path: Path = DEFAULT_CONFIG_PATH) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
-def _iter_news_records(news_glob: str) -> list[dict[str, Any]]:
-    paths = sorted(PROJECT_ROOT.glob(news_glob))
+def _iter_news_records(news_glob: str | Sequence[str]) -> list[dict[str, Any]]:
+    globs = [news_glob] if isinstance(news_glob, str) else list(news_glob)
+    paths: list[Path] = []
+    seen_paths: set[Path] = set()
+    for pattern in globs:
+        for path in sorted(PROJECT_ROOT.glob(pattern)):
+            if path not in seen_paths:
+                seen_paths.add(path)
+                paths.append(path)
     records: list[dict[str, Any]] = []
     seen_urls: set[str] = set()
     for path in paths:
@@ -79,7 +97,7 @@ def build_watchlist_news_summary(
     max_articles: int = 8,
     per_symbol_limit: int = 2,
     config_path: Path = DEFAULT_CONFIG_PATH,
-    news_glob: str = DEFAULT_NEWS_GLOB,
+    news_glob: str | Sequence[str] = DEFAULT_NEWS_GLOB,
 ) -> dict[str, Any]:
     config = load_watchlist_config(config_path)
     symbols = config.get("symbols") or []
@@ -147,7 +165,7 @@ def build_watchlist_news_summary(
         "lookback_days": lookback_days,
         "source": "local_ltn_jsonl",
         "config": str(config_path),
-        "news_glob": news_glob,
+        "news_glob": [news_glob] if isinstance(news_glob, str) else list(news_glob),
         "watchlist": [
             {
                 "symbol": item.get("symbol"),
@@ -170,6 +188,7 @@ def write_watchlist_news_summary(
 ) -> dict[str, Any]:
     summary = build_watchlist_news_summary(**kwargs)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    backup_latest_pointer_before_overwrite(output_path)
     output_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     if canonical_path is None and output_path == DEFAULT_OUTPUT_PATH:
         canonical_path = canonical_output_path("watchlist_news", kind="pipeline", run_mode="production", latest=True)

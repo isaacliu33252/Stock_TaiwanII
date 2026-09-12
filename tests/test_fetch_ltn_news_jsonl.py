@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import unittest
+import urllib.error
 from pathlib import Path
 
 from fetch_ltn_news_jsonl import (
@@ -11,6 +12,7 @@ from fetch_ltn_news_jsonl import (
     build_search_url,
     deduplicate_records,
     extract_records_from_html,
+    fetch_search_results,
     parse_cli_date,
     parse_cli_month,
     month_date_range,
@@ -99,6 +101,35 @@ class FetchLtnNewsJsonlTests(unittest.TestCase):
         records = extract_records_from_html(html, fallback_date="2026-05-20")
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0]["date"], "2026-05-20")
+
+    def test_fetch_search_results_treats_first_page_404_as_no_results(self) -> None:
+        def fake_fetch_html(*_args, **_kwargs) -> str:
+            raise urllib.error.HTTPError(
+                url="https://search.ltn.com.tw/list",
+                code=404,
+                msg="Not Found",
+                hdrs=None,
+                fp=None,
+            )
+
+        import fetch_ltn_news_jsonl as module
+
+        original = module.fetch_html
+        module.fetch_html = fake_fetch_html
+        try:
+            records = fetch_search_results(
+                keyword="冷門關鍵字",
+                start_date="2026-08-17",
+                end_date="2026-08-17",
+                news_type="all",
+                max_pages=1,
+                timeout=1,
+                sleep_ms=0,
+            )
+        finally:
+            module.fetch_html = original
+
+        self.assertEqual(records, [])
 
     def test_build_prompt_template(self) -> None:
         prompt = build_prompt_template(

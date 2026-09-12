@@ -298,9 +298,18 @@ def fetch_search_results(
         try:
             html_text = fetch_html(url, timeout=timeout)
         except urllib.error.HTTPError as exc:
-            if page > 1 and exc.code == 404:
+            if exc.code == 404:
+                # LTN returns 404 both for "ran off the end of a multi-page
+                # result set" (page > 1) and for "zero results for this
+                # keyword/date range" (page == 1, e.g. a narrow rolling
+                # window with no hits). Both mean "no more/no records", not
+                # an error worth propagating -- surfacing this as an
+                # exception broke scheduled multi-keyword rolling fetches
+                # where any one keyword having zero hits in a short window
+                # is routine, not exceptional.
                 if verbose:
-                    print(f"[LTN] page {page}: no more pages (HTTP 404)")
+                    reason = "no more pages" if page > 1 else "no results"
+                    print(f"[LTN] page {page}: {reason} (HTTP 404)")
                 break
             raise
         page_records = extract_records_from_html(html_text, fallback_date=end_date)
