@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2608_08405_capacity_crowding_readiness",
+  "status": "blocked",
+  "generated_at": "2026-09-04T20:38:37",
+  "as_of": "2026-09-03",
+  "policy": "research_only_capacity_crowding_readiness_no_weight_change",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2608.08405_robustness_or_crowding_strategy_capacity.pdf",
+    "title": "Robustness or Crowding: Experimental Design for Trading Strategy Capacity",
+    "date": "2026-08-05",
+    "imported_concepts": [
+      "capacity_is_a_causal_estimand_not_a_backtest_metric",
+      "same_date_sleeve_contrasts_remove_calendar_shocks_but_do_not_identify_aggregate_crowding",
+      "finite_hold_trials_attenuate_steady_state_erosion",
+      "impact_models_bound_capacity_from_one_side_only",
+      "finite_arm_grids_should_report_capacity_intervals_not_point_estimates",
+      "assigned_and_realized_deployment_must_be_separated",
+      "path_dependence_requires_a_separate_ramp_experiment"
+    ],
+    "not_imported": [
+      "live_randomized_sleeve_experiment",
+      "automatic_capacity_based_position_scaling",
+      "steady_state_deattenuated_capacity_point_estimate"
+    ]
+  },
+  "capital_context": {
+    "capital": 1000000.0,
+    "live_actual_data_date": "2026-09-03",
+    "execution_plan_actual_data_date": "2026-08-31",
+    "target_weights": {
+      "0050.TW": 0.529328223921051,
+      "00631L.TW": 0.170671776078949,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.29999999999999993
+    },
+    "target_values": {
+      "0050.TW": 529328.223921051,
+      "00631L.TW": 170671.776078949,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 299999.99999999994
+    },
+    "max_single_risky_weight": 0.529328223921051,
+    "leveraged_or_inverse_weight": 0.170671776078949,
+    "cash_weight": 0.29999999999999993
+  },
+  "paper_method_mapping": {
+    "capacity_experiment": "not_feasible_for_current_single_account_group_a_plus",
+    "same_date_contrast": "use_as_warning_about_estimand_limits_not_as_promotion_evidence",
+    "finite_hold_attenuation": [
+      {
+        "hold_periods": 20,
+        "persistence": 0.9177,
+        "terminal_fraction_f_l": 0.8205205896391184,
+        "block_average_fraction_g_l": 0.542532354124047,
+        "steady_state_shortfall_terminal": 0.17947941036088155,
+        "steady_state_shortfall_block_average": 0.457467645875953,
+        "interpretation": "illustrative_only_paper_calibration_not_fitted_to_taiwan_etfs"
+      },
+      {
+        "hold_periods": 60,
+        "persistence": 0.9177,
+        "terminal_fraction_f_l": 0.99421845510668,
+        "block_average_fraction_g_l": 0.8152299967089105,
+        "steady_state_shortfall_terminal": 0.005781544893319945,
+        "steady_state_shortfall_block_average": 0.1847700032910895,
+        "interpretation": "illustrative_only_paper_calibration_not_fitted_to_taiwan_etfs"
+      },
+      {
+        "hold_periods": 120,
+        "persistence": 0.9177,
+        "terminal_fraction_f_l": 0.9999665737386465,
+        "block_average_fraction_g_l": 0.9070808703199721,
+        "steady_state_shortfall_terminal": 3.3426261353497466e-05,
+        "steady_state_shortfall_block_average": 0.09291912968002791,
+        "interpretation": "illustrative_only_paper_calibration_not_fitted_to_taiwan_etfs"
+      }
+    ],
+    "impact_model": "treat_market_impact_review_as_upper_bound_only_for_capacity",
+    "finite_grid": "future_capacity_study_must_report_interval_with_simultaneous_band",
+    "path_dependence": "future_ramp_up_down_shadow_only_before_any_capacity_scaling"
+  },
+  "assigned_vs_realized_deployment": {
+    "assigned_target_weights_logged": true,
+    "assigned_target_shares_logged": true,
+    "pre_staging_theoretical_target_logged": true,
+    "realized_fill_or_broker_execution_logged": false,
+    "paper_mapping": "GroupA+ records assigned targets and staged targets, but this report did not find a same-run realized fill series that can instrument assigned versus realized deployment."
+  },
+  "current_artifact_summary": {
+    "market_impact_status": "blocked",
+    "market_impact_turnover": 0.14215824542363484,
+    "market_impact_max_participation_of_volume": 5.063368006727523e-05,
+    "market_impact_trade_rows": 4,
+    "liquidity_feedback_decision": {
+      "creates_orders": false,
+      "target_weight_change_allowed": false,
+      "auto_rebalance_allowed": false,
+      "code_change_allowed": false,
+      "guarded_candidate_allowed": false,
+      "promote_to_live": false,
+      "requires_signed_approval_before_any_candidate": true
+    },
+    "liquidity_feedback_as_of": "2026-09-03"
+  },
+  "checks": {
+    "capacity_experiment_feasible_for_single_account": false,
+    "randomized_parallel_sleeves_available": false,
+    "same_date_contrast_identifies_aggregate_crowding": false,
+    "finite_grid_capacity_interval_reported": false,
+    "steady_state_kernel_calibrated_to_group_a_plus": false,
+    "impact_model_is_only_one_sided_upper_bound": true,
+    "impact_or_liquidity_artifacts_available": true,
+    "assigned_targets_logged": true,
+    "realized_deployment_logged": false,
+    "changes_latest_strategy": false
+  },
+  "blocking_reasons": [
+    "no_randomized_parallel_sleeves",
+    "aggregate_crowding_not_identified_by_same_date_contrast",
+    "finite_grid_capacity_interval_missing",
+    "steady_state_kernel_not_calibrated_to_group_a_plus",
+    "impact_model_upper_bound_only",
+    "realized_deployment_series_missing",
+    "market_impact_readiness_blocked",
+    "execution_plan_stale_vs_live_signal"
+  ],
+  "warning_reasons": [
+    "leveraged_etf_positive_weight_capacity_review_required_before_scaling"
+  ],
+  "decision": {
+    "summary": "Import the paper as capacity/crowding governance only. It adds a mandatory research-only review before scaling capital, but it does not justify changing golden1_0531, golden2_0830, or the latest strategy weights.",
+    "promotion_allowed": false,
+    "target_weight_change_allowed": false,
+    "golden1_0531_change_allowed": false,
+    "golden2_0830_change_allowed": false,
+    "latest_strategy_change_allowed": false,
+    "capacity_scaling_allowed": false,
+    "requires_human_review_before_scaling_above_current_capital": true,
+    "blockers": [
+      "no_randomized_parallel_sleeves",
+      "aggregate_crowding_not_identified_by_same_date_contrast",
+      "finite_grid_capacity_interval_missing",
+      "steady_state_kernel_not_calibrated_to_group_a_plus",
+      "impact_model_upper_bound_only",
+      "realized_deployment_series_missing",
+      "market_impact_readiness_blocked",
+      "execution_plan_stale_vs_live_signal"
+    ]
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_plus_live_signal_v2_20260903.json",
+    "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+    "market_impact": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+    "liquidity_feedback": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_liquidity_feedback_watch_shadow_backtest.json"
+  }
+}

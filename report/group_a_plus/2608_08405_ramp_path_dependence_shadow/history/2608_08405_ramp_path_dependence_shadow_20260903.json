@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2608_08405_ramp_path_dependence_shadow",
+  "generated_at": "2026-09-05T09:54:52",
+  "as_of": "2026-09-03",
+  "status": "blocked_shadow_only",
+  "policy": "ramp_path_dependence_shadow_no_weight_change",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2608.08405_robustness_or_crowding_strategy_capacity.pdf",
+    "concept": "path_dependence_requires_a_separate_ramp_experiment"
+  },
+  "coverage": {
+    "history_type": "system_observed_daily_status_not_broker_fills",
+    "entry_count": 147,
+    "ticker_count": 4,
+    "two_sided_target_path_ticker_count": 4,
+    "realized_two_sided_path_ticker_count": 0,
+    "minimum_two_sided_tickers": 2
+  },
+  "ticker_sequences": {
+    "0050.TW": {
+      "entry_count": 30,
+      "positive_target_delta_count": 15,
+      "negative_target_delta_count": 15,
+      "filled_trade_count": 0,
+      "has_two_sided_target_path": true,
+      "has_realized_two_sided_path": false
+    },
+    "00631L.TW": {
+      "entry_count": 102,
+      "positive_target_delta_count": 15,
+      "negative_target_delta_count": 14,
+      "filled_trade_count": 0,
+      "has_two_sided_target_path": true,
+      "has_realized_two_sided_path": false
+    },
+    "00632R.TW": {
+      "entry_count": 13,
+      "positive_target_delta_count": 7,
+      "negative_target_delta_count": 6,
+      "filled_trade_count": 0,
+      "has_two_sided_target_path": true,
+      "has_realized_two_sided_path": false
+    },
+    "00679B.TWO": {
+      "entry_count": 2,
+      "positive_target_delta_count": 1,
+      "negative_target_delta_count": 1,
+      "filled_trade_count": 0,
+      "has_two_sided_target_path": true,
+      "has_realized_two_sided_path": false
+    }
+  },
+  "checks": {
+    "target_ramp_paths_observed": true,
+    "realized_ramp_paths_observed": false,
+    "assigned_realized_ready": false,
+    "pre_registered_ramp_protocol": false,
+    "path_dependent_outcome_window_estimated": false,
+    "can_be_combined_with_capacity_grid_as_same_estimand": false
+  },
+  "blocking_reasons": [
+    "intervention_history_is_target_status_not_realized_fills",
+    "realized_deployment_series_missing",
+    "realized_two_sided_ramp_paths_missing",
+    "ramp_up_down_protocol_not_pre_registered",
+    "path_dependent_outcome_window_not_estimated",
+    "capacity_level_grid_cannot_substitute_for_ramp_experiment"
+  ],
+  "decision": {
+    "ramp_path_dependence_claim_allowed": false,
+    "capacity_claim_allowed": false,
+    "capacity_scaling_allowed": false,
+    "latest_strategy_change_allowed": false,
+    "target_weight_change_allowed": false,
+    "golden1_0531_change_allowed": false,
+    "golden2_0830_change_allowed": false,
+    "summary": "GroupA+ has target-change history, but not a pre-registered realized ramp-up/ramp-down experiment. Path dependence remains a separate shadow question and cannot support capacity scaling or strategy changes."
+  },
+  "inputs": {
+    "intervention_history": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/intervention_history.json",
+    "assigned_realized": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/2608_08405_assigned_realized_deployment_shadow.json"
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2608_08405_assigned_realized_deployment_shadow",
+  "generated_at": "2026-09-12T08:30:04",
+  "status": "blocked",
+  "policy": "research_only_assigned_realized_deployment_audit_no_weight_change",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2608.08405_robustness_or_crowding_strategy_capacity.pdf",
+    "concept": "assigned_and_realized_deployment_must_be_separated_before_capacity_claims"
+  },
+  "dates": {
+    "live_signal_date": "2026-09-07",
+    "execution_plan_date": "2026-08-31",
+    "broker_sample_last_transaction_date": "2026-07-17"
+  },
+  "coverage": {
+    "assigned_live_targets_logged": true,
+    "execution_plan_targets_logged": true,
+    "realized_authoritative_positions_logged": false,
+    "broker_authoritative_export": false,
+    "broker_holdings_reconciled": false,
+    "comparison_ticker_count": 14
+  },
+  "comparison": [
+    {
+      "ticker": "0050.TW",
+      "assigned_live_target_shares": 4791,
+      "execution_plan_target_shares": 5432,
+      "broker_sample_latest_position": -2304,
+      "plan_minus_assigned": 641,
+      "realized_minus_assigned": -7095,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "0056.TW",
+      "assigned_live_target_shares": null,
+      "execution_plan_target_shares": null,
+      "broker_sample_latest_position": 4863,
+      "plan_minus_assigned": null,
+      "realized_minus_assigned": null,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "00631L.TW",
+      "assigned_live_target_shares": 4583,
+      "execution_plan_target_shares": 2241,
+      "broker_sample_latest_position": 500,
+      "plan_minus_assigned": -2342,
+      "realized_minus_assigned": -4083,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "00632R.TW",
+      "assigned_live_target_shares": 0,
+      "execution_plan_target_shares": 13078,
+      "broker_sample_latest_position": null,
+      "plan_minus_assigned": 13078,
+      "realized_minus_assigned": null,
+      "realized_position_available": false
+    },
+    {
+      "ticker": "00646.TW",
+      "assigned_live_target_shares": null,
+      "execution_plan_target_shares": null,
+      "broker_sample_latest_position": 1032,
+      "plan_minus_assigned": null,
+      "realized_minus_assigned": null,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "00679B.TWO",
+      "assigned_live_target_shares": 0,
+      "execution_plan_target_shares": 0,
+      "broker_sample_latest_position": 3000,
+      "plan_minus_assigned": 0,
+      "realized_minus_assigned": 3000,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "00713.TW",
+      "assigned_live_target_shares": 1891,
+      "execution_plan_target_shares": null,
+      "broker_sample_latest_position": 500,
+      "plan_minus_assigned": null,
+      "realized_minus_assigned": -1391,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "00751B.TWO",
+      "assigned_live_target_shares": null,
+      "execution_plan_target_shares": null,
+      "broker_sample_latest_position": 4000,
+      "plan_minus_assigned": null,
+      "realized_minus_assigned": null,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "00878.TW",
+      "assigned_live_target_shares": null,
+      "execution_plan_target_shares": null,
+      "broker_sample_latest_position": 2747,
+      "plan_minus_assigned": null,
+      "realized_minus_assigned": null,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "UNKNOWN:富邦台50",
+      "assigned_live_target_shares": null,
+      "execution_plan_target_shares": null,
+      "broker_sample_latest_position": -222,
+      "plan_minus_assigned": null,
+      "realized_minus_assigned": null,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "UNKNOWN:日掦",
+      "assigned_live_target_shares": null,
+      "execution_plan_target_shares": null,
+      "broker_sample_latest_position": 0,
+      "plan_minus_assigned": null,
+      "realized_minus_assigned": null,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "UNKNOWN:普萊德",
+      "assigned_live_target_shares": null,
+      "execution_plan_target_shares": null,
+      "broker_sample_latest_position": -1000,
+      "plan_minus_assigned": null,
+      "realized_minus_assigned": null,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "UNKNOWN:玉山金",
+      "assigned_live_target_shares": null,
+      "execution_plan_target_shares": null,
+      "broker_sample_latest_position": -71,
+      "plan_minus_assigned": null,
+      "realized_minus_assigned": null,
+      "realized_position_available": true
+    },
+    {
+      "ticker": "UNKNOWN:群益ESG投等債20+",
+      "assigned_live_target_shares": null,
+      "execution_plan_target_shares": null,
+      "broker_sample_latest_position": 0,
+      "plan_minus_assigned": null,
+      "realized_minus_assigned": null,
+      "realized_position_available": true
+    }
+  ],
+  "blocking_reasons": [
+    "execution_plan_stale_vs_live_signal",
+    "broker_positions_not_authoritative",
+    "broker_holdings_not_reconciled",
+    "realized_fill_or_deployment_series_missing"
+  ],
+  "decision": {
+    "capacity_claim_allowed": false,
+    "capacity_scaling_allowed": false,
+    "latest_strategy_change_allowed": false,
+    "target_weight_change_allowed": false,
+    "live_order_generation_allowed": false,
+    "summary": "Assigned targets are available, but realized deployment/fill evidence is not authoritative and reconciled. Treat capacity evidence as blocked until same-run assigned, planned, and realized deployment series are logged."
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal.json",
+    "execution_plan": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/execution_plan.json",
+    "broker_sample": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/broker_holdings_time_series_sample.json",
+    "broker_reconciliation": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/broker_holdings_reconciliation_review.json"
+  }
+}

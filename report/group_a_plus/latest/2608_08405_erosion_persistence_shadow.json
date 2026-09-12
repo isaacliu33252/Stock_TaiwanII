@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2608_08405_erosion_persistence_shadow",
+  "generated_at": "2026-09-12T08:30:27",
+  "status": "proxy_available_not_calibrated_kernel",
+  "policy": "research_only_erosion_persistence_proxy_no_weight_change",
+  "as_of": "2026-09-09",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2608.08405_robustness_or_crowding_strategy_capacity.pdf",
+    "concept": "finite_hold_capacity_requires_steady_state_erosion_kernel_or_declared_bridge"
+  },
+  "summary": {
+    "ticker_count": 4,
+    "proxy_available_count": 4,
+    "median_ar1_persistence_proxy": 0.24069437323306775,
+    "median_half_life_days_proxy": 0.48668297197722094
+  },
+  "ticker_estimates": [
+    {
+      "ticker": "0050.TW",
+      "status": "proxy_available_not_causal_kernel",
+      "row_count": 4313,
+      "first_date": "2009-01-05",
+      "last_date": "2026-09-09",
+      "proxy_definition": "abs(log_return) * log1p(volume)",
+      "ar1_persistence_raw": 0.2398058927466925,
+      "ar1_persistence_nonnegative_clipped": 0.2398058927466925,
+      "half_life_days": 0.48542252272358594,
+      "finite_hold_attenuation_proxy": [
+        {
+          "hold_periods": 20,
+          "persistence": 0.2398058927466925,
+          "terminal_fraction_f_l": 0.9999999999996044,
+          "block_average_fraction_g_l": 0.9842273249385574,
+          "steady_state_shortfall_block_average": 0.015772675061442643
+        },
+        {
+          "hold_periods": 60,
+          "persistence": 0.2398058927466925,
+          "terminal_fraction_f_l": 1.0,
+          "block_average_fraction_g_l": 0.9947424416461838,
+          "steady_state_shortfall_block_average": 0.00525755835381625
+        },
+        {
+          "hold_periods": 120,
+          "persistence": 0.2398058927466925,
+          "terminal_fraction_f_l": 1.0,
+          "block_average_fraction_g_l": 0.9973712208230918,
+          "steady_state_shortfall_block_average": 0.0026287791769081803
+        }
+      ]
+    },
+    {
+      "ticker": "00631L.TW",
+      "status": "proxy_available_not_causal_kernel",
+      "row_count": 2875,
+      "first_date": "2014-10-31",
+      "last_date": "2026-09-09",
+      "proxy_definition": "abs(log_return) * log1p(volume)",
+      "ar1_persistence_raw": 0.24158285371944302,
+      "ar1_persistence_nonnegative_clipped": 0.24158285371944302,
+      "half_life_days": 0.48794530359010974,
+      "finite_hold_attenuation_proxy": [
+        {
+          "hold_periods": 20,
+          "persistence": 0.24158285371944302,
+          "terminal_fraction_f_l": 0.9999999999995415,
+          "block_average_fraction_g_l": 0.9840732204629005,
+          "steady_state_shortfall_block_average": 0.015926779537099534
+        },
+        {
+          "hold_periods": 60,
+          "persistence": 0.24158285371944302,
+          "terminal_fraction_f_l": 1.0,
+          "block_average_fraction_g_l": 0.9946910734876311,
+          "steady_state_shortfall_block_average": 0.005308926512368917
+        },
+        {
+          "hold_periods": 120,
+          "persistence": 0.24158285371944302,
+          "terminal_fraction_f_l": 1.0,
+          "block_average_fraction_g_l": 0.9973455367438155,
+          "steady_state_shortfall_block_average": 0.0026544632561844583
+        }
+      ]
+    },
+    {
+      "ticker": "00632R.TW",
+      "status": "proxy_available_not_causal_kernel",
+      "row_count": 2875,
+      "first_date": "2014-10-31",
+      "last_date": "2026-09-09",
+      "proxy_definition": "abs(log_return) * log1p(volume)",
+      "ar1_persistence_raw": 0.005818212088516967,
+      "ar1_persistence_nonnegative_clipped": 0.005818212088516967,
+      "half_life_days": 0.13467635472043873,
+      "finite_hold_attenuation_proxy": [
+        {
+          "hold_periods": 20,
+          "persistence": 0.005818212088516967,
+          "terminal_fraction_f_l": 1.0,
+          "block_average_fraction_g_l": 0.9997073869105599,
+          "steady_state_shortfall_block_average": 0.0002926130894400636
+        },
+        {
+          "hold_periods": 60,
+          "persistence": 0.005818212088516967,
+          "terminal_fraction_f_l": 1.0,
+          "block_average_fraction_g_l": 0.99990246230352,
+          "steady_state_shortfall_block_average": 9.75376964800212e-05
+        },
+        {
+          "hold_periods": 120,
+          "persistence": 0.005818212088516967,
+          "terminal_fraction_f_l": 1.0,
+          "block_average_fraction_g_l": 0.99995123115176,
+          "steady_state_shortfall_block_average": 4.87688482400106e-05
+        }
+      ]
+    },
+    {
+      "ticker": "00679B.TWO",
+      "status": "proxy_available_not_causal_kernel",
+      "row_count": 2337,
+      "first_date": "2017-01-17",
+      "last_date": "2026-09-09",
+      "proxy_definition": "abs(log_return) * log1p(volume)",
+      "ar1_persistence_raw": 0.26724524625130447,
+      "ar1_persistence_nonnegative_clipped": 0.26724524625130447,
+      "half_life_days": 0.5252752442841714,
+      "finite_hold_attenuation_proxy": [
+        {
+          "hold_periods": 20,
+          "persistence": 0.26724524625130447,
+          "terminal_fraction_f_l": 0.999999999996547,
+          "block_average_fraction_g_l": 0.9817643457866917,
+          "steady_state_shortfall_block_average": 0.018235654213308305
+        },
+        {
+          "hold_periods": 60,
+          "persistence": 0.26724524625130447,
+          "terminal_fraction_f_l": 1.0,
+          "block_average_fraction_g_l": 0.9939214485955429,
+          "steady_state_shortfall_block_average": 0.006078551404457122
+        },
+        {
+          "hold_periods": 120,
+          "persistence": 0.26724524625130447,
+          "terminal_fraction_f_l": 1.0,
+          "block_average_fraction_g_l": 0.9969607242977715,
+          "steady_state_shortfall_block_average": 0.0030392757022285055
+        }
+      ]
+    }
+  ],
+  "blocking_reasons": [
+    "randomized_deployment_erosion_kernel_missing",
+    "proxy_not_causal_capacity_evidence",
+    "same_run_realized_deployment_not_used"
+  ],
+  "decision": {
+    "steady_state_kernel_calibrated_to_group_a_plus": false,
+    "proxy_can_replace_randomized_kernel": false,
+    "capacity_deattenuation_allowed": false,
+    "capacity_scaling_allowed": false,
+    "latest_strategy_change_allowed": false,
+    "target_weight_change_allowed": false,
+    "summary": "OHLCV persistence proxies are available for monitoring, but they are not the causal deployment-erosion kernel required by the paper. Do not deattenuate capacity or scale capital from this proxy."
+  },
+  "inputs": {
+    "db": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "00679B.TWO"
+    ]
+  }
+}

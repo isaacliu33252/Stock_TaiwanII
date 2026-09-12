@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2608_08405_capacity_grid_shadow",
+  "generated_at": "2026-09-12T08:30:09",
+  "status": "not_identified_shadow_only",
+  "policy": "finite_grid_capacity_interval_shadow_no_weight_change",
+  "as_of": "2026-09-09",
+  "source_paper": {
+    "file": "C:/Users/isaac/Downloads/2608.08405_robustness_or_crowding_strategy_capacity.pdf",
+    "concept": "finite_arm_grids_should_report_capacity_intervals_not_point_estimates"
+  },
+  "grid_specification": {
+    "capital": 1000000.0,
+    "arms": [
+      0.0,
+      0.5,
+      1.0,
+      1.5,
+      2.0
+    ],
+    "arm_count": 5,
+    "target_weights": {
+      "0050.TW": 0.526560825661465,
+      "00631L.TW": 0.17343917433853498,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "00713.TW": 0.12,
+      "cash": 0.18000000000000005
+    },
+    "simultaneous_band_required": true,
+    "point_estimate_allowed": false,
+    "capacity_interval_identified": false,
+    "capacity_interval": {
+      "lower_beta": null,
+      "upper_beta_open": null
+    }
+  },
+  "grid_rows": [
+    {
+      "deployment_arm_beta": 0.0,
+      "scaled_risky_notional": 0.0,
+      "scaled_cash_weight_reference": 1.0,
+      "one_sided_impact_proxy_max_pov": 0.0,
+      "observed_edge_erosion": null,
+      "simultaneous_band_lower": null,
+      "simultaneous_band_upper": null
+    },
+    {
+      "deployment_arm_beta": 0.5,
+      "scaled_risky_notional": 410000.0,
+      "scaled_cash_weight_reference": 0.5900000000000001,
+      "one_sided_impact_proxy_max_pov": 2.531684e-05,
+      "observed_edge_erosion": null,
+      "simultaneous_band_lower": null,
+      "simultaneous_band_upper": null
+    },
+    {
+      "deployment_arm_beta": 1.0,
+      "scaled_risky_notional": 820000.0,
+      "scaled_cash_weight_reference": 0.18000000000000005,
+      "one_sided_impact_proxy_max_pov": 5.063368e-05,
+      "observed_edge_erosion": null,
+      "simultaneous_band_lower": null,
+      "simultaneous_band_upper": null
+    },
+    {
+      "deployment_arm_beta": 1.5,
+      "scaled_risky_notional": 1230000.0,
+      "scaled_cash_weight_reference": 0.0,
+      "one_sided_impact_proxy_max_pov": 7.595052e-05,
+      "observed_edge_erosion": null,
+      "simultaneous_band_lower": null,
+      "simultaneous_band_upper": null
+    },
+    {
+      "deployment_arm_beta": 2.0,
+      "scaled_risky_notional": 1640000.0,
+      "scaled_cash_weight_reference": 0.0,
+      "one_sided_impact_proxy_max_pov": 0.00010126736,
+      "observed_edge_erosion": null,
+      "simultaneous_band_lower": null,
+      "simultaneous_band_upper": null
+    }
+  ],
+  "upstream_status": {
+    "market_impact_status": "blocked",
+    "market_impact_target_weight_change_allowed": false,
+    "assigned_realized_status": "blocked"
+  },
+  "blocking_reasons": [
+    "assigned_realized_deployment_not_ready",
+    "market_impact_not_ready_for_capacity_grid",
+    "randomized_parallel_sleeve_observations_missing",
+    "edge_erosion_by_deployment_arm_missing",
+    "simultaneous_band_not_estimable"
+  ],
+  "decision": {
+    "capacity_interval_reported": false,
+    "capacity_point_estimate_reported": false,
+    "capacity_claim_allowed": false,
+    "capacity_scaling_allowed": false,
+    "latest_strategy_change_allowed": false,
+    "target_weight_change_allowed": false,
+    "summary": "A finite deployment grid can be specified, but no capacity interval is identified without randomized sleeve observations, realized deployment, and observed edge erosion by arm. Keep this as shadow governance only."
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal.json",
+    "market_impact": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/market_impact_readiness_review.json",
+    "assigned_realized": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/2608_08405_assigned_realized_deployment_shadow.json"
+  }
+}
