@@ -15,6 +15,7 @@ from group_a_plus.integrations.ncf import (
     load_ncf_2330_checklist,
     load_ncf_signal,
     ncf_cross_ticker_consistency,
+    ncf_00713_cash_sleeve_decision,
     ncf_downside_signal,
     ncf_dynamic_horizon_signal,
     ncf_overlay_summary,
@@ -177,6 +178,83 @@ class NCFSignalLoadTests(unittest.TestCase):
         self.assertEqual("risk_off", checklist["factor_quality_label"])
         self.assertEqual(6.0, checklist["factor_quality_risk_score"])
         self.assertEqual("technical", next(iter(checklist["layers"])))
+
+
+class NCF00713CashSleeveDecisionTests(unittest.TestCase):
+    def test_disabled_gate_keeps_base_sleeve(self) -> None:
+        decision = ncf_00713_cash_sleeve_decision(
+            {"date": "2026-09-07", "calibrated_prob_up": 0.1, "confidence": 1.0},
+            actual_date="2026-09-07",
+            base_weight=0.05,
+            enabled=False,
+        )
+
+        self.assertEqual(decision["status"], "disabled")
+        self.assertEqual(decision["effective_weight"], 0.05)
+        self.assertEqual(decision["cash_released"], 0.0)
+
+    def test_stale_signal_keeps_base_sleeve(self) -> None:
+        decision = ncf_00713_cash_sleeve_decision(
+            {"date": "2026-09-06", "calibrated_prob_up": 0.1, "confidence": 1.0},
+            actual_date="2026-09-07",
+            base_weight=0.05,
+            enabled=True,
+        )
+
+        self.assertEqual(decision["status"], "stale")
+        self.assertEqual(decision["effective_weight"], 0.05)
+        self.assertIn("date_mismatch_keep_base", decision["reason"])
+
+    def test_confirmed_low_probability_cuts_sleeve_to_cash(self) -> None:
+        decision = ncf_00713_cash_sleeve_decision(
+            {
+                "date": "2026-09-07",
+                "direction": "DOWN",
+                "calibrated_prob_up": 0.49,
+                "confidence": 0.7,
+            },
+            actual_date="2026-09-07",
+            base_weight=0.05,
+        )
+
+        self.assertEqual(decision["status"], "applied")
+        self.assertEqual(decision["scale"], 0.0)
+        self.assertEqual(decision["effective_weight"], 0.0)
+        self.assertEqual(decision["cash_released"], 0.05)
+        self.assertIn("confirmed_prob_up_below_half_min", decision["reason"])
+
+    def test_tail_risk_overrides_full_probability(self) -> None:
+        decision = ncf_00713_cash_sleeve_decision(
+            {
+                "date": "2026-09-07",
+                "direction": "UP",
+                "calibrated_prob_up": 0.58,
+                "confidence": 0.8,
+                "prob_fwd_mdd_gt5_h20": 0.31,
+            },
+            actual_date="2026-09-07",
+            base_weight=0.05,
+        )
+
+        self.assertEqual(decision["effective_weight"], 0.0)
+        self.assertIn("tail_drawdown_risk_high", decision["reason"])
+
+    def test_low_upside_halves_sleeve(self) -> None:
+        decision = ncf_00713_cash_sleeve_decision(
+            {
+                "date": "2026-09-07",
+                "direction": "UP",
+                "calibrated_prob_up": 0.58,
+                "confidence": 0.8,
+                "prob_fwd_gain_gt5_h20": 0.04,
+            },
+            actual_date="2026-09-07",
+            base_weight=0.05,
+        )
+
+        self.assertEqual(decision["scale"], 0.5)
+        self.assertEqual(decision["effective_weight"], 0.025)
+        self.assertIn("upside_reward_low", decision["reason"])
 
 
 class A2118LateBullHoldTests(unittest.TestCase):

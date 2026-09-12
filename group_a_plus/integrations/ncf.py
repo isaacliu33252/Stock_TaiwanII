@@ -186,6 +186,107 @@ def load_ncf_2330_checklist(path: Path) -> dict[str, Any]:
     }
 
 
+def ncf_00713_cash_sleeve_decision(
+    ncf_signal: dict[str, Any] | None,
+    *,
+    actual_date: str | None = None,
+    base_weight: float = 0.05,
+    enabled: bool = True,
+    prob_up_full_min: float = 0.54,
+    prob_up_half_min: float = 0.50,
+    confidence_min: float = 0.30,
+    mdd_gt5_max: float = 0.20,
+    gain_gt5_min: float = 0.08,
+) -> dict[str, Any]:
+    """Gate the small 00713 cash sleeve with its own NCF signal.
+
+    The output only decides how much of the existing cash-funded 00713 sleeve
+    to keep. It never reallocates from 0050.TW or 00631L.TW.
+    """
+    base = min(max(float(base_weight), 0.0), 1.0)
+    if base <= 0.0:
+        return {
+            "status": "disabled",
+            "base_weight": base,
+            "scale": 0.0,
+            "effective_weight": 0.0,
+            "cash_released": base,
+            "reason": "zero_base_weight",
+        }
+    if not enabled:
+        return {
+            "status": "disabled",
+            "base_weight": base,
+            "scale": 1.0,
+            "effective_weight": base,
+            "cash_released": 0.0,
+            "reason": "ncf_gate_disabled_keep_base",
+        }
+    if not ncf_signal:
+        return {
+            "status": "unavailable",
+            "base_weight": base,
+            "scale": 1.0,
+            "effective_weight": base,
+            "cash_released": 0.0,
+            "reason": "missing_ncf_00713_signal",
+        }
+
+    signal_date = ncf_signal.get("date")
+    date_matches = actual_date is None or str(signal_date) == str(actual_date)
+    prob = float(ncf_signal.get("calibrated_prob_up", 0.5))
+    confidence = float(ncf_signal.get("confidence", 0.0) or 0.0)
+    mdd_prob = ncf_signal.get("prob_fwd_mdd_gt5_h20")
+    gain_prob = ncf_signal.get("prob_fwd_gain_gt5_h20")
+    mdd = float(mdd_prob) if mdd_prob is not None else None
+    gain = float(gain_prob) if gain_prob is not None else None
+
+    scale = 1.0
+    reasons: list[str] = []
+    confidence_ok = confidence >= confidence_min
+    if not date_matches:
+        scale = 1.0
+        reasons.append("date_mismatch_keep_base")
+    elif prob < prob_up_half_min and confidence_ok:
+        scale = 0.0
+        reasons.append("confirmed_prob_up_below_half_min")
+    elif prob < prob_up_full_min and confidence_ok:
+        scale = min(scale, 0.5)
+        reasons.append("confirmed_prob_up_between_half_and_full")
+    elif date_matches and not confidence_ok:
+        reasons.append("low_confidence_no_cut")
+    if date_matches and mdd is not None and mdd > mdd_gt5_max:
+        scale = 0.0
+        reasons.append("tail_drawdown_risk_high")
+    if date_matches and gain is not None and gain < gain_gt5_min:
+        scale = min(scale, 0.5)
+        reasons.append("upside_reward_low")
+
+    effective = base * scale
+    return {
+        "status": "applied" if date_matches else "stale",
+        "base_weight": round(base, 8),
+        "scale": round(scale, 4),
+        "effective_weight": round(effective, 8),
+        "cash_released": round(base - effective, 8),
+        "reason": ",".join(reasons) if reasons else "full_sleeve_allowed",
+        "signal_date": signal_date,
+        "actual_date": actual_date,
+        "direction": ncf_signal.get("direction"),
+        "calibrated_prob_up": round(prob, 6),
+        "confidence": round(confidence, 6),
+        "prob_fwd_mdd_gt5_h20": round(mdd, 6) if mdd is not None else None,
+        "prob_fwd_gain_gt5_h20": round(gain, 6) if gain is not None else None,
+        "thresholds": {
+            "prob_up_full_min": prob_up_full_min,
+            "prob_up_half_min": prob_up_half_min,
+            "confidence_min": confidence_min,
+            "mdd_gt5_max": mdd_gt5_max,
+            "gain_gt5_min": gain_gt5_min,
+        },
+    }
+
+
 def ncf_dynamic_horizon_signal(
     ncf_signal: dict[str, Any],
     *,
