@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "status": "available",
+  "research_only": true,
+  "production_effect": "none",
+  "date": "2026-09-09",
+  "alpha_threshold": 0.005,
+  "rolling_window_days": 63,
+  "per_ticker": {
+    "0050.TW": {
+      "same_day_sentiment_score": null,
+      "same_day_news_intensity": 0,
+      "same_day_return": -0.0,
+      "move_explained_by_news": null,
+      "rolling_63d_sentiment_return_corr": 0.3534
+    },
+    "00631L.TW": {
+      "same_day_sentiment_score": null,
+      "same_day_news_intensity": 0,
+      "same_day_return": 0.001334,
+      "move_explained_by_news": null,
+      "rolling_63d_sentiment_return_corr": 0.1767
+    },
+    "00632R.TW": {
+      "same_day_sentiment_score": null,
+      "same_day_news_intensity": 0,
+      "same_day_return": 0.0,
+      "move_explained_by_news": null,
+      "rolling_63d_sentiment_return_corr": null
+    },
+    "00679B.TWO": {
+      "same_day_sentiment_score": null,
+      "same_day_news_intensity": 0,
+      "same_day_return": -0.000781,
+      "move_explained_by_news": null,
+      "rolling_63d_sentiment_return_corr": null
+    },
+    "2330.TW": {
+      "same_day_sentiment_score": null,
+      "same_day_news_intensity": 0,
+      "same_day_return": -0.002024,
+      "move_explained_by_news": null,
+      "rolling_63d_sentiment_return_corr": 0.7264
+    }
+  },
+  "next_day_prediction": null,
+  "next_day_prediction_note": "intentionally null -- 2026-08-05 diagnostic (research/shadow/FINSMART_REWARD_ALIGNMENT_DIAGNOSTIC_20260805.md) found next-day correlation indistinguishable from zero under both directional and volatility interpretations; do not add a directional next-day field without re-running that diagnostic first",
+  "raw_headline_count": 15842,
+  "deduped_headline_count": 14301,
+  "dropped_duplicate_count": 1541
+}
