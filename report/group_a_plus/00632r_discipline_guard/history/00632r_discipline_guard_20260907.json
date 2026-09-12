@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_00632r_discipline_guard",
+  "generated_at": "2026-09-05T14:39:45",
+  "as_of": "2026-09-07",
+  "status": "blocked_for_inverse_adds",
+  "policy": "latest_strategy_00632r_zero_default_no_dca_no_averaging_down",
+  "current_latest_strategy": {
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "actual_data_date": "2026-09-04",
+    "target_weight_00632r": 0.0,
+    "target_weight_cash": 0.30000000000000004
+  },
+  "rules": {
+    "default_target_weight": 0.0,
+    "dca_allowed": false,
+    "averaging_down_allowed": false,
+    "discretionary_buy_allowed": false,
+    "prefer_cash_floor_for_default_defense": true,
+    "manual_exception_max_weight": 0.05,
+    "manual_exception_requires_all_hedge_gates": true,
+    "must_have_exit_rule_before_open": true
+  },
+  "upstream": {
+    "letf_allow_00632r_open": null,
+    "tail_gate_allow_00632r_open": false,
+    "tail_gate_manual_hedge_discussion_allowed": false,
+    "trade_check_00632r_buy_count": 5
+  },
+  "checks": {
+    "latest_strategy_default_zero_weight_ok": true,
+    "dedicated_hedge_gates_allow_open": false,
+    "recent_trade_review_has_00632r_buy_records": true
+  },
+  "blocking_reasons": [
+    "dedicated_hedge_gates_do_not_allow_00632r_open",
+    "recent_trade_review_found_00632r_buy_or_dca_records",
+    "00632r_dca_prohibited",
+    "00632r_averaging_down_prohibited",
+    "cash_floor_preferred_over_inverse_etf_for_default_defense"
+  ],
+  "decision": {
+    "latest_strategy_rule_added": true,
+    "target_weight_change_allowed": false,
+    "latest_strategy_change_allowed": false,
+    "allow_00632r_dca": false,
+    "allow_00632r_averaging_down": false,
+    "allow_00632r_discretionary_buy": false,
+    "allow_00632r_open": false,
+    "allow_00632r_increase": false,
+    "manual_exception_max_weight": 0.05,
+    "default_defense_asset": "cash",
+    "summary": "Keep 00632R at zero by default in the latest strategy. Do not DCA, average down, or buy it discretionarily; use cash as the default defensive sleeve unless all dedicated hedge gates explicitly pass."
+  },
+  "inputs": {
+    "live_signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal.json",
+    "letf_readiness": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json",
+    "tail_gate": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/00632r_tail_tracking_error_gate_review.json",
+    "trade_check": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/0501_0904_check.xlsx"
+  }
+}
