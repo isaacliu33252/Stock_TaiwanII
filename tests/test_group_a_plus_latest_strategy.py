@@ -287,15 +287,15 @@ class LatestStrategyTests(unittest.TestCase):
         self.assertEqual("soft", lending["severity"])
         self.assertEqual("warn", lending["status"])
 
-    def test_a2111_uses_latest_group_a_signal(self) -> None:
+    def test_a2111_uses_curated_group_a_live_pointer_not_newer_glob(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)
             results = root / "results"
             results.mkdir()
             older = results / "group_a_combined_live_latest.json"
             newer = results / "signal_group_a_20260627_211552.json"
-            older.write_text("{}", encoding="utf-8")
-            newer.write_text("{}", encoding="utf-8")
+            older.write_text('{"actual_data_date": "2026-06-27"}', encoding="utf-8")
+            newer.write_text('{"actual_data_date": "2026-06-27"}', encoding="utf-8")
             older_ts = 1_700_000_000
             newer_ts = older_ts + 10
             os.utime(older, (older_ts, older_ts))
@@ -305,7 +305,7 @@ class LatestStrategyTests(unittest.TestCase):
                 "group_a_plus.runners.a2111.LATEST_GROUP_A_SIGNAL",
                 older,
             ):
-                self.assertEqual(newer.resolve(), _resolve_golden_signal_path())
+                self.assertEqual(older.resolve(), _resolve_golden_signal_path())
 
     def test_daily_signal_ncf_overlay_reduces_00631l_to_cash(self) -> None:
         def ncf_payload(ticker: str, direction: str, prob: float, conf: float) -> dict:

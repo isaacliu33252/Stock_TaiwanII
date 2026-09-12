@@ -60,24 +60,32 @@ from tw_output_standard import OutputStandardizer, write_standard_output
 
 
 A2111_ID = "a2111_tight_entry_bond30c30"
-LATEST_GROUP_A_SIGNAL = PROJECT_ROOT / "results" / "group_a_combined_live_latest.json"
+# 2026-09-09: repointed from golden1_0531's own live pipeline output
+# (results/group_a_combined_live_latest.json, written by
+# scripts/run/run_group_a_combined_signal.py) to a2118's own independently
+# forked signal file (written by scripts/run/run_a2118_own_golden_signal.py),
+# so a future change to golden1_0531's pipeline/output no longer silently
+# propagates into a2118's live decisions. Underlying model weights are
+# identical to golden1_0531's as of the fork date -- this is a pipeline-level
+# decoupling, not a strategy change. See
+# project_a2118_own_golden_signal_pipeline_split_20260909 memory.
+LATEST_GROUP_A_SIGNAL = PROJECT_ROOT / "results" / "a2118_own_golden_live_latest.json"
 
 
 def _resolve_golden_signal_path() -> Path:
-    candidates = []
-    if LATEST_GROUP_A_SIGNAL.exists():
-        candidates.append(LATEST_GROUP_A_SIGNAL)
-    candidates.extend((PROJECT_ROOT / "results").glob("signal_group_a_*.json"))
-    candidates = [
-        path
-        for path in candidates
-        if path.exists()
-        and not path.name.startswith("signal_group_a_tdcc")
-        and "shareholding" not in path.name
-    ]
-    if not candidates:
+    # Codex 2026-08-13: fail closed on the curated live pointer instead of
+    # choosing by newest mtime. The 2026-08 stale-signal incident showed that
+    # a stale/test `signal_group_a_*.json` can become trade-driving when glob
+    # resolution is allowed to race filesystem mtimes.
+    if not LATEST_GROUP_A_SIGNAL.exists():
         return _resolve(DEFAULT_GOLDEN_SIGNAL)
-    return max(candidates, key=lambda path: path.stat().st_mtime).resolve()
+    payload = _load(LATEST_GROUP_A_SIGNAL)
+    if str(payload.get("override_holdings_source") or "").strip():
+        raise ValueError(f"Curated golden live pointer is a what-if signal: {LATEST_GROUP_A_SIGNAL}")
+    actual_data_date = str(payload.get("actual_data_date") or "").strip()
+    if not actual_data_date:
+        raise ValueError(f"Curated golden live pointer has no actual_data_date: {LATEST_GROUP_A_SIGNAL}")
+    return LATEST_GROUP_A_SIGNAL.resolve()
 
 
 def _file_sha256(path: Path) -> str:
@@ -91,14 +99,12 @@ def _file_sha256(path: Path) -> str:
 def _golden_signal_metadata(path: Path, golden_weights: dict[str, float]) -> dict:
     """Reproducibility metadata for the golden1 weights a backtest actually used.
 
-    H3 (2026-07-02 Fable 5 audit): `_resolve_golden_signal_path()` picks
-    whichever `signal_group_a_*.json` file has the newest mtime, so a
-    backtest run today replays the *entire* history under *today's* golden1
-    weights, not the weights that were actually in force on each historical
-    date -- a drift channel distinct from (and in addition to) the known NCF
-    panel weight drift. This does not change that resolution behavior (doing
-    so would change live signal generation); it only makes the choice
-    auditable, mirroring the existing `ncf_panel_coverage` sha256/mtime guard.
+    H3 (2026-07-02 Fable 5 audit): a backtest run today replays the *entire*
+    history under the currently curated golden pointer's weights, not the
+    weights that were actually in force on each historical date -- a drift
+    channel distinct from (and in addition to) the known NCF panel weight
+    drift. This makes that pointer choice auditable, mirroring the existing
+    `ncf_panel_coverage` sha256/mtime guard.
     """
     stat = path.stat()
     return {
@@ -110,9 +116,9 @@ def _golden_signal_metadata(path: Path, golden_weights: dict[str, float]) -> dic
         ).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "golden_weights": dict(golden_weights),
         "caveat": (
-            "golden1 weights are resolved by newest-mtime among "
-            "results/signal_group_a_*.json at backtest run time, not the "
-            "weights actually in force on each historical date -- see H3 in "
+            "golden1 weights are resolved from the curated live pointer at "
+            "backtest run time, not the weights actually in force on each "
+            "historical date -- see H3 in "
             "GROUP_A_PLUS_FABLE5_AUDIT_A214_REVERT_HANDOFF_20260702.md."
         ),
     }
