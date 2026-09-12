@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2608_15841_auxiliary_lifecycle_audit",
+  "generated_at": "2026-09-12T08:06:59",
+  "source_paper": {
+    "id": "2608.15841",
+    "transferable_use": "auxiliary_head_pruning_redundancy_retirement_gate"
+  },
+  "policy": "research_only_no_weight_change",
+  "changes_latest_strategy": false,
+  "changes_golden1_0531": false,
+  "changes_golden2_0830": false,
+  "thresholds": {
+    "min_recent_auc": 0.52,
+    "corr_threshold": 0.85
+  },
+  "summary": {
+    "head_lifecycle_passed": false,
+    "promotion_allowed": false,
+    "decision": "head_lifecycle_review_required",
+    "blockers": [
+      "head_lifecycle_review_required"
+    ],
+    "status_counts": {
+      "redundant_candidate": 4,
+      "watchlist": 4,
+      "retire_candidate": 1
+    }
+  },
+  "redundancy_pairs": [
+    {
+      "ticker": "00631L.TW",
+      "left": "h20_forward_drawdown_gt5",
+      "right": "tail_reward_risk_score",
+      "correlation": -0.9120911184729007
+    },
+    {
+      "ticker": "0050.TW",
+      "left": "h20_forward_drawdown_gt5",
+      "right": "tail_reward_risk_score",
+      "correlation": -0.8658357349705826
+    }
+  ],
+  "heads": [
+    {
+      "ticker": "00631L.TW",
+      "head": "h20_forward_drawdown_gt5",
+      "status": "redundant_candidate",
+      "reasons": [
+        "high_redundancy"
+      ],
+      "full_auc": 0.658155487804878,
+      "recent_auc": 0.5689285714285715,
+      "regime_decay_failed": false,
+      "redundant": true
+    },
+    {
+      "ticker": "00631L.TW",
+      "head": "h20_forward_gain_gt5",
+      "status": "watchlist",
+      "reasons": [
+        "regime_or_decay_failed"
+      ],
+      "full_auc": 0.6033898305084746,
+      "recent_auc": 0.5638233514821537,
+      "regime_decay_failed": true,
+      "redundant": false
+    },
+    {
+      "ticker": "00631L.TW",
+      "head": "tail_reward_risk_score",
+      "status": "redundant_candidate",
+      "reasons": [
+        "recent_auc_below_floor",
+        "high_redundancy"
+      ],
+      "full_auc": 0.6194277382905048,
+      "recent_auc": 0.4398064125831821,
+      "regime_decay_failed": false,
+      "redundant": true
+    },
+    {
+      "ticker": "00632R.TW",
+      "head": "h20_forward_drawdown_gt5",
+      "status": "watchlist",
+      "reasons": [
+        "regime_or_decay_failed"
+      ],
+      "full_auc": 0.5761344537815126,
+      "recent_auc": 0.5360772357723578,
+      "regime_decay_failed": true,
+      "redundant": false
+    },
+    {
+      "ticker": "00632R.TW",
+      "head": "h20_forward_gain_gt5",
+      "status": "retire_candidate",
+      "reasons": [
+        "recent_auc_below_floor",
+        "regime_or_decay_failed"
+      ],
+      "full_auc": 0.6670395227442207,
+      "recent_auc": 0.5072463768115942,
+      "regime_decay_failed": true,
+      "redundant": false
+    },
+    {
+      "ticker": "00632R.TW",
+      "head": "tail_reward_risk_score",
+      "status": "watchlist",
+      "reasons": [
+        "recent_auc_below_floor"
+      ],
+      "full_auc": 0.6251304996271438,
+      "recent_auc": 0.5084214649432042,
+      "regime_decay_failed": false,
+      "redundant": false
+    },
+    {
+      "ticker": "0050.TW",
+      "head": "h20_forward_drawdown_gt5",
+      "status": "redundant_candidate",
+      "reasons": [
+        "regime_or_decay_failed",
+        "high_redundancy"
+      ],
+      "full_auc": 0.7083935328517372,
+      "recent_auc": 0.5260477869173521,
+      "regime_decay_failed": true,
+      "redundant": true
+    },
+    {
+      "ticker": "0050.TW",
+      "head": "h20_forward_gain_gt5",
+      "status": "watchlist",
+      "reasons": [
+        "regime_or_decay_failed"
+      ],
+      "full_auc": 0.6975530362554719,
+      "recent_auc": 0.5684121621621622,
+      "regime_decay_failed": true,
+      "redundant": false
+    },
+    {
+      "ticker": "0050.TW",
+      "head": "tail_reward_risk_score",
+      "status": "redundant_candidate",
+      "reasons": [
+        "high_redundancy"
+      ],
+      "full_auc": 0.6260803681670222,
+      "recent_auc": 0.5257601351351352,
+      "regime_decay_failed": false,
+      "redundant": true
+    }
+  ]
+}

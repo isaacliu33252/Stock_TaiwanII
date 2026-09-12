@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2608_15841_auxiliary_purged_walkforward",
+  "generated_at": "2026-09-12T08:06:42",
+  "source_paper": "2608.15841",
+  "policy": "research_only_no_weight_change",
+  "inputs": {
+    "panel_631l": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_panel_latest_20260909.csv",
+    "panel_632r": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_panel_latest_20260909.csv"
+  },
+  "window": {
+    "date_start": "2025-01-02",
+    "date_end": "2026-08-10",
+    "rows": 388
+  },
+  "split": {
+    "n_splits": 4,
+    "purge": 20,
+    "min_train_size": 120,
+    "quantile": 0.75,
+    "min_pass_fraction": 0.75
+  },
+  "summary": {
+    "purged_walk_forward_policy_impact_passed": true,
+    "best_score": "downside_score",
+    "by_score": {
+      "downside_score": {
+        "folds": 4,
+        "pass_count": 3,
+        "pass_fraction": 0.75,
+        "passed": true
+      },
+      "net_derisk_score": {
+        "folds": 4,
+        "pass_count": 2,
+        "pass_fraction": 0.5,
+        "passed": false
+      }
+    }
+  },
+  "folds": [
+    {
+      "score": "downside_score",
+      "test_start": "2025-08-04",
+      "test_end": "2025-11-03",
+      "test_rows": 62,
+      "high_score_rows": 16,
+      "threshold": 0.05554815078901817,
+      "high_mean_forward_gain_h20_631l": 0.0963320264823019,
+      "low_mean_forward_gain_h20_631l": 0.1315399354422347,
+      "high_mean_forward_mdd_h20_631l": -0.048143173312432355,
+      "low_mean_forward_mdd_h20_631l": -0.017641377249663755,
+      "high_mdd_gt5_rate_631l": 0.4375,
+      "low_mdd_gt5_rate_631l": 0.15217391304347827,
+      "pass": true,
+      "reason": "high_score_bucket_has_lower_gain_worse_mdd_and_higher_mdd_event"
+    },
+    {
+      "score": "net_derisk_score",
+      "test_start": "2025-08-04",
+      "test_end": "2025-11-03",
+      "test_rows": 62,
+      "high_score_rows": 14,
+      "threshold": 0.0,
+      "high_mean_forward_gain_h20_631l": 0.09402037841809505,
+      "low_mean_forward_gain_h20_631l": 0.1307471699209645,
+      "high_mean_forward_mdd_h20_631l": -0.05068702604000852,
+      "low_mean_forward_mdd_h20_631l": -0.018170328373402732,
+      "high_mdd_gt5_rate_631l": 0.42857142857142855,
+      "low_mdd_gt5_rate_631l": 0.16666666666666666,
+      "pass": true,
+      "reason": "high_score_bucket_has_lower_gain_worse_mdd_and_higher_mdd_event"
+    },
+    {
+      "score": "downside_score",
+      "test_start": "2025-11-04",
+      "test_end": "2026-01-30",
+      "test_rows": 62,
+      "high_score_rows": 16,
+      "threshold": 0.013839897900156412,
+      "high_mean_forward_gain_h20_631l": 0.14495795996439692,
+      "low_mean_forward_gain_h20_631l": 0.1652182911148452,
+      "high_mean_forward_mdd_h20_631l": -0.054529687360533693,
+      "low_mean_forward_mdd_h20_631l": -0.014363396019785557,
+      "high_mdd_gt5_rate_631l": 0.5,
+      "low_mdd_gt5_rate_631l": 0.21739130434782608,
+      "pass": true,
+      "reason": "high_score_bucket_has_lower_gain_worse_mdd_and_higher_mdd_event"
+    },
+    {
+      "score": "net_derisk_score",
+      "test_start": "2025-11-04",
+      "test_end": "2026-01-30",
+      "test_rows": 62,
+      "high_score_rows": 6,
+      "threshold": 0.0,
+      "high_mean_forward_gain_h20_631l": 0.19503956109854517,
+      "low_mean_forward_gain_h20_631l": 0.15623448900217785,
+      "high_mean_forward_mdd_h20_631l": -0.05081188702769168,
+      "low_mean_forward_mdd_h20_631l": -0.02193428379486651,
+      "high_mdd_gt5_rate_631l": 0.5,
+      "low_mdd_gt5_rate_631l": 0.26785714285714285,
+      "pass": false,
+      "reason": "mixed_or_wrong_separation"
+    },
+    {
+      "score": "downside_score",
+      "test_start": "2026-02-02",
+      "test_end": "2026-05-13",
+      "test_rows": 62,
+      "high_score_rows": 16,
+      "threshold": 0.09633346377750744,
+      "high_mean_forward_gain_h20_631l": 0.1332930601852242,
+      "low_mean_forward_gain_h20_631l": 0.27587559305786163,
+      "high_mean_forward_mdd_h20_631l": -0.10397005378001437,
+      "low_mean_forward_mdd_h20_631l": -0.0334054511447686,
+      "high_mdd_gt5_rate_631l": 0.8125,
+      "low_mdd_gt5_rate_631l": 0.32608695652173914,
+      "pass": true,
+      "reason": "high_score_bucket_has_lower_gain_worse_mdd_and_higher_mdd_event"
+    },
+    {
+      "score": "net_derisk_score",
+      "test_start": "2026-02-02",
+      "test_end": "2026-05-13",
+      "test_rows": 62,
+      "high_score_rows": 16,
+      "threshold": 0.08264810664625495,
+      "high_mean_forward_gain_h20_631l": 0.14628659370191,
+      "low_mean_forward_gain_h20_631l": 0.27135610313901437,
+      "high_mean_forward_mdd_h20_631l": -0.09766450041601238,
+      "low_mean_forward_mdd_h20_631l": -0.03559868709746495,
+      "high_mdd_gt5_rate_631l": 0.8125,
+      "low_mdd_gt5_rate_631l": 0.32608695652173914,
+      "pass": true,
+      "reason": "high_score_bucket_has_lower_gain_worse_mdd_and_higher_mdd_event"
+    },
+    {
+      "score": "downside_score",
+      "test_start": "2026-05-14",
+      "test_end": "2026-08-10",
+      "test_rows": 62,
+      "high_score_rows": 16,
+      "threshold": 0.053663735167403886,
+      "high_mean_forward_gain_h20_631l": 0.1344887753034698,
+      "low_mean_forward_gain_h20_631l": 0.104441131051174,
+      "high_mean_forward_mdd_h20_631l": -0.09602702170892707,
+      "low_mean_forward_mdd_h20_631l": -0.10739830916931654,
+      "high_mdd_gt5_rate_631l": 0.75,
+      "low_mdd_gt5_rate_631l": 0.6086956521739131,
+      "pass": false,
+      "reason": "mixed_or_wrong_separation"
+    },
+    {
+      "score": "net_derisk_score",
+      "test_start": "2026-05-14",
+      "test_end": "2026-08-10",
+      "test_rows": 62,
+      "high_score_rows": 16,
+      "threshold": 0.047941121691480126,
+      "high_mean_forward_gain_h20_631l": 0.1344887753034698,
+      "low_mean_forward_gain_h20_631l": 0.104441131051174,
+      "high_mean_forward_mdd_h20_631l": -0.09602702170892707,
+      "low_mean_forward_mdd_h20_631l": -0.10739830916931654,
+      "high_mdd_gt5_rate_631l": 0.75,
+      "low_mdd_gt5_rate_631l": 0.6086956521739131,
+      "pass": false,
+      "reason": "mixed_or_wrong_separation"
+    }
+  ],
+  "decision": {
+    "promotion_allowed": false,
+    "decision": "shadow_only",
+    "reason": "Purged walk-forward score separation is diagnostic only and does not retrain QUESTrader or change weights."
+  }
+}

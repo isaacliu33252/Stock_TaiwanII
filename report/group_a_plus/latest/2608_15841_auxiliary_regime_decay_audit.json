@@ -1,0 +1,529 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2608_15841_auxiliary_regime_decay_audit",
+  "generated_at": "2026-09-12T08:06:43",
+  "source_paper": {
+    "id": "2608.15841",
+    "transferable_use": "auxiliary_task_temporal_regime_stability_gate"
+  },
+  "policy": "research_only_no_weight_change",
+  "changes_latest_strategy": false,
+  "changes_golden1_0531": false,
+  "changes_golden2_0830": false,
+  "thresholds": {
+    "min_slice_rows": 40,
+    "min_recent_auc": 0.52,
+    "max_auc_decay": 0.15
+  },
+  "summary": {
+    "temporal_regime_stability_passed": false,
+    "promotion_allowed": false,
+    "decision": "temporal_regime_stability_not_cleared",
+    "blockers": [
+      "unstable_auxiliary_task_slices"
+    ],
+    "failed_tasks": [
+      {
+        "ticker": "00631L.TW",
+        "task": "h20_forward_gain_gt5",
+        "blockers": [
+          "weak_regime_or_temporal_slices"
+        ]
+      },
+      {
+        "ticker": "00632R.TW",
+        "task": "h20_forward_drawdown_gt5",
+        "blockers": [
+          "weak_regime_or_temporal_slices"
+        ]
+      },
+      {
+        "ticker": "00632R.TW",
+        "task": "h20_forward_gain_gt5",
+        "blockers": [
+          "recent_auc_below_floor",
+          "weak_regime_or_temporal_slices"
+        ]
+      },
+      {
+        "ticker": "0050.TW",
+        "task": "h20_forward_drawdown_gt5",
+        "blockers": [
+          "second_half_auc_decay_too_large",
+          "weak_regime_or_temporal_slices"
+        ]
+      },
+      {
+        "ticker": "0050.TW",
+        "task": "h20_forward_gain_gt5",
+        "blockers": [
+          "second_half_auc_decay_too_large"
+        ]
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "ticker": "00631L.TW",
+      "task": "h20_forward_drawdown_gt5",
+      "slices": {
+        "first_half": {
+          "available": true,
+          "rows": 204,
+          "positives": 80,
+          "auc": 0.6528225806451613,
+          "brier": 0.22311101042569662
+        },
+        "second_half": {
+          "available": true,
+          "rows": 184,
+          "positives": 84,
+          "auc": 0.6548809523809525,
+          "brier": 0.23381089150701148
+        },
+        "recent_126": {
+          "available": true,
+          "rows": 106,
+          "positives": 56,
+          "auc": 0.5689285714285715,
+          "brier": 0.2552573620699718
+        },
+        "direction_down": {
+          "available": true,
+          "rows": 186,
+          "positives": 88,
+          "auc": 0.6537569573283859,
+          "brier": 0.24316385840628632
+        },
+        "direction_up": {
+          "available": true,
+          "rows": 202,
+          "positives": 76,
+          "auc": 0.695906432748538,
+          "brier": 0.21439293317110378
+        },
+        "confidence_high": {
+          "available": true,
+          "rows": 191,
+          "positives": 77,
+          "auc": 0.7253360674413306,
+          "brier": 0.21094641114867999
+        },
+        "confidence_low": {
+          "available": true,
+          "rows": 197,
+          "positives": 87,
+          "auc": 0.5910135841170324,
+          "brier": 0.24489891185144333
+        },
+        "tail_score_high": {
+          "available": true,
+          "rows": 194,
+          "positives": 66,
+          "auc": 0.6837121212121211,
+          "brier": 0.20822696354357845
+        },
+        "tail_score_low": {
+          "available": true,
+          "rows": 194,
+          "positives": 98,
+          "auc": 0.611500850340136,
+          "brier": 0.24814339812720615
+        }
+      },
+      "auc_decay_first_to_second_half": -0.0020583717357911535,
+      "weak_slices": [],
+      "passed": true,
+      "blockers": []
+    },
+    {
+      "ticker": "00631L.TW",
+      "task": "h20_forward_gain_gt5",
+      "slices": {
+        "first_half": {
+          "available": true,
+          "rows": 204,
+          "positives": 143,
+          "auc": 0.5357101914478964,
+          "brier": 0.22719067697114823
+        },
+        "second_half": {
+          "available": true,
+          "rows": 184,
+          "positives": 152,
+          "auc": 0.6609786184210527,
+          "brier": 0.17336261877105374
+        },
+        "recent_126": {
+          "available": true,
+          "rows": 106,
+          "positives": 87,
+          "auc": 0.5638233514821537,
+          "brier": 0.18611843799778455
+        },
+        "direction_down": {
+          "available": true,
+          "rows": 186,
+          "positives": 139,
+          "auc": 0.5415582427674881,
+          "brier": 0.23144094536184934
+        },
+        "direction_up": {
+          "available": true,
+          "rows": 202,
+          "positives": 156,
+          "auc": 0.6868729096989966,
+          "brier": 0.1742455649439809
+        },
+        "confidence_high": {
+          "available": true,
+          "rows": 191,
+          "positives": 153,
+          "auc": 0.5749914000687995,
+          "brier": 0.18927190436901956
+        },
+        "confidence_low": {
+          "available": true,
+          "rows": 197,
+          "positives": 142,
+          "auc": 0.6359795134443023,
+          "brier": 0.2136786102614487
+        },
+        "tail_score_high": {
+          "available": true,
+          "rows": 194,
+          "positives": 160,
+          "auc": 0.7159926470588235,
+          "brier": 0.15146784749977008
+        },
+        "tail_score_low": {
+          "available": true,
+          "rows": 194,
+          "positives": 135,
+          "auc": 0.45900816070307593,
+          "brier": 0.2518600904176945
+        }
+      },
+      "auc_decay_first_to_second_half": -0.1252684269731562,
+      "weak_slices": [
+        "tail_score_low"
+      ],
+      "passed": false,
+      "blockers": [
+        "weak_regime_or_temporal_slices"
+      ]
+    },
+    {
+      "ticker": "00632R.TW",
+      "task": "h20_forward_drawdown_gt5",
+      "slices": {
+        "first_half": {
+          "available": true,
+          "rows": 204,
+          "positives": 98,
+          "auc": 0.5007701193685021,
+          "brier": 0.28677351187531985
+        },
+        "second_half": {
+          "available": true,
+          "rows": 184,
+          "positives": 140,
+          "auc": 0.5418831168831169,
+          "brier": 0.3834444087259956
+        },
+        "recent_126": {
+          "available": true,
+          "rows": 106,
+          "positives": 82,
+          "auc": 0.5360772357723578,
+          "brier": 0.421273676905822
+        },
+        "direction_down": {
+          "available": true,
+          "rows": 297,
+          "positives": 186,
+          "auc": 0.6272401433691757,
+          "brier": 0.31497057992193384
+        },
+        "direction_up": {
+          "available": true,
+          "rows": 91,
+          "positives": 52,
+          "auc": 0.3732741617357002,
+          "brier": 0.3902121471575171
+        },
+        "confidence_high": {
+          "available": true,
+          "rows": 187,
+          "positives": 139,
+          "auc": 0.5839328537170263,
+          "brier": 0.3365236512681572
+        },
+        "confidence_low": {
+          "available": true,
+          "rows": 201,
+          "positives": 99,
+          "auc": 0.4070112893642306,
+          "brier": 0.32898330766668177
+        },
+        "tail_score_high": {
+          "available": true,
+          "rows": 194,
+          "positives": 114,
+          "auc": 0.45120614035087714,
+          "brier": 0.3865858339831605
+        },
+        "tail_score_low": {
+          "available": true,
+          "rows": 194,
+          "positives": 124,
+          "auc": 0.6923963133640554,
+          "brier": 0.27864905069801704
+        }
+      },
+      "auc_decay_first_to_second_half": -0.041112997514614724,
+      "weak_slices": [
+        "first_half",
+        "direction_up",
+        "confidence_low",
+        "tail_score_high"
+      ],
+      "passed": false,
+      "blockers": [
+        "weak_regime_or_temporal_slices"
+      ]
+    },
+    {
+      "ticker": "00632R.TW",
+      "task": "h20_forward_gain_gt5",
+      "slices": {
+        "first_half": {
+          "available": true,
+          "rows": 204,
+          "positives": 46,
+          "auc": 0.726609796367639,
+          "brier": 0.18301591227663877
+        },
+        "second_half": {
+          "available": true,
+          "rows": 184,
+          "positives": 44,
+          "auc": 0.6108766233766234,
+          "brier": 0.2028746251471805
+        },
+        "recent_126": {
+          "available": true,
+          "rows": 106,
+          "positives": 37,
+          "auc": 0.5072463768115942,
+          "brier": 0.26094031903002757
+        },
+        "direction_down": {
+          "available": true,
+          "rows": 297,
+          "positives": 77,
+          "auc": 0.6778630460448642,
+          "brier": 0.2062174785284741
+        },
+        "direction_up": {
+          "available": true,
+          "rows": 91,
+          "positives": 13,
+          "auc": 0.7130177514792899,
+          "brier": 0.14744600009405173
+        },
+        "confidence_high": {
+          "available": true,
+          "rows": 187,
+          "positives": 26,
+          "auc": 0.6846631629240325,
+          "brier": 0.11577281006838684
+        },
+        "confidence_low": {
+          "available": true,
+          "rows": 201,
+          "positives": 64,
+          "auc": 0.594434306569343,
+          "brier": 0.2637545355658069
+        },
+        "tail_score_high": {
+          "available": true,
+          "rows": 194,
+          "positives": 54,
+          "auc": 0.6187830687830689,
+          "brier": 0.22828732062844442
+        },
+        "tail_score_low": {
+          "available": true,
+          "rows": 194,
+          "positives": 36,
+          "auc": 0.6686005625879043,
+          "brier": 0.15657957180204793
+        }
+      },
+      "auc_decay_first_to_second_half": 0.1157331729910156,
+      "weak_slices": [
+        "recent_126"
+      ],
+      "passed": false,
+      "blockers": [
+        "recent_auc_below_floor",
+        "weak_regime_or_temporal_slices"
+      ]
+    },
+    {
+      "ticker": "0050.TW",
+      "task": "h20_forward_drawdown_gt5",
+      "slices": {
+        "first_half": {
+          "available": true,
+          "rows": 203,
+          "positives": 53,
+          "auc": 0.8311949685534591,
+          "brier": 0.2074612064309521
+        },
+        "second_half": {
+          "available": true,
+          "rows": 184,
+          "positives": 49,
+          "auc": 0.6660619803476946,
+          "brier": 0.20779065232443894
+        },
+        "recent_126": {
+          "available": true,
+          "rows": 106,
+          "positives": 37,
+          "auc": 0.5260477869173521,
+          "brier": 0.263156515953975
+        },
+        "direction_down": {
+          "available": true,
+          "rows": 56,
+          "positives": 24,
+          "auc": 0.40104166666666663,
+          "brier": 0.3509271766573975
+        },
+        "direction_up": {
+          "available": true,
+          "rows": 331,
+          "positives": 78,
+          "auc": 0.7430830039525692,
+          "brier": 0.18337215420050082
+        },
+        "confidence_high": {
+          "available": true,
+          "rows": 204,
+          "positives": 27,
+          "auc": 0.7748482946223059,
+          "brier": 0.11793316450095438
+        },
+        "confidence_low": {
+          "available": true,
+          "rows": 183,
+          "positives": 75,
+          "auc": 0.5599999999999999,
+          "brier": 0.30759420423489253
+        },
+        "tail_score_high": {
+          "available": true,
+          "rows": 194,
+          "positives": 21,
+          "auc": 0.8092485549132948,
+          "brier": 0.09385933120071206
+        },
+        "tail_score_low": {
+          "available": true,
+          "rows": 193,
+          "positives": 81,
+          "auc": 0.4365079365079365,
+          "brier": 0.32196577554529476
+        }
+      },
+      "auc_decay_first_to_second_half": 0.1651329882057645,
+      "weak_slices": [
+        "direction_down",
+        "tail_score_low"
+      ],
+      "passed": false,
+      "blockers": [
+        "second_half_auc_decay_too_large",
+        "weak_regime_or_temporal_slices"
+      ]
+    },
+    {
+      "ticker": "0050.TW",
+      "task": "h20_forward_gain_gt5",
+      "slices": {
+        "first_half": {
+          "available": true,
+          "rows": 203,
+          "positives": 105,
+          "auc": 0.8035957240038872,
+          "brier": 0.20474963937446833
+        },
+        "second_half": {
+          "available": true,
+          "rows": 184,
+          "positives": 131,
+          "auc": 0.5797205818810313,
+          "brier": 0.3226369278011241
+        },
+        "recent_126": {
+          "available": true,
+          "rows": 106,
+          "positives": 74,
+          "auc": 0.5684121621621622,
+          "brier": 0.33861253800422075
+        },
+        "direction_down": {
+          "available": true,
+          "rows": 56,
+          "positives": 30,
+          "auc": 0.6358974358974359,
+          "brier": 0.2869549285690743
+        },
+        "direction_up": {
+          "available": true,
+          "rows": 331,
+          "positives": 206,
+          "auc": 0.7053592233009709,
+          "brier": 0.2563743066723738
+        },
+        "confidence_high": {
+          "available": true,
+          "rows": 204,
+          "positives": 144,
+          "auc": 0.6505787037037037,
+          "brier": 0.2667184523363846
+        },
+        "confidence_low": {
+          "available": true,
+          "rows": 183,
+          "positives": 92,
+          "auc": 0.6777353081700909,
+          "brier": 0.25420113241421555
+        },
+        "tail_score_high": {
+          "available": true,
+          "rows": 194,
+          "positives": 141,
+          "auc": 0.688478522681654,
+          "brier": 0.25159791982813307
+        },
+        "tail_score_low": {
+          "available": true,
+          "rows": 193,
+          "positives": 95,
+          "auc": 0.6184747583243825,
+          "brier": 0.2700485754495651
+        }
+      },
+      "auc_decay_first_to_second_half": 0.22387514212285597,
+      "weak_slices": [],
+      "passed": false,
+      "blockers": [
+        "second_half_auc_decay_too_large"
+      ]
+    }
+  ]
+}

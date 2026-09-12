@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2608_15841_candidate_auxiliary_bank_blueprint",
+  "generated_at": "2026-09-12T08:07:20",
+  "source_paper": {
+    "id": "2608.15841",
+    "transferable_use": "small_controlled_gvf_auxiliary_bank_research_spec"
+  },
+  "policy": "research_only_no_weight_change",
+  "changes_latest_strategy": false,
+  "changes_golden1_0531": false,
+  "changes_golden2_0830": false,
+  "training_allowed": false,
+  "promotion_allowed": false,
+  "decision": {
+    "decision": "blocked_until_readiness_gates_pass",
+    "blockers": [
+      "live_feature_freshness_ok",
+      "quest_trader_retrained_for_group_a_plus",
+      "downstream_policy_lift_validated",
+      "multi_window_cost_turnover_passed",
+      "temporal_regime_stability_passed",
+      "auxiliary_head_lifecycle_passed",
+      "delayed_credit_alignment_passed"
+    ],
+    "reason": "A learned auxiliary bank must not be trained or promoted while live freshness, policy-lift, churn/cost, or regime-stability gates fail."
+  },
+  "candidate_grid": [
+    {
+      "bank_id": "gvf_bank_16_k10",
+      "gvf_question_count": 16,
+      "meta_unroll_length": 10,
+      "role": "minimum_viable_candidate"
+    },
+    {
+      "bank_id": "gvf_bank_32_k10",
+      "gvf_question_count": 32,
+      "meta_unroll_length": 10,
+      "role": "balanced_default_candidate"
+    },
+    {
+      "bank_id": "gvf_bank_32_k20",
+      "gvf_question_count": 32,
+      "meta_unroll_length": 20,
+      "role": "delayed_credit_candidate"
+    },
+    {
+      "bank_id": "gvf_bank_64_k20",
+      "gvf_question_count": 64,
+      "meta_unroll_length": 20,
+      "role": "upper_complexity_candidate"
+    }
+  ],
+  "admission_tests": [
+    "point_in_time_feature_build_no_forward_label_leakage",
+    "purged_walk_forward_policy_impact_passed",
+    "full_window_delta_final_value_nonnegative_after_costs",
+    "delta_sharpe_ratio_nonnegative",
+    "delta_max_drawdown_nonnegative",
+    "turnover_to_initial_below_cap",
+    "temporal_regime_stability_passed",
+    "live_feature_freshness_ok",
+    "seed_sensitivity_small_enough"
+  ],
+  "hard_rejections": [
+    "standalone_auc_only_without_portfolio_lift",
+    "high_turnover_score_churn",
+    "recent_or_regime_slice_auc_below_floor",
+    "unbounded_auxiliary_question_count",
+    "zero_slippage_or_negligible_impact_assumption_for_live_decisions"
+  ],
+  "implementation_notes": [
+    "Reuse existing NCF panel schema for fixed-head comparisons before adding learned GVF tasks.",
+    "Start with 16 and 32 questions; 64 is an upper research bound, not a default.",
+    "Do not test 128-question banks unless smaller banks pass policy impact after costs.",
+    "Keep all outputs under report/group_a_plus/latest until promotion gates pass."
+  ]
+}

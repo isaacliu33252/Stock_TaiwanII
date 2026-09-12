@@ -1,0 +1,148 @@
+{
+  "window": {
+    "start": "2025-01-02",
+    "end": "2026-09-09",
+    "golden1_days": 336
+  },
+  "baseline_metrics": {
+    "initial_value": 1000000.0,
+    "final_value": 2151789.1975260573,
+    "total_return": 1.1517891975260572,
+    "annual_return": 0.576342435980066,
+    "volatility": 0.2417996451446418,
+    "downside_deviation": 0.23157912150305296,
+    "sharpe_ratio": 2.078541975744715,
+    "sortino_ratio": 2.170276443278973,
+    "max_drawdown": -0.16414651001697744,
+    "max_drawdown_duration": 114,
+    "recovery_duration": null,
+    "value_at_risk_5pct": -0.022187657715710362,
+    "expected_tail_loss_5pct": -0.03437074174115921,
+    "starr_ratio_5pct": 0.058026317934293,
+    "var_breach_count_5pct": 21,
+    "var_breach_ratio_5pct": 0.05134474327628362,
+    "kupiec_lr_5pct": 0.015440223039007606,
+    "kupiec_pvalue_5pct": 0.9011104511683001,
+    "volatility_weighted_var_5pct": -0.018473110897782283,
+    "volatility_weighted_etl_5pct": -0.027890448199453483,
+    "worst_daily_return": -0.07432359391612187,
+    "worst_5d_return": -0.09485235510878365,
+    "worst_10d_return": -0.11474673073997188,
+    "worst_20d_return": -0.14348846419772399,
+    "negative_semivariance": 0.05362888951612576,
+    "expected_shortfall_loss_95": 0.03437074174115921,
+    "starr_95": 0.058026317934293,
+    "expected_tail_gain_95pct": 0.03836754928443272,
+    "rachev_95_95": 1.1162851699091296
+  },
+  "results": {
+    "downside_only": {
+      "metrics": {
+        "initial_value": 1000000.0,
+        "final_value": 2008009.8486731779,
+        "total_return": 1.0080098486731779,
+        "annual_return": 0.5129109632000788,
+        "volatility": 0.2023786975189063,
+        "downside_deviation": 0.19049510636634356,
+        "sharpe_ratio": 2.2292197100728686,
+        "sortino_ratio": 2.368284361806205,
+        "max_drawdown": -0.12504729872174258,
+        "max_drawdown_duration": 114,
+        "recovery_duration": 59,
+        "value_at_risk_5pct": -0.016989764773604567,
+        "expected_tail_loss_5pct": -0.02769894906845058,
+        "starr_ratio_5pct": 0.0646329291234996,
+        "var_breach_count_5pct": 21,
+        "var_breach_ratio_5pct": 0.05134474327628362,
+        "kupiec_lr_5pct": 0.015440223039007606,
+        "kupiec_pvalue_5pct": 0.9011104511683001,
+        "volatility_weighted_var_5pct": -0.015989500460389106,
+        "volatility_weighted_etl_5pct": -0.024090868426696437,
+        "worst_daily_return": -0.054264650007344706,
+        "worst_5d_return": -0.07527692614956705,
+        "worst_10d_return": -0.0879033643578252,
+        "worst_20d_return": -0.109278030236721,
+        "negative_semivariance": 0.03628838554952454,
+        "expected_shortfall_loss_95": 0.02769894906845058,
+        "starr_95": 0.0646329291234996,
+        "expected_tail_gain_95pct": 0.03173116537236657,
+        "rachev_95_95": 1.1455728985945077
+      },
+      "delta_vs_baseline": {
+        "final_value": -143779.34885287937,
+        "sharpe_ratio": 0.15067773432815335,
+        "max_drawdown": 0.03909921129523486
+      },
+      "mean_score_on_golden1_days": 0.03162671171525544,
+      "days_score_gt_0": 250,
+      "simulation": {
+        "transaction_cost": 12271.540053610344,
+        "turnover_value": 5147168.743137188,
+        "rebalance_count": 246
+      },
+      "score_behavior": {
+        "golden1_days_score_gt_0": 217,
+        "golden1_score_change_days": 242,
+        "golden1_mean_abs_score_change": 0.019087383451441273,
+        "golden1_max_abs_score_change": 0.14255441724757678,
+        "missed_upside_proxy_days": 201,
+        "mean_forward_gain_h20_when_active": 0.12787558197916582,
+        "mean_forward_gain_h20_when_inactive": 0.16892373458457224
+      }
+    },
+    "net_derisk": {
+      "metrics": {
+        "initial_value": 1000000.0,
+        "final_value": 2016228.0172579382,
+        "total_return": 1.016228017257938,
+        "annual_return": 0.51658528611725,
+        "volatility": 0.20262806337686323,
+        "downside_deviation": 0.1906323963712859,
+        "sharpe_ratio": 2.239166385720578,
+        "sortino_ratio": 2.3800673807480535,
+        "max_drawdown": -0.12568984474435707,
+        "max_drawdown_duration": 114,
+        "recovery_duration": 59,
+        "value_at_risk_5pct": -0.016993700420611612,
+        "expected_tail_loss_5pct": -0.02764673947265769,
+        "starr_ratio_5pct": 0.06512406465356056,
+        "var_breach_count_5pct": 21,
+        "var_breach_ratio_5pct": 0.05134474327628362,
+        "kupiec_lr_5pct": 0.015440223039007606,
+        "kupiec_pvalue_5pct": 0.9011104511683001,
+        "volatility_weighted_var_5pct": -0.015976618551731266,
+        "volatility_weighted_etl_5pct": -0.02398717050496876,
+        "worst_daily_return": -0.053697315421781244,
+        "worst_5d_return": -0.07617874155851556,
+        "worst_10d_return": -0.08752598538857248,
+        "worst_20d_return": -0.10899917355513089,
+        "negative_semivariance": 0.03634071054625906,
+        "expected_shortfall_loss_95": 0.02764673947265769,
+        "starr_95": 0.06512406465356056,
+        "expected_tail_gain_95pct": 0.03162133944566756,
+        "rachev_95_95": 1.143763787297258
+      },
+      "delta_vs_baseline": {
+        "final_value": -135561.1802681191,
+        "sharpe_ratio": 0.16062440997586291,
+        "max_drawdown": 0.03845666527262037
+      },
+      "mean_score_on_golden1_days": 0.01780243817373545,
+      "days_score_gt_0": 104,
+      "simulation": {
+        "transaction_cost": 10739.774791952295,
+        "turnover_value": 4516937.692409008,
+        "rebalance_count": 122
+      },
+      "score_behavior": {
+        "golden1_days_score_gt_0": 95,
+        "golden1_score_change_days": 116,
+        "golden1_mean_abs_score_change": 0.012801653805961278,
+        "golden1_max_abs_score_change": 0.14557043408802053,
+        "missed_upside_proxy_days": 85,
+        "mean_forward_gain_h20_when_active": 0.13723385355491188,
+        "mean_forward_gain_h20_when_inactive": 0.141997202997561
+      }
+    }
+  }
+}

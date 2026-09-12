@@ -1,0 +1,603 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2608_15841_auxiliary_task_discovery_readiness",
+  "generated_at": "2026-09-12T08:07:33",
+  "source_paper": {
+    "id": "2608.15841",
+    "title": "Self-Supervised Auxiliary Task Discovery for Stable Reinforcement Learning in Stock Trading",
+    "transferable_use": "auxiliary_task_discovery_readiness_gate_only"
+  },
+  "policy": "research_only_no_weight_change",
+  "changes_latest_strategy": false,
+  "changes_golden1_0531": false,
+  "changes_golden2_0830": false,
+  "decision": {
+    "promotion_allowed": false,
+    "decision": "shadow_readiness_only",
+    "reason": "Existing NCF auxiliary heads can be audited, but QUESTrader-style task discovery has not been trained or validated on GroupA+ ETF policy impact.",
+    "blockers": [
+      "live_feature_freshness_ok",
+      "quest_trader_retrained_for_group_a_plus",
+      "downstream_policy_lift_validated",
+      "multi_window_cost_turnover_passed",
+      "temporal_regime_stability_passed",
+      "auxiliary_head_lifecycle_passed",
+      "delayed_credit_alignment_passed"
+    ]
+  },
+  "thresholds": {
+    "min_resolved_rows": 250,
+    "min_positive_rows": 20,
+    "min_auc": 0.55
+  },
+  "checks": {
+    "existing_aux_heads_available": true,
+    "aux_head_standalone_quality_passed": true,
+    "live_feature_freshness_ok": false,
+    "quest_trader_retrained_for_group_a_plus": false,
+    "downstream_policy_lift_validated": false,
+    "purged_walk_forward_policy_impact_passed": true,
+    "multi_window_cost_turnover_passed": false,
+    "temporal_regime_stability_passed": false,
+    "auxiliary_head_lifecycle_passed": false,
+    "delayed_credit_alignment_passed": false,
+    "candidate_auxiliary_bank_blueprint_available": true
+  },
+  "panels": [
+    {
+      "ticker": "00631L.TW",
+      "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_panel_latest_20260909.csv",
+      "available": true,
+      "rows": 408,
+      "date_start": "2025-01-02",
+      "date_end": "2026-09-07",
+      "auxiliary_tasks": {
+        "h20_forward_drawdown_gt5": {
+          "available": true,
+          "resolved_rows": 388,
+          "positive_rows": 164,
+          "positive_rate": 0.422680412371134,
+          "auc": 0.658155487804878,
+          "brier": 0.22818518083539233
+        },
+        "h20_forward_gain_gt5": {
+          "available": true,
+          "resolved_rows": 388,
+          "positive_rows": 295,
+          "positive_rate": 0.7603092783505154,
+          "auc": 0.6033898305084746,
+          "brier": 0.2016639689587323
+        }
+      },
+      "tail_reward_risk_score_available": true
+    },
+    {
+      "ticker": "00632R.TW",
+      "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_panel_latest_20260909.csv",
+      "available": true,
+      "rows": 408,
+      "date_start": "2025-01-02",
+      "date_end": "2026-09-07",
+      "auxiliary_tasks": {
+        "h20_forward_drawdown_gt5": {
+          "available": true,
+          "resolved_rows": 388,
+          "positive_rows": 238,
+          "positive_rate": 0.6134020618556701,
+          "auc": 0.5761344537815126,
+          "brier": 0.3326174423405888
+        },
+        "h20_forward_gain_gt5": {
+          "available": true,
+          "resolved_rows": 388,
+          "positive_rows": 90,
+          "positive_rate": 0.23195876288659795,
+          "auc": 0.6670395227442207,
+          "brier": 0.19243344621524616
+        }
+      },
+      "tail_reward_risk_score_available": true
+    },
+    {
+      "ticker": "0050.TW",
+      "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_panel_latest_20260909.csv",
+      "available": true,
+      "rows": 407,
+      "date_start": "2025-01-02",
+      "date_end": "2026-09-07",
+      "auxiliary_tasks": {
+        "h20_forward_drawdown_gt5": {
+          "available": true,
+          "resolved_rows": 387,
+          "positive_rows": 102,
+          "positive_rate": 0.26356589147286824,
+          "auc": 0.7083935328517372,
+          "brier": 0.20761784220459956
+        },
+        "h20_forward_gain_gt5": {
+          "available": true,
+          "resolved_rows": 387,
+          "positive_rows": 236,
+          "positive_rate": 0.6098191214470284,
+          "auc": 0.6975530362554719,
+          "brier": 0.26079940958249065
+        }
+      },
+      "tail_reward_risk_score_available": true
+    }
+  ],
+  "signals": [
+    {
+      "ticker": "00631L.TW",
+      "signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260909.json",
+      "available": true,
+      "last_close_date": "2026-09-07",
+      "freshness_status": "degraded_stale",
+      "stale_sources": [
+        "external_market_ohlcv"
+      ],
+      "missing_sources": []
+    },
+    {
+      "ticker": "00632R.TW",
+      "signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260909.json",
+      "available": true,
+      "last_close_date": "2026-09-07",
+      "freshness_status": "degraded_stale",
+      "stale_sources": [
+        "external_market_ohlcv"
+      ],
+      "missing_sources": []
+    },
+    {
+      "ticker": "0050.TW",
+      "signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_latest_20260909.json",
+      "available": true,
+      "last_close_date": "2026-09-07",
+      "freshness_status": "degraded_stale",
+      "stale_sources": [
+        "external_market_ohlcv"
+      ],
+      "missing_sources": []
+    }
+  ],
+  "weak_tasks": [],
+  "stale_or_missing_signals": [
+    {
+      "ticker": "00631L.TW",
+      "signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260909.json",
+      "available": true,
+      "last_close_date": "2026-09-07",
+      "freshness_status": "degraded_stale",
+      "stale_sources": [
+        "external_market_ohlcv"
+      ],
+      "missing_sources": []
+    },
+    {
+      "ticker": "00632R.TW",
+      "signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260909.json",
+      "available": true,
+      "last_close_date": "2026-09-07",
+      "freshness_status": "degraded_stale",
+      "stale_sources": [
+        "external_market_ohlcv"
+      ],
+      "missing_sources": []
+    },
+    {
+      "ticker": "0050.TW",
+      "signal": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_latest_20260909.json",
+      "available": true,
+      "last_close_date": "2026-09-07",
+      "freshness_status": "degraded_stale",
+      "stale_sources": [
+        "external_market_ohlcv"
+      ],
+      "missing_sources": []
+    }
+  ],
+  "policy_lift_shadow": {
+    "available": true,
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/2608_15841_existing_aux_heads_policy_lift_shadow.json",
+    "window": {
+      "start": "2025-01-02",
+      "end": "2026-09-09",
+      "golden1_days": 336
+    },
+    "best_variant": "net_derisk",
+    "variants": {
+      "downside_only": {
+        "delta_final_value": -143779.34885287937,
+        "delta_sharpe_ratio": 0.15067773432815335,
+        "delta_max_drawdown": 0.03909921129523486,
+        "mean_score_on_golden1_days": 0.03162671171525544,
+        "days_score_gt_0": 250,
+        "joint_pass": false
+      },
+      "net_derisk": {
+        "delta_final_value": -135561.1802681191,
+        "delta_sharpe_ratio": 0.16062440997586291,
+        "delta_max_drawdown": 0.03845666527262037,
+        "mean_score_on_golden1_days": 0.01780243817373545,
+        "days_score_gt_0": 104,
+        "joint_pass": false
+      }
+    },
+    "validated": false,
+    "validation_rule": "requires_delta_final_value_delta_sharpe_and_delta_max_drawdown_all_nonnegative"
+  },
+  "purged_walk_forward_shadow": {
+    "available": true,
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/2608_15841_auxiliary_purged_walkforward.json",
+    "passed": true,
+    "best_score": "downside_score",
+    "by_score": {
+      "downside_score": {
+        "folds": 4,
+        "pass_count": 3,
+        "pass_fraction": 0.75,
+        "passed": true
+      },
+      "net_derisk_score": {
+        "folds": 4,
+        "pass_count": 2,
+        "pass_fraction": 0.5,
+        "passed": false
+      }
+    },
+    "window": {
+      "date_start": "2025-01-02",
+      "date_end": "2026-08-10",
+      "rows": 388
+    }
+  },
+  "churn_cost_shadow": {
+    "available": true,
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/2608_15841_auxiliary_churn_shadow.json",
+    "passed": false,
+    "decision": "churn_cost_not_cleared",
+    "blockers": [
+      "negative_delta_final_value_after_costs",
+      "turnover_above_limit"
+    ],
+    "variants": [
+      {
+        "variant": "downside_only",
+        "delta_final_value": -143779.34885287937,
+        "delta_sharpe_ratio": 0.15067773432815335,
+        "delta_max_drawdown": 0.03909921129523486,
+        "transaction_cost": 12271.540053610344,
+        "turnover_value": 5147168.743137188,
+        "turnover_to_initial": 5.147168743137188,
+        "rebalance_count": 246,
+        "days_score_gt_0": 250,
+        "golden1_days_score_gt_0": 217,
+        "golden1_score_change_days": 242,
+        "golden1_mean_abs_score_change": 0.019087383451441273,
+        "missed_upside_proxy_days": 201,
+        "mean_forward_gain_h20_when_active": 0.12787558197916582,
+        "mean_forward_gain_h20_when_inactive": 0.16892373458457224,
+        "cost_turnover_pass": false
+      },
+      {
+        "variant": "net_derisk",
+        "delta_final_value": -135561.1802681191,
+        "delta_sharpe_ratio": 0.16062440997586291,
+        "delta_max_drawdown": 0.03845666527262037,
+        "transaction_cost": 10739.774791952295,
+        "turnover_value": 4516937.692409008,
+        "turnover_to_initial": 4.516937692409008,
+        "rebalance_count": 122,
+        "days_score_gt_0": 104,
+        "golden1_days_score_gt_0": 95,
+        "golden1_score_change_days": 116,
+        "golden1_mean_abs_score_change": 0.012801653805961278,
+        "missed_upside_proxy_days": 85,
+        "mean_forward_gain_h20_when_active": 0.13723385355491188,
+        "mean_forward_gain_h20_when_inactive": 0.141997202997561,
+        "cost_turnover_pass": false
+      }
+    ],
+    "window": {
+      "start": "2025-01-02",
+      "end": "2026-09-09",
+      "golden1_days": 336
+    }
+  },
+  "regime_decay_audit": {
+    "available": true,
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/2608_15841_auxiliary_regime_decay_audit.json",
+    "passed": false,
+    "decision": "temporal_regime_stability_not_cleared",
+    "blockers": [
+      "unstable_auxiliary_task_slices"
+    ],
+    "failed_tasks": [
+      {
+        "ticker": "00631L.TW",
+        "task": "h20_forward_gain_gt5",
+        "blockers": [
+          "weak_regime_or_temporal_slices"
+        ]
+      },
+      {
+        "ticker": "00632R.TW",
+        "task": "h20_forward_drawdown_gt5",
+        "blockers": [
+          "weak_regime_or_temporal_slices"
+        ]
+      },
+      {
+        "ticker": "00632R.TW",
+        "task": "h20_forward_gain_gt5",
+        "blockers": [
+          "recent_auc_below_floor",
+          "weak_regime_or_temporal_slices"
+        ]
+      },
+      {
+        "ticker": "0050.TW",
+        "task": "h20_forward_drawdown_gt5",
+        "blockers": [
+          "second_half_auc_decay_too_large",
+          "weak_regime_or_temporal_slices"
+        ]
+      },
+      {
+        "ticker": "0050.TW",
+        "task": "h20_forward_gain_gt5",
+        "blockers": [
+          "second_half_auc_decay_too_large"
+        ]
+      }
+    ]
+  },
+  "auxiliary_head_lifecycle_audit": {
+    "available": true,
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/2608_15841_auxiliary_lifecycle_audit.json",
+    "passed": false,
+    "decision": "head_lifecycle_review_required",
+    "blockers": [
+      "head_lifecycle_review_required"
+    ],
+    "status_counts": {
+      "redundant_candidate": 4,
+      "watchlist": 4,
+      "retire_candidate": 1
+    },
+    "redundancy_pairs": [
+      {
+        "ticker": "00631L.TW",
+        "left": "h20_forward_drawdown_gt5",
+        "right": "tail_reward_risk_score",
+        "correlation": -0.9120911184729007
+      },
+      {
+        "ticker": "0050.TW",
+        "left": "h20_forward_drawdown_gt5",
+        "right": "tail_reward_risk_score",
+        "correlation": -0.8658357349705826
+      }
+    ],
+    "heads": [
+      {
+        "ticker": "00631L.TW",
+        "head": "h20_forward_drawdown_gt5",
+        "status": "redundant_candidate",
+        "reasons": [
+          "high_redundancy"
+        ],
+        "full_auc": 0.658155487804878,
+        "recent_auc": 0.5689285714285715,
+        "regime_decay_failed": false,
+        "redundant": true
+      },
+      {
+        "ticker": "00631L.TW",
+        "head": "h20_forward_gain_gt5",
+        "status": "watchlist",
+        "reasons": [
+          "regime_or_decay_failed"
+        ],
+        "full_auc": 0.6033898305084746,
+        "recent_auc": 0.5638233514821537,
+        "regime_decay_failed": true,
+        "redundant": false
+      },
+      {
+        "ticker": "00631L.TW",
+        "head": "tail_reward_risk_score",
+        "status": "redundant_candidate",
+        "reasons": [
+          "recent_auc_below_floor",
+          "high_redundancy"
+        ],
+        "full_auc": 0.6194277382905048,
+        "recent_auc": 0.4398064125831821,
+        "regime_decay_failed": false,
+        "redundant": true
+      },
+      {
+        "ticker": "00632R.TW",
+        "head": "h20_forward_drawdown_gt5",
+        "status": "watchlist",
+        "reasons": [
+          "regime_or_decay_failed"
+        ],
+        "full_auc": 0.5761344537815126,
+        "recent_auc": 0.5360772357723578,
+        "regime_decay_failed": true,
+        "redundant": false
+      },
+      {
+        "ticker": "00632R.TW",
+        "head": "h20_forward_gain_gt5",
+        "status": "retire_candidate",
+        "reasons": [
+          "recent_auc_below_floor",
+          "regime_or_decay_failed"
+        ],
+        "full_auc": 0.6670395227442207,
+        "recent_auc": 0.5072463768115942,
+        "regime_decay_failed": true,
+        "redundant": false
+      },
+      {
+        "ticker": "00632R.TW",
+        "head": "tail_reward_risk_score",
+        "status": "watchlist",
+        "reasons": [
+          "recent_auc_below_floor"
+        ],
+        "full_auc": 0.6251304996271438,
+        "recent_auc": 0.5084214649432042,
+        "regime_decay_failed": false,
+        "redundant": false
+      },
+      {
+        "ticker": "0050.TW",
+        "head": "h20_forward_drawdown_gt5",
+        "status": "redundant_candidate",
+        "reasons": [
+          "regime_or_decay_failed",
+          "high_redundancy"
+        ],
+        "full_auc": 0.7083935328517372,
+        "recent_auc": 0.5260477869173521,
+        "regime_decay_failed": true,
+        "redundant": true
+      },
+      {
+        "ticker": "0050.TW",
+        "head": "h20_forward_gain_gt5",
+        "status": "watchlist",
+        "reasons": [
+          "regime_or_decay_failed"
+        ],
+        "full_auc": 0.6975530362554719,
+        "recent_auc": 0.5684121621621622,
+        "regime_decay_failed": true,
+        "redundant": false
+      },
+      {
+        "ticker": "0050.TW",
+        "head": "tail_reward_risk_score",
+        "status": "redundant_candidate",
+        "reasons": [
+          "high_redundancy"
+        ],
+        "full_auc": 0.6260803681670222,
+        "recent_auc": 0.5257601351351352,
+        "regime_decay_failed": false,
+        "redundant": true
+      }
+    ]
+  },
+  "delayed_credit_audit": {
+    "available": true,
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/2608_15841_delayed_credit_audit.json",
+    "passed": false,
+    "decision": "delayed_credit_alignment_not_cleared",
+    "blockers": [
+      "delayed_credit_alignment_failed"
+    ],
+    "failed_heads": [
+      {
+        "ticker": "00632R.TW",
+        "head": "direction_prob",
+        "blockers": [
+          "h20_direction_auc_below_floor"
+        ]
+      },
+      {
+        "ticker": "00632R.TW",
+        "head": "gain_prob",
+        "blockers": [
+          "h20_direction_auc_below_floor"
+        ]
+      },
+      {
+        "ticker": "00632R.TW",
+        "head": "tail_reward_risk_score",
+        "blockers": [
+          "h20_direction_auc_below_floor"
+        ]
+      }
+    ]
+  },
+  "candidate_auxiliary_bank_blueprint": {
+    "available": true,
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/2608_15841_candidate_auxiliary_bank_blueprint.json",
+    "training_allowed": false,
+    "promotion_allowed": false,
+    "decision": "blocked_until_readiness_gates_pass",
+    "blockers": [
+      "live_feature_freshness_ok",
+      "quest_trader_retrained_for_group_a_plus",
+      "downstream_policy_lift_validated",
+      "multi_window_cost_turnover_passed",
+      "temporal_regime_stability_passed",
+      "auxiliary_head_lifecycle_passed",
+      "delayed_credit_alignment_passed"
+    ],
+    "candidate_grid": [
+      {
+        "bank_id": "gvf_bank_16_k10",
+        "gvf_question_count": 16,
+        "meta_unroll_length": 10,
+        "role": "minimum_viable_candidate"
+      },
+      {
+        "bank_id": "gvf_bank_32_k10",
+        "gvf_question_count": 32,
+        "meta_unroll_length": 10,
+        "role": "balanced_default_candidate"
+      },
+      {
+        "bank_id": "gvf_bank_32_k20",
+        "gvf_question_count": 32,
+        "meta_unroll_length": 20,
+        "role": "delayed_credit_candidate"
+      },
+      {
+        "bank_id": "gvf_bank_64_k20",
+        "gvf_question_count": 64,
+        "meta_unroll_length": 20,
+        "role": "upper_complexity_candidate"
+      }
+    ],
+    "admission_tests": [
+      "point_in_time_feature_build_no_forward_label_leakage",
+      "purged_walk_forward_policy_impact_passed",
+      "full_window_delta_final_value_nonnegative_after_costs",
+      "delta_sharpe_ratio_nonnegative",
+      "delta_max_drawdown_nonnegative",
+      "turnover_to_initial_below_cap",
+      "temporal_regime_stability_passed",
+      "live_feature_freshness_ok",
+      "seed_sensitivity_small_enough"
+    ]
+  },
+  "recommended_next_experiment": {
+    "status": "not_started",
+    "scope": "shadow_only_compare_existing_fixed_aux_heads_vs_small_candidate_auxiliary_bank",
+    "constraints": [
+      "purged_walk_forward_no_forward_label_leakage",
+      "multi_window_policy_impact_not_standalone_auc_only",
+      "realistic_cost_and_turnover_comparison",
+      "no_latest_strategy_change_until_passed"
+    ],
+    "initial_grid": {
+      "gvf_question_count": [
+        16,
+        32,
+        64
+      ],
+      "meta_unroll_length": [
+        10,
+        20
+      ]
+    }
+  }
+}

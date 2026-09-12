@@ -1,0 +1,439 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2608_15841_delayed_credit_audit",
+  "generated_at": "2026-09-12T08:06:59",
+  "source_paper": {
+    "id": "2608.15841",
+    "transferable_use": "delayed_auxiliary_task_contribution_gate"
+  },
+  "policy": "research_only_no_weight_change",
+  "changes_latest_strategy": false,
+  "changes_golden1_0531": false,
+  "changes_golden2_0830": false,
+  "thresholds": {
+    "min_h20_auc": 0.52
+  },
+  "summary": {
+    "delayed_credit_passed": false,
+    "promotion_allowed": false,
+    "decision": "delayed_credit_alignment_not_cleared",
+    "blockers": [
+      "delayed_credit_alignment_failed"
+    ],
+    "failed_heads": [
+      {
+        "ticker": "00632R.TW",
+        "head": "direction_prob",
+        "blockers": [
+          "h20_direction_auc_below_floor"
+        ]
+      },
+      {
+        "ticker": "00632R.TW",
+        "head": "gain_prob",
+        "blockers": [
+          "h20_direction_auc_below_floor"
+        ]
+      },
+      {
+        "ticker": "00632R.TW",
+        "head": "tail_reward_risk_score",
+        "blockers": [
+          "h20_direction_auc_below_floor"
+        ]
+      }
+    ]
+  },
+  "heads": [
+    {
+      "ticker": "00631L.TW",
+      "head": "direction_prob",
+      "score_column": "ensemble_prob_up",
+      "target": "gain",
+      "horizon_direction_auc": {
+        "h1": 0.5322268772155977,
+        "h5": 0.5977259023171677,
+        "h20": 0.5973367371580363
+      },
+      "risk_event_auc_h20": 0.40488893728222997,
+      "spearman_forward_gain_h20": 0.021267041601634968,
+      "spearman_forward_mdd_h20": 0.1680503107184687,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.12792763236726554,
+        "high_mean": 0.15172211957008455,
+        "high_minus_low": 0.023794487202819015
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.07456024228355382,
+        "high_mean": -0.046829825191367726,
+        "high_minus_low": 0.027730417092186092
+      },
+      "passed": true,
+      "blockers": []
+    },
+    {
+      "ticker": "00631L.TW",
+      "head": "drawdown_prob",
+      "score_column": "prob_fwd_mdd_gt5_h20",
+      "target": "risk",
+      "horizon_direction_auc": {
+        "h1": 0.4633419271672575,
+        "h5": 0.387859993683062,
+        "h20": 0.34498223341497913
+      },
+      "risk_event_auc_h20": 0.658155487804878,
+      "spearman_forward_gain_h20": 0.0026062364674752938,
+      "spearman_forward_mdd_h20": -0.25600120799978626,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.14432109872768945,
+        "high_mean": 0.14090947359049816,
+        "high_minus_low": -0.0034116251371912876
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.02708050465662958,
+        "high_mean": -0.0705335475652599,
+        "high_minus_low": -0.04345304290863032
+      },
+      "passed": true,
+      "blockers": []
+    },
+    {
+      "ticker": "00631L.TW",
+      "head": "gain_prob",
+      "score_column": "prob_fwd_gain_gt5_h20",
+      "target": "gain",
+      "horizon_direction_auc": {
+        "h1": 0.5360672467504566,
+        "h5": 0.5964050880064318,
+        "h20": 0.627729671921896
+      },
+      "risk_event_auc_h20": 0.46115527003484325,
+      "spearman_forward_gain_h20": 0.2344353461627526,
+      "spearman_forward_mdd_h20": 0.12400814475254292,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.10189859298375045,
+        "high_mean": 0.184394289887702,
+        "high_minus_low": 0.08249569690395156
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.06549904958163678,
+        "high_mean": -0.037211704540967255,
+        "high_minus_low": 0.02828734504066953
+      },
+      "passed": true,
+      "blockers": []
+    },
+    {
+      "ticker": "00631L.TW",
+      "head": "tail_reward_risk_score",
+      "score_column": "tail_reward_risk_score_h20",
+      "target": "gain",
+      "horizon_direction_auc": {
+        "h1": 0.5370609087979374,
+        "h5": 0.6248600223964166,
+        "h20": 0.6583640942491461
+      },
+      "risk_event_auc_h20": 0.3753810975609756,
+      "spearman_forward_gain_h20": 0.104903277677235,
+      "spearman_forward_mdd_h20": 0.23058565639155482,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.13275708048182422,
+        "high_mean": 0.17493505051011388,
+        "high_minus_low": 0.04217797002828966
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.07540529470634394,
+        "high_mean": -0.03304526869831563,
+        "high_minus_low": 0.04236002600802831
+      },
+      "passed": true,
+      "blockers": []
+    },
+    {
+      "ticker": "00632R.TW",
+      "head": "direction_prob",
+      "score_column": "ensemble_prob_up",
+      "target": "gain",
+      "horizon_direction_auc": {
+        "h1": null,
+        "h5": null,
+        "h20": null
+      },
+      "risk_event_auc_h20": 0.37383753501400563,
+      "spearman_forward_gain_h20": 0.16468538285487078,
+      "spearman_forward_mdd_h20": 0.28550652517128533,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.010366081846319125,
+        "high_mean": 0.0322211736610936,
+        "high_minus_low": 0.021855091814774477
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.09165033922652777,
+        "high_mean": -0.05736292455975914,
+        "high_minus_low": 0.03428741466676863
+      },
+      "passed": false,
+      "blockers": [
+        "h20_direction_auc_below_floor"
+      ]
+    },
+    {
+      "ticker": "00632R.TW",
+      "head": "drawdown_prob",
+      "score_column": "prob_fwd_mdd_gt5_h20",
+      "target": "risk",
+      "horizon_direction_auc": {
+        "h1": null,
+        "h5": null,
+        "h20": null
+      },
+      "risk_event_auc_h20": 0.5761344537815126,
+      "spearman_forward_gain_h20": -0.025699576645441424,
+      "spearman_forward_mdd_h20": -0.21799798122438374,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.02045492164414261,
+        "high_mean": 0.017221251010805,
+        "high_minus_low": -0.0032336706333376125
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.055709816244306355,
+        "high_mean": -0.08391979056381582,
+        "high_minus_low": -0.028209974319509466
+      },
+      "passed": true,
+      "blockers": []
+    },
+    {
+      "ticker": "00632R.TW",
+      "head": "gain_prob",
+      "score_column": "prob_fwd_gain_gt5_h20",
+      "target": "gain",
+      "horizon_direction_auc": {
+        "h1": null,
+        "h5": null,
+        "h20": null
+      },
+      "risk_event_auc_h20": 0.5176470588235295,
+      "spearman_forward_gain_h20": 0.26907771485106063,
+      "spearman_forward_mdd_h20": -0.03284103099621859,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.014506491684844603,
+        "high_mean": 0.048134867706957844,
+        "high_minus_low": 0.03362837602211324
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.07211678232791625,
+        "high_mean": -0.07490902822906562,
+        "high_minus_low": -0.0027922459011493622
+      },
+      "passed": false,
+      "blockers": [
+        "h20_direction_auc_below_floor"
+      ]
+    },
+    {
+      "ticker": "00632R.TW",
+      "head": "tail_reward_risk_score",
+      "score_column": "tail_reward_risk_score_h20",
+      "target": "gain",
+      "horizon_direction_auc": {
+        "h1": null,
+        "h5": null,
+        "h20": null
+      },
+      "risk_event_auc_h20": 0.4660224089635854,
+      "spearman_forward_gain_h20": 0.1982587342178301,
+      "spearman_forward_mdd_h20": 0.12440385230428538,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.01204374664783491,
+        "high_mean": 0.05093741454196194,
+        "high_minus_low": 0.03889366789412703
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.08290447429226333,
+        "high_mean": -0.06274622974110083,
+        "high_minus_low": 0.020158244551162496
+      },
+      "passed": false,
+      "blockers": [
+        "h20_direction_auc_below_floor"
+      ]
+    },
+    {
+      "ticker": "0050.TW",
+      "head": "direction_prob",
+      "score_column": "ensemble_prob_up",
+      "target": "gain",
+      "horizon_direction_auc": {
+        "h1": 0.583716454613493,
+        "h5": 0.6509261897976631,
+        "h20": 0.7646370829033369
+      },
+      "risk_event_auc_h20": 0.2572755417956656,
+      "spearman_forward_gain_h20": 0.22931399094146374,
+      "spearman_forward_mdd_h20": 0.39220398040287724,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.056355944965810846,
+        "high_mean": 0.0936842422570614,
+        "high_minus_low": 0.037328297291250555
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.06147045388976337,
+        "high_mean": -0.00852801854300112,
+        "high_minus_low": 0.05294243534676225
+      },
+      "passed": true,
+      "blockers": []
+    },
+    {
+      "ticker": "0050.TW",
+      "head": "drawdown_prob",
+      "score_column": "prob_fwd_mdd_gt5_h20",
+      "target": "risk",
+      "horizon_direction_auc": {
+        "h1": 0.44843900352827964,
+        "h5": 0.4196922200056996,
+        "h20": 0.3052975576195391
+      },
+      "risk_event_auc_h20": 0.7083935328517372,
+      "spearman_forward_gain_h20": -0.06172105860386727,
+      "spearman_forward_mdd_h20": -0.30463167907948324,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.07658243290960232,
+        "high_mean": 0.07448030069019464,
+        "high_minus_low": -0.002102132219407679
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.010649113312172694,
+        "high_mean": -0.03965321008055536,
+        "high_minus_low": -0.02900409676838267
+      },
+      "passed": true,
+      "blockers": []
+    },
+    {
+      "ticker": "0050.TW",
+      "head": "gain_prob",
+      "score_column": "prob_fwd_gain_gt5_h20",
+      "target": "gain",
+      "horizon_direction_auc": {
+        "h1": 0.547337752592751,
+        "h5": 0.6798803077799942,
+        "h20": 0.7620227038183696
+      },
+      "risk_event_auc_h20": 0.2746474028207774,
+      "spearman_forward_gain_h20": 0.2563234434527593,
+      "spearman_forward_mdd_h20": 0.37560264581777647,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.056840164362147234,
+        "high_mean": 0.08535439112973486,
+        "high_minus_low": 0.02851422676758763
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.05270867359329037,
+        "high_mean": -0.011476847366532218,
+        "high_minus_low": 0.04123182622675815
+      },
+      "passed": true,
+      "blockers": []
+    },
+    {
+      "ticker": "0050.TW",
+      "head": "tail_reward_risk_score",
+      "score_column": "tail_reward_risk_score_h20",
+      "target": "gain",
+      "horizon_direction_auc": {
+        "h1": 0.555998075483802,
+        "h5": 0.6358221715588487,
+        "h20": 0.7325765393876849
+      },
+      "risk_event_auc_h20": 0.2900928792569659,
+      "spearman_forward_gain_h20": 0.14345262339119277,
+      "spearman_forward_mdd_h20": 0.36148660976742436,
+      "forward_gain_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": 0.07161349184701682,
+        "high_mean": 0.08142632711129638,
+        "high_minus_low": 0.009812835264279562
+      },
+      "forward_mdd_h20_quartile_gap": {
+        "available": true,
+        "low_rows": 97,
+        "high_rows": 97,
+        "low_mean": -0.042037565065428835,
+        "high_mean": -0.010609409061758508,
+        "high_minus_low": 0.03142815600367033
+      },
+      "passed": true,
+      "blockers": []
+    }
+  ]
+}
