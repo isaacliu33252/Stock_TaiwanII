@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2609_07989_order_flow_regime_shadow",
+  "status": "unavailable",
+  "reason": "missing_signed_flow_csv",
+  "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/intraday_signed_order_flow_latest.csv",
+  "policy": "execution_advisory_shadow_only",
+  "decision": {
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "live_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "latest_strategy_change_allowed": false,
+    "golden2_0830_change_allowed": false
+  },
+  "input_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/intraday_signed_order_flow_latest.csv",
+  "generated_at": "2026-09-12T07:38:43.313510+00:00"
+}
