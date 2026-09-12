@@ -162,6 +162,7 @@ def _ops_health_payload(
     pipeline_status="ok",
     external_status="ok",
     execution_plan_freshness=None,
+    readiness_review_freshness=None,
 ) -> dict:
     return {
         "success": True,
@@ -174,6 +175,8 @@ def _ops_health_payload(
             },
             "pipeline_health": {"status": pipeline_status, "errors": ["pipeline_manifest_unreadable"]},
             "external_data_freshness": {"status": external_status, "errors": ["ohlcv_freshness_report_unreadable"]},
+            "readiness_review_freshness": readiness_review_freshness
+            or {"status": "ok", "errors": []},
         },
     }
 
@@ -219,6 +222,26 @@ def test_execution_plan_lag_over_a_week_is_high() -> None:
     plan_alerts = [a for a in alerts if a["type"] == "ops_health_execution_plan_stale"]
     assert len(plan_alerts) == 1
     assert plan_alerts[0]["level"] == "high"
+
+
+def test_readiness_review_freshness_error_is_surfaced_as_medium() -> None:
+    alerts = _ops_health_error_alerts(
+        _ops_health_payload(
+            readiness_review_freshness={
+                "status": "error",
+                "errors": ["foo_review.json: as_of=2026-07-20 is 14 business days stale despite daily pipeline wiring"],
+            }
+        )
+    )
+    review_alerts = [a for a in alerts if a["type"] == "ops_health_readiness_review_stale"]
+    assert len(review_alerts) == 1
+    assert review_alerts[0]["level"] == "medium"
+    assert "foo_review.json" in review_alerts[0]["reason"]
+
+
+def test_readiness_review_freshness_ok_produces_no_alert() -> None:
+    alerts = _ops_health_error_alerts(_ops_health_payload())
+    assert not [a for a in alerts if a["type"] == "ops_health_readiness_review_stale"]
 
 
 def test_crash_risk_alert_is_advisory_only() -> None:

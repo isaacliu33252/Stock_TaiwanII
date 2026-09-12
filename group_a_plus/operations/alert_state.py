@@ -322,6 +322,26 @@ def _ops_health_error_alerts(ops_health_payload: dict[str, Any]) -> list[dict[st
             }
         )
 
+    # 2026-08-09: readiness_review_freshness catches a class of bug mtime
+    # checks above cannot see -- a report/group_a_plus/latest/*.json file
+    # that regenerates daily (fresh generated_at) but whose embedded as_of
+    # field is stale because it read a pinned/stale upstream input (the
+    # rebalance_review_20260720.json bug class). All errors here are
+    # research/promotion-gate documents, not weight-affecting, so "high" is
+    # not warranted -- "medium" matches this module's other detection-only,
+    # manual-follow-up alerts.
+    readiness_review_freshness = data.get("readiness_review_freshness") or {}
+    if readiness_review_freshness.get("status") == "error":
+        errors = readiness_review_freshness.get("errors") or []
+        alerts.append(
+            {
+                "type": "ops_health_readiness_review_stale",
+                "level": "medium",
+                "title": "Ops health: readiness review as_of stale despite pipeline wiring",
+                "reason": f"Readiness review(s) regenerating daily but as_of stuck stale: {', '.join(errors)}.",
+            }
+        )
+
     return alerts
 
 
