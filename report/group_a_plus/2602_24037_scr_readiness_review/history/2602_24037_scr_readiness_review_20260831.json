@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2602_24037_scr_readiness_review",
+  "generated_at": "2026-08-31T21:18:51",
+  "status": "available_for_shadow_review",
+  "policy": "research_shadow_only_no_rl_training_no_live_weight_change",
+  "source_paper": {
+    "path": "/mnt/c/Users/isaac/Downloads/2602.24037.pdf",
+    "exists": true,
+    "pages": 13,
+    "title": "Portfolio Reinforcement Learning with Scenario-Context Rollout",
+    "authors": "Vanya Priscillia Bendatu; Yao Lu",
+    "arxiv": "https://arxiv.org/abs/2602.24037v1",
+    "doi": "https://doi.org/10.48550/arXiv.2602.24037",
+    "text_chars": 51387,
+    "text_extract_error": null,
+    "key_claims": [
+      "macro-conditioned scenario-context rollout generates plausible next-day multivariate return scenarios",
+      "scenario rewards with tape-realized continuations create reward-transition mismatch in TD learning",
+      "counterfactual continuation mixing gives a bias-variance tradeoff for the critic target",
+      "paper reports higher Sharpe, lower max drawdown, and much lower turnover across U.S. stock/ETF universes"
+    ]
+  },
+  "groupa_plus_mapping": {
+    "importable_advantage": "scenario_context_rollout_readiness_and_reward_transition_mismatch_guard",
+    "implemented_as": "nearest_neighbor_scenario_to_real_gap_audit_for_current_groupa_plus_weights",
+    "paper_equivalent": false,
+    "reason_not_exact": "The paper trains SCR-PPO on U.S. universes; this review only audits whether Taiwan ETF data support future SCR-style shadow training."
+  },
+  "parameters": {
+    "start": "2018-01-02",
+    "end": "2026-08-31",
+    "eval_start": "2024-01-02",
+    "tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "00679B.TWO"
+    ],
+    "available_tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "00679B.TWO"
+    ],
+    "base": "0050.TW",
+    "min_history": 504,
+    "k_neighbors": 30,
+    "gap_limit": 0.01,
+    "live_signal_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal.json",
+    "reference_weights": {
+      "0050.TW": 0.47,
+      "00631L.TW": 0.09871434512265483,
+      "00632R.TW": 0.1671390088790092,
+      "00679B.TWO": 0.0
+    }
+  },
+  "coverage": {
+    "return_observations": 2104,
+    "feature_observations": 2044,
+    "actual_data_start": "2018-01-02",
+    "actual_data_end": "2026-08-31"
+  },
+  "summary": {
+    "status": "available",
+    "oos_days": 644,
+    "mean_abs_scenario_real_gap": 0.007888,
+    "median_abs_scenario_real_gap": 0.004341,
+    "p90_abs_scenario_real_gap": 0.013895,
+    "mean_scenario_variance": 0.000485573,
+    "mismatch_mse": 0.0016239856,
+    "beta_cf_from_bias_variance_proxy": 0.769822,
+    "gap_limit": 0.01,
+    "scenario_real_gap_gate_passed": true
+  },
+  "recent_rows_tail": [
+    {
+      "date": "2026-08-17",
+      "scenario_mean_next_return": -0.002023,
+      "realized_next_return": -0.007292,
+      "scenario_variance": 9.28853e-05,
+      "abs_gap": 0.005269,
+      "signed_gap": 0.005269,
+      "neighbor_count": 30
+    },
+    {
+      "date": "2026-08-18",
+      "scenario_mean_next_return": -0.001326,
+      "realized_next_return": -0.00833,
+      "scenario_variance": 5.9386e-05,
+      "abs_gap": 0.007004,
+      "signed_gap": 0.007004,
+      "neighbor_count": 30
+    },
+    {
+      "date": "2026-08-19",
+      "scenario_mean_next_return": 0.000395,
+      "realized_next_return": 0.003441,
+      "scenario_variance": 3.83791e-05,
+      "abs_gap": 0.003045,
+      "signed_gap": -0.003045,
+      "neighbor_count": 30
+    },
+    {
+      "date": "2026-08-20",
+      "scenario_mean_next_return": -0.000748,
+      "realized_next_return": 0.004346,
+      "scenario_variance": 8.4871e-05,
+      "abs_gap": 0.005094,
+      "signed_gap": -0.005094,
+      "neighbor_count": 30
+    },
+    {
+      "date": "2026-08-21",
+      "scenario_mean_next_return": -0.002132,
+      "realized_next_return": -0.004568,
+      "scenario_variance": 6.80682e-05,
+      "abs_gap": 0.002437,
+      "signed_gap": 0.002437,
+      "neighbor_count": 30
+    },
+    {
+      "date": "2026-08-24",
+      "scenario_mean_next_return": -0.001685,
+      "realized_next_return": 0.003223,
+      "scenario_variance": 3.45214e-05,
+      "abs_gap": 0.004907,
+      "signed_gap": -0.004907,
+      "neighbor_count": 30
+    },
+    {
+      "date": "2026-08-25",
+      "scenario_mean_next_return": -0.004239,
+      "realized_next_return": 0.006888,
+      "scenario_variance": 9.0835e-05,
+      "abs_gap": 0.011127,
+      "signed_gap": -0.011127,
+      "neighbor_count": 30
+    },
+    {
+      "date": "2026-08-26",
+      "scenario_mean_next_return": -9.1e-05,
+      "realized_next_return": 0.00066,
+      "scenario_variance": 5.80662e-05,
+      "abs_gap": 0.000751,
+      "signed_gap": -0.000751,
+      "neighbor_count": 30
+    },
+    {
+      "date": "2026-08-27",
+      "scenario_mean_next_return": -0.002509,
+      "realized_next_return": 0.003942,
+      "scenario_variance": 8.17137e-05,
+      "abs_gap": 0.006451,
+      "signed_gap": -0.006451,
+      "neighbor_count": 30
+    },
+    {
+      "date": "2026-08-28",
+      "scenario_mean_next_return": 0.000924,
+      "realized_next_return": -0.003368,
+      "scenario_variance": 2.77299e-05,
+      "abs_gap": 0.004291,
+      "signed_gap": 0.004291,
+      "neighbor_count": 30
+    }
+  ],
+  "paper_result_context": {
+    "reported_oos_split": "train 2009-2017, validation 2018-2019, test 2020-2023",
+    "reported_universes": 31,
+    "reported_beta_cf_sweet_spot": 0.5,
+    "reported_market_proxy_sharpe_historical_ppo_to_scr_full": "0.492 -> 1.004",
+    "reported_market_proxy_maxdd_historical_ppo_to_scr_full": "0.370 -> 0.179",
+    "reported_ablation_gap_final_historical_ppo_to_scr_full": "0.526 -> 0.0001"
+  },
+  "decision": {
+    "review_complete": true,
+    "has_importable_advantage": true,
+    "best_import": "scr_readiness_and_mismatch_guard_only",
+    "scr_shadow_training_allowed_by_this_review": false,
+    "ppo_training_allowed": false,
+    "model_training_allowed": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "allow_00679b_add": false,
+    "counterfactual_bootstrap_beta_cf_candidate": 0.769822,
+    "beta_cf_candidate_in_paper_moderate_range": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "blocking_reasons": [],
+  "warning_reasons": [
+    "beta_cf_proxy_outside_paper_moderate_range"
+  ]
+}

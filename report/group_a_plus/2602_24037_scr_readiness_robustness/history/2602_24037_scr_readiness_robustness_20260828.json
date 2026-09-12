@@ -1,0 +1,315 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2602_24037_scr_readiness_robustness",
+  "generated_at": "2026-09-12T08:40:39",
+  "status": "available_for_shadow_review",
+  "policy": "research_shadow_only_no_rl_training_no_live_weight_change",
+  "source_paper": "2602.24037v1",
+  "parameters": {
+    "start": "2018-01-02",
+    "end": "latest",
+    "eval_starts": [
+      "2023-01-03",
+      "2024-01-02",
+      "2025-01-02"
+    ],
+    "min_histories": [
+      252,
+      504
+    ],
+    "k_neighbors_values": [
+      15,
+      30,
+      60
+    ],
+    "gap_limit": 0.01
+  },
+  "summary": {
+    "total_runs": 18,
+    "valid_runs": 18,
+    "gap_gate_pass_runs": 6,
+    "beta_moderate_runs": 18,
+    "gap_gate_pass_rate": 0.333333,
+    "beta_moderate_rate": 1.0,
+    "mean_gap_min": 0.008913,
+    "mean_gap_max": 0.010976,
+    "beta_cf_min": 0.632979,
+    "beta_cf_max": 0.666534,
+    "gap_readiness_robust": false,
+    "beta_cf_moderate_robust": true
+  },
+  "rows": [
+    {
+      "eval_start": "2023-01-03",
+      "min_history": 252,
+      "k_neighbors": 15,
+      "status": "available_for_shadow_review",
+      "oos_days": 891,
+      "mean_abs_scenario_real_gap": 0.009097,
+      "p90_abs_scenario_real_gap": 0.019349,
+      "beta_cf_from_bias_variance_proxy": 0.6396,
+      "scenario_real_gap_gate_passed": true,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": []
+    },
+    {
+      "eval_start": "2023-01-03",
+      "min_history": 252,
+      "k_neighbors": 30,
+      "status": "available_for_shadow_review",
+      "oos_days": 891,
+      "mean_abs_scenario_real_gap": 0.008957,
+      "p90_abs_scenario_real_gap": 0.019358,
+      "beta_cf_from_bias_variance_proxy": 0.634014,
+      "scenario_real_gap_gate_passed": true,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": []
+    },
+    {
+      "eval_start": "2023-01-03",
+      "min_history": 252,
+      "k_neighbors": 60,
+      "status": "available_for_shadow_review",
+      "oos_days": 891,
+      "mean_abs_scenario_real_gap": 0.008913,
+      "p90_abs_scenario_real_gap": 0.019192,
+      "beta_cf_from_bias_variance_proxy": 0.632979,
+      "scenario_real_gap_gate_passed": true,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": []
+    },
+    {
+      "eval_start": "2023-01-03",
+      "min_history": 504,
+      "k_neighbors": 15,
+      "status": "available_for_shadow_review",
+      "oos_days": 891,
+      "mean_abs_scenario_real_gap": 0.009097,
+      "p90_abs_scenario_real_gap": 0.019349,
+      "beta_cf_from_bias_variance_proxy": 0.6396,
+      "scenario_real_gap_gate_passed": true,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": []
+    },
+    {
+      "eval_start": "2023-01-03",
+      "min_history": 504,
+      "k_neighbors": 30,
+      "status": "available_for_shadow_review",
+      "oos_days": 891,
+      "mean_abs_scenario_real_gap": 0.008957,
+      "p90_abs_scenario_real_gap": 0.019358,
+      "beta_cf_from_bias_variance_proxy": 0.634014,
+      "scenario_real_gap_gate_passed": true,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": []
+    },
+    {
+      "eval_start": "2023-01-03",
+      "min_history": 504,
+      "k_neighbors": 60,
+      "status": "available_for_shadow_review",
+      "oos_days": 891,
+      "mean_abs_scenario_real_gap": 0.008913,
+      "p90_abs_scenario_real_gap": 0.019192,
+      "beta_cf_from_bias_variance_proxy": 0.632979,
+      "scenario_real_gap_gate_passed": true,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": []
+    },
+    {
+      "eval_start": "2024-01-02",
+      "min_history": 252,
+      "k_neighbors": 15,
+      "status": "available_for_shadow_review",
+      "oos_days": 652,
+      "mean_abs_scenario_real_gap": 0.010309,
+      "p90_abs_scenario_real_gap": 0.021572,
+      "beta_cf_from_bias_variance_proxy": 0.662586,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    },
+    {
+      "eval_start": "2024-01-02",
+      "min_history": 252,
+      "k_neighbors": 30,
+      "status": "available_for_shadow_review",
+      "oos_days": 652,
+      "mean_abs_scenario_real_gap": 0.010158,
+      "p90_abs_scenario_real_gap": 0.021949,
+      "beta_cf_from_bias_variance_proxy": 0.661068,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    },
+    {
+      "eval_start": "2024-01-02",
+      "min_history": 252,
+      "k_neighbors": 60,
+      "status": "available_for_shadow_review",
+      "oos_days": 652,
+      "mean_abs_scenario_real_gap": 0.010092,
+      "p90_abs_scenario_real_gap": 0.022517,
+      "beta_cf_from_bias_variance_proxy": 0.661238,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    },
+    {
+      "eval_start": "2024-01-02",
+      "min_history": 504,
+      "k_neighbors": 15,
+      "status": "available_for_shadow_review",
+      "oos_days": 652,
+      "mean_abs_scenario_real_gap": 0.010309,
+      "p90_abs_scenario_real_gap": 0.021572,
+      "beta_cf_from_bias_variance_proxy": 0.662586,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    },
+    {
+      "eval_start": "2024-01-02",
+      "min_history": 504,
+      "k_neighbors": 30,
+      "status": "available_for_shadow_review",
+      "oos_days": 652,
+      "mean_abs_scenario_real_gap": 0.010158,
+      "p90_abs_scenario_real_gap": 0.021949,
+      "beta_cf_from_bias_variance_proxy": 0.661068,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    },
+    {
+      "eval_start": "2024-01-02",
+      "min_history": 504,
+      "k_neighbors": 60,
+      "status": "available_for_shadow_review",
+      "oos_days": 652,
+      "mean_abs_scenario_real_gap": 0.010092,
+      "p90_abs_scenario_real_gap": 0.022517,
+      "beta_cf_from_bias_variance_proxy": 0.661238,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    },
+    {
+      "eval_start": "2025-01-02",
+      "min_history": 252,
+      "k_neighbors": 15,
+      "status": "available_for_shadow_review",
+      "oos_days": 410,
+      "mean_abs_scenario_real_gap": 0.010976,
+      "p90_abs_scenario_real_gap": 0.02276,
+      "beta_cf_from_bias_variance_proxy": 0.666534,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    },
+    {
+      "eval_start": "2025-01-02",
+      "min_history": 252,
+      "k_neighbors": 30,
+      "status": "available_for_shadow_review",
+      "oos_days": 410,
+      "mean_abs_scenario_real_gap": 0.010837,
+      "p90_abs_scenario_real_gap": 0.022787,
+      "beta_cf_from_bias_variance_proxy": 0.664324,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    },
+    {
+      "eval_start": "2025-01-02",
+      "min_history": 252,
+      "k_neighbors": 60,
+      "status": "available_for_shadow_review",
+      "oos_days": 410,
+      "mean_abs_scenario_real_gap": 0.010734,
+      "p90_abs_scenario_real_gap": 0.023435,
+      "beta_cf_from_bias_variance_proxy": 0.664856,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    },
+    {
+      "eval_start": "2025-01-02",
+      "min_history": 504,
+      "k_neighbors": 15,
+      "status": "available_for_shadow_review",
+      "oos_days": 410,
+      "mean_abs_scenario_real_gap": 0.010976,
+      "p90_abs_scenario_real_gap": 0.02276,
+      "beta_cf_from_bias_variance_proxy": 0.666534,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    },
+    {
+      "eval_start": "2025-01-02",
+      "min_history": 504,
+      "k_neighbors": 30,
+      "status": "available_for_shadow_review",
+      "oos_days": 410,
+      "mean_abs_scenario_real_gap": 0.010837,
+      "p90_abs_scenario_real_gap": 0.022787,
+      "beta_cf_from_bias_variance_proxy": 0.664324,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    },
+    {
+      "eval_start": "2025-01-02",
+      "min_history": 504,
+      "k_neighbors": 60,
+      "status": "available_for_shadow_review",
+      "oos_days": 410,
+      "mean_abs_scenario_real_gap": 0.010734,
+      "p90_abs_scenario_real_gap": 0.023435,
+      "beta_cf_from_bias_variance_proxy": 0.664856,
+      "scenario_real_gap_gate_passed": false,
+      "beta_cf_candidate_in_paper_moderate_range": true,
+      "warning_reasons": [
+        "scenario_real_gap_gate_not_passed"
+      ]
+    }
+  ],
+  "decision": {
+    "sweep_complete": true,
+    "best_import": "scr_readiness_and_mismatch_guard_only",
+    "scr_shadow_training_allowed_by_this_sweep": false,
+    "ppo_training_allowed": false,
+    "model_training_allowed": false,
+    "promote_to_live": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "allow_00679b_add": false,
+    "keep_golden1_0531_unchanged": true
+  }
+}

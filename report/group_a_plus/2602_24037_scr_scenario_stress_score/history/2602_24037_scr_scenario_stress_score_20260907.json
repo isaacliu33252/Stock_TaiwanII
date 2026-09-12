@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2602_24037_scr_scenario_stress_score",
+  "generated_at": "2026-09-09T12:11:09",
+  "status": "available_for_shadow_monitoring",
+  "policy": "research_shadow_only_no_orders_no_weight_change",
+  "source_paper": {
+    "path": "/mnt/c/Users/isaac/Downloads/2602.24037.pdf",
+    "exists": true,
+    "pages": 13,
+    "title": "Portfolio Reinforcement Learning with Scenario-Context Rollout",
+    "authors": "Vanya Priscillia Bendatu; Yao Lu",
+    "arxiv": "https://arxiv.org/abs/2602.24037v1",
+    "doi": "https://doi.org/10.48550/arXiv.2602.24037",
+    "text_chars": 51387,
+    "text_extract_error": null,
+    "key_claims": [
+      "macro-conditioned scenario-context rollout generates plausible next-day multivariate return scenarios",
+      "scenario rewards with tape-realized continuations create reward-transition mismatch in TD learning",
+      "counterfactual continuation mixing gives a bias-variance tradeoff for the critic target",
+      "paper reports higher Sharpe, lower max drawdown, and much lower turnover across U.S. stock/ETF universes"
+    ]
+  },
+  "parameters": {
+    "start": "2018-01-02",
+    "end": "2026-09-07",
+    "tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "00679B.TWO"
+    ],
+    "available_tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00632R.TW",
+      "00679B.TWO"
+    ],
+    "base": "0050.TW",
+    "min_history": 504,
+    "k_neighbors": 60,
+    "var_alpha": 0.05,
+    "warning_es_threshold": -0.02,
+    "live_signal_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/live_signal.json",
+    "reference_weights": {
+      "0050.TW": 0.526560825661465,
+      "00631L.TW": 0.17343917433853498,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0
+    }
+  },
+  "coverage": {
+    "return_observations": 2109,
+    "actual_data_start": "2018-01-02",
+    "actual_data_end": "2026-09-07"
+  },
+  "scenario_context": {
+    "status": "available",
+    "as_of": "2026-09-07"
+  },
+  "summary": {
+    "status": "available",
+    "scenario_count": 60,
+    "mean_next_return": 0.001943,
+    "median_next_return": 0.001362,
+    "p10_next_return": -0.008615,
+    "var_alpha": 0.05,
+    "var_next_return": -0.01398,
+    "es_next_return": -0.017738,
+    "probability_loss": 0.383333,
+    "worst_next_return": -0.024251,
+    "best_next_return": 0.022091,
+    "warning_es_threshold": -0.02,
+    "downside_warning_active": false
+  },
+  "nearest_scenarios": [
+    {
+      "context_date": "2026-09-01",
+      "next_date": "2026-09-02",
+      "distance": 0.34538,
+      "scenario_next_portfolio_return": -0.014202
+    },
+    {
+      "context_date": "2020-06-03",
+      "next_date": "2020-06-04",
+      "distance": 0.697372,
+      "scenario_next_portfolio_return": 0.007189
+    },
+    {
+      "context_date": "2026-09-04",
+      "next_date": "2026-09-07",
+      "distance": 0.94221,
+      "scenario_next_portfolio_return": 0.01544
+    },
+    {
+      "context_date": "2025-06-09",
+      "next_date": "2025-06-10",
+      "distance": 1.008724,
+      "scenario_next_portfolio_return": 0.020896
+    },
+    {
+      "context_date": "2026-08-28",
+      "next_date": "2026-08-31",
+      "distance": 1.013476,
+      "scenario_next_portfolio_return": -0.00574
+    },
+    {
+      "context_date": "2025-06-04",
+      "next_date": "2025-06-05",
+      "distance": 1.077632,
+      "scenario_next_portfolio_return": 0.001282
+    },
+    {
+      "context_date": "2025-06-25",
+      "next_date": "2025-06-26",
+      "distance": 1.108973,
+      "scenario_next_portfolio_return": -0.000196
+    },
+    {
+      "context_date": "2024-06-18",
+      "next_date": "2024-06-19",
+      "distance": 1.112055,
+      "scenario_next_portfolio_return": 0.021205
+    },
+    {
+      "context_date": "2024-07-04",
+      "next_date": "2024-07-05",
+      "distance": 1.1232,
+      "scenario_next_portfolio_return": -0.002898
+    },
+    {
+      "context_date": "2024-06-12",
+      "next_date": "2024-06-13",
+      "distance": 1.157036,
+      "scenario_next_portfolio_return": 0.01225
+    },
+    {
+      "context_date": "2024-05-22",
+      "next_date": "2024-05-23",
+      "distance": 1.161757,
+      "scenario_next_portfolio_return": 0.004701
+    },
+    {
+      "context_date": "2020-06-10",
+      "next_date": "2020-06-11",
+      "distance": 1.18396,
+      "scenario_next_portfolio_return": -0.014762
+    },
+    {
+      "context_date": "2025-10-16",
+      "next_date": "2025-10-17",
+      "distance": 1.196725,
+      "scenario_next_portfolio_return": -0.012896
+    },
+    {
+      "context_date": "2025-06-24",
+      "next_date": "2025-06-25",
+      "distance": 1.199102,
+      "scenario_next_portfolio_return": 0.011338
+    },
+    {
+      "context_date": "2025-10-20",
+      "next_date": "2025-10-21",
+      "distance": 1.21902,
+      "scenario_next_portfolio_return": 0.001528
+    },
+    {
+      "context_date": "2024-07-11",
+      "next_date": "2024-07-12",
+      "distance": 1.221933,
+      "scenario_next_portfolio_return": -0.024251
+    },
+    {
+      "context_date": "2024-07-03",
+      "next_date": "2024-07-04",
+      "distance": 1.231731,
+      "scenario_next_portfolio_return": 0.021131
+    },
+    {
+      "context_date": "2024-05-27",
+      "next_date": "2024-05-28",
+      "distance": 1.245142,
+      "scenario_next_portfolio_return": 0.002267
+    },
+    {
+      "context_date": "2023-01-13",
+      "next_date": "2023-01-16",
+      "distance": 1.256696,
+      "scenario_next_portfolio_return": 0.00641
+    },
+    {
+      "context_date": "2018-07-12",
+      "next_date": "2018-07-13",
+      "distance": 1.272047,
+      "scenario_next_portfolio_return": 0.007195
+    }
+  ],
+  "decision": {
+    "score_complete": true,
+    "best_import": "latest_scr_scenario_downside_stress_score_only",
+    "downside_warning_active": false,
+    "creates_orders": false,
+    "target_weight_change_allowed": false,
+    "auto_rebalance_allowed": false,
+    "scr_shadow_training_allowed_by_this_score": false,
+    "ppo_training_allowed": false,
+    "model_training_allowed": false,
+    "promote_to_live": false,
+    "allow_00631l_add": false,
+    "allow_00632r_open": false,
+    "allow_00679b_add": false,
+    "keep_golden1_0531_unchanged": true
+  },
+  "blocking_reasons": [],
+  "warning_reasons": []
+}
