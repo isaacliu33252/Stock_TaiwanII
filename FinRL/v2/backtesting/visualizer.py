@@ -23,6 +23,8 @@ import warnings
 
 # 嘗試導入視覺化庫
 try:
+    import matplotlib
+    matplotlib.use('Agg')  # 非互動式後端，避免無顯示伺服器時卡住
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
     MPL_AVAILABLE = True
@@ -344,15 +346,19 @@ def plot_trade_history(
     if not trades.empty and 'date' in trades.columns:
         trades['date'] = pd.to_datetime(trades['date'])
         
-        # 標記買入
+        # 標記買入（使用 reindex 避免 KeyError：當交易日期非交易日時）
         buys = trades[trades['shares'] > 0]
-        ax.scatter(buys['date'], equity_curve.loc[buys['date'].values].values,
-                  marker='^', color='green', s=100, label='Buy', zorder=5)
+        if not buys.empty:
+            buy_equity = equity_curve.reindex(buys['date'].values)
+            ax.scatter(buys['date'], buy_equity.values,
+                      marker='^', color='green', s=100, label='Buy', zorder=5, alpha=0.7)
         
-        # 標記賣出
+        # 標記賣出（使用 reindex 避免 KeyError：當交易日期非交易日時）
         sells = trades[trades['shares'] < 0]
-        ax.scatter(sells['date'], equity_curve.loc[sells['date'].values].values,
-                  marker='v', color='red', s=100, label='Sell', zorder=5)
+        if not sells.empty:
+            sell_equity = equity_curve.reindex(sells['date'].values)
+            ax.scatter(sells['date'], sell_equity.values,
+                      marker='v', color='red', s=100, label='Sell', zorder=5, alpha=0.7)
     
     ax.set_title(title, fontsize=14, fontweight='bold')
     ax.set_ylabel('Portfolio Value (TWD)', fontsize=12)
@@ -508,7 +514,7 @@ class Visualizer:
                 for ax in fig.axes:
                     ax.remove()
                     ax.figure = fig
-                    axes[i]. figures.append(ax)
+                    axes[i].figures.append(ax)  # FIXED: was `axes[i]. figures.append(ax)` (typo with space)
                     ax.set_position(ax.get_position())
         
         plt.tight_layout()

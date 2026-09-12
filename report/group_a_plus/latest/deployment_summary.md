@@ -2,34 +2,36 @@
 
 - Status: `blocked`
 - Broker actionable: `False`
-- As of: `2026-08-06`
-- Actual data date: `2026-08-05`
+- As of: `2026-09-09`
+- Actual data date: `2026-09-07`
 - Strategy: `a2118_a2111_ncf_late_bull_deleverage`
-- Cash input: `0.0`
-- Nonzero trades: `3`
+- Cash input: `920516.6511917114`
+- Nonzero trades: `4`
 - Golden1_0531 unchanged: `True`
 - Consistency review: `ok`
 
 ## Target Weights
 
-- `0050.TW`: `0.3`
-- `00631L.TW`: `0.0`
-- `00632R.TW`: `0.2707873391613097`
+- `0050.TW`: `0.526560825661465`
+- `00631L.TW`: `0.17343917433853498`
+- `00632R.TW`: `0.0`
 - `00679B.TWO`: `0.0`
-- `cash`: `0.42921266083869036`
+- `00713.TW`: `0.12`
+- `cash`: `0.18000000000000005`
 
 ## Final Target Shares
 
-- `0050.TW`: `788`
-- `00631L.TW`: `0`
-- `00632R.TW`: `2866`
+- `0050.TW`: `5432`
+- `00631L.TW`: `2241`
+- `00632R.TW`: `13078`
 - `00679B.TWO`: `0`
 
 ## Planned Trades
 
-- `sell` `0050.TW` `-554` shares @ `103.80000305175781`
-- `sell` `00679B.TWO` `-5000` shares @ `26.670000076293945`
-- `buy` `00632R.TW` `2866` shares @ `10.300000190734863`
+- `sell` `00679B.TWO` `-100` shares @ `25.860000610351562`
+- `buy` `0050.TW` `801` shares @ `106.25`
+- `buy` `00631L.TW` `1261` shares @ `35.81999969482422`
+- `buy` `00632R.TW` `8078` shares @ `9.949999809265137`
 
 ## Blocked Buys
 
@@ -40,6 +42,4 @@
 - `gift_signed_approval_record_missing_or_invalid`
 - `gift_human_exception_not_approved`
 - `gift_signed_approval_manual_completion_pending`
-- `cash_balance_zero_with_nonzero_trades`
-- `execution_plan_not_allowed`
-- `manual_confirmation_required`
+- `daily_status_pre_trade_guard_not_ok`

@@ -56,6 +56,16 @@ def _base_inputs() -> dict:
                 },
             },
         },
+        "t_plus_1_delay_report": {
+            "totals": {
+                "delayed_still_positive_overall": True,
+                "delayed_positive_windows": 7,
+                "window_count": 7,
+                "same_day_delta_final_value_sum": 15_275.0,
+                "delayed_delta_final_value_sum": 10_687.0,
+            }
+        },
+        "execution_plan_is_fresh_shadow_snapshot": True,
     }
 
 
@@ -77,7 +87,7 @@ def test_a2120_scorecard_fails_when_cost_stress_is_not_positive() -> None:
     scorecard = build_scorecard(**inputs)
 
     assert scorecard["decision"]["shadow_gate"] == "fail"
-    failed = [check["name"] for check in scorecard["checks"] if not check["passed"]]
+    failed = [check["name"] for check in scorecard["checks"] if not check["passed"] and check["severity"] == "fail"]
     assert failed == ["cost20_positive"]
 
 
@@ -89,5 +99,51 @@ def test_a2120_scorecard_fails_when_rolling_stability_fails() -> None:
     scorecard = build_scorecard(**inputs)
 
     assert scorecard["decision"]["shadow_gate"] == "fail"
-    failed = [check["name"] for check in scorecard["checks"] if not check["passed"]]
+    failed = [check["name"] for check in scorecard["checks"] if not check["passed"] and check["severity"] == "fail"]
     assert failed == ["rolling_cost20_stability"]
+
+
+def test_a2120_scorecard_production_blockers_shrink_when_ops_and_delay_audit_resolved() -> None:
+    """2026-08-22 (Fable 00631L direction #2, items a/b): production_blockers
+    used to be a hardcoded, unconditional list of three items regardless of
+    what evidence was actually supplied. Now two of the three are evaluated
+    from real inputs -- confirm they drop out when resolved and reappear
+    when not, so this can never silently go stale again.
+    """
+    resolved = build_scorecard(**_base_inputs())
+    assert resolved["decision"]["production_blockers"] == [
+        "research_only_shadow_candidate",
+        "hard_guards_must_remain_precedence",
+        "requires_rolling_window_shadow_monitoring_before_production",
+    ]
+
+    unresolved_inputs = _base_inputs()
+    unresolved_inputs["t_plus_1_delay_report"] = None
+    unresolved_inputs["execution_plan_is_fresh_shadow_snapshot"] = False
+    unresolved = build_scorecard(**unresolved_inputs)
+    assert unresolved["decision"]["production_blockers"] == [
+        "research_only_shadow_candidate",
+        "hard_guards_must_remain_precedence",
+        "requires_rolling_window_shadow_monitoring_before_production",
+        "requires_daily_ops_integration",
+        "requires_t_plus_1_execution_alignment_audit",
+    ]
+    # requires_rolling_window_shadow_monitoring_before_production has no
+    # programmatic shortcut -- it must always be present regardless of the
+    # other two, since it depends on accumulating real forward-day history.
+    assert "requires_rolling_window_shadow_monitoring_before_production" in resolved["decision"]["production_blockers"]
+
+
+def test_a2120_scorecard_t_plus_1_check_fails_when_a_window_turns_negative() -> None:
+    inputs = _base_inputs()
+    inputs["t_plus_1_delay_report"]["totals"]["delayed_still_positive_overall"] = False
+    inputs["t_plus_1_delay_report"]["totals"]["delayed_positive_windows"] = 6
+
+    scorecard = build_scorecard(**inputs)
+
+    t_plus_1_check = next(c for c in scorecard["checks"] if c["name"] == "t_plus_1_execution_delay_positive")
+    assert t_plus_1_check["passed"] is False
+    assert t_plus_1_check["severity"] == "advisory"
+    # Advisory severity: does not flip the shadow gate to fail on its own.
+    assert scorecard["decision"]["shadow_gate"] == "pass"
+    assert "requires_t_plus_1_execution_alignment_audit" in scorecard["decision"]["production_blockers"]

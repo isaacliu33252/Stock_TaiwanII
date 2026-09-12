@@ -23,6 +23,7 @@ from scripts.evaluate.build_a2120_letf_compounding_shadow_scorecard import (  # 
     DEFAULT_COST20,
     DEFAULT_OVERLAP,
     DEFAULT_ROLLING,
+    DEFAULT_T_PLUS_1_DELAY,
     DEFAULT_7WIN,
     build_scorecard,
 )
@@ -30,6 +31,11 @@ from scripts.evaluate.evaluate_00631l_compounding_execution_replay_shadow import
 from scripts.evaluate.evaluate_00631l_leveraged_compounding_regime import build_report as build_diagnostic_report  # noqa: E402
 from scripts.evaluate.evaluate_turnover_capped_execution_shadow import _read_plan, turnover_capped_shadow  # noqa: E402
 from scripts.evaluate.evaluate_a2119_a2120_combined_policy_shadow import build_report as build_combined_report  # noqa: E402
+from group_a_plus.operations.execution_plan import (  # noqa: E402
+    DEFAULT_WORKBOOK as EXEC_PLAN_DEFAULT_WORKBOOK,
+    build_execution_plan,
+)
+from group_a_plus.governance.latest import DEFAULT_LATEST_STRATEGY as EXEC_PLAN_DEFAULT_MANIFEST  # noqa: E402
 
 
 DEFAULT_EXECUTION_PLAN = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "execution_plan.json"
@@ -38,6 +44,57 @@ DEFAULT_LATEST_DIR = PROJECT_ROOT / "report" / "group_a_plus" / "latest"
 DEFAULT_SHADOW_DIR = PROJECT_ROOT / "report" / "group_a_plus" / "shadow"
 DEFAULT_DB = PROJECT_ROOT / "FinRL" / "data" / "stock_data.db"
 DEFAULT_A2119 = PROJECT_ROOT / "results" / "a2119_reentry_regret_gate_7win_20260715.json"
+
+
+def _build_fresh_execution_plan_snapshot(
+    *, diagnostic_path: Path, date_stamp: str, output_dir: Path, latest_dir: Path, db_path: Path,
+) -> Path | None:
+    """Generate a same-day-fresh, shadow-only execution_plan snapshot for the
+    A21.20 replay to compare against, instead of whatever the real (manually
+    cadenced, needs a human to supply real cash balance) production
+    execution_plan.json last happened to be.
+
+    2026-08-22: without this, the daily-scheduled a2120_shadow_pipeline step
+    (wired in since 2026-07-16) was comparing a same-day-fresh compounding
+    regime diagnostic against a production execution_plan.json that can be
+    several trading days stale, and the replay's date-alignment hard blocker
+    (evaluate_00631l_compounding_execution_replay_shadow.py::_hard_blockers)
+    would then mask a real FAST_REENTER_CANDIDATE signal every day the
+    staleness persisted -- not a code bug, an operational cadence mismatch
+    between two artifacts that update on different schedules.
+
+    Uses the SAME workbook/manifest/cash-balance-0 defaults as a manual
+    dry-run of execution_plan.py's own CLI, and reuses build_execution_plan()
+    directly (no subprocess) with THIS run's own freshly-generated
+    diagnostic_path as compounding_regime_path, so the two artifacts are
+    guaranteed date-aligned by construction. Writes only to new, clearly
+    shadow-labeled paths -- report/group_a_plus/latest/execution_plan.json
+    (the real production pointer) is never read or written here.
+
+    Best-effort: on any failure, logs a warning and returns None so callers
+    fall back to whatever --execution-plan was passed in (unchanged prior
+    behavior), rather than breaking the rest of the a2120 shadow chain.
+    """
+
+    try:
+        plan = build_execution_plan(
+            workbook=EXEC_PLAN_DEFAULT_WORKBOOK,
+            requested_as_of=datetime.now().strftime("%Y-%m-%d"),
+            cash_balance=0.0,
+            max_business_stale_days=3,
+            db_path=db_path,
+            manifest_path=EXEC_PLAN_DEFAULT_MANIFEST,
+            compounding_regime_path=diagnostic_path,
+            enforce_advisory_pre_trade_guards=False,
+        )
+    except Exception as exc:  # best-effort: never break the rest of the shadow chain
+        print(f"  [WARNING] a2120 execution-plan shadow snapshot generation failed (non-fatal): {exc}")
+        return None
+
+    snapshot_path = output_dir / f"group_a_plus_execution_plan_a2120_shadow_snapshot_{date_stamp}.json"
+    _write_json(snapshot_path, plan)
+    _write_json(latest_dir / "execution_plan_a2120_shadow_snapshot.json", plan)
+    return snapshot_path
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -181,6 +238,24 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Path]:
     diagnostic = build_diagnostic_report(_diagnostic_args(args, diagnostic_path, diagnostic_csv))
     _write_json(diagnostic_path, diagnostic)
 
+    # 2026-08-22: prefer a same-day-fresh, shadow-only execution_plan snapshot
+    # (date-aligned with diagnostic_path by construction) over whatever the
+    # real, manually-cadenced report/group_a_plus/latest/execution_plan.json
+    # last happened to be -- see _build_fresh_execution_plan_snapshot's
+    # docstring. Falls back to args.execution_plan unchanged if generation
+    # fails for any reason (best-effort, never breaks the rest of this chain).
+    execution_plan_snapshot_path = None
+    if not getattr(args, "no_fresh_execution_plan_snapshot", False):
+        execution_plan_snapshot_path = _build_fresh_execution_plan_snapshot(
+            diagnostic_path=diagnostic_path,
+            date_stamp=date_stamp,
+            output_dir=output_dir,
+            latest_dir=latest_dir,
+            db_path=Path(args.db),
+        )
+        if execution_plan_snapshot_path is not None:
+            args.execution_plan = str(execution_plan_snapshot_path)
+
     replay_path = output_dir / f"00631l_compounding_execution_replay_shadow_tunedtrend_score3_ar0_persist50_rev50_{date_stamp}.json"
     replay = build_replay_report(_replay_args(args, diagnostic_path, replay_path))
     _write_json(replay_path, replay)
@@ -236,6 +311,18 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Path]:
     }
     _write_json(risk_turnover_path, risk_turnover)
 
+    # Best-effort load: the T+1 delay audit
+    # (evaluate_00631l_compounding_t_plus_1_execution_delay_shadow.py) is a
+    # periodic structural check, not something that needs re-running every
+    # day, so this just picks up whatever the latest saved result says.
+    t_plus_1_path = Path(args.t_plus_1_delay_report)
+    t_plus_1_report = None
+    if t_plus_1_path.exists():
+        try:
+            t_plus_1_report = _read_json(t_plus_1_path)
+        except Exception as exc:
+            print(f"  [WARNING] could not read T+1 delay report (non-fatal): {exc}")
+
     scorecard_path = shadow_dir / f"a2120_letf_compounding_shadow_scorecard_{date_stamp}.json"
     scorecard = build_scorecard(
         seven_window_report=_read_json(Path(args.seven_window_report)),
@@ -244,6 +331,8 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Path]:
         overlap_report=_read_json(Path(args.overlap_report)),
         replay_report=replay,
         rolling_report=_read_json(Path(args.rolling_report)),
+        t_plus_1_delay_report=t_plus_1_report,
+        execution_plan_is_fresh_shadow_snapshot=execution_plan_snapshot_path is not None,
     )
     scorecard["inputs"] = {
         "seven_window_report": str(Path(args.seven_window_report)),
@@ -252,6 +341,7 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Path]:
         "overlap_report": str(Path(args.overlap_report)),
         "replay_report": str(replay_path),
         "rolling_report": str(Path(args.rolling_report)),
+        "t_plus_1_delay_report": str(t_plus_1_path) if t_plus_1_report is not None else None,
     }
     _write_json(scorecard_path, scorecard)
 
@@ -264,6 +354,8 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Path]:
         "turnover_capped_replay": str(turnover_path),
         "risk_sensitive_turnover_capped_replay": str(risk_turnover_path),
         "scorecard": str(scorecard_path),
+        "execution_plan_used": str(args.execution_plan),
+        "execution_plan_is_fresh_shadow_snapshot": execution_plan_snapshot_path is not None,
     }
     latest = build_latest_summary(
         date_stamp=date_stamp,
@@ -315,10 +407,24 @@ def main() -> None:
     parser.add_argument("--end", default="latest")
     parser.add_argument("--recent-days", type=int, default=20)
     parser.add_argument("--execution-plan", default=str(DEFAULT_EXECUTION_PLAN))
+    parser.add_argument(
+        "--no-fresh-execution-plan-snapshot",
+        action="store_true",
+        default=False,
+        help=(
+            "Skip generating a same-day shadow execution_plan snapshot and use "
+            "--execution-plan exactly as given (e.g. to replay against a specific "
+            "historical plan). By default a fresh, date-aligned snapshot is "
+            "generated and used instead, since the real production "
+            "execution_plan.json is only regenerated when someone manually runs "
+            "it with a real cash balance, not on every pipeline run."
+        ),
+    )
     parser.add_argument("--turnover-cap", type=float, default=0.50)
     parser.add_argument("--seven-window-report", default=str(DEFAULT_7WIN))
     parser.add_argument("--cost20-report", default=str(DEFAULT_COST20))
     parser.add_argument("--rolling-report", default=str(DEFAULT_ROLLING))
+    parser.add_argument("--t-plus-1-delay-report", default=str(DEFAULT_T_PLUS_1_DELAY))
     parser.add_argument("--overlap-report", default=str(DEFAULT_OVERLAP))
     parser.add_argument("--a2119-report", default=str(DEFAULT_A2119))
     parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))

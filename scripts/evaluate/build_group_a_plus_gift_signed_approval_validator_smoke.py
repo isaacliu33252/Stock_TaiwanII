@@ -12,7 +12,7 @@ import argparse
 import json
 import sys
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any
@@ -43,12 +43,22 @@ def _approval_record_template(schema: dict[str, Any]) -> dict[str, Any]:
     return deepcopy(value) if isinstance(value, dict) else {}
 
 
-def _valid_record_from_template(template: dict[str, Any]) -> dict[str, Any]:
+def _as_of_datetime(as_of: str) -> datetime:
+    try:
+        return datetime.fromisoformat(as_of.replace("Z", "+00:00"))
+    except ValueError:
+        return datetime.fromisoformat(f"{as_of}T00:00:00")
+
+
+def _valid_record_from_template(template: dict[str, Any], *, as_of: str) -> dict[str, Any]:
     record = deepcopy(template)
+    as_of_dt = _as_of_datetime(as_of)
+    approved_at = as_of_dt - timedelta(days=1)
+    expires_at = as_of_dt + timedelta(days=7)
     record["reviewer"] = "validator_smoke_reviewer"
     record["reviewer_role"] = "research_governance_smoke"
-    record["approved_at"] = "2026-07-22T09:00:00"
-    record["expires_at"] = "2026-07-29T09:00:00"
+    record["approved_at"] = approved_at.isoformat(timespec="seconds")
+    record["expires_at"] = expires_at.isoformat(timespec="seconds")
     record["notes"] = "Temporary validator smoke record; not a formal approval."
 
     approved_actions = record.setdefault("approved_actions", {})
@@ -131,7 +141,7 @@ def build_review(
             temp_dir = Path(tmp)
             temp_dir_used = str(temp_dir)
 
-            valid_record = _valid_record_from_template(template)
+            valid_record = _valid_record_from_template(template, as_of=as_of)
             valid_path = _write(temp_dir / "valid_signed_record.json", valid_record)
             valid_review = validate_signed_record(
                 approval_record_schema_path=schema_path,

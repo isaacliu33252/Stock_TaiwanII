@@ -108,3 +108,27 @@ def test_multi_window_gate_ignores_garch_fold_benchmarks(tmp_path: Path) -> None
     report = evaluate_multi_window([fold])
 
     assert [candidate["candidate"] for candidate in report["candidates"]] == ["garch_selector_frozen"]
+
+
+def test_multi_window_gate_extracts_explicit_candidate_rows(tmp_path: Path) -> None:
+    result = _write_json(
+        tmp_path / "explicit_rows.json",
+        {
+            "experiment": "same_window_candidate",
+            "window": {"start": "2025-01-02", "end": "2026-08-31"},
+            "baseline": {"metrics": {"final_value": 100.0, "sharpe_ratio": 1.0, "max_drawdown": -0.20}},
+            "rows": [
+                {
+                    "name": "golden2_latest_ncf_panel",
+                    "metrics": {"final_value": 105.0, "sharpe_ratio": 1.1, "max_drawdown": -0.18},
+                }
+            ],
+        },
+    )
+
+    report = evaluate_multi_window([result])
+
+    assert report["decision"] == "candidate_available"
+    assert report["candidate_count"] == 1
+    assert report["candidates"][0]["candidate"] == "golden2_latest_ncf_panel"
+    assert report["candidates"][0]["decision"] == "multi_window_pass"

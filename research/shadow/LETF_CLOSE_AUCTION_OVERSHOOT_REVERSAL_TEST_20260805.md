@@ -24,7 +24,7 @@ cannot be replicated directly; this is a reduced-form proxy test only.
 2023    10.2
 2024    16.5
 2025    24.4
-2026    80.7
+2026    80.8
 
 ## Context: TSMC's own daily traded value (億元 TWD, yearly mean)
 
@@ -40,7 +40,7 @@ cannot be replicated directly; this is a reduced-form proxy test only.
 2023    129.7
 2024    344.9
 2025    373.2
-2026    744.3
+2026    722.0
 
 ## Ratio: (00631L+00632R turnover) / (TSMC's own full-day turnover)
 
@@ -61,46 +61,46 @@ alone, not full-day volume) reached a median of 1.02.
 2023    0.079
 2024    0.048
 2025    0.065
-2026    0.108
+2026    0.112
 
 ## Full-sample regressions (HAC/Newey-West, 5 lags)
 
                       channel                                                label    n      beta         t            p
-                 same-day (t)                               2330 (TSMC) | t | SOXX 3061  0.380785 16.121764 1.794140e-58
-next-day (t+1, reversal test)                             2330 (TSMC) | t+1 | SOXX 3060 -0.008746 -0.507773 6.116125e-01
-                 same-day (t)    0050 (Taiwan50, LETF's own underlying) | t | SOXX 3061  0.287238 15.095591 1.731301e-51
-next-day (t+1, reversal test)  0050 (Taiwan50, LETF's own underlying) | t+1 | SOXX 3060  0.004786  0.340496 7.334834e-01
-                 same-day (t)             Hon Hai (low Taiwan50 weight) | t | SOXX 3061  0.241960 10.323646 5.509048e-25
-next-day (t+1, reversal test)           Hon Hai (low Taiwan50 weight) | t+1 | SOXX 3060  0.053818  2.445787 1.445362e-02
-                 same-day (t)            MediaTek (low Taiwan50 weight) | t | SOXX 3061  0.359259 11.676760 1.675617e-31
-next-day (t+1, reversal test)          MediaTek (low Taiwan50 weight) | t+1 | SOXX 3060  0.080827  2.978572 2.895953e-03
-                 same-day (t)       Chunghwa Telecom (low-beta control) | t | SOXX 3061  0.018843  2.365269 1.801699e-02
-next-day (t+1, reversal test)     Chunghwa Telecom (low-beta control) | t+1 | SOXX 3060 -0.000680 -0.090265 9.280767e-01
-                 same-day (t)                                2330 (TSMC) | t | QQQ 3061  0.517291 12.051398 1.906881e-33
-next-day (t+1, reversal test)                              2330 (TSMC) | t+1 | QQQ 3060 -0.034813 -1.341609 1.797227e-01
-                 same-day (t)     0050 (Taiwan50, LETF's own underlying) | t | QQQ 3061  0.390320 11.506332 1.225816e-30
-next-day (t+1, reversal test)   0050 (Taiwan50, LETF's own underlying) | t+1 | QQQ 3060 -0.010174 -0.515252 6.063773e-01
-                 same-day (t)              Hon Hai (low Taiwan50 weight) | t | QQQ 3061  0.336694  8.567398 1.058493e-17
-next-day (t+1, reversal test)            Hon Hai (low Taiwan50 weight) | t+1 | QQQ 3060  0.083419  2.615255 8.916097e-03
-                 same-day (t)             MediaTek (low Taiwan50 weight) | t | QQQ 3061  0.474791  8.756405 2.015770e-18
-next-day (t+1, reversal test)           MediaTek (low Taiwan50 weight) | t+1 | QQQ 3060  0.072631  1.897906 5.770840e-02
-                 same-day (t)        Chunghwa Telecom (low-beta control) | t | QQQ 3061  0.042646  3.470527 5.194388e-04
-next-day (t+1, reversal test)      Chunghwa Telecom (low-beta control) | t+1 | QQQ 3060  0.001643  0.125922 8.997938e-01
-                 same-day (t)                              2330 (TSMC) | t | ^IXIC 3061  0.529175 11.684221 1.534796e-31
-next-day (t+1, reversal test)                            2330 (TSMC) | t+1 | ^IXIC 3060 -0.033501 -1.205419 2.280418e-01
-                 same-day (t)   0050 (Taiwan50, LETF's own underlying) | t | ^IXIC 3061  0.403797 11.431797 2.900443e-30
-next-day (t+1, reversal test) 0050 (Taiwan50, LETF's own underlying) | t+1 | ^IXIC 3060 -0.008841 -0.408251 6.830896e-01
-                 same-day (t)            Hon Hai (low Taiwan50 weight) | t | ^IXIC 3061  0.349886  8.503078 1.846289e-17
-next-day (t+1, reversal test)          Hon Hai (low Taiwan50 weight) | t+1 | ^IXIC 3060  0.088027  2.642195 8.237052e-03
-                 same-day (t)           MediaTek (low Taiwan50 weight) | t | ^IXIC 3061  0.486617  8.758300 1.982165e-18
-next-day (t+1, reversal test)         MediaTek (low Taiwan50 weight) | t+1 | ^IXIC 3060  0.079231  2.047330 4.062567e-02
-                 same-day (t)      Chunghwa Telecom (low-beta control) | t | ^IXIC 3061  0.041783  3.399713 6.745664e-04
-next-day (t+1, reversal test)    Chunghwa Telecom (low-beta control) | t+1 | ^IXIC 3060  0.002986  0.224232 8.225765e-01
+                 same-day (t)                               2330 (TSMC) | t | SOXX 3075  0.365671 15.123862 1.127326e-51
+next-day (t+1, reversal test)                             2330 (TSMC) | t+1 | SOXX 3074 -0.011124 -0.656917 5.112344e-01
+                 same-day (t)    0050 (Taiwan50, LETF's own underlying) | t | SOXX 3074  0.277639 14.415738 4.120141e-47
+next-day (t+1, reversal test)  0050 (Taiwan50, LETF's own underlying) | t+1 | SOXX 3073  0.003772  0.274575 7.836426e-01
+                 same-day (t)             Hon Hai (low Taiwan50 weight) | t | SOXX 3064  0.242830 10.344820 4.417477e-25
+next-day (t+1, reversal test)           Hon Hai (low Taiwan50 weight) | t+1 | SOXX 3063  0.054265  2.483691 1.300286e-02
+                 same-day (t)            MediaTek (low Taiwan50 weight) | t | SOXX 3064  0.359693 11.720743 9.979287e-32
+next-day (t+1, reversal test)          MediaTek (low Taiwan50 weight) | t+1 | SOXX 3063  0.087106  3.212643 1.315198e-03
+                 same-day (t)       Chunghwa Telecom (low-beta control) | t | SOXX 3064  0.018903  2.381721 1.723195e-02
+next-day (t+1, reversal test)     Chunghwa Telecom (low-beta control) | t+1 | SOXX 3063 -0.000906 -0.121016 9.036783e-01
+                 same-day (t)                                2330 (TSMC) | t | QQQ 3075  0.504572 12.032966 2.384394e-33
+next-day (t+1, reversal test)                              2330 (TSMC) | t+1 | QQQ 3074 -0.036065 -1.410430 1.584128e-01
+                 same-day (t)     0050 (Taiwan50, LETF's own underlying) | t | QQQ 3074  0.382630 11.515133 1.106885e-30
+next-day (t+1, reversal test)   0050 (Taiwan50, LETF's own underlying) | t+1 | QQQ 3073 -0.010097 -0.519087 6.036997e-01
+                 same-day (t)              Hon Hai (low Taiwan50 weight) | t | QQQ 3064  0.337566  8.591475 8.586006e-18
+next-day (t+1, reversal test)            Hon Hai (low Taiwan50 weight) | t+1 | QQQ 3063  0.084658  2.664290 7.715112e-03
+                 same-day (t)             MediaTek (low Taiwan50 weight) | t | QQQ 3064  0.476254  8.779762 1.638213e-18
+next-day (t+1, reversal test)           MediaTek (low Taiwan50 weight) | t+1 | QQQ 3063  0.079144  2.065639 3.886254e-02
+                 same-day (t)        Chunghwa Telecom (low-beta control) | t | QQQ 3064  0.042158  3.434626 5.933731e-04
+next-day (t+1, reversal test)      Chunghwa Telecom (low-beta control) | t+1 | QQQ 3063  0.001339  0.102864 9.180711e-01
+                 same-day (t)                              2330 (TSMC) | t | ^IXIC 3075  0.520384 11.740733 7.880014e-32
+next-day (t+1, reversal test)                            2330 (TSMC) | t+1 | ^IXIC 3074 -0.034454 -1.251490 2.107558e-01
+                 same-day (t)   0050 (Taiwan50, LETF's own underlying) | t | ^IXIC 3074  0.398618 11.485603 1.558434e-30
+next-day (t+1, reversal test) 0050 (Taiwan50, LETF's own underlying) | t+1 | ^IXIC 3073 -0.008558 -0.399282 6.896857e-01
+                 same-day (t)            Hon Hai (low Taiwan50 weight) | t | ^IXIC 3064  0.350407  8.524599 1.533405e-17
+next-day (t+1, reversal test)          Hon Hai (low Taiwan50 weight) | t+1 | ^IXIC 3063  0.089387  2.692005 7.102386e-03
+                 same-day (t)           MediaTek (low Taiwan50 weight) | t | ^IXIC 3064  0.488426  8.776735 1.682886e-18
+next-day (t+1, reversal test)         MediaTek (low Taiwan50 weight) | t+1 | ^IXIC 3063  0.085205  2.199169 2.786591e-02
+                 same-day (t)      Chunghwa Telecom (low-beta control) | t | ^IXIC 3064  0.041090  3.343579 8.270516e-04
+next-day (t+1, reversal test)    Chunghwa Telecom (low-beta control) | t+1 | ^IXIC 3063  0.002606  0.196010 8.446026e-01
 
 ## Dose-split and period-split regressions (2330, next-day reversal, SOXX instrument)
 
                                                               label    n      beta         t        p                                          regime
- 2330 (TSMC) | t+1 | low-dose (00631L+00632R turnover below median) 1517 -0.011062 -0.402121 0.687595  low-dose (00631L+00632R turnover below median)
-2330 (TSMC) | t+1 | high-dose (00631L+00632R turnover above median) 1516 -0.010620 -0.479088 0.631876 high-dose (00631L+00632R turnover above median)
-                   2330 (TSMC) | t+1 | pre-2020-01 (smaller 00631L) 1465 -0.034725 -1.345330 0.178519                    pre-2020-01 (smaller 00631L)
-                 2330 (TSMC) | t+1 | 2020-01 onward (larger 00631L) 1595 -0.000457 -0.021494 0.982852                  2020-01 onward (larger 00631L)
+ 2330 (TSMC) | t+1 | low-dose (00631L+00632R turnover below median) 1525 -0.011441 -0.416672 0.676918  low-dose (00631L+00632R turnover below median)
+2330 (TSMC) | t+1 | high-dose (00631L+00632R turnover above median) 1522 -0.014368 -0.662405 0.507712 high-dose (00631L+00632R turnover above median)
+                   2330 (TSMC) | t+1 | pre-2020-01 (smaller 00631L) 1465 -0.034725 -1.345306 0.178527                    pre-2020-01 (smaller 00631L)
+                 2330 (TSMC) | t+1 | 2020-01 onward (larger 00631L) 1609 -0.004195 -0.201984 0.839929                  2020-01 onward (larger 00631L)

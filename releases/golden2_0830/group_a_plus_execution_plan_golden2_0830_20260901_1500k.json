@@ -1,0 +1,3374 @@
+{
+  "success": true,
+  "data": {
+    "plan_version": 2,
+    "generated_at": "2026-08-31T21:46:35",
+    "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "requested_as_of_date": "2026-09-01",
+    "actual_data_date": "2026-08-31",
+    "workbook": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/taiwan_stock_20260619.xlsx",
+    "holdings_source": "results/holdings_group_a_plus_from_taiwan_stock_20260831.json",
+    "holdings_row": "即時庫存",
+    "current_holdings": {
+      "0050.TW": 4631,
+      "00631L.TW": 980,
+      "00632R.TW": 5000,
+      "00679B.TWO": 100
+    },
+    "current_cash_input": 920516.6511917114,
+    "cash_assumption": "workbook has no cash field; using explicit --cash-balance input",
+    "current_holdings_market_value": 579483.3488082886,
+    "current_total_assets": 1500000.0,
+    "current_prices": {
+      "00679B.TWO": 25.860000610351562,
+      "00632R.TW": 9.949999809265137,
+      "00631L.TW": 35.81999969482422,
+      "0050.TW": 106.25
+    },
+    "execution_regime": "golden1",
+    "target_weights": {
+      "0050.TW": 0.47,
+      "00631L.TW": 0.09871434512265483,
+      "00632R.TW": 0.1671390088790092,
+      "00679B.TWO": 0.0,
+      "cash": 0.264146645998336
+    },
+    "theoretical_target_shares": {
+      "0050.TW": 6635,
+      "00631L.TW": 4133,
+      "00632R.TW": 25196,
+      "00679B.TWO": 0
+    },
+    "target_shares": {
+      "0050.TW": 5432,
+      "00631L.TW": 2241,
+      "00632R.TW": 13078,
+      "00679B.TWO": 0
+    },
+    "suppressed_trades": [],
+    "staged_buys": [
+      {
+        "ticker": "0050.TW",
+        "current_shares": 4631,
+        "full_target_shares": 6635,
+        "staged_target_shares": 5432,
+        "full_delta_shares": 2004,
+        "staged_delta_shares": 801,
+        "deferred_delta_shares": 1203,
+        "price": 106.25,
+        "full_buy_notional": 212925.0,
+        "staged_buy_notional": 85106.25,
+        "deferred_buy_notional": 127818.75,
+        "max_initial_buy_fraction": 0.4,
+        "reason": "large_buy_staged"
+      },
+      {
+        "ticker": "00631L.TW",
+        "current_shares": 980,
+        "full_target_shares": 4133,
+        "staged_target_shares": 2241,
+        "full_delta_shares": 3153,
+        "staged_delta_shares": 1261,
+        "deferred_delta_shares": 1892,
+        "price": 35.81999969482422,
+        "full_buy_notional": 112940.45903778076,
+        "staged_buy_notional": 45169.01961517334,
+        "deferred_buy_notional": 67771.43942260742,
+        "max_initial_buy_fraction": 0.4,
+        "reason": "large_buy_staged"
+      },
+      {
+        "ticker": "00632R.TW",
+        "current_shares": 5000,
+        "full_target_shares": 25196,
+        "staged_target_shares": 13078,
+        "full_delta_shares": 20196,
+        "staged_delta_shares": 8078,
+        "deferred_delta_shares": 12118,
+        "price": 9.949999809265137,
+        "full_buy_notional": 200950.1961479187,
+        "staged_buy_notional": 80376.09845924377,
+        "deferred_buy_notional": 120574.09768867493,
+        "max_initial_buy_fraction": 0.4,
+        "reason": "large_buy_staged"
+      }
+    ],
+    "staged_target_shares_before_guards": {
+      "0050.TW": 5432,
+      "00631L.TW": 2241,
+      "00632R.TW": 13078,
+      "00679B.TWO": 0
+    },
+    "advisory_pre_trade_guards_enforced": false,
+    "pre_trade_guard": {
+      "name": "volatility_gate_no_00631l_add",
+      "status": "flagged_advisory_only",
+      "ticker": "00631L.TW",
+      "current_shares": 980,
+      "requested_target_shares": 2241,
+      "guarded_target_shares": 2241,
+      "blocked_trades": [],
+      "policy": "advisory_no_auto_weight_change",
+      "allow_00631l_add": false,
+      "reason": "tail_conformal_blocks_new_00631l_exposure",
+      "source_alert_type": "tail_specific_conformal_warning",
+      "volatility_gate": null,
+      "reference_00631l_scale": null,
+      "tail_conformal": {
+        "policy": "diagnostic_warning_only_no_weight_change",
+        "recommended_action": "pause_new_00631l_adds_and_monitor_trough",
+        "allow_00631l_add": false,
+        "auto_reduce_00631l": false,
+        "ticker": "00631L.TW",
+        "current_risk_bucket": "elevated",
+        "min_lower_tail_confidence_bound": -0.0886663038952209,
+        "max_prob_mdd_lt_8pct": 0.19631901840490798,
+        "high_tail_reasons": [
+          "h10_lower_bound_le_8pct"
+        ],
+        "diagnostics": {
+          "h5": {
+            "horizon_days": 5,
+            "point_forecast_return": 0.030517270287502618,
+            "lower_tail_confidence_bound": -0.05842898689271325,
+            "alpha": 0.1,
+            "effective_alpha": 0.1,
+            "adaptive": false,
+            "nominal_lower_tail_coverage": 0.9,
+            "calibration_scope": "elevated",
+            "calibration_count": 157,
+            "lower_tail_residual_quantile": 0.08894625718021587,
+            "prob_mdd_lt_8pct": 0.0975609756097561,
+            "mdd_threshold": -0.08
+          },
+          "h10": {
+            "horizon_days": 10,
+            "point_forecast_return": 0.040820202842656195,
+            "lower_tail_confidence_bound": -0.0886663038952209,
+            "alpha": 0.1,
+            "effective_alpha": 0.1,
+            "adaptive": false,
+            "nominal_lower_tail_coverage": 0.9,
+            "calibration_scope": "elevated",
+            "calibration_count": 157,
+            "lower_tail_residual_quantile": 0.1294865067378771,
+            "prob_mdd_lt_8pct": 0.19631901840490798,
+            "mdd_threshold": -0.08
+          }
+        }
+      },
+      "enforced": false,
+      "advisory_trades": [
+        {
+          "ticker": "00631L.TW",
+          "side": "buy",
+          "current_shares": 980,
+          "requested_target_shares": 2241,
+          "guarded_target_shares": 980,
+          "blocked_delta_shares": 1261,
+          "reason": "tail_conformal_no_00631l_add"
+        }
+      ],
+      "review_note": "Advisory only: full target kept for manual review instead of being auto-blocked."
+    },
+    "risk_add_pre_trade_guard": {
+      "name": "a2118_extreme_risk_no_new_adds",
+      "status": "inactive",
+      "tickers": [
+        "0050.TW",
+        "00631L.TW"
+      ],
+      "blocked_trades": [],
+      "policy": "warning_only_no_weight_change",
+      "recommended_action": "none",
+      "source_alert_type": null
+    },
+    "compounding_regime_pre_trade_guard": {
+      "name": "compounding_regime_no_00631l_add",
+      "status": "unavailable",
+      "ticker": "00631L.TW",
+      "current_shares": 980,
+      "requested_target_shares": 2241,
+      "guarded_target_shares": 2241,
+      "blocked_trades": [],
+      "policy": "auto_blocks_00631l_buy_additions_only_never_forces_sells",
+      "allow_00631l_add": true,
+      "compounding_regime": null,
+      "recommended_policy": null,
+      "date": null,
+      "reason": "compounding_regime_unavailable",
+      "enforced": false
+    },
+    "pre_trade_guards": [
+      {
+        "name": "volatility_gate_no_00631l_add",
+        "status": "flagged_advisory_only",
+        "ticker": "00631L.TW",
+        "current_shares": 980,
+        "requested_target_shares": 2241,
+        "guarded_target_shares": 2241,
+        "blocked_trades": [],
+        "policy": "advisory_no_auto_weight_change",
+        "allow_00631l_add": false,
+        "reason": "tail_conformal_blocks_new_00631l_exposure",
+        "source_alert_type": "tail_specific_conformal_warning",
+        "volatility_gate": null,
+        "reference_00631l_scale": null,
+        "tail_conformal": {
+          "policy": "diagnostic_warning_only_no_weight_change",
+          "recommended_action": "pause_new_00631l_adds_and_monitor_trough",
+          "allow_00631l_add": false,
+          "auto_reduce_00631l": false,
+          "ticker": "00631L.TW",
+          "current_risk_bucket": "elevated",
+          "min_lower_tail_confidence_bound": -0.0886663038952209,
+          "max_prob_mdd_lt_8pct": 0.19631901840490798,
+          "high_tail_reasons": [
+            "h10_lower_bound_le_8pct"
+          ],
+          "diagnostics": {
+            "h5": {
+              "horizon_days": 5,
+              "point_forecast_return": 0.030517270287502618,
+              "lower_tail_confidence_bound": -0.05842898689271325,
+              "alpha": 0.1,
+              "effective_alpha": 0.1,
+              "adaptive": false,
+              "nominal_lower_tail_coverage": 0.9,
+              "calibration_scope": "elevated",
+              "calibration_count": 157,
+              "lower_tail_residual_quantile": 0.08894625718021587,
+              "prob_mdd_lt_8pct": 0.0975609756097561,
+              "mdd_threshold": -0.08
+            },
+            "h10": {
+              "horizon_days": 10,
+              "point_forecast_return": 0.040820202842656195,
+              "lower_tail_confidence_bound": -0.0886663038952209,
+              "alpha": 0.1,
+              "effective_alpha": 0.1,
+              "adaptive": false,
+              "nominal_lower_tail_coverage": 0.9,
+              "calibration_scope": "elevated",
+              "calibration_count": 157,
+              "lower_tail_residual_quantile": 0.1294865067378771,
+              "prob_mdd_lt_8pct": 0.19631901840490798,
+              "mdd_threshold": -0.08
+            }
+          }
+        },
+        "enforced": false,
+        "advisory_trades": [
+          {
+            "ticker": "00631L.TW",
+            "side": "buy",
+            "current_shares": 980,
+            "requested_target_shares": 2241,
+            "guarded_target_shares": 980,
+            "blocked_delta_shares": 1261,
+            "reason": "tail_conformal_no_00631l_add"
+          }
+        ],
+        "review_note": "Advisory only: full target kept for manual review instead of being auto-blocked."
+      },
+      {
+        "name": "a2118_extreme_risk_no_new_adds",
+        "status": "inactive",
+        "tickers": [
+          "0050.TW",
+          "00631L.TW"
+        ],
+        "blocked_trades": [],
+        "policy": "warning_only_no_weight_change",
+        "recommended_action": "none",
+        "source_alert_type": null
+      },
+      {
+        "name": "compounding_regime_no_00631l_add",
+        "status": "unavailable",
+        "ticker": "00631L.TW",
+        "current_shares": 980,
+        "requested_target_shares": 2241,
+        "guarded_target_shares": 2241,
+        "blocked_trades": [],
+        "policy": "auto_blocks_00631l_buy_additions_only_never_forces_sells",
+        "allow_00631l_add": true,
+        "compounding_regime": null,
+        "recommended_policy": null,
+        "date": null,
+        "reason": "compounding_regime_unavailable",
+        "enforced": false
+      }
+    ],
+    "guard_impact_summary": {
+      "active_guard_names": [
+        "volatility_gate_no_00631l_add"
+      ],
+      "blocked_guard_names": [],
+      "by_guard": [
+        {
+          "name": "volatility_gate_no_00631l_add",
+          "status": "flagged_advisory_only",
+          "allow_00631l_add": false,
+          "blocked_trade_count": 0,
+          "blocked_buy_notional": 0.0,
+          "blocked_trades": []
+        },
+        {
+          "name": "a2118_extreme_risk_no_new_adds",
+          "status": "inactive",
+          "allow_00631l_add": null,
+          "blocked_trade_count": 0,
+          "blocked_buy_notional": 0.0,
+          "blocked_trades": []
+        },
+        {
+          "name": "compounding_regime_no_00631l_add",
+          "status": "unavailable",
+          "allow_00631l_add": true,
+          "blocked_trade_count": 0,
+          "blocked_buy_notional": 0.0,
+          "blocked_trades": []
+        }
+      ],
+      "combined_blocked_buys": [],
+      "combined_blocked_buy_notional": 0,
+      "combined_blocked_trade_count": 0
+    },
+    "trough_high_vol_override_watch": {
+      "name": "trough_high_vol_00631l_override_watch",
+      "research_only": true,
+      "live_execution_effect": "none",
+      "status": "inactive",
+      "candidate_policy": "partial_reentry_high_vol_no_lower_low_3d_cap_25pct",
+      "max_override_fraction_of_blocked_00631l_buy": 0.25,
+      "trough_state": "NO_TROUGH",
+      "volatility_guard_status": "flagged_advisory_only",
+      "risk_guard_blocks_00631l": false,
+      "compounding_guard_blocks_00631l": false,
+      "blocked_00631l_buy_shares": 0,
+      "research_candidate_00631l_shares": 0,
+      "no_fresh_0050_lower_low_3d": true,
+      "latest_0050_close": 106.25,
+      "prior_0050_3d_low": 105.9000015258789,
+      "reason": "conditions_not_met_or_other_guard_blocks_00631l"
+    },
+    "cross_market_graph_advisory": {
+      "status": "available",
+      "policy": "shadow_only_no_weight_change",
+      "live_execution_effect": "none",
+      "latest_shadow_action": "NO_ADD",
+      "no_add_active": false,
+      "recommended_action": "none",
+      "latest_probabilities": {
+        "REENTER": 0.5597137628023908,
+        "NO_ADD": 0.5920958930833974
+      },
+      "thresholds": {
+        "no_add_alert_probability": 0.65
+      },
+      "recommended_use": "NO_ADD_ONLY_SHADOW_FILTER",
+      "promote_to_execution_guard": false,
+      "promote_to_reentry_signal": false,
+      "auto_weight_change": false,
+      "overall_metrics": {
+        "NO_ADD_auc": 0.5320128454965811,
+        "REENTER_auc": 0.4845623973688792
+      },
+      "stress_year_metrics": {
+        "2021": {
+          "NO_ADD_auc": 0.5007678806494076,
+          "NO_ADD_balanced_accuracy": 0.49813514699429573,
+          "REENTER_auc": 0.42875770507349453
+        },
+        "2022": {
+          "NO_ADD_auc": 0.5585416666666666,
+          "NO_ADD_balanced_accuracy": 0.540625,
+          "REENTER_auc": 0.4487291155277535
+        },
+        "2026": {
+          "NO_ADD_auc": 0.521931115690315,
+          "NO_ADD_balanced_accuracy": 0.5183985869885193,
+          "REENTER_auc": 0.5056056877221766
+        }
+      },
+      "condition_metrics": {
+        "condition_0050_5d_le_minus2pct": {
+          "rows": 239,
+          "frequency": 0.18147304479878512,
+          "NO_ADD_auc": 0.4766096579476861,
+          "NO_ADD_balanced_accuracy": 0.4540995975855131,
+          "REENTER_auc": 0.4833683473389356
+        },
+        "condition_0050_10d_le_minus3pct": {
+          "rows": 204,
+          "frequency": 0.1548974943052392,
+          "NO_ADD_auc": 0.4668276972624798,
+          "NO_ADD_balanced_accuracy": 0.46682769726247986,
+          "REENTER_auc": 0.4499176595950789
+        },
+        "condition_0050_60d_drawdown_le_minus5pct": {
+          "rows": 464,
+          "frequency": 0.35231586940015186,
+          "NO_ADD_auc": 0.5198394906743184,
+          "NO_ADD_balanced_accuracy": 0.49928263988522237,
+          "REENTER_auc": 0.4560840604184257
+        },
+        "condition_0050_5d_abs_ge_2pct": {
+          "rows": 622,
+          "frequency": 0.47228549734244496,
+          "NO_ADD_auc": 0.5377632584024443,
+          "NO_ADD_balanced_accuracy": 0.5162319947621127,
+          "REENTER_auc": 0.5001825198164372
+        },
+        "condition_00631l_5d_le_minus4pct": {
+          "rows": 216,
+          "frequency": 0.16400911161731208,
+          "NO_ADD_auc": 0.5242485990830362,
+          "NO_ADD_balanced_accuracy": 0.4818135506877229,
+          "REENTER_auc": 0.4856775300171527
+        }
+      },
+      "selected_features": [
+        "src_AMD_ret1d",
+        "src_ASML_ret1d",
+        "src_AVGO_ret1d",
+        "src_NVDA_ret1d",
+        "src_QQQ_ret1d",
+        "src_SOXX_minus_QQQ_ret1d",
+        "src_SOXX_ret1d",
+        "src_TSM_ret1d",
+        "src_US_SEMI_BASKET_ret1d"
+      ],
+      "report_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/cross_market_directed_graph_shadow_latest.json",
+      "rationale": "NO_ADD has weak but repeatable signal in selected stress years; REENTER is unstable and should not drive re-entry."
+    },
+    "execution_controls": {
+      "published_commission_rate": 0.001425,
+      "commission_discount": 1.0,
+      "effective_commission_rate": 0.001425,
+      "min_trade_notional": 5000.0,
+      "min_weight_deviation": 0.005,
+      "share_lot_size": 1,
+      "forced_liquidations_bypass_bands": true,
+      "max_initial_buy_fraction": 0.4,
+      "effective_max_initial_buy_fraction": 0.4,
+      "trough_reentry_staging": {
+        "state": "NO_TROUGH",
+        "default_max_initial_buy_fraction": 0.4,
+        "recommended_execution_staging_fraction": null,
+        "effective_max_initial_buy_fraction": 0.4,
+        "applied": false,
+        "policy": "diagnostic_reentry_timing_only_no_target_weight_change",
+        "capitulation_score": 1,
+        "reentry_confirmation_score": 5
+      },
+      "min_staged_buy_notional": 20000.0,
+      "buy_staging_applies_to_sells": false,
+      "compounding_regime_source": null
+    },
+    "trades": [
+      {
+        "ticker": "00679B.TWO",
+        "side": "sell",
+        "current_shares": 100,
+        "target_shares": 0,
+        "delta_shares": -100,
+        "price": 25.860000610351562,
+        "notional": 2586.0000610351562,
+        "commission": 3.6850500869750977,
+        "slippage": 1.2930000305175782,
+        "sell_tax_rate": 0.0,
+        "sell_tax": 0.0,
+        "estimated_cost": 4.978050117492676
+      },
+      {
+        "ticker": "0050.TW",
+        "side": "buy",
+        "current_shares": 4631,
+        "target_shares": 5432,
+        "delta_shares": 801,
+        "price": 106.25,
+        "notional": 85106.25,
+        "commission": 121.27640625000001,
+        "slippage": 42.553125,
+        "sell_tax_rate": 0.001,
+        "sell_tax": 0.0,
+        "estimated_cost": 163.82953125
+      },
+      {
+        "ticker": "00631L.TW",
+        "side": "buy",
+        "current_shares": 980,
+        "target_shares": 2241,
+        "delta_shares": 1261,
+        "price": 35.81999969482422,
+        "notional": 45169.01961517334,
+        "commission": 64.36585295162202,
+        "slippage": 22.58450980758667,
+        "sell_tax_rate": 0.001,
+        "sell_tax": 0.0,
+        "estimated_cost": 86.95036275920869
+      },
+      {
+        "ticker": "00632R.TW",
+        "side": "buy",
+        "current_shares": 5000,
+        "target_shares": 13078,
+        "delta_shares": 8078,
+        "price": 9.949999809265137,
+        "notional": 80376.09845924377,
+        "commission": 114.53594030442238,
+        "slippage": 40.18804922962189,
+        "sell_tax_rate": 0.001,
+        "sell_tax": 0.0,
+        "estimated_cost": 154.72398953404428
+      }
+    ],
+    "execution_summary": {
+      "buy_notional": 210651.3680744171,
+      "sell_notional": 2586.0000610351562,
+      "commission": 303.8632495930195,
+      "sell_tax": 0.0,
+      "slippage": 106.61868406772614,
+      "total_execution_cost": 410.4819336607456,
+      "turnover_notional": 213237.36813545227,
+      "estimated_cash_after_execution": 712040.8012446688,
+      "turnover_ratio": 0.14215824542363484,
+      "max_automatic_turnover_ratio": 0.5,
+      "cross_market_graph_no_add_active": false,
+      "cross_market_graph_recommended_use": "NO_ADD_ONLY_SHADOW_FILTER"
+    },
+    "planning_status": "ready",
+    "manual_confirmation_required": false,
+    "execution_allowed": true,
+    "execution_guard_reasons": [],
+    "source_live_signal": {
+      "signal_version": 2,
+      "generated_at": "2026-08-31T21:46:35",
+      "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+      "strategy_status": "active",
+      "requested_as_of_date": "2026-09-01",
+      "actual_data_date": "2026-08-31",
+      "business_stale_days": 1,
+      "calendar_stale_days": 1,
+      "max_business_stale_days": 3,
+      "execution_allowed": true,
+      "execution_guard_reasons": [],
+      "execution_warning_reasons": [],
+      "golden_signal_coverage": {
+        "golden_signal_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/group_a_combined_live_latest.json",
+        "golden_signal_sha256": "cac52a7c7aa1d7e2bd02816f0563abfb59b7c562fad8fe0f69474b5a5abce55a",
+        "golden_signal_modified_at": "2026-08-31T13:14:47Z",
+        "golden_weights": {
+          "0050.TW": 0.47,
+          "00631L.TW": 0.09881315828093576,
+          "00632R.TW": 0.1671390088790092,
+          "00679B.TWO": 0.0,
+          "cash": 0.26404783284005506
+        },
+        "caveat": "golden1 weights are resolved by newest-mtime among results/signal_group_a_*.json at backtest run time, not the weights actually in force on each historical date -- see H3 in GROUP_A_PLUS_FABLE5_AUDIT_A214_REVERT_HANDOFF_20260702.md."
+      },
+      "base_regime": "golden1",
+      "execution_regime": "golden1",
+      "regime_reason": "A20.7 formal defensive state is inactive",
+      "last_transition_date": "2026-08-03",
+      "strategy_transition_today": false,
+      "action": "hold_or_align_to_target",
+      "target_weights": {
+        "0050.TW": 0.47,
+        "00631L.TW": 0.09871434512265483,
+        "00632R.TW": 0.1671390088790092,
+        "00679B.TWO": 0.0,
+        "cash": 0.264146645998336
+      },
+      "target_values": {
+        "0050.TW": 705000.0,
+        "00631L.TW": 148071.51768398224,
+        "00632R.TW": 250708.5133185138,
+        "00679B.TWO": 0.0,
+        "cash": 396219.968997504
+      },
+      "reference_target_shares_before_cost": {
+        "0050.TW": 6635,
+        "00631L.TW": 4133,
+        "00632R.TW": 25196,
+        "00679B.TWO": 0
+      },
+      "reference_target_market_values": {
+        "0050.TW": 704968.75,
+        "00631L.TW": 148044.0587387085,
+        "00632R.TW": 250700.19519424438,
+        "00679B.TWO": 0.0
+      },
+      "estimated_cash_after_rounding_before_cost": 396286.9960670471,
+      "latest_prices": {
+        "0050.TW": 106.25,
+        "00631L.TW": 35.81999969482422,
+        "00632R.TW": 9.949999809265137,
+        "00679B.TWO": 25.860000610351562
+      },
+      "symbol_metadata": {
+        "0050.TW": {
+          "symbol": "0050.TW",
+          "root": "0050",
+          "suffix": ".TW",
+          "exchange": "TWSE",
+          "tradingview_symbol": "TWSE:0050"
+        },
+        "00631L.TW": {
+          "symbol": "00631L.TW",
+          "root": "00631L",
+          "suffix": ".TW",
+          "exchange": "TWSE",
+          "tradingview_symbol": "TWSE:00631L"
+        },
+        "00632R.TW": {
+          "symbol": "00632R.TW",
+          "root": "00632R",
+          "suffix": ".TW",
+          "exchange": "TWSE",
+          "tradingview_symbol": "TWSE:00632R"
+        },
+        "00679B.TWO": {
+          "symbol": "00679B.TWO",
+          "root": "00679B",
+          "suffix": ".TWO",
+          "exchange": "TPEX",
+          "tradingview_symbol": "TPEX:00679B"
+        }
+      },
+      "portfolio_value_input": 1500000.0,
+      "latest_features": {
+        "ma_gap": 0.062234441389652506,
+        "drawdown": -0.044084583523267384,
+        "exit_momentum_5d": 0.023603052757335208,
+        "chip_score": 0,
+        "derivative_score": 2,
+        "total_risk_score": 2,
+        "tail_risk_score": 0,
+        "chip_data_core_days_since_source_update": 0,
+        "finbert_sentiment_risk": 0.4856
+      },
+      "market_state": {
+        "state": "bull_trend",
+        "bucket": "bull_trend",
+        "label_zh": "多頭趨勢",
+        "allocation_bias": "00631L high weight",
+        "risk_level": "risk_on",
+        "inputs": {
+          "execution_regime": "golden1",
+          "ma_gap": 0.062234441389652506,
+          "drawdown": -0.044084583523267384,
+          "exit_momentum_5d": 0.023603052757335208,
+          "total_risk_score": 2,
+          "tail_risk_score": 0,
+          "signal_alignment": "mixed",
+          "dominant_direction": "bullish"
+        },
+        "reason": "execution_regime=golden1; ma_gap=0.0622; drawdown=-0.0441; exit_momentum_5d=0.0236; total_risk_score=2; tail_risk_score=0; signal_alignment=mixed; dominant_direction=bullish"
+      },
+      "trough_nowcast": {
+        "state": "NO_TROUGH",
+        "state_space": [
+          "NO_TROUGH",
+          "CAPITULATION_WARNING",
+          "PARTIAL_REENTRY",
+          "FULL_REENTRY"
+        ],
+        "policy": "diagnostic_reentry_timing_only_no_target_weight_change",
+        "recommended_execution_staging_fraction": null,
+        "context_active": false,
+        "context_reasons": [],
+        "capitulation_score": 1,
+        "reentry_confirmation_score": 5,
+        "capitulation_reasons": [
+          "panic_volume_expanded_then_contracting"
+        ],
+        "reentry_confirmation_reasons": [
+          "0050_rebound_from_5d_low_ge_2pct",
+          "00631l_rebound_from_5d_low_ge_4pct",
+          "groupa_breadth_up_fraction_ge_50pct",
+          "soxx_rebound_from_5d_low_ge_3pct",
+          "tsm_adr_rebound_from_5d_low_ge_3pct"
+        ],
+        "full_reentry_checks": {
+          "local_price_confirm": true,
+          "risk_unwind_confirm": false,
+          "cross_market_confirm": true,
+          "partial_reentry_confirmed": false,
+          "full_reentry_candidate": false,
+          "full_reentry_disabled_reason": "shadow_audit_false_reentry_rate_too_high",
+          "full_reentry_confirmed": false
+        },
+        "inputs": {
+          "latest_features": {
+            "ma_gap": 0.062234441389652506,
+            "drawdown": -0.044084583523267384,
+            "exit_momentum_5d": 0.023603052757335208,
+            "total_risk_score": 2,
+            "tail_risk_score": 0
+          },
+          "market_proxy": {
+            "status": "ok",
+            "ret_0050_1d": -0.006545086191829919,
+            "ret_0050_5d": 0.023603052757335208,
+            "ret_00631l_5d": 0.05013189838389254,
+            "latest_0050_close": 106.25,
+            "prior_0050_3d_low": 105.9000015258789,
+            "no_fresh_0050_lower_low_3d": true,
+            "rebound_0050_from_5d_low": 0.023603052757335208,
+            "rebound_00631l_from_5d_low": 0.05013189838389254,
+            "volume_z60": -0.5422499378526795,
+            "amihud_z60": -0.33561955940898835,
+            "panic_volume_contracting": true,
+            "breadth_up_fraction_groupa": 0.5,
+            "limit_down_count_groupa": 0
+          },
+          "multisource": {
+            "status": "ok",
+            "feature_date": "2026-08-31",
+            "txo_pcr_volume_z20": null,
+            "txo_pcr_oi_z20": null,
+            "txo_foreign_put_call_net_oi_chg5_z60": 0.46980047725066126,
+            "tx_foreign_net_oi_z60": -0.567512860071091,
+            "market_margin_forced_repay_z60": null,
+            "market_margin_balance_chg20_z252": null,
+            "securities_lending_0050_volume_z60": null,
+            "soxx_ret1": 0.0,
+            "tsm_adr_ret1": 0.0,
+            "usdtwd_ret5_z60": -1.3209859235158585,
+            "soxx_put_call_iv_skew_z252": -0.10459037854883059,
+            "soxx_put_call_volume_ratio_z60": -0.6971630448690873,
+            "soxx_put_call_oi_ratio_z60": -1.4695983397894232,
+            "txo_pcr_volume_z20_chg5": null,
+            "usdtwd_ret5_z60_chg5": 0.773412190187561
+          },
+          "cross_market_rebound": {
+            "status": "ok",
+            "soxx_rebound_from_5d_low": 0.03802995037049994,
+            "soxx_ret5": 0.005896462589835005,
+            "tsm_adr_rebound_from_5d_low": 0.04189016112436139,
+            "tsm_adr_ret5": 0.02716343219463635,
+            "tw_2330_rebound_from_5d_low": 0.012631578947368327,
+            "tw_2330_ret5": 0.012631578947368327,
+            "usdtwd_ret5": -0.005059430673644338,
+            "usdtwd_ret1": 3.1326376870310924e-06
+          },
+          "signal_alignment": {
+            "alignment": "mixed",
+            "dominant_direction": "bullish"
+          }
+        },
+        "rationale": "Rare-event trough nowcast adapted for Taiwan proxies: options tail demand, liquidity stress, breadth/liquidity capitulation, USD/TWD and SOXX/TSM/2330 rebound. It only activates after an H20/crash/defensive warning context."
+      },
+      "tail_conformal": {
+        "status": "ok",
+        "policy": "diagnostic_warning_only_no_weight_change",
+        "ticker": "00631L.TW",
+        "actual_date": "2026-08-31",
+        "state": "TAIL_RISK_HIGH",
+        "recommended_action": "pause_new_00631l_adds_and_monitor_trough",
+        "allow_00631l_add": false,
+        "auto_reduce_00631l": false,
+        "current_risk_bucket": "elevated",
+        "min_lower_tail_confidence_bound": -0.0886663038952209,
+        "max_prob_mdd_lt_8pct": 0.19631901840490798,
+        "high_tail_reasons": [
+          "h10_lower_bound_le_8pct"
+        ],
+        "diagnostics": {
+          "h5": {
+            "horizon_days": 5,
+            "point_forecast_return": 0.030517270287502618,
+            "lower_tail_confidence_bound": -0.05842898689271325,
+            "alpha": 0.1,
+            "effective_alpha": 0.1,
+            "adaptive": false,
+            "nominal_lower_tail_coverage": 0.9,
+            "calibration_scope": "elevated",
+            "calibration_count": 157,
+            "lower_tail_residual_quantile": 0.08894625718021587,
+            "prob_mdd_lt_8pct": 0.0975609756097561,
+            "mdd_threshold": -0.08
+          },
+          "h10": {
+            "horizon_days": 10,
+            "point_forecast_return": 0.040820202842656195,
+            "lower_tail_confidence_bound": -0.0886663038952209,
+            "alpha": 0.1,
+            "effective_alpha": 0.1,
+            "adaptive": false,
+            "nominal_lower_tail_coverage": 0.9,
+            "calibration_scope": "elevated",
+            "calibration_count": 157,
+            "lower_tail_residual_quantile": 0.1294865067378771,
+            "prob_mdd_lt_8pct": 0.19631901840490798,
+            "mdd_threshold": -0.08
+          }
+        },
+        "rationale": "Tail-specific conformal diagnostic controls lower-tail error separately. It is used to pause additional leverage and trigger trough monitoring, not to automatically liquidate 00631L."
+      },
+      "cross_market_graph_shadow": {
+        "status": "available",
+        "report_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/cross_market_directed_graph_shadow_latest.json",
+        "report_type": "cross_market_directed_graph_shadow",
+        "generated_at": "2026-07-15T17:44:53",
+        "policy": "shadow_only_no_weight_change",
+        "latest_shadow_action": "NO_ADD",
+        "no_add_active": false,
+        "recommended_action": "none",
+        "allow_auto_weight_change": false,
+        "allow_00631l_add_reference": true,
+        "thresholds": {
+          "no_add_alert_probability": 0.65
+        },
+        "latest_probabilities": {
+          "REENTER": 0.5597137628023908,
+          "NO_ADD": 0.5920958930833974
+        },
+        "metrics": {
+          "REENTER": {
+            "auc": 0.4845623973688792,
+            "balanced_accuracy": 0.49679932057609877,
+            "positive_rate": 0.42976461655277143,
+            "mean_probability": 0.5016295644921446,
+            "threshold_metrics": [
+              {
+                "threshold": 0.55,
+                "alerts": 203,
+                "true_positives": 78,
+                "false_positives": 125,
+                "false_negatives": 488,
+                "precision": 0.3842364532019704,
+                "recall": 0.13780918727915195,
+                "false_positive_rate": 0.16644474034620507
+              },
+              {
+                "threshold": 0.6,
+                "alerts": 52,
+                "true_positives": 14,
+                "false_positives": 38,
+                "false_negatives": 552,
+                "precision": 0.2692307692307692,
+                "recall": 0.024734982332155476,
+                "false_positive_rate": 0.05059920106524634
+              },
+              {
+                "threshold": 0.65,
+                "alerts": 12,
+                "true_positives": 4,
+                "false_positives": 8,
+                "false_negatives": 562,
+                "precision": 0.3333333333333333,
+                "recall": 0.007067137809187279,
+                "false_positive_rate": 0.010652463382157125
+              }
+            ]
+          },
+          "NO_ADD": {
+            "auc": 0.5320128454965811,
+            "balanced_accuracy": 0.5273154180551872,
+            "positive_rate": 0.27638572513287774,
+            "mean_probability": 0.4993725152346376,
+            "threshold_metrics": [
+              {
+                "threshold": 0.55,
+                "alerts": 279,
+                "true_positives": 88,
+                "false_positives": 191,
+                "false_negatives": 276,
+                "precision": 0.3154121863799283,
+                "recall": 0.24175824175824176,
+                "false_positive_rate": 0.20041972717733472
+              },
+              {
+                "threshold": 0.6,
+                "alerts": 92,
+                "true_positives": 30,
+                "false_positives": 62,
+                "false_negatives": 334,
+                "precision": 0.32608695652173914,
+                "recall": 0.08241758241758242,
+                "false_positive_rate": 0.06505771248688352
+              },
+              {
+                "threshold": 0.65,
+                "alerts": 25,
+                "true_positives": 10,
+                "false_positives": 15,
+                "false_negatives": 354,
+                "precision": 0.4,
+                "recall": 0.027472527472527472,
+                "false_positive_rate": 0.015739769150052464
+              }
+            ]
+          }
+        },
+        "promotion_assessment": {
+          "recommended_use": "NO_ADD_ONLY_SHADOW_FILTER",
+          "promote_to_execution_guard": false,
+          "promote_to_reentry_signal": false,
+          "rationale": "NO_ADD has weak but repeatable signal in selected stress years; REENTER is unstable and should not drive re-entry.",
+          "minimum_live_alert_policy": {
+            "no_add_probability_min": 0.65,
+            "require_no_add_gt_reenter": true,
+            "auto_weight_change": false
+          },
+          "summary_metrics": {
+            "NO_ADD_auc": 0.5320128454965811,
+            "REENTER_auc": 0.4845623973688792
+          }
+        },
+        "metrics_by_year": {
+          "2021": {
+            "REENTER": {
+              "rows": 225,
+              "auc": 0.42875770507349453,
+              "balanced_accuracy": 0.4617117117117117,
+              "positive_rate": 0.49333333333333335,
+              "mean_probability": 0.4962057859307961,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 43,
+                  "true_positives": 17,
+                  "false_positives": 26,
+                  "false_negatives": 94,
+                  "precision": 0.3953488372093023,
+                  "recall": 0.15315315315315314,
+                  "false_positive_rate": 0.22807017543859648
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 12,
+                  "true_positives": 5,
+                  "false_positives": 7,
+                  "false_negatives": 106,
+                  "precision": 0.4166666666666667,
+                  "recall": 0.04504504504504504,
+                  "false_positive_rate": 0.06140350877192982
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 4,
+                  "true_positives": 2,
+                  "false_positives": 2,
+                  "false_negatives": 109,
+                  "precision": 0.5,
+                  "recall": 0.018018018018018018,
+                  "false_positive_rate": 0.017543859649122806
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 225,
+              "auc": 0.5007678806494076,
+              "balanced_accuracy": 0.49813514699429573,
+              "positive_rate": 0.23555555555555555,
+              "mean_probability": 0.5131221396781288,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 78,
+                  "true_positives": 19,
+                  "false_positives": 59,
+                  "false_negatives": 34,
+                  "precision": 0.24358974358974358,
+                  "recall": 0.3584905660377358,
+                  "false_positive_rate": 0.3430232558139535
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 22,
+                  "true_positives": 4,
+                  "false_positives": 18,
+                  "false_negatives": 49,
+                  "precision": 0.18181818181818182,
+                  "recall": 0.07547169811320754,
+                  "false_positive_rate": 0.10465116279069768
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 4,
+                  "true_positives": 1,
+                  "false_positives": 3,
+                  "false_negatives": 52,
+                  "precision": 0.25,
+                  "recall": 0.018867924528301886,
+                  "false_positive_rate": 0.01744186046511628
+                }
+              ]
+            }
+          },
+          "2022": {
+            "REENTER": {
+              "rows": 246,
+              "auc": 0.4487291155277535,
+              "balanced_accuracy": 0.47735370971573365,
+              "positive_rate": 0.2967479674796748,
+              "mean_probability": 0.5146079738247281,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 75,
+                  "true_positives": 16,
+                  "false_positives": 59,
+                  "false_negatives": 57,
+                  "precision": 0.21333333333333335,
+                  "recall": 0.2191780821917808,
+                  "false_positive_rate": 0.34104046242774566
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 25,
+                  "true_positives": 4,
+                  "false_positives": 21,
+                  "false_negatives": 69,
+                  "precision": 0.16,
+                  "recall": 0.0547945205479452,
+                  "false_positive_rate": 0.12138728323699421
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 7,
+                  "true_positives": 2,
+                  "false_positives": 5,
+                  "false_negatives": 71,
+                  "precision": 0.2857142857142857,
+                  "recall": 0.0273972602739726,
+                  "false_positive_rate": 0.028901734104046242
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 246,
+              "auc": 0.5585416666666666,
+              "balanced_accuracy": 0.540625,
+              "positive_rate": 0.3902439024390244,
+              "mean_probability": 0.5102749793831435,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 84,
+                  "true_positives": 38,
+                  "false_positives": 46,
+                  "false_negatives": 58,
+                  "precision": 0.4523809523809524,
+                  "recall": 0.3958333333333333,
+                  "false_positive_rate": 0.30666666666666664
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 47,
+                  "true_positives": 20,
+                  "false_positives": 27,
+                  "false_negatives": 76,
+                  "precision": 0.425531914893617,
+                  "recall": 0.20833333333333334,
+                  "false_positive_rate": 0.18
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 18,
+                  "true_positives": 8,
+                  "false_positives": 10,
+                  "false_negatives": 88,
+                  "precision": 0.4444444444444444,
+                  "recall": 0.08333333333333333,
+                  "false_positive_rate": 0.06666666666666667
+                }
+              ]
+            }
+          },
+          "2023": {
+            "REENTER": {
+              "rows": 239,
+              "auc": 0.5185786435786436,
+              "balanced_accuracy": 0.5310966810966811,
+              "positive_rate": 0.41422594142259417,
+              "mean_probability": 0.49762534375510226,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 28,
+                  "true_positives": 15,
+                  "false_positives": 13,
+                  "false_negatives": 84,
+                  "precision": 0.5357142857142857,
+                  "recall": 0.15151515151515152,
+                  "false_positive_rate": 0.09285714285714286
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 6,
+                  "true_positives": 1,
+                  "false_positives": 5,
+                  "false_negatives": 98,
+                  "precision": 0.16666666666666666,
+                  "recall": 0.010101010101010102,
+                  "false_positive_rate": 0.03571428571428571
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 0,
+                  "true_positives": 0,
+                  "false_positives": 0,
+                  "false_negatives": 99,
+                  "precision": null,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 239,
+              "auc": 0.5346560846560846,
+              "balanced_accuracy": 0.5351322751322751,
+              "positive_rate": 0.20920502092050208,
+              "mean_probability": 0.4905047628897755,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 41,
+                  "true_positives": 8,
+                  "false_positives": 33,
+                  "false_negatives": 42,
+                  "precision": 0.1951219512195122,
+                  "recall": 0.16,
+                  "false_positive_rate": 0.1746031746031746
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 8,
+                  "true_positives": 1,
+                  "false_positives": 7,
+                  "false_negatives": 49,
+                  "precision": 0.125,
+                  "recall": 0.02,
+                  "false_positive_rate": 0.037037037037037035
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 0,
+                  "true_positives": 0,
+                  "false_positives": 0,
+                  "false_negatives": 50,
+                  "precision": null,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0
+                }
+              ]
+            }
+          },
+          "2024": {
+            "REENTER": {
+              "rows": 242,
+              "auc": 0.5572471324296142,
+              "balanced_accuracy": 0.5280152937087244,
+              "positive_rate": 0.43388429752066116,
+              "mean_probability": 0.5019132189990445,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 23,
+                  "true_positives": 13,
+                  "false_positives": 10,
+                  "false_negatives": 92,
+                  "precision": 0.5652173913043478,
+                  "recall": 0.12380952380952381,
+                  "false_positive_rate": 0.072992700729927
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 2,
+                  "true_positives": 0,
+                  "false_positives": 2,
+                  "false_negatives": 105,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.014598540145985401
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 0,
+                  "true_positives": 0,
+                  "false_positives": 0,
+                  "false_negatives": 105,
+                  "precision": null,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 242,
+              "auc": 0.5261900299850075,
+              "balanced_accuracy": 0.5276424287856072,
+              "positive_rate": 0.2396694214876033,
+              "mean_probability": 0.4977951401228775,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 34,
+                  "true_positives": 9,
+                  "false_positives": 25,
+                  "false_negatives": 49,
+                  "precision": 0.2647058823529412,
+                  "recall": 0.15517241379310345,
+                  "false_positive_rate": 0.1358695652173913
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 8,
+                  "true_positives": 3,
+                  "false_positives": 5,
+                  "false_negatives": 55,
+                  "precision": 0.375,
+                  "recall": 0.05172413793103448,
+                  "false_positive_rate": 0.02717391304347826
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 2,
+                  "true_positives": 1,
+                  "false_positives": 1,
+                  "false_negatives": 57,
+                  "precision": 0.5,
+                  "recall": 0.017241379310344827,
+                  "false_positive_rate": 0.005434782608695652
+                }
+              ]
+            }
+          },
+          "2025": {
+            "REENTER": {
+              "rows": 243,
+              "auc": 0.5199917841982747,
+              "balanced_accuracy": 0.5063330138299329,
+              "positive_rate": 0.448559670781893,
+              "mean_probability": 0.500677570873218,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 22,
+                  "true_positives": 10,
+                  "false_positives": 12,
+                  "false_negatives": 99,
+                  "precision": 0.45454545454545453,
+                  "recall": 0.09174311926605505,
+                  "false_positive_rate": 0.08955223880597014
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 6,
+                  "true_positives": 3,
+                  "false_positives": 3,
+                  "false_negatives": 106,
+                  "precision": 0.5,
+                  "recall": 0.027522935779816515,
+                  "false_positive_rate": 0.022388059701492536
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 1,
+                  "true_positives": 0,
+                  "false_positives": 1,
+                  "false_negatives": 109,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.007462686567164179
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 243,
+              "auc": 0.5086417597765363,
+              "balanced_accuracy": 0.5209933659217877,
+              "positive_rate": 0.26337448559670784,
+              "mean_probability": 0.4921699416618264,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 19,
+                  "true_positives": 5,
+                  "false_positives": 14,
+                  "false_negatives": 59,
+                  "precision": 0.2631578947368421,
+                  "recall": 0.078125,
+                  "false_positive_rate": 0.0782122905027933
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 2,
+                  "true_positives": 0,
+                  "false_positives": 2,
+                  "false_negatives": 64,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0111731843575419
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 0,
+                  "true_positives": 0,
+                  "false_positives": 0,
+                  "false_negatives": 64,
+                  "precision": null,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0
+                }
+              ]
+            }
+          },
+          "2026": {
+            "REENTER": {
+              "rows": 122,
+              "auc": 0.5056056877221766,
+              "balanced_accuracy": 0.5243368881596937,
+              "positive_rate": 0.5655737704918032,
+              "mean_probability": 0.49464071445419594,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 12,
+                  "true_positives": 7,
+                  "false_positives": 5,
+                  "false_negatives": 62,
+                  "precision": 0.5833333333333334,
+                  "recall": 0.10144927536231885,
+                  "false_positive_rate": 0.09433962264150944
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 1,
+                  "true_positives": 1,
+                  "false_positives": 0,
+                  "false_negatives": 68,
+                  "precision": 1.0,
+                  "recall": 0.014492753623188406,
+                  "false_positive_rate": 0.0
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 0,
+                  "true_positives": 0,
+                  "false_positives": 0,
+                  "false_negatives": 69,
+                  "precision": null,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.0
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 122,
+              "auc": 0.521931115690315,
+              "balanced_accuracy": 0.5183985869885193,
+              "positive_rate": 0.3524590163934426,
+              "mean_probability": 0.4868780175735152,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 23,
+                  "true_positives": 9,
+                  "false_positives": 14,
+                  "false_negatives": 34,
+                  "precision": 0.391304347826087,
+                  "recall": 0.20930232558139536,
+                  "false_positive_rate": 0.17721518987341772
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 5,
+                  "true_positives": 2,
+                  "false_positives": 3,
+                  "false_negatives": 41,
+                  "precision": 0.4,
+                  "recall": 0.046511627906976744,
+                  "false_positive_rate": 0.0379746835443038
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 1,
+                  "true_positives": 0,
+                  "false_positives": 1,
+                  "false_negatives": 43,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "false_positive_rate": 0.012658227848101266
+                }
+              ]
+            }
+          }
+        },
+        "metrics_by_condition": {
+          "condition_0050_5d_le_minus2pct": {
+            "REENTER": {
+              "rows": 239,
+              "auc": 0.4833683473389356,
+              "balanced_accuracy": 0.501750700280112,
+              "positive_rate": 0.502092050209205,
+              "mean_probability": 0.5108960967822584,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 51,
+                  "true_positives": 22,
+                  "false_positives": 29,
+                  "false_negatives": 98,
+                  "precision": 0.43137254901960786,
+                  "recall": 0.18333333333333332,
+                  "false_positive_rate": 0.24369747899159663
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 15,
+                  "true_positives": 7,
+                  "false_positives": 8,
+                  "false_negatives": 113,
+                  "precision": 0.4666666666666667,
+                  "recall": 0.058333333333333334,
+                  "false_positive_rate": 0.06722689075630252
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 2,
+                  "true_positives": 1,
+                  "false_positives": 1,
+                  "false_negatives": 119,
+                  "precision": 0.5,
+                  "recall": 0.008333333333333333,
+                  "false_positive_rate": 0.008403361344537815
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 239,
+              "auc": 0.4766096579476861,
+              "balanced_accuracy": 0.4540995975855131,
+              "positive_rate": 0.29707112970711297,
+              "mean_probability": 0.5473935458064411,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 111,
+                  "true_positives": 33,
+                  "false_positives": 78,
+                  "false_negatives": 38,
+                  "precision": 0.2972972972972973,
+                  "recall": 0.4647887323943662,
+                  "false_positive_rate": 0.4642857142857143
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 55,
+                  "true_positives": 18,
+                  "false_positives": 37,
+                  "false_negatives": 53,
+                  "precision": 0.32727272727272727,
+                  "recall": 0.2535211267605634,
+                  "false_positive_rate": 0.22023809523809523
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 18,
+                  "true_positives": 7,
+                  "false_positives": 11,
+                  "false_negatives": 64,
+                  "precision": 0.3888888888888889,
+                  "recall": 0.09859154929577464,
+                  "false_positive_rate": 0.06547619047619048
+                }
+              ]
+            },
+            "condition_rows": 239,
+            "condition_frequency": 0.18147304479878512
+          },
+          "condition_0050_10d_le_minus3pct": {
+            "REENTER": {
+              "rows": 204,
+              "auc": 0.4499176595950789,
+              "balanced_accuracy": 0.4723917465852949,
+              "positive_rate": 0.45588235294117646,
+              "mean_probability": 0.5110715157933132,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 48,
+                  "true_positives": 18,
+                  "false_positives": 30,
+                  "false_negatives": 75,
+                  "precision": 0.375,
+                  "recall": 0.1935483870967742,
+                  "false_positive_rate": 0.2702702702702703
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 14,
+                  "true_positives": 4,
+                  "false_positives": 10,
+                  "false_negatives": 89,
+                  "precision": 0.2857142857142857,
+                  "recall": 0.043010752688172046,
+                  "false_positive_rate": 0.09009009009009009
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 3,
+                  "true_positives": 1,
+                  "false_positives": 2,
+                  "false_negatives": 92,
+                  "precision": 0.3333333333333333,
+                  "recall": 0.010752688172043012,
+                  "false_positive_rate": 0.018018018018018018
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 204,
+              "auc": 0.4668276972624798,
+              "balanced_accuracy": 0.46682769726247986,
+              "positive_rate": 0.3382352941176471,
+              "mean_probability": 0.5369980208961685,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 81,
+                  "true_positives": 28,
+                  "false_positives": 53,
+                  "false_negatives": 41,
+                  "precision": 0.345679012345679,
+                  "recall": 0.4057971014492754,
+                  "false_positive_rate": 0.3925925925925926
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 40,
+                  "true_positives": 13,
+                  "false_positives": 27,
+                  "false_negatives": 56,
+                  "precision": 0.325,
+                  "recall": 0.18840579710144928,
+                  "false_positive_rate": 0.2
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 17,
+                  "true_positives": 6,
+                  "false_positives": 11,
+                  "false_negatives": 63,
+                  "precision": 0.35294117647058826,
+                  "recall": 0.08695652173913043,
+                  "false_positive_rate": 0.08148148148148149
+                }
+              ]
+            },
+            "condition_rows": 204,
+            "condition_frequency": 0.1548974943052392
+          },
+          "condition_0050_60d_drawdown_le_minus5pct": {
+            "REENTER": {
+              "rows": 464,
+              "auc": 0.4560840604184257,
+              "balanced_accuracy": 0.47711792851111734,
+              "positive_rate": 0.4504310344827586,
+              "mean_probability": 0.5057939373265881,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 90,
+                  "true_positives": 35,
+                  "false_positives": 55,
+                  "false_negatives": 174,
+                  "precision": 0.3888888888888889,
+                  "recall": 0.1674641148325359,
+                  "false_positive_rate": 0.21568627450980393
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 26,
+                  "true_positives": 7,
+                  "false_positives": 19,
+                  "false_negatives": 202,
+                  "precision": 0.2692307692307692,
+                  "recall": 0.03349282296650718,
+                  "false_positive_rate": 0.07450980392156863
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 6,
+                  "true_positives": 2,
+                  "false_positives": 4,
+                  "false_negatives": 207,
+                  "precision": 0.3333333333333333,
+                  "recall": 0.009569377990430622,
+                  "false_positive_rate": 0.01568627450980392
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 464,
+              "auc": 0.5198394906743184,
+              "balanced_accuracy": 0.49928263988522237,
+              "positive_rate": 0.29310344827586204,
+              "mean_probability": 0.5149525797482519,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 136,
+                  "true_positives": 45,
+                  "false_positives": 91,
+                  "false_negatives": 91,
+                  "precision": 0.33088235294117646,
+                  "recall": 0.33088235294117646,
+                  "false_positive_rate": 0.2774390243902439
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 61,
+                  "true_positives": 20,
+                  "false_positives": 41,
+                  "false_negatives": 116,
+                  "precision": 0.32786885245901637,
+                  "recall": 0.14705882352941177,
+                  "false_positive_rate": 0.125
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 22,
+                  "true_positives": 9,
+                  "false_positives": 13,
+                  "false_negatives": 127,
+                  "precision": 0.4090909090909091,
+                  "recall": 0.0661764705882353,
+                  "false_positive_rate": 0.039634146341463415
+                }
+              ]
+            },
+            "condition_rows": 464,
+            "condition_frequency": 0.35231586940015186
+          },
+          "condition_0050_5d_abs_ge_2pct": {
+            "REENTER": {
+              "rows": 622,
+              "auc": 0.5001825198164372,
+              "balanced_accuracy": 0.5047559449311639,
+              "positive_rate": 0.4533762057877814,
+              "mean_probability": 0.5022513044569147,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 99,
+                  "true_positives": 41,
+                  "false_positives": 58,
+                  "false_negatives": 241,
+                  "precision": 0.41414141414141414,
+                  "recall": 0.1453900709219858,
+                  "false_positive_rate": 0.17058823529411765
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 24,
+                  "true_positives": 10,
+                  "false_positives": 14,
+                  "false_negatives": 272,
+                  "precision": 0.4166666666666667,
+                  "recall": 0.03546099290780142,
+                  "false_positive_rate": 0.041176470588235294
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 4,
+                  "true_positives": 2,
+                  "false_positives": 2,
+                  "false_negatives": 280,
+                  "precision": 0.5,
+                  "recall": 0.0070921985815602835,
+                  "false_positive_rate": 0.0058823529411764705
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 622,
+              "auc": 0.5377632584024443,
+              "balanced_accuracy": 0.5162319947621127,
+              "positive_rate": 0.2540192926045016,
+              "mean_probability": 0.4983156290748982,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 140,
+                  "true_positives": 43,
+                  "false_positives": 97,
+                  "false_negatives": 115,
+                  "precision": 0.30714285714285716,
+                  "recall": 0.2721518987341772,
+                  "false_positive_rate": 0.20905172413793102
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 57,
+                  "true_positives": 18,
+                  "false_positives": 39,
+                  "false_negatives": 140,
+                  "precision": 0.3157894736842105,
+                  "recall": 0.11392405063291139,
+                  "false_positive_rate": 0.08405172413793104
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 19,
+                  "true_positives": 7,
+                  "false_positives": 12,
+                  "false_negatives": 151,
+                  "precision": 0.3684210526315789,
+                  "recall": 0.04430379746835443,
+                  "false_positive_rate": 0.02586206896551724
+                }
+              ]
+            },
+            "condition_rows": 622,
+            "condition_frequency": 0.47228549734244496
+          },
+          "condition_00631l_5d_le_minus4pct": {
+            "REENTER": {
+              "rows": 216,
+              "auc": 0.4856775300171527,
+              "balanced_accuracy": 0.505746140651801,
+              "positive_rate": 0.49074074074074076,
+              "mean_probability": 0.5092469918333735,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 45,
+                  "true_positives": 18,
+                  "false_positives": 27,
+                  "false_negatives": 88,
+                  "precision": 0.4,
+                  "recall": 0.16981132075471697,
+                  "false_positive_rate": 0.24545454545454545
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 13,
+                  "true_positives": 6,
+                  "false_positives": 7,
+                  "false_negatives": 100,
+                  "precision": 0.46153846153846156,
+                  "recall": 0.05660377358490566,
+                  "false_positive_rate": 0.06363636363636363
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 2,
+                  "true_positives": 1,
+                  "false_positives": 1,
+                  "false_negatives": 105,
+                  "precision": 0.5,
+                  "recall": 0.009433962264150943,
+                  "false_positive_rate": 0.00909090909090909
+                }
+              ]
+            },
+            "NO_ADD": {
+              "rows": 216,
+              "auc": 0.5242485990830362,
+              "balanced_accuracy": 0.4818135506877229,
+              "positive_rate": 0.30092592592592593,
+              "mean_probability": 0.5507006230050536,
+              "threshold_metrics": [
+                {
+                  "threshold": 0.55,
+                  "alerts": 103,
+                  "true_positives": 35,
+                  "false_positives": 68,
+                  "false_negatives": 30,
+                  "precision": 0.33980582524271846,
+                  "recall": 0.5384615384615384,
+                  "false_positive_rate": 0.4503311258278146
+                },
+                {
+                  "threshold": 0.6,
+                  "alerts": 51,
+                  "true_positives": 18,
+                  "false_positives": 33,
+                  "false_negatives": 47,
+                  "precision": 0.35294117647058826,
+                  "recall": 0.27692307692307694,
+                  "false_positive_rate": 0.2185430463576159
+                },
+                {
+                  "threshold": 0.65,
+                  "alerts": 18,
+                  "true_positives": 7,
+                  "false_positives": 11,
+                  "false_negatives": 58,
+                  "precision": 0.3888888888888889,
+                  "recall": 0.1076923076923077,
+                  "false_positive_rate": 0.0728476821192053
+                }
+              ]
+            },
+            "condition_rows": 216,
+            "condition_frequency": 0.16400911161731208
+          }
+        },
+        "selected_features": [
+          "src_AMD_ret1d",
+          "src_ASML_ret1d",
+          "src_AVGO_ret1d",
+          "src_NVDA_ret1d",
+          "src_QQQ_ret1d",
+          "src_SOXX_minus_QQQ_ret1d",
+          "src_SOXX_ret1d",
+          "src_TSM_ret1d",
+          "src_US_SEMI_BASKET_ret1d"
+        ],
+        "source": {
+          "start": "2019-01-02",
+          "end": "2026-07-15",
+          "edge_window": 250,
+          "tstat_threshold": 2.0,
+          "stability_threshold": 0.2,
+          "min_windows": 3,
+          "walk_forward_edge_selection": true,
+          "min_train_days": 504,
+          "retrain_step": 252,
+          "source_tickers_available": [
+            "AMD",
+            "ASML",
+            "AVGO",
+            "NVDA",
+            "QQQ",
+            "SOXX",
+            "TSM",
+            "TWD=X",
+            "^TNX"
+          ],
+          "target_tickers_available": [
+            "0050.TW",
+            "00631L.TW",
+            "2308.TW",
+            "2317.TW",
+            "2382.TW",
+            "2454.TW",
+            "2330.TW"
+          ]
+        }
+      },
+      "srr_lite_shadow": {
+        "status": "available",
+        "policy": "shadow_only_no_weight_change",
+        "actual_date": "2026-08-31",
+        "method": "srr_lite_correlation_layer",
+        "systemic_fragility_score": 0.2919,
+        "fragility_level": "normal",
+        "no_add_active": false,
+        "crash_watch_active": false,
+        "recommended_action": "none",
+        "crash_watch_recommended_action": "none",
+        "allow_auto_weight_change": false,
+        "allow_crash_watch_auto_weight_change": false,
+        "allow_00631l_add_reference": true,
+        "thresholds": {
+          "edge_abs_spearman": 0.5,
+          "no_add_score": 0.65,
+          "no_add_graph_density": 0.65,
+          "no_add_graph_velocity": 0.18,
+          "crash_watch_score": 0.75,
+          "crash_watch_graph_density": 0.65,
+          "high_fragility_score": 0.7,
+          "corr_window_days": 7,
+          "baseline_window_days": 60
+        },
+        "metrics": {
+          "graph_density": 0.3929,
+          "avg_abs_corr": 0.4411,
+          "density_z": -0.8126,
+          "graph_velocity": 0.1741,
+          "core_max_centrality": 0.6339
+        },
+        "score_components": {
+          "density": 0.1224,
+          "avg_abs_corr": 0.2602,
+          "density_spike": 0.0,
+          "graph_velocity": 0.4973,
+          "core_centrality": 0.811
+        },
+        "centrality": {
+          "0050.TW": 0.47,
+          "00631L.TW": 0.6339,
+          "00632R.TW": 0.603,
+          "00679B.TWO": 0.2046,
+          "2330.TW": 0.5418,
+          "SOXX": 0.3511,
+          "TSM": 0.382,
+          "TWD=X": 0.3421
+        },
+        "available_symbols": [
+          "0050.TW",
+          "00631L.TW",
+          "00632R.TW",
+          "00679B.TWO",
+          "2330.TW",
+          "SOXX",
+          "TSM",
+          "TWD=X"
+        ],
+        "rationale": "SRR-lite tracks correlation-network density, co-movement strength, graph velocity, and centrality as a systemic fragility warning. It is diagnostic only.",
+        "source": {
+          "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+          "lookback_days": 180,
+          "requested_symbols": [
+            "0050.TW",
+            "00631L.TW",
+            "00632R.TW",
+            "00679B.TWO",
+            "2330.TW",
+            "SOXX",
+            "TSM",
+            "TWD=X"
+          ]
+        }
+      },
+      "garch_regime_shadow": {
+        "status": "available",
+        "policy": "shadow_only_no_weight_change",
+        "date": "2026-08-31",
+        "params": {
+          "ratio_threshold": 1.05,
+          "percentile_threshold": 0.7,
+          "require_negative_5d": true,
+          "source": "walk-forward research 2026-07-05"
+        },
+        "garch_proxy_vol_ratio": 1.0288,
+        "garch_proxy_vol_percentile": 0.5278,
+        "return_0050_5d": 0.0236,
+        "high_vol_flag": false,
+        "selected_rule": "a207",
+        "a207_regime": "golden1",
+        "ma20_regime": "golden1",
+        "shadow_selected_regime": "golden1",
+        "volatility_gate": {
+          "policy": "shadow_only_no_weight_change",
+          "gate": "neutral_vol",
+          "low_vol_gate": false,
+          "high_vol_gate": false,
+          "signal_reliability": "calibrate_thresholds",
+          "reference_00631l_scale": 0.75,
+          "inputs": {
+            "garch_proxy_vol_ratio": 1.0288,
+            "garch_proxy_vol_percentile": 0.5278,
+            "return_0050_5d": 0.0236
+          },
+          "rationale": "Intermediate volatility; require calibrated thresholds and turnover discipline."
+        }
+      },
+      "rg_resmoe_volatility_gate_shadow": {
+        "status": "available",
+        "reason": null,
+        "policy": "shadow_only_no_weight_change",
+        "outputs_target_weights": false,
+        "date": "2026-08-31",
+        "tickers": [
+          "0050.TW",
+          "00631L.TW"
+        ],
+        "by_ticker": {
+          "0050.TW": {
+            "status": "available",
+            "policy": "shadow_only_no_weight_change",
+            "outputs_target_weights": false,
+            "horizons": {
+              "5": {
+                "base_forecast": 6.957384160649757e-05,
+                "input_pathway_forecast": 6.581055339460082e-05,
+                "gate_pathway_forecast": 4.9759445192730224e-05,
+                "gate_pathway_soft_forecast": 7.326212201124088e-05,
+                "gate_weight": 0.07539682539682539
+              },
+              "10": {
+                "base_forecast": 7.401275709091899e-05,
+                "input_pathway_forecast": 6.845108680325165e-05,
+                "gate_pathway_forecast": 5.0733160596622355e-05,
+                "gate_pathway_soft_forecast": 7.91282375335208e-05,
+                "gate_weight": 0.07539682539682539
+              },
+              "20": {
+                "base_forecast": 7.80807340747194e-05,
+                "input_pathway_forecast": 6.441075348494604e-05,
+                "gate_pathway_forecast": 5.020289048953552e-05,
+                "gate_pathway_soft_forecast": 8.186776575020177e-05,
+                "gate_weight": 0.07539682539682539
+              }
+            },
+            "ticker": "0050.TW",
+            "date": "2026-08-31",
+            "source": "arXiv:2608.12251 RG-ResMoE-lite pathway shadow",
+            "lookback_calendar_days": 1600,
+            "rows": 1067,
+            "rolling_window": 504,
+            "ridge_lambda": 4.0,
+            "volatility_gate_reference": {
+              "policy": "shadow_only_no_weight_change",
+              "trade_policy": "advisory_no_auto_weight_change",
+              "gate": "rg_resmoe_neutral_vol_reference",
+              "high_vol_reference": false,
+              "elevated_vol_reference": false,
+              "allow_00631l_add_reference": true,
+              "reference_00631l_scale": 1.0,
+              "inputs": {
+                "h5_base_forecast_variance": 6.957384160649757e-05,
+                "h5_gate_pathway_soft_forecast_variance": 7.326212201124088e-05,
+                "h5_soft_vs_base_ratio": 1.0530124586996912,
+                "h5_gate_weight": 0.07539682539682539
+              },
+              "rationale": "RG-ResMoE-lite shadow uses regime state only for residual-gate routing; it is a risk reference and does not change target weights."
+            }
+          },
+          "00631L.TW": {
+            "status": "available",
+            "policy": "shadow_only_no_weight_change",
+            "outputs_target_weights": false,
+            "horizons": {
+              "5": {
+                "base_forecast": 0.00023037302276631878,
+                "input_pathway_forecast": 0.0002114771639203715,
+                "gate_pathway_forecast": 0.00016791637346881156,
+                "gate_pathway_soft_forecast": 0.00023638938555727688,
+                "gate_weight": 0.09523809523809523
+              },
+              "10": {
+                "base_forecast": 0.0002460880779243042,
+                "input_pathway_forecast": 0.00019996977820144592,
+                "gate_pathway_forecast": 0.00016176879745093614,
+                "gate_pathway_soft_forecast": 0.00025053624201739396,
+                "gate_weight": 0.09523809523809523
+              },
+              "20": {
+                "base_forecast": 0.0002609790609350087,
+                "input_pathway_forecast": 0.00018011446679880422,
+                "gate_pathway_forecast": 0.00017420787629378114,
+                "gate_pathway_soft_forecast": 0.00026509488341829176,
+                "gate_weight": 0.09523809523809523
+              }
+            },
+            "ticker": "00631L.TW",
+            "date": "2026-08-31",
+            "source": "arXiv:2608.12251 RG-ResMoE-lite pathway shadow",
+            "lookback_calendar_days": 1600,
+            "rows": 1067,
+            "rolling_window": 504,
+            "ridge_lambda": 4.0,
+            "volatility_gate_reference": {
+              "policy": "shadow_only_no_weight_change",
+              "trade_policy": "advisory_no_auto_weight_change",
+              "gate": "rg_resmoe_neutral_vol_reference",
+              "high_vol_reference": false,
+              "elevated_vol_reference": false,
+              "allow_00631l_add_reference": true,
+              "reference_00631l_scale": 1.0,
+              "inputs": {
+                "h5_base_forecast_variance": 0.00023037302276631878,
+                "h5_gate_pathway_soft_forecast_variance": 0.00023638938555727688,
+                "h5_soft_vs_base_ratio": 1.026115743582793,
+                "h5_gate_weight": 0.09523809523809523
+              },
+              "rationale": "RG-ResMoE-lite shadow uses regime state only for residual-gate routing; it is a risk reference and does not change target weights."
+            }
+          }
+        },
+        "volatility_gate_reference": {
+          "policy": "shadow_only_no_weight_change",
+          "trade_policy": "advisory_no_auto_weight_change",
+          "gate": "rg_resmoe_combined_neutral_vol_reference",
+          "high_vol_reference": false,
+          "elevated_vol_reference": false,
+          "allow_00631l_add_reference": true,
+          "reference_00631l_scale": 1.0,
+          "inputs": {
+            "0050.TW": {
+              "h5_base_forecast_variance": 6.957384160649757e-05,
+              "h5_gate_pathway_soft_forecast_variance": 7.326212201124088e-05,
+              "h5_soft_vs_base_ratio": 1.0530124586996912,
+              "h5_gate_weight": 0.07539682539682539
+            },
+            "00631L.TW": {
+              "h5_base_forecast_variance": 0.00023037302276631878,
+              "h5_gate_pathway_soft_forecast_variance": 0.00023638938555727688,
+              "h5_soft_vs_base_ratio": 1.026115743582793,
+              "h5_gate_weight": 0.09523809523809523
+            }
+          },
+          "rationale": "Combined RG-ResMoE-lite shadow uses the most conservative available 0050/00631L volatility reference. Advisory only; no target-weight change."
+        }
+      },
+      "rg_resmoe_h5_high_vol_shadow_advisory": {
+        "status": "partial_ready_shadow_only",
+        "date": "2026-08-31",
+        "policy": "shadow_only_no_weight_change",
+        "trade_policy": "shadow_only_no_weight_change",
+        "outputs_target_weights": false,
+        "allow_target_weight_change": false,
+        "source": {
+          "daily_shadow": "arXiv:2608.12251 RG-ResMoE-lite pathway shadow",
+          "readiness_review": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/rg_resmoe_volatility_gate_readiness_review.json"
+        },
+        "readiness": {
+          "full_promotion_ready": false,
+          "tail_calibration_ready": true,
+          "h5_high_vol_shadow_ready": "partial",
+          "trade_policy": "shadow_only_no_weight_change",
+          "blockers": [],
+          "interpretation": "Full promotion remains blocked; calibrated tail references and H5 high-vol-only advisory can be observed in shadow without changing target weights."
+        },
+        "combined_reference": {
+          "h5_high_vol_active_reference": false,
+          "active_tickers": [],
+          "ready_tickers": [
+            "0050.TW",
+            "00631L.TW"
+          ],
+          "high_vol_gate_quantile": 0.8,
+          "manual_review_reason": "H5 RG-ResMoE high-vol-only shadow is ready/observed but not active today."
+        },
+        "by_ticker": {
+          "0050.TW": {
+            "ticker": "0050.TW",
+            "status": "available",
+            "date": "2026-08-31",
+            "policy": "shadow_only_no_weight_change",
+            "horizon": 5,
+            "h5_high_vol_ready_reference": true,
+            "h5_high_vol_active_reference": false,
+            "high_vol_gate_quantile": 0.8,
+            "readiness": {
+              "qlike_improvement_pct": 0.770311421421368,
+              "dm_p_value": 0.034026346611439995,
+              "dm_a_more_accurate": true,
+              "tail_ready": true,
+              "note": "h5_high_vol_only_shadow_advisory_reference_no_weight_change"
+            },
+            "inputs": {
+              "h5_base_forecast_variance": 6.957384160649757e-05,
+              "h5_gate_pathway_soft_forecast_variance": 7.326212201124088e-05,
+              "h5_soft_vs_base_ratio": 1.0530124586996912,
+              "h5_gate_weight": 0.07539682539682539
+            }
+          },
+          "00631L.TW": {
+            "ticker": "00631L.TW",
+            "status": "available",
+            "date": "2026-08-31",
+            "policy": "shadow_only_no_weight_change",
+            "horizon": 5,
+            "h5_high_vol_ready_reference": true,
+            "h5_high_vol_active_reference": false,
+            "high_vol_gate_quantile": 0.8,
+            "readiness": {
+              "qlike_improvement_pct": 1.036838851514805,
+              "dm_p_value": 0.16292554636594297,
+              "dm_a_more_accurate": true,
+              "tail_ready": true,
+              "note": "h5_high_vol_only_shadow_advisory_reference_no_weight_change"
+            },
+            "inputs": {
+              "h5_base_forecast_variance": 0.00023037302276631878,
+              "h5_gate_pathway_soft_forecast_variance": 0.00023638938555727688,
+              "h5_soft_vs_base_ratio": 1.026115743582793,
+              "h5_gate_weight": 0.09523809523809523
+            }
+          }
+        }
+      },
+      "specialist_routing": {
+        "status": "available",
+        "policy": "advisory_only_no_weight_change",
+        "route": "neutral",
+        "risk_level": "low",
+        "trusted_specialists": [
+          "calibrated_ensemble",
+          "risk_score"
+        ],
+        "signal_reliability": "calibrate_thresholds",
+        "recommended_action": "hold_or_align",
+        "allow_return_prediction": true,
+        "allow_00631l_add": true,
+        "inputs": {
+          "volatility_gate": "neutral_vol",
+          "high_vol_gate": false,
+          "low_vol_gate": false,
+          "market_state": "bull_trend",
+          "market_state_bucket": "bull_trend",
+          "tsmc_0050_health_state": "healthy_leadership",
+          "signal_alignment": "mixed",
+          "dominant_direction": "bullish",
+          "total_risk_score": 2,
+          "tail_risk_score": 0,
+          "drawdown": -0.044085
+        },
+        "rationale": "No dominant specialist regime; use the active calibrated strategy and normal risk gates."
+      },
+      "execution_risk": {
+        "score": 0.1612,
+        "level": "low",
+        "components": {
+          "blocked_guard": 0.0,
+          "business_stale": 0.3333,
+          "calendar_stale": 0.1429,
+          "soft_data_warnings": 0.0,
+          "leverage_weight": 0.4936,
+          "total_risk_score": 0.2,
+          "ncf_downside": 0.002,
+          "ncf_tail_downside": 0.002,
+          "finbert_sentiment_risk": 0.4856
+        },
+        "method": "weighted_daily_execution_risk_v2"
+      },
+      "signal_alerts": [
+        {
+          "type": "tail_specific_conformal_warning",
+          "level": "medium",
+          "title": "Tail-specific conformal warning",
+          "reason": "Tail-specific conformal diagnostic controls lower-tail error separately. It is used to pause additional leverage and trigger trough monitoring, not to automatically liquidate 00631L.",
+          "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-08-31:tail_specific_conformal_warning",
+          "cooldown_minutes": 1200,
+          "metadata": {
+            "policy": "diagnostic_warning_only_no_weight_change",
+            "recommended_action": "pause_new_00631l_adds_and_monitor_trough",
+            "allow_00631l_add": false,
+            "auto_reduce_00631l": false,
+            "ticker": "00631L.TW",
+            "current_risk_bucket": "elevated",
+            "min_lower_tail_confidence_bound": -0.0886663038952209,
+            "max_prob_mdd_lt_8pct": 0.19631901840490798,
+            "high_tail_reasons": [
+              "h10_lower_bound_le_8pct"
+            ],
+            "diagnostics": {
+              "h5": {
+                "horizon_days": 5,
+                "point_forecast_return": 0.030517270287502618,
+                "lower_tail_confidence_bound": -0.05842898689271325,
+                "alpha": 0.1,
+                "effective_alpha": 0.1,
+                "adaptive": false,
+                "nominal_lower_tail_coverage": 0.9,
+                "calibration_scope": "elevated",
+                "calibration_count": 157,
+                "lower_tail_residual_quantile": 0.08894625718021587,
+                "prob_mdd_lt_8pct": 0.0975609756097561,
+                "mdd_threshold": -0.08
+              },
+              "h10": {
+                "horizon_days": 10,
+                "point_forecast_return": 0.040820202842656195,
+                "lower_tail_confidence_bound": -0.0886663038952209,
+                "alpha": 0.1,
+                "effective_alpha": 0.1,
+                "adaptive": false,
+                "nominal_lower_tail_coverage": 0.9,
+                "calibration_scope": "elevated",
+                "calibration_count": 157,
+                "lower_tail_residual_quantile": 0.1294865067378771,
+                "prob_mdd_lt_8pct": 0.19631901840490798,
+                "mdd_threshold": -0.08
+              }
+            }
+          }
+        },
+        {
+          "type": "ncf_panel_stale",
+          "level": "high",
+          "title": "NCF panel stale",
+          "reason": "ncf_panel_631l last covers 2026-07-16, 32 trading day(s) behind signal date 2026-08-31. If this panel is pinned in strategy.json runner_params, the reproducibility guard that invalidates stale holds on panel regeneration is not firing -- confirm whether to refresh the panel.",
+          "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-08-31:ncf_panel_stale",
+          "cooldown_minutes": 1200
+        },
+        {
+          "type": "ncf_20d_ic_unreliable",
+          "level": "low",
+          "title": "NCF 20d IC 不可信",
+          "reason": "近期 rolling 20d IC 為負，月度展望請勿依賴 NCF 判斷，改看 1d/5d 信號。",
+          "cooldown_key": "a2118_a2111_ncf_late_bull_deleverage:2026-08-31:ncf_20d_ic_unreliable",
+          "cooldown_minutes": 1200
+        }
+      ],
+      "signal_alignment": {
+        "schema_version": 1,
+        "generated_at": "2026-08-31T13:46:20Z",
+        "strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+        "signal_date": "2026-08-31",
+        "alignment": "mixed",
+        "dominant_direction": "bullish",
+        "direction_counts": {
+          "bullish": 6,
+          "bearish": 1,
+          "neutral": 3
+        },
+        "weighted_share": {
+          "bullish": 0.7788,
+          "bearish": 0.1332,
+          "neutral": 0.088
+        },
+        "available_sources": 10,
+        "total_sources": 10,
+        "divergent_sources": [
+          "factor_lens"
+        ],
+        "confidence_penalty": 0.1,
+        "leverage_suitability": {
+          "schema_version": 1,
+          "tier": 2,
+          "label_zh": "可持有 0050 + 小 00631L",
+          "action": "hold_0050_small_00631l",
+          "policy": "advisory_only_no_weight_change",
+          "reason": "risk-on context is not strong enough to raise leverage, but no hard 00631L veto is active",
+          "shadow_momentum_candidate": false,
+          "shadow_momentum_note": null,
+          "inputs": {
+            "execution_regime": "golden1",
+            "alignment": "mixed",
+            "dominant_direction": "bullish",
+            "weighted_share": {
+              "bullish": 0.7788,
+              "bearish": 0.1332,
+              "neutral": 0.088
+            },
+            "total_risk_score": 2,
+            "chip_data_stale": false,
+            "tail_risk_score": 0,
+            "ncf_2330_tsmc_state": "healthy_leadership",
+            "ncf_2330_reference_action": "allow_normal",
+            "ncf_2330_market_state": {
+              "state": 4,
+              "label_zh": "拉回整理",
+              "bias": "pullback_in_uptrend",
+              "policy": "diagnostic_only_no_weight_change",
+              "rule_version": "tsmc_market_state_v1",
+              "reasons": [
+                "H20 is still UP",
+                "short/medium horizon is pulling back",
+                "tail risk is not high enough to confirm trend weakening"
+              ],
+              "inputs": {
+                "h1_direction": "UP",
+                "h5_direction": "DOWN",
+                "h20_direction": "UP",
+                "h1_probability_up": 0.832304,
+                "h5_probability_up": 0.352756,
+                "h20_probability_up": 0.822587,
+                "h1_return": 0.003541,
+                "h5_return": 0.002529,
+                "h20_return": 0.030621,
+                "combined_probability_up": 0.693866,
+                "calibrated_probability_up": 0.618239,
+                "confidence": 0.442715,
+                "weighted_return": 0.004292,
+                "prob_fwd_mdd_gt5_h20": 0.303884,
+                "prob_fwd_mdd_gt8_h20": 0.067186,
+                "prob_fwd_gain_gt5_h20": 0.581577,
+                "tail_reward_risk_score": 0.277693
+              },
+              "state_map": {
+                "1": "強勢領漲",
+                "2": "高檔震盪",
+                "3": "假突破",
+                "4": "拉回整理",
+                "5": "趨勢轉弱"
+              }
+            },
+            "ncf_00631l_direction": "neutral",
+            "ncf_00631l_prob_up": 0.5099,
+            "ncf_00631l_prob_fwd_mdd_gt5_h20": 0.285072,
+            "ncf_2330_prob_fwd_mdd_gt5_h20": 0.303884,
+            "ncf_2330_prob_fwd_mdd_gt8_h20": 0.067186,
+            "ncf_cross_ticker_direction": "bullish",
+            "ncf_2330_factor_quality_signal": "neutral",
+            "ncf_2330_factor_quality_risk_score": 1.0,
+            "ncf_2330_factor_quality_net_score": 1.0
+          },
+          "tier_map": {
+            "0": "不利 00631L",
+            "1": "只適合 0050",
+            "2": "可持有 0050 + 小 00631L",
+            "3": "適合提高 00631L"
+          }
+        },
+        "sources": [
+          {
+            "name": "ncf_00631l",
+            "available": true,
+            "direction": "neutral",
+            "strength": 0.1263,
+            "reason": "00631L calibrated_prob_up=0.5099, direction=UP"
+          },
+          {
+            "name": "ncf_00632r_inverse",
+            "available": true,
+            "direction": "neutral",
+            "strength": 0.1,
+            "reason": "00632R calibrated_prob_up=0.2956, inverse_direction=neutral, direction_conflict=True→neutral"
+          },
+          {
+            "name": "ncf_cross_ticker",
+            "available": true,
+            "direction": "bullish",
+            "strength": 0.2691,
+            "reason": "market_probability_up=0.6145, agreement=0.5382"
+          },
+          {
+            "name": "ncf_2330_tsmc",
+            "available": true,
+            "direction": "bullish",
+            "strength": 0.45,
+            "reason": "state=healthy_leadership, 2330_h20_prob_up=0.8226, 2330_tail_risk=0.303884, 2330_severe_tail=0.067186, 2330_market_state=4, 2330_5d=0.012632, 0050_ex_tsmc_5d=0.038948"
+          },
+          {
+            "name": "finbert_sentiment",
+            "available": true,
+            "direction": "neutral",
+            "strength": 0.0712,
+            "reason": "finbert_risk_score=0.4856, status=ok"
+          },
+          {
+            "name": "lm_dictionary_sentiment",
+            "available": false,
+            "direction": "neutral",
+            "strength": 0.0,
+            "reason": "lm_status=no_dictionary_hits, risk_score=0.0000, pos=0, neg=0, hits=0",
+            "structural_limitation": "english_only_dictionary_vs_chinese_news_source"
+          },
+          {
+            "name": "composite_risk_score",
+            "available": true,
+            "direction": "bullish",
+            "strength": 0.2,
+            "reason": "total_risk_score=2, chip=0, derivative=2"
+          },
+          {
+            "name": "factor_lens",
+            "available": true,
+            "direction": "bearish",
+            "strength": 0.45,
+            "reason": "all_key_factors_pass=False, ic_20d_warnings=3"
+          },
+          {
+            "name": "tbrain_kdj",
+            "available": true,
+            "direction": "bullish",
+            "strength": 0.8556,
+            "reason": "J=0.926, K=0.723, D=0.622 (fast); K_slow=0.617, D_slow=0.582, J_q_low=0.108, J_q_high=1.074"
+          },
+          {
+            "name": "weekly_ma_bull",
+            "available": true,
+            "direction": "bullish",
+            "strength": 0.5071,
+            "reason": "weekly MA short=106.06, mid=104.48, long=96.30, bull_aligned=True"
+          },
+          {
+            "name": "execution_regime",
+            "available": true,
+            "direction": "bullish",
+            "strength": 0.35,
+            "reason": "execution_regime=golden1"
+          }
+        ]
+      },
+      "finbert_sentiment": {
+        "status": "ok",
+        "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/sentiment/finbert_market_sentiment_daily.csv",
+        "date": "2026-08-31",
+        "requested_as_of_date": "2026-09-01",
+        "actual_data_date": "2026-08-31",
+        "calendar_stale_days": 1,
+        "actual_calendar_stale_days": 0,
+        "freshness_scale": 1.0,
+        "finbert_sentiment_score": 0.0237424050607502,
+        "finbert_negative_ratio": 0.2520491351172619,
+        "finbert_positive_ratio": 0.2757915401780121,
+        "finbert_neutral_ratio": 0.472159324704726,
+        "finbert_confidence": 0.587970986343058,
+        "finbert_news_intensity": 5.0,
+        "raw_risk_score": 0.4856,
+        "risk_score": 0.4856
+      },
+      "lm_dictionary_sentiment": {
+        "status": "no_dictionary_hits",
+        "reason": "no_positive_or_negative_dictionary_hits",
+        "signal_date": "2026-08-31",
+        "dictionary_dir": "/mnt/c/Users/isaac/Downloads/StocksProject-master/StocksProject-master/SentimentAnalysis",
+        "source": {
+          "status": "available",
+          "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/report/group_a_plus/latest/watchlist_news.json",
+          "article_count": 8,
+          "source": "local_ltn_jsonl",
+          "signal_date": "2026-08-31"
+        },
+        "active_allocation_impact": "none",
+        "token_count": 15,
+        "positive_count": 0,
+        "negative_count": 0,
+        "uncertainty_count": 0,
+        "litigious_count": 0,
+        "dictionary_hit_count": 0,
+        "sentiment_score": 0.0,
+        "risk_score": 0.0
+      },
+      "tbrain_shadow": {
+        "status": "available",
+        "ticker": "0050.TW",
+        "date": "2026-08-31",
+        "features": {
+          "tbrain_close_ma6_loc": 0.006552,
+          "tbrain_close_ma22_loc": 0.016813,
+          "tbrain_close_ma65_loc": 0.017331,
+          "tbrain_close_ma130_loc": 0.120581,
+          "tbrain_volume_ma22_loc": -0.222062,
+          "tbrain_kdj_k_9_3_3": 0.723329,
+          "tbrain_kdj_d_9_3_3": 0.621871,
+          "tbrain_kdj_j_9_3_3": 0.926245,
+          "tbrain_kdj_k_5_21_11": 0.617084,
+          "tbrain_kdj_d_5_21_11": 0.581737,
+          "tbrain_kdj_j_9_3_3_q_low": 0.108411,
+          "tbrain_kdj_j_9_3_3_q_high": 1.074382
+        },
+        "weekly_ma": {
+          "status": "available",
+          "ma_periods_weeks": [
+            4,
+            13,
+            26
+          ],
+          "ma_short": 106.0625,
+          "ma_mid": 104.4846,
+          "ma_long": 96.2962,
+          "bull_aligned": true,
+          "bear_aligned": false,
+          "weeks_available": 57
+        },
+        "method": "tbrain_multi_kdj_location_shadow_v1"
+      },
+      "ncf_live_overlay": {
+        "date_00631l": "2026-08-31",
+        "date_00632r": "2026-08-31",
+        "ncf_00631l": {
+          "direction": "UP",
+          "calibrated_prob_up": 0.5099,
+          "confidence": 0.4353,
+          "confidence_panel_aligned": 0.2525,
+          "votes_up": 1,
+          "tail_reward_risk_score": 0.393087,
+          "prob_fwd_mdd_gt5_h20": 0.285072,
+          "prob_fwd_gain_gt5_h20": 0.678159,
+          "direction_magnitude_gate": {
+            "passed": false,
+            "direction": "UP",
+            "return_side": "DOWN",
+            "probability_edge": 0.0099,
+            "predicted_return": -0.003521,
+            "min_probability_edge": 0.05,
+            "min_abs_return": 0.002,
+            "method": "direction_magnitude_gate"
+          },
+          "direction_conflict": true
+        },
+        "ncf_00632r": {
+          "direction": "DOWN",
+          "calibrated_prob_up": 0.2956,
+          "confidence": 0.7312,
+          "confidence_panel_aligned": 0.68,
+          "votes_up": 0,
+          "tail_reward_risk_score": 0.007909,
+          "prob_fwd_mdd_gt5_h20": 0.209093,
+          "prob_fwd_gain_gt5_h20": 0.217003,
+          "direction_magnitude_gate": {
+            "passed": false,
+            "direction": "DOWN",
+            "return_side": "UP",
+            "probability_edge": 0.2044,
+            "predicted_return": 0.014755,
+            "min_probability_edge": 0.05,
+            "min_abs_return": 0.002,
+            "method": "direction_magnitude_gate"
+          },
+          "direction_conflict": true
+        },
+        "composite_downside_signal": 0.002,
+        "directional_downside_signal": 0.0,
+        "tail_downside_signal": 0.002,
+        "gated_downside_signal": 0.002,
+        "composite_upside_signal": 0.1874,
+        "directional_upside_signal": 0.0,
+        "tail_upside_signal": 0.1874,
+        "dynamic_horizon_00631l": {
+          "probability_up": 0.5221,
+          "direction": "UP",
+          "confidence": 0.0193,
+          "weights": {
+            "1": 0.1731,
+            "5": 0.3314,
+            "20": 0.4955
+          },
+          "prior_weights": {
+            "1": 0.1894,
+            "5": 0.3425,
+            "20": 0.4681
+          },
+          "live_weights": {
+            "1": 0.1428,
+            "5": 0.3107,
+            "20": 0.5465
+          },
+          "source": "multi_year_auc_blend"
+        },
+        "dynamic_horizon_00632r": {
+          "probability_up": 0.247,
+          "direction": "DOWN",
+          "confidence": 0.37,
+          "weights": {
+            "1": 0.1618,
+            "5": 0.3318,
+            "20": 0.5065
+          },
+          "prior_weights": {
+            "1": 0.218,
+            "5": 0.3152,
+            "20": 0.4668
+          },
+          "live_weights": {
+            "1": 0.0574,
+            "5": 0.3625,
+            "20": 0.5802
+          },
+          "source": "multi_year_auc_blend"
+        },
+        "cross_ticker_consistency": {
+          "market_direction": "UP",
+          "market_probability_up": 0.6145,
+          "agreement_score": 0.5382,
+          "conflict_flag": false,
+          "confidence": 0.0446,
+          "00631l_probability_up": 0.5221,
+          "00632r_probability_up": 0.247
+        },
+        "bull_suppression": 0.0,
+        "bull_suppression_applied": false,
+        "ma_gap": 0.062234441389652506,
+        "current_regime": "golden1",
+        "action": "hold",
+        "base_golden1_weights": {
+          "0050.TW": 0.47,
+          "00631L.TW": 0.09881315828093576,
+          "00632R.TW": 0.1671390088790092,
+          "00679B.TWO": 0.0,
+          "cash": 0.26404783284005506
+        },
+        "adjusted_golden1_weights": {
+          "0050.TW": 0.47,
+          "00631L.TW": 0.09871434512265483,
+          "00632R.TW": 0.1671390088790092,
+          "00679B.TWO": 0.0,
+          "cash": 0.264146645998336
+        },
+        "00631l_reduction": 0.0001,
+        "status": "applied",
+        "files": {
+          "00631L.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_latest_20260831_no_external.json",
+          "00632R.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00632r_latest_20260831.json",
+          "0050.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_0050_latest_20260831.json",
+          "2330.TW": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_latest_20260831.json",
+          "ncf_2330_checklist": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_checklist_20260831.json"
+        },
+        "ncf_0050": {
+          "status": "available",
+          "trade_policy": "diagnostic_only_no_weight_change",
+          "direction": "UP",
+          "calibrated_prob_up": 0.5757,
+          "confidence": 0.5087,
+          "confidence_panel_aligned": 0.4683,
+          "weighted_return": -0.001707,
+          "votes_up": 2,
+          "horizon_prob_up": {
+            "1": 0.5688,
+            "5": 0.5159,
+            "20": 0.6675
+          },
+          "prob_fwd_mdd_gt5_h20": 0.48404,
+          "prob_fwd_gain_gt5_h20": 0.283355,
+          "direction_magnitude_gate": {
+            "passed": false,
+            "direction": "UP",
+            "return_side": "DOWN",
+            "probability_edge": 0.0757,
+            "predicted_return": -0.001707,
+            "min_probability_edge": 0.05,
+            "min_abs_return": 0.002,
+            "method": "direction_magnitude_gate"
+          },
+          "direction_conflict": true
+        },
+        "ncf_2330": {
+          "ticker": "2330.TW",
+          "date": "2026-08-31",
+          "direction": "UP",
+          "calibrated_prob_up": 0.6182,
+          "confidence": 0.4427,
+          "confidence_panel_aligned": null,
+          "weighted_return": 0.004292,
+          "votes_up": 2,
+          "raw_combined_prob_up": 0.6939,
+          "horizon_prob_up": {
+            "1": 0.8323,
+            "5": 0.3528,
+            "20": 0.8226
+          },
+          "horizon_val_auc": {
+            "1": 0.7316,
+            "5": 0.6349,
+            "20": 0.6368
+          },
+          "direction_weights": {
+            "1": 0.4878,
+            "5": 0.2841,
+            "20": 0.2282
+          },
+          "direction_magnitude_gate": {
+            "passed": true,
+            "direction": "UP",
+            "return_side": "UP",
+            "probability_edge": 0.1182,
+            "predicted_return": 0.004292,
+            "min_probability_edge": 0.05,
+            "min_abs_return": 0.002,
+            "method": "direction_magnitude_gate"
+          },
+          "direction_conflict": false,
+          "tail_reward_risk_score": 0.277693,
+          "prob_fwd_mdd_gt5_h20": 0.303884,
+          "prob_fwd_mdd_gt8_h20": 0.067186,
+          "prob_fwd_gain_gt5_h20": 0.581577,
+          "tsmc_market_state": {
+            "state": 4,
+            "label_zh": "拉回整理",
+            "bias": "pullback_in_uptrend",
+            "policy": "diagnostic_only_no_weight_change",
+            "rule_version": "tsmc_market_state_v1",
+            "reasons": [
+              "H20 is still UP",
+              "short/medium horizon is pulling back",
+              "tail risk is not high enough to confirm trend weakening"
+            ],
+            "inputs": {
+              "h1_direction": "UP",
+              "h5_direction": "DOWN",
+              "h20_direction": "UP",
+              "h1_probability_up": 0.832304,
+              "h5_probability_up": 0.352756,
+              "h20_probability_up": 0.822587,
+              "h1_return": 0.003541,
+              "h5_return": 0.002529,
+              "h20_return": 0.030621,
+              "combined_probability_up": 0.693866,
+              "calibrated_probability_up": 0.618239,
+              "confidence": 0.442715,
+              "weighted_return": 0.004292,
+              "prob_fwd_mdd_gt5_h20": 0.303884,
+              "prob_fwd_mdd_gt8_h20": 0.067186,
+              "prob_fwd_gain_gt5_h20": 0.581577,
+              "tail_reward_risk_score": 0.277693
+            },
+            "state_map": {
+              "1": "強勢領漲",
+              "2": "高檔震盪",
+              "3": "假突破",
+              "4": "拉回整理",
+              "5": "趨勢轉弱"
+            }
+          }
+        },
+        "tsmc_0050_health": {
+          "status": "available",
+          "date": "2026-08-31",
+          "state": "healthy_leadership",
+          "label_zh": "台積電帶動且 0050 非台積 proxy 同步為正",
+          "reference_guidance": {
+            "reference_action": "allow_normal",
+            "reference_action_zh": "台積與 0050 廣度同步，00631L 依原策略持有",
+            "trade_policy": "diagnostic_only_no_weight_change",
+            "manual_review_required": false,
+            "allow_00631l_add": true
+          },
+          "top5_breadth": {
+            "status": "ok",
+            "date": "2026-08-31",
+            "tsmc_weight_assumption": 0.5831,
+            "top5_weight_sum_estimate": 0.7106,
+            "ret_5d": {
+              "2330.TW": 0.012632,
+              "2317.TW": 0.026694,
+              "2454.TW": 0.042497,
+              "2308.TW": 0.060519,
+              "2382.TW": 0.041538,
+              "0050.TW": 0.023603
+            },
+            "ex_tsmc_return_5d": 0.038948,
+            "concentration_divergence_5d": -0.026317,
+            "tsmc_contribution_to_0050_5d": 0.007365,
+            "narrow_lead": false,
+            "top5_above_ma20": {
+              "2330.TW": true,
+              "2317.TW": false,
+              "2454.TW": false,
+              "2308.TW": true,
+              "2382.TW": true
+            },
+            "top5_above_ma20_pct": 0.6,
+            "top5_advancing_5d": {
+              "2330.TW": true,
+              "2317.TW": true,
+              "2454.TW": true,
+              "2308.TW": true,
+              "2382.TW": true
+            },
+            "top5_advancing_5d_pct": 1.0,
+            "top5_weighted_contribution_ratio_5d": 0.7439,
+            "caveat": "top-5 mega-cap proxy only (~71.1% of 0050's weight estimated), not full ~50-constituent breadth -- see module docstring"
+          },
+          "price_latest_dates": {
+            "0050.TW": "2026-08-31",
+            "00631L.TW": "2026-08-31",
+            "2330.TW": "2026-08-31"
+          },
+          "tsmc_weight_assumption": 0.5831,
+          "returns": {
+            "2330.TW": {
+              "1d": -0.006198,
+              "5d": 0.012632,
+              "10d": 0.002083,
+              "20d": 0.014768
+            },
+            "0050.TW": {
+              "1d": -0.006545,
+              "5d": 0.023603,
+              "10d": -0.001879,
+              "20d": 0.041667
+            },
+            "00631L.TW": {
+              "1d": -0.013223,
+              "5d": 0.050132,
+              "10d": -0.003616,
+              "20d": 0.098099
+            },
+            "0050_ex_tsmc_proxy": {
+              "1d": -0.00703,
+              "5d": 0.038948,
+              "10d": -0.00742,
+              "20d": 0.079289
+            }
+          },
+          "ncf_2330_h20_prob_up": 0.8226,
+          "ncf_2330_calibrated_prob_up": 0.6182,
+          "ncf_2330_prob_fwd_mdd_gt5_h20": 0.303884,
+          "ncf_2330_prob_fwd_mdd_gt8_h20": 0.067186,
+          "ncf_2330_tail_reward_risk_score": 0.277693,
+          "ncf_2330_market_state": {
+            "state": 4,
+            "label_zh": "拉回整理",
+            "bias": "pullback_in_uptrend",
+            "policy": "diagnostic_only_no_weight_change",
+            "rule_version": "tsmc_market_state_v1",
+            "reasons": [
+              "H20 is still UP",
+              "short/medium horizon is pulling back",
+              "tail risk is not high enough to confirm trend weakening"
+            ],
+            "inputs": {
+              "h1_direction": "UP",
+              "h5_direction": "DOWN",
+              "h20_direction": "UP",
+              "h1_probability_up": 0.832304,
+              "h5_probability_up": 0.352756,
+              "h20_probability_up": 0.822587,
+              "h1_return": 0.003541,
+              "h5_return": 0.002529,
+              "h20_return": 0.030621,
+              "combined_probability_up": 0.693866,
+              "calibrated_probability_up": 0.618239,
+              "confidence": 0.442715,
+              "weighted_return": 0.004292,
+              "prob_fwd_mdd_gt5_h20": 0.303884,
+              "prob_fwd_mdd_gt8_h20": 0.067186,
+              "prob_fwd_gain_gt5_h20": 0.581577,
+              "tail_reward_risk_score": 0.277693
+            },
+            "state_map": {
+              "1": "強勢領漲",
+              "2": "高檔震盪",
+              "3": "假突破",
+              "4": "拉回整理",
+              "5": "趨勢轉弱"
+            }
+          },
+          "trim_policy": "trim_00631l_only_when_tsmc_weak_and_00631l_ncf_is_weak"
+        },
+        "ncf_2330_checklist": {
+          "report": "ncf_2330_checklist",
+          "mode": "daily",
+          "as_of": "2026-08-31",
+          "generated_at": "2026-08-31T21:28:09",
+          "overall_signal": "neutral",
+          "available_layer_score": 2,
+          "available_layer_count": 9,
+          "factor_quality_overlay": {
+            "status": "research_only",
+            "signal": "neutral",
+            "label": "mixed",
+            "risk_score": 1.0,
+            "opportunity_score": 2.0,
+            "net_score": 1.0,
+            "components": {
+              "technical_extension": {
+                "risk_points": 0.0,
+                "opportunity_points": 1.0,
+                "close_vs_ma60": 0.008585,
+                "close_vs_ma120": 0.075229,
+                "reason": "technical extension is not extreme"
+              },
+              "valuation_heat": {
+                "risk_points": 1.0,
+                "opportunity_points": 0.0,
+                "pe": 27.88,
+                "pb": 9.7,
+                "reason": "PE/PB are in historically riskier zones"
+              },
+              "fx_tail_pressure": {
+                "risk_points": 0.0,
+                "opportunity_points": 0.0,
+                "usdtwd_5d_change": -0.005059,
+                "dxy_5d_change": 0.008148,
+                "reason": "FX pressure is not at an overlay threshold"
+              },
+              "chip_crowding": {
+                "risk_points": 0.0,
+                "opportunity_points": 1.0,
+                "foreign_net_5d_shares": 7031215.0,
+                "investment_trust_net_5d_shares": -2905868.0,
+                "reason": "foreign investors are net buyers without investment-trust crowding"
+              },
+              "fundamental_growth": {
+                "risk_points": 0.0,
+                "opportunity_points": 0.0,
+                "revenue_yoy": 0.446876,
+                "revenue_yoy_accel": -0.231793,
+                "reason": "fundamental growth is not at an overlay threshold"
+              }
+            },
+            "source": "evaluate_ncf_2330_checklist_factor_quality.py",
+            "reason": "factor-quality overlay is mixed; keep it diagnostic"
+          },
+          "factor_quality_signal": "neutral",
+          "factor_quality_label": "mixed",
+          "factor_quality_risk_score": 1.0,
+          "factor_quality_opportunity_score": 2.0,
+          "factor_quality_net_score": 1.0,
+          "layers": {
+            "fundamental": {
+              "status": "available_partial",
+              "signal": "neutral",
+              "values": {
+                "latest_revenue_month": "2026-08-01",
+                "revenue": 467580548000.0,
+                "revenue_yoy": 0.446876,
+                "revenue_qoq_proxy_3m": 0.138427,
+                "revenue_yoy_accel": -0.231793,
+                "gross_margin": null,
+                "eps": null,
+                "missing": [
+                  "gross_margin",
+                  "eps"
+                ]
+              },
+              "reason": "monthly revenue growth is positive but not strong enough for a clear growth-continuation signal"
+            },
+            "valuation": {
+              "status": "available_partial",
+              "signal": "neutral",
+              "values": {
+                "date": "2026-08-31",
+                "pe": 27.88,
+                "forward_pe": null,
+                "pb": 9.7,
+                "dividend_yield": 0.91,
+                "missing": [
+                  "forward_pe"
+                ]
+              },
+              "reason": "valuation is not cheap, but not extreme enough for an overheating veto"
+            },
+            "technical": {
+              "status": "available",
+              "signal": "neutral",
+              "values": {
+                "date": "2026-08-31",
+                "close": 2405.0,
+                "ma20": 2391.0,
+                "ma60": 2384.5293,
+                "ma120": 2236.7323,
+                "prior_60d_high": 2510.0,
+                "close_vs_ma20": 0.005855,
+                "close_vs_ma60": 0.008585,
+                "close_vs_ma120": 0.075229
+              },
+              "reason": "trend is intact but not a clean leadership breakout"
+            },
+            "adr": {
+              "status": "available",
+              "signal": "bullish",
+              "values": {
+                "date": "2026-08-27",
+                "tsm_adr_close_usd": 427.3,
+                "usdtwd": 31.8059,
+                "tsmc_close_twd": 2410.0,
+                "implied_twd_per_share": 2718.1322,
+                "adr_premium_discount": 0.127856,
+                "adr_1d_return": 0.023007,
+                "usdtwd_1d_change": 3e-06,
+                "fx_adjusted_adr_1d_return": 0.023011
+              },
+              "reason": "ADR FX-adjusted return implies positive next-session pressure"
+            },
+            "global_semiconductor": {
+              "status": "available",
+              "signal": "neutral",
+              "values": {
+                "SOX/SOXX proxy": {
+                  "date": "2026-08-27",
+                  "return_5d": 0.005896
+                },
+                "NVDA": {
+                  "date": "2026-08-27",
+                  "return_5d": 0.051326
+                },
+                "AMD": {
+                  "date": "2026-08-27",
+                  "return_5d": 0.015358
+                },
+                "ASML": {
+                  "date": "2026-08-27",
+                  "return_5d": -0.008741
+                },
+                "average_available_5d_return": 0.01596,
+                "missing": []
+              },
+              "reason": "global semiconductor proxy momentum is mixed or flat"
+            },
+            "fx": {
+              "status": "available",
+              "signal": "neutral",
+              "values": {
+                "date": "2026-08-31",
+                "usdtwd": 31.661,
+                "usdtwd_5d_change": -0.005059,
+                "usdtwd_20d_change": -0.019574,
+                "dxy_ticker": "DX-Y.NYB",
+                "dxy_date": "2026-08-30",
+                "dxy": 99.605,
+                "dxy_5d_change": 0.008148,
+                "missing": []
+              },
+              "reason": "USD/TWD and DXY moves are not large enough for a clear FX pressure signal"
+            },
+            "chip": {
+              "status": "available",
+              "signal": "neutral",
+              "values": {
+                "date": "2026-08-31",
+                "foreign_net_1d_shares": -4554240.0,
+                "foreign_net_5d_shares": 7031215.0,
+                "investment_trust_net_5d_shares": -2905868.0,
+                "dealer_net_5d_shares": 0.0,
+                "institutional_total_net_5d_shares": 0.0,
+                "foreign_holding_ratio": 69.22
+              },
+              "reason": "institutional flows are mixed"
+            },
+            "relation_0050": {
+              "status": "available",
+              "signal": "bullish",
+              "values": {
+                "date_2330": "2026-08-31",
+                "date_0050": "2026-08-31",
+                "tsmc_weight_assumption": 0.5831,
+                "ret_2330_5d": 0.012632,
+                "ret_0050_5d": 0.023603,
+                "ret_0050_ex_tsmc_proxy_5d": 0.038948,
+                "ret_2330_20d": 0.014768,
+                "ret_0050_20d": 0.041667,
+                "ret_0050_ex_tsmc_proxy_20d": 0.079289
+              },
+              "reason": "TSMC, 0050, and 0050 ex-TSMC proxy are all positive over 5 sessions"
+            },
+            "ncf_2330": {
+              "status": "available",
+              "signal": "neutral",
+              "values": {
+                "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_latest_20260831.json",
+                "date": "2026-08-31",
+                "state": {
+                  "state": 4,
+                  "label_zh": "拉回整理",
+                  "bias": "pullback_in_uptrend",
+                  "policy": "diagnostic_only_no_weight_change",
+                  "rule_version": "tsmc_market_state_v1",
+                  "reasons": [
+                    "H20 is still UP",
+                    "short/medium horizon is pulling back",
+                    "tail risk is not high enough to confirm trend weakening"
+                  ],
+                  "inputs": {
+                    "h1_direction": "UP",
+                    "h5_direction": "DOWN",
+                    "h20_direction": "UP",
+                    "h1_probability_up": 0.832304,
+                    "h5_probability_up": 0.352756,
+                    "h20_probability_up": 0.822587,
+                    "h1_return": 0.003541,
+                    "h5_return": 0.002529,
+                    "h20_return": 0.030621,
+                    "combined_probability_up": 0.693866,
+                    "calibrated_probability_up": 0.618239,
+                    "confidence": 0.442715,
+                    "weighted_return": 0.004292,
+                    "prob_fwd_mdd_gt5_h20": 0.303884,
+                    "prob_fwd_mdd_gt8_h20": 0.067186,
+                    "prob_fwd_gain_gt5_h20": 0.581577,
+                    "tail_reward_risk_score": 0.277693
+                  },
+                  "state_map": {
+                    "1": "強勢領漲",
+                    "2": "高檔震盪",
+                    "3": "假突破",
+                    "4": "拉回整理",
+                    "5": "趨勢轉弱"
+                  }
+                },
+                "h20_probability_up": 0.8226,
+                "prob_fwd_mdd_gt8_h20": 0.067186
+              },
+              "reason": "ncf_2330 market state is 拉回整理"
+            }
+          },
+          "policy": "diagnostic_only_no_weight_change",
+          "source": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_2330_checklist_20260831.json"
+        },
+        "a2118_extreme_risk_warning": {
+          "active": false,
+          "policy": "warning_only_no_weight_change",
+          "recommended_action": "none",
+          "allow_new_0050_add": true,
+          "allow_new_00631l_add": true,
+          "thresholds": {
+            "h20_prob_up_max": 0.22,
+            "prob_fwd_mdd_gt5_h20_min": 0.85
+          },
+          "inputs": {
+            "signal_current": true,
+            "current_regime": "golden1",
+            "h20_prob_up": 0.4664,
+            "prob_fwd_mdd_gt5_h20": 0.285072,
+            "prob_fwd_gain_gt5_h20": 0.678159,
+            "confidence": 0.2525
+          },
+          "rationale": "Extreme A21.18 NCF warning: H20 probability is very bearish and 20-day drawdown-risk probability is very high. Research-only; do not auto-sell, but pause new 0050/00631L risk adds."
+        }
+      },
+      "factor_lens_gate": {
+        "status": "available",
+        "report_file": "group_a_plus_factor_lens_20260831.json",
+        "report_generated_at": "2026-08-31T21:14:22",
+        "all_key_factors_pass": false,
+        "factors": {
+          "ncf_00631l_prob_up": {
+            "passed": true,
+            "checks": {
+              "recent_ic_1d_positive": true,
+              "recent_ic_5d_positive": true,
+              "spread_5d_positive": true
+            },
+            "ic_20d_warning": true,
+            "ic_20d_recent_mean": -0.2049
+          },
+          "ncf_cross_ticker_market_up": {
+            "passed": false,
+            "checks": {
+              "recent_ic_1d_positive": false,
+              "recent_ic_5d_positive": true,
+              "spread_5d_positive": true
+            },
+            "ic_20d_warning": true,
+            "ic_20d_recent_mean": -0.2187
+          },
+          "ncf_market_probability_up": {
+            "passed": true,
+            "checks": {
+              "recent_ic_1d_positive": true,
+              "recent_ic_5d_positive": true,
+              "spread_5d_positive": true
+            },
+            "ic_20d_warning": true,
+            "ic_20d_recent_mean": -0.2246
+          }
+        }
+      },
+      "data_freshness": {
+        "price_data_as_of": "2026-08-31",
+        "ohlcv_by_ticker": {
+          "0050.TW": "2026-08-31",
+          "00631L.TW": "2026-08-31",
+          "00632R.TW": "2026-08-31",
+          "00679B.TWO": "2026-08-31"
+        },
+        "latest_prices": {
+          "0050.TW": 106.25,
+          "00631L.TW": 35.81999969482422,
+          "00632R.TW": 9.949999809265137,
+          "00679B.TWO": 25.860000610351562
+        },
+        "optional_sources": {
+          "institutional_0050": {
+            "table": "institutional_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-08-31",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 0,
+            "max_business_stale_days": 1,
+            "status": "ok"
+          },
+          "margin_0050": {
+            "table": "margin_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-08-28",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 1,
+            "max_business_stale_days": 1,
+            "status": "ok"
+          },
+          "market_margin": {
+            "table": "market_margin_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-08-28",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 1,
+            "max_business_stale_days": 1,
+            "status": "ok"
+          },
+          "tdcc_0050": {
+            "table": "shareholding_distribution",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-08-28",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 1,
+            "max_business_stale_days": 10,
+            "status": "ok"
+          },
+          "foreign_shareholding_0050": {
+            "table": "foreign_shareholding_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-08-28",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 1,
+            "max_business_stale_days": 1,
+            "status": "ok"
+          },
+          "short_balance_0050": {
+            "table": "short_sale_balance_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-08-28",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 1,
+            "max_business_stale_days": 1,
+            "status": "ok"
+          },
+          "securities_lending_0050": {
+            "table": "securities_lending_data",
+            "severity": "soft",
+            "exists": true,
+            "latest_date": "2026-08-28",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 1,
+            "max_business_stale_days": 1,
+            "status": "ok"
+          },
+          "day_trading_0050": {
+            "table": "day_trading_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-08-31",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 0,
+            "max_business_stale_days": 0,
+            "status": "ok"
+          },
+          "dealer_tx": {
+            "table": "dealer_futures_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-08-31",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 0,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "dealer_txo": {
+            "table": "dealer_options_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-08-31",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 0,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "foreign_tx_oi": {
+            "table": "derivative_institutional_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-08-31",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 0,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          },
+          "foreign_txo_oi": {
+            "table": "derivative_institutional_data",
+            "severity": "hard",
+            "exists": true,
+            "latest_date": "2026-08-31",
+            "freshness_as_of": "2026-08-31",
+            "business_stale_days": 0,
+            "max_business_stale_days": 3,
+            "status": "ok"
+          }
+        }
+      },
+      "manifest": "releases/golden2_0830/group_a_plus_strategy_golden2_0830.json"
+    }
+  },
+  "metadata": {
+    "script": "group_a_plus.operations.execution_plan",
+    "timestamp": "2026-08-31T21:46:35",
+    "output_type": "OutputType.DICT",
+    "version": "1.0.0",
+    "execution_time_ms": 20519
+  },
+  "error": null
+}

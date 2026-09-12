@@ -52,11 +52,131 @@ def _command_args(**overrides) -> argparse.Namespace:
     return argparse.Namespace(**values)
 
 
-def test_daily_pipeline_does_not_write_golden1_0531_release_artifacts() -> None:
+def test_research_governance_command_builder_keeps_snapshot_and_gate_paths() -> None:
+    module = _load_module()
+
+    commands = module._build_research_governance_commands(stamp="20260627", as_of="2026-06-27")
+
+    assert list(commands) == [
+        "research_shadow_decision_snapshot",
+        "research_governance_gate",
+        "shadow_artifact_registry",
+        "latest_strategy_target_weight_export",
+        "latest_strategy_explain_snapshot",
+        "data_freshness_gate",
+        "ncf_panel_drift_auto_attribution",
+        "golden_release_separation_audit",
+    ]
+    assert commands["research_shadow_decision_snapshot"][1] == (
+        "scripts/evaluate/build_group_a_plus_research_shadow_decision_snapshot.py"
+    )
+    assert commands["research_shadow_decision_snapshot"][
+        commands["research_shadow_decision_snapshot"].index("--ncf-decision-calibration") + 1
+    ].endswith("results/ncf_decision_calibration_shadow_20260627.json")
+    assert commands["research_governance_gate"][1] == (
+        "scripts/evaluate/build_group_a_plus_research_governance_gate.py"
+    )
+    assert commands["research_governance_gate"][commands["research_governance_gate"].index("--as-of") + 1] == (
+        "2026-06-27"
+    )
+    assert commands["research_governance_gate"][commands["research_governance_gate"].index("--output") + 1].endswith(
+        "report/group_a_plus/latest/research_governance_gate.json"
+    )
+    assert commands["shadow_artifact_registry"][1] == (
+        "scripts/evaluate/build_group_a_plus_shadow_artifact_registry.py"
+    )
+    assert commands["shadow_artifact_registry"][commands["shadow_artifact_registry"].index("--as-of") + 1] == (
+        "2026-06-27"
+    )
+    assert commands["shadow_artifact_registry"][commands["shadow_artifact_registry"].index("--output") + 1].endswith(
+        "report/group_a_plus/latest/shadow_artifact_registry.json"
+    )
+    assert commands["latest_strategy_target_weight_export"][1] == (
+        "scripts/evaluate/export_group_a_plus_latest_strategy_target_weights.py"
+    )
+    assert commands["latest_strategy_target_weight_export"][
+        commands["latest_strategy_target_weight_export"].index("--end") + 1
+    ] == "latest"
+    assert commands["latest_strategy_target_weight_export"][
+        commands["latest_strategy_target_weight_export"].index("--output-json") + 1
+    ].endswith("report/group_a_plus/latest/latest_strategy_historical_target_weights.json")
+    assert commands["latest_strategy_target_weight_export"][
+        commands["latest_strategy_target_weight_export"].index("--output-csv") + 1
+    ].endswith("report/group_a_plus/latest/latest_strategy_historical_target_weights.csv")
+    assert "latest_strategy_target_weight_export" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["latest_strategy_explain_snapshot"][1] == (
+        "scripts/evaluate/build_group_a_plusplus_latest_strategy_explain_snapshot.py"
+    )
+    assert commands["latest_strategy_explain_snapshot"][
+        commands["latest_strategy_explain_snapshot"].index("--target-weights") + 1
+    ].endswith("report/group_a_plus/latest/latest_strategy_historical_target_weights.json")
+    assert commands["latest_strategy_explain_snapshot"][
+        commands["latest_strategy_explain_snapshot"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/group_a_plusplus_latest_strategy_explain_snapshot.json")
+    assert commands["data_freshness_gate"][1] == (
+        "scripts/evaluate/build_group_a_plus_data_freshness_gate.py"
+    )
+    assert commands["data_freshness_gate"][commands["data_freshness_gate"].index("--ohlcv-freshness") + 1].endswith(
+        "results/ohlcv_freshness_20260627.json"
+    )
+    assert commands["data_freshness_gate"][commands["data_freshness_gate"].index("--output") + 1].endswith(
+        "report/group_a_plus/latest/data_freshness_gate.json"
+    )
+    assert commands["ncf_panel_drift_auto_attribution"][1] == (
+        "scripts/evaluate/build_ncf_panel_drift_auto_attribution.py"
+    )
+    assert commands["ncf_panel_drift_auto_attribution"][
+        commands["ncf_panel_drift_auto_attribution"].index("--diagnosis") + 1
+    ].endswith("results/ncf_panel_drift_diagnosis_20260627.json")
+    assert commands["ncf_panel_drift_auto_attribution"][
+        commands["ncf_panel_drift_auto_attribution"].index("--data-freshness-gate") + 1
+    ].endswith("report/group_a_plus/latest/data_freshness_gate.json")
+    assert commands["ncf_panel_drift_auto_attribution"][
+        commands["ncf_panel_drift_auto_attribution"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/ncf_panel_drift_auto_attribution.json")
+    assert commands["golden_release_separation_audit"][1] == (
+        "scripts/evaluate/build_group_a_plus_golden_release_separation_audit.py"
+    )
+    assert commands["golden_release_separation_audit"][
+        commands["golden_release_separation_audit"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/golden_release_separation_audit.json")
+
+
+def test_ctbc_command_builder_keeps_date_stamped_panels_and_outputs() -> None:
+    module = _load_module()
+    db_path = Path("/tmp/stock_data.db")
+
+    commands = module._build_ctbc_2509_02986_commands(stamp="20260627", db_path=db_path)
+
+    assert list(commands) == [
+        "ctbc_debounce_shadow_2509_02986",
+        "ctbc_00713_debounce_shadow_2509_02986",
+        "ctbc_00713_domain_randomization_2509_02986",
+        "ctbc_groupa_plusplus_review_2509_02986",
+        "ctbc_promotion_readiness_gate_2509_02986",
+    ]
+    assert commands["ctbc_debounce_shadow_2509_02986"][
+        commands["ctbc_debounce_shadow_2509_02986"].index("--panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260627.csv")
+    assert commands["ctbc_00713_debounce_shadow_2509_02986"][
+        commands["ctbc_00713_debounce_shadow_2509_02986"].index("--panel-00713") + 1
+    ].endswith("results/ncf_00713_panel_latest_20260627.csv")
+    assert commands["ctbc_00713_debounce_shadow_2509_02986"][
+        commands["ctbc_00713_debounce_shadow_2509_02986"].index("--curves-output") + 1
+    ].endswith("results/2509_02986_ctbc_00713_debounce_shadow_curves_20260627.csv")
+    assert commands["ctbc_promotion_readiness_gate_2509_02986"][
+        commands["ctbc_promotion_readiness_gate_2509_02986"].index("--domain-randomization") + 1
+    ].endswith("report/group_a_plus/latest/2509_02986_ctbc_00713_domain_randomization.json")
+    assert list(commands).index("ctbc_groupa_plusplus_review_2509_02986") < list(commands).index(
+        "ctbc_promotion_readiness_gate_2509_02986"
+    )
+
+
+def test_daily_pipeline_does_not_write_frozen_golden_release_artifacts() -> None:
     module = _load_module()
     commands = module.build_commands(_command_args())
 
-    protected = {module._normalize_project_path(path) for path in module.PROTECTED_GOLDEN1_RELEASE_ARTIFACTS}
+    protected = {module._normalize_project_path(path) for path in module.PROTECTED_GOLDEN_RELEASE_ARTIFACTS}
     output_targets = []
     for cmd in commands.values():
         for index, token in enumerate(cmd[:-1]):
@@ -78,8 +198,24 @@ def test_daily_pipeline_blocks_golden1_0531_release_output_target() -> None:
         ]
     }
 
-    with pytest.raises(ValueError, match="protected Golden1_0531 release"):
-        module._assert_no_protected_golden1_output_targets(commands)
+    with pytest.raises(ValueError, match="protected frozen Golden release"):
+        module._assert_no_protected_golden_release_output_targets(commands)
+
+
+def test_daily_pipeline_blocks_golden2_0830_release_output_target() -> None:
+    module = _load_module()
+    protected = module.PROJECT_ROOT / "results" / "golden2_0830" / "ncf_00631l_panel_golden2_0830.csv"
+    commands = {
+        "bad_step": [
+            "python",
+            "some_script.py",
+            "--csv",
+            str(protected),
+        ]
+    }
+
+    with pytest.raises(ValueError, match="protected frozen Golden release"):
+        module._assert_no_protected_golden_release_output_targets(commands)
 
 
 def test_infer_no_external_panel_path() -> None:
@@ -136,11 +272,25 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "ncf_00631l",
         "ncf_00632r",
         "ncf_0050",
+        "ncf_00713",
         "ncf_signal_archive",
         "ncf_2330",
         "ncf_00631l_no_external_shadow",
         "ncf_panel_manifest",
         "ncf_0050_threshold_eval",
+        "ctbc_debounce_shadow_2509_02986",
+        "ctbc_00713_debounce_shadow_2509_02986",
+        "ctbc_00713_domain_randomization_2509_02986",
+        "ctbc_groupa_plusplus_review_2509_02986",
+        "ctbc_promotion_readiness_gate_2509_02986",
+        "auxiliary_policy_lift_shadow_2608_15841",
+        "auxiliary_churn_shadow_2608_15841",
+        "auxiliary_purged_walkforward_2608_15841",
+        "auxiliary_regime_decay_audit_2608_15841",
+        "auxiliary_lifecycle_audit_2608_15841",
+        "delayed_credit_audit_2608_15841",
+        "candidate_auxiliary_bank_blueprint_2608_15841",
+        "auxiliary_task_discovery_readiness_2608_15841",
         "ncf_panel_drift",
         "ncf_panel_refresh_recommendation",
         "ncf_panel_drift_no_external_vs_external",
@@ -157,13 +307,38 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "ncf_panel_coverage",
         "advisory_panel",
         "factor_lens",
+        "golden1_combined_signal",
         "daily_signal",
+        "riccati_mv_shadow",
+        "current_policy_re_evaluation_gate",
+        "rebalance_review",
         "compounding_regime",
         "gjr_garch_shadow",
         "a2120_shadow_pipeline",
         "recovery_boost_spillover_gate_shadow_log",
         "trough_override_eligibility_shadow_log",
+        "add_0050_instead_shadow_log",
+        "adaptive_review_interval_shadow_log",
+        "gatedlinear_drawdown_forecast_shadow_log",
         "cvar_tail_risk_diagnostic",
+        "taiwan_etf_2607_16450_review",
+        "taiwan_etf_2607_16450_tail_scorecard",
+        "taiwan_etf_2607_16450_cost_robustness",
+        "taiwan_etf_2607_16450_candidate_tail_review",
+        "taiwan_etf_2607_16450_regime_vol_forecast_quality",
+        "taiwan_etf_2607_16450_regime_vol_gate",
+        "taiwan_etf_2607_16450_tail_dependence_monitor",
+        "taiwan_etf_2607_16450_geopolitical_cvar_overlay",
+        "taiwan_etf_2607_16450_bootstrap_promotion_gate",
+        "paper_2609_07946_00635u_instrument_review",
+        "paper_2609_07946_stock_bond_gold_forward_shadow",
+        "paper_2609_07946_bond_only_forward_shadow",
+        "paper_2609_07946_complementarity_promotion_gate",
+        "paper_2609_07946_adoption_matrix",
+        "paper_2609_08106_complementarity_forward_shadow",
+        "paper_2609_08106_latest_target_weight_replay",
+        "paper_2609_08106_latest_target_weight_param_sweep",
+        "paper_2609_08106_adoption_matrix",
         "option_state_coverage_review",
         "adversarial_market_integrity_review",
         "sciphyrl_readiness_review",
@@ -175,17 +350,33 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "trigate_vol_memory_shadow",
         "systemic_bubble_time_at_risk_review",
         "illiquidity_network_readiness_review",
-        "speculative_influence_network_readiness_review",
-        "sin_lite_proxy",
-        "hmm_wj_synthetic_scenario_readiness_review",
-        "dynamic_cvar_tail_cost_readiness_review",
-        "synthetic_augmentation_validation_audit",
-        "synthetic_augmentation_validation_readiness_review",
+            "speculative_influence_network_readiness_review",
+            "sin_lite_proxy",
+            "hmm_wj_synthetic_scenario_readiness_review",
+            "scr_readiness_review_2602_24037",
+            "scr_readiness_robustness_2602_24037",
+            "scr_readiness_window_split_2602_24037",
+            "scr_scenario_stress_score_2602_24037",
+            "cvar_cost_window_split_2606_26625",
+            "rolling_tail_no_add_gate_2606_26625",
+            "dynamic_cvar_constraint_shadow_2608_20179",
+            "dynamic_cvar_forward_validation_2608_20179",
+            "dynamic_cvar_tail_cost_readiness_review",
+            "synthetic_augmentation_validation_audit",
+            "synthetic_augmentation_validation_readiness_review",
         "intervention_history",
         "broker_holdings_time_series_sample",
         "broker_holdings_reconciliation_review",
+        "assigned_realized_deployment_shadow_2608_08405",
+        "capacity_grid_shadow_2608_08405",
+        "erosion_persistence_shadow_2608_08405",
+        "instrument_readiness_shadow_2608_08405",
+        "ramp_path_dependence_shadow_2608_08405",
+        "capacity_crowding_readiness_2608_08405",
         "intervention_fatigue_risk_budget_readiness_review",
         "letf_tracking_error_effective_fee_readiness_review",
+        "00632r_discipline_guard",
+        "letf_liquidity_feedback_watch_shadow_backtest",
         "asian_etf_tail_analytics_readiness_review",
         "gift_human_exception_record_draft",
         "gift_human_exception_approval_record_schema",
@@ -195,27 +386,61 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "gift_signed_approval_validator_smoke",
         "gift_manual_approval_readiness",
         "gift_pdf_advantage_coverage_review",
+        "defensive_cash_floor_signed_approval_validation",
+        "defensive_cash_floor_guarded_candidate",
+        "defensive_cash_floor_guarded_monitor",
+        "ncf_panel_drift_auto_attribution",
         "dfl_shadow_refresh_main",
         "dfl_shadow_refresh_p50",
         "dfl_shadow_refresh_p70",
         "dfl_advisory",
-        "dfl_shadow_refresh_overlap",
-        "dfl_active_date_audit",
-        "dfl_shadow_ensemble",
-        "relative_reentry_opportunity_shadow",
-        "relative_reentry_advisory_shadow",
-        "relative_reentry_candidate_review",
+            "dfl_shadow_refresh_overlap",
+            "dfl_active_date_audit",
+            "dfl_shadow_ensemble",
+            "a2118_seed_averaging_live_inference_snapshot",
+            "a2118_seed_averaging_forward_shadow_monitor",
+            "a2118_seed_averaging_promotion_gate",
+            "a2118_risk_down_mapped_shadow",
+            "paper_2606_09104_00631l_regime_split",
+            "paper_2606_09104_00631l_staged_ladder_readiness",
+            "paper_2606_09104_extreme_state_monitor",
+            "relative_reentry_opportunity_shadow",
+            "relative_reentry_advisory_shadow",
+            "relative_reentry_candidate_review",
         "relative_reentry_promotion_gate",
+        "staged_reentry_event_study",
+        "staged_reentry_promotion_review",
+        "staged_reentry_confirmatory_tracker_2609_04917",
         "ncf_decision_calibration_shadow",
+        "tsi_stress_shadow",
+        "tsi_stress_oos",
+        "tsi_no_add_shadow",
         "daily_artifact_integrity",
         "research_shadow_decision_snapshot",
-        "daily_status",
-        "deployment_consistency_review",
-        "deployment_summary",
-        "promotion_gate",
-        "multi_window_failure_attribution",
+        "research_governance_gate",
+        "shadow_artifact_registry",
+        "latest_strategy_target_weight_export",
+        "latest_strategy_explain_snapshot",
+        "data_freshness_gate",
+        "golden_release_separation_audit",
+            "daily_status",
+            "deployment_consistency_review",
+            "deployment_summary",
+            "promotion_gate",
+            "golden2_same_window_candidate_backtests",
+            "golden2_multi_window_gate",
+            "golden2_promotion_candidate_review",
+            "multi_window_failure_attribution",
         "promotion_blocked_diagnostic",
         "daily_status_final",
+        "moira_relative_exposure_thesis_shadow",
+        "moira_hierarchical_credit_review_shadow",
+        "moira_event_aware_execution_quality_shadow",
+        "moira_policy_critic_shadow",
+        "moira_policy_critic_validation_shadow",
+        "moira_execution_guard_hard_stop_backtest_shadow",
+        "daily_semantic_context_summary",
+        "paper_convergence_review",
         "final_governance_snapshot",
         "ncf_2330_checklist",
     ]
@@ -223,9 +448,33 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert commands["ncf_data_validation"][1] == "ncf_data_quality.py"
     assert "--fail-on-degraded-freshness" not in commands["ncf_data_validation"]
     assert "ncf_data_validation" not in module.BEST_EFFORT_STEP_NAMES
+    assert commands["ctbc_debounce_shadow_2509_02986"][1] == (
+        "scripts/evaluate/evaluate_group_a_plus_2509_02986_ctbc_debounce_shadow.py"
+    )
+    assert commands["ctbc_debounce_shadow_2509_02986"][
+        commands["ctbc_debounce_shadow_2509_02986"].index("--panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260627.csv")
+    assert commands["ctbc_00713_debounce_shadow_2509_02986"][
+        commands["ctbc_00713_debounce_shadow_2509_02986"].index("--panel-00713") + 1
+    ].endswith("results/ncf_00713_panel_latest_20260627.csv")
+    assert commands["ctbc_00713_domain_randomization_2509_02986"][
+        commands["ctbc_00713_domain_randomization_2509_02986"].index("--panel-00713") + 1
+    ].endswith("results/ncf_00713_panel_latest_20260627.csv")
+    assert list(commands).index("ctbc_groupa_plusplus_review_2509_02986") < list(commands).index("daily_signal")
+    assert "ctbc_debounce_shadow_2509_02986" in module.BEST_EFFORT_STEP_NAMES
+    assert "ctbc_00713_debounce_shadow_2509_02986" in module.BEST_EFFORT_STEP_NAMES
+    assert "ctbc_00713_domain_randomization_2509_02986" in module.BEST_EFFORT_STEP_NAMES
+    assert "ctbc_promotion_readiness_gate_2509_02986" in module.BEST_EFFORT_STEP_NAMES
+    assert "ctbc_groupa_plusplus_review_2509_02986" in module.BEST_EFFORT_STEP_NAMES
     assert commands["a2120_shadow_pipeline"][1] == "scripts/run/run_a2120_daily_shadow_pipeline.py"
     assert commands["a2120_shadow_pipeline"][commands["a2120_shadow_pipeline"].index("--date-stamp") + 1] == "20260627"
     assert "a2120_shadow_pipeline" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["golden1_combined_signal"][1] == "scripts/run/run_group_a_combined_signal.py"
+    assert commands["golden1_combined_signal"][
+        commands["golden1_combined_signal"].index("--as-of-date") + 1
+    ] == "2026-06-27"
+    assert list(commands).index("golden1_combined_signal") < list(commands).index("daily_signal")
+    assert "golden1_combined_signal" not in module.BEST_EFFORT_STEP_NAMES
     assert commands["recovery_boost_spillover_gate_shadow_log"][1] == (
         "scripts/run/build_group_a_plus_recovery_boost_spillover_gate_shadow_log.py"
     )
@@ -240,10 +489,63 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["trough_override_eligibility_shadow_log"].index("--panel") + 1
     ].endswith("results/ncf_00631l_panel_latest_20260627.csv")
     assert "trough_override_eligibility_shadow_log" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["add_0050_instead_shadow_log"][1] == (
+        "scripts/run/build_group_a_plus_add_0050_instead_shadow_log.py"
+    )
+    assert commands["add_0050_instead_shadow_log"][
+        commands["add_0050_instead_shadow_log"].index("--panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260627.csv")
+    assert "add_0050_instead_shadow_log" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["adaptive_review_interval_shadow_log"][1] == (
+        "scripts/run/build_group_a_plus_adaptive_review_interval_shadow_log.py"
+    )
+    assert commands["adaptive_review_interval_shadow_log"][
+        commands["adaptive_review_interval_shadow_log"].index("--panel") + 1
+    ].endswith("results/ncf_00631l_panel_latest_20260627.csv")
+    assert "adaptive_review_interval_shadow_log" in module.BEST_EFFORT_STEP_NAMES
     assert commands["cvar_tail_risk_diagnostic"][1] == (
         "scripts/run/build_group_a_plus_cvar_tail_risk_diagnostic_snapshot.py"
     )
     assert "cvar_tail_risk_diagnostic" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["taiwan_etf_2607_16450_review"][1] == (
+        "scripts/evaluate/build_group_a_plus_2607_16450_taiwan_etf_review.py"
+    )
+    assert "taiwan_etf_2607_16450_review" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["taiwan_etf_2607_16450_tail_scorecard"][1] == (
+        "scripts/evaluate/build_group_a_plus_2607_16450_tail_sensitive_scorecard.py"
+    )
+    assert "taiwan_etf_2607_16450_tail_scorecard" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["taiwan_etf_2607_16450_cost_robustness"][1] == (
+        "scripts/evaluate/build_group_a_plus_2607_16450_turnover_cost_robustness.py"
+    )
+    assert "taiwan_etf_2607_16450_cost_robustness" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["taiwan_etf_2607_16450_candidate_tail_review"][1] == (
+        "scripts/evaluate/build_group_a_plus_2607_16450_candidate_tail_review.py"
+    )
+    assert "taiwan_etf_2607_16450_candidate_tail_review" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["taiwan_etf_2607_16450_regime_vol_forecast_quality"][1] == (
+        "scripts/evaluate/evaluate_group_a_plus_regime_switching_volatility_forecast_quality.py"
+    )
+    assert commands["taiwan_etf_2607_16450_regime_vol_forecast_quality"][
+        commands["taiwan_etf_2607_16450_regime_vol_forecast_quality"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2607_16450_regime_switching_volatility_forecast_quality.json")
+    assert "taiwan_etf_2607_16450_regime_vol_forecast_quality" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["taiwan_etf_2607_16450_regime_vol_gate"][1] == (
+        "scripts/evaluate/build_group_a_plus_2607_16450_regime_switching_volatility_gate.py"
+    )
+    assert "taiwan_etf_2607_16450_regime_vol_gate" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["taiwan_etf_2607_16450_tail_dependence_monitor"][1] == (
+        "scripts/evaluate/build_group_a_plus_2607_16450_tail_dependence_monitor.py"
+    )
+    assert "taiwan_etf_2607_16450_tail_dependence_monitor" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["taiwan_etf_2607_16450_geopolitical_cvar_overlay"][1] == (
+        "scripts/evaluate/build_group_a_plus_2607_16450_geopolitical_cvar_overlay.py"
+    )
+    assert "taiwan_etf_2607_16450_geopolitical_cvar_overlay" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["taiwan_etf_2607_16450_bootstrap_promotion_gate"][1] == (
+        "scripts/evaluate/build_group_a_plus_2607_16450_bootstrap_promotion_gate.py"
+    )
+    assert "taiwan_etf_2607_16450_bootstrap_promotion_gate" in module.BEST_EFFORT_STEP_NAMES
     assert commands["option_state_coverage_review"][1] == (
         "scripts/evaluate/build_group_a_plus_option_state_coverage_review.py"
     )
@@ -272,6 +574,28 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["market_impact_readiness_review"].index("--output") + 1
     ].endswith("report/group_a_plus/latest/market_impact_readiness_review.json")
     assert "market_impact_readiness_review" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["capacity_crowding_readiness_2608_08405"][1] == (
+        "scripts/evaluate/build_group_a_plus_2608_08405_capacity_crowding_readiness.py"
+    )
+    assert commands["capacity_crowding_readiness_2608_08405"][
+        commands["capacity_crowding_readiness_2608_08405"].index("--capital") + 1
+    ] == "1000000"
+    assert commands["capacity_crowding_readiness_2608_08405"][
+        commands["capacity_crowding_readiness_2608_08405"].index("--market-impact") + 1
+    ].endswith("report/group_a_plus/latest/market_impact_readiness_review.json")
+    assert commands["capacity_crowding_readiness_2608_08405"][
+        commands["capacity_crowding_readiness_2608_08405"].index("--capacity-grid") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_capacity_grid_shadow.json")
+    assert commands["capacity_crowding_readiness_2608_08405"][
+        commands["capacity_crowding_readiness_2608_08405"].index("--erosion-persistence") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_erosion_persistence_shadow.json")
+    assert commands["capacity_crowding_readiness_2608_08405"][
+        commands["capacity_crowding_readiness_2608_08405"].index("--instrument-readiness") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_instrument_readiness_shadow.json")
+    assert commands["capacity_crowding_readiness_2608_08405"][
+        commands["capacity_crowding_readiness_2608_08405"].index("--ramp-path-dependence") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_ramp_path_dependence_shadow.json")
+    assert "capacity_crowding_readiness_2608_08405" in module.BEST_EFFORT_STEP_NAMES
     assert commands["finstressts_readiness_review"][1] == (
         "scripts/evaluate/build_group_a_plus_finstressts_readiness_review.py"
     )
@@ -380,13 +704,90 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["hmm_wj_synthetic_scenario_readiness_review"].index("--output") + 1
     ].endswith("report/group_a_plus/latest/hmm_wj_synthetic_scenario_readiness_review.json")
     assert "hmm_wj_synthetic_scenario_readiness_review" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["scr_readiness_review_2602_24037"][1] == (
+        "scripts/evaluate/build_group_a_plus_2602_24037_scr_readiness_review.py"
+    )
+    assert commands["scr_readiness_review_2602_24037"][
+        commands["scr_readiness_review_2602_24037"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_readiness_review.json")
+    assert "scr_readiness_review_2602_24037" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["scr_readiness_robustness_2602_24037"][1] == (
+        "scripts/evaluate/sweep_group_a_plus_2602_24037_scr_readiness_robustness.py"
+    )
+    assert commands["scr_readiness_robustness_2602_24037"][
+        commands["scr_readiness_robustness_2602_24037"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_readiness_robustness.json")
+    assert "scr_readiness_robustness_2602_24037" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["scr_readiness_window_split_2602_24037"][1] == (
+        "scripts/evaluate/evaluate_group_a_plus_2602_24037_scr_readiness_window_split.py"
+    )
+    assert commands["scr_readiness_window_split_2602_24037"][
+        commands["scr_readiness_window_split_2602_24037"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_readiness_window_split.json")
+    assert "scr_readiness_window_split_2602_24037" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["scr_scenario_stress_score_2602_24037"][1] == (
+        "scripts/evaluate/build_group_a_plus_2602_24037_scr_scenario_stress_score.py"
+    )
+    assert commands["scr_scenario_stress_score_2602_24037"][
+        commands["scr_scenario_stress_score_2602_24037"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_scenario_stress_score.json")
+    assert "scr_scenario_stress_score_2602_24037" in module.BEST_EFFORT_STEP_NAMES
     assert commands["dynamic_cvar_tail_cost_readiness_review"][1] == (
         "scripts/evaluate/build_group_a_plus_dynamic_cvar_tail_cost_readiness_review.py"
     )
     assert commands["dynamic_cvar_tail_cost_readiness_review"][
+        commands["dynamic_cvar_tail_cost_readiness_review"].index("--cvar-cost-window-split") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_cvar_cost_window_split.json")
+    assert commands["dynamic_cvar_tail_cost_readiness_review"][
+        commands["dynamic_cvar_tail_cost_readiness_review"].index("--rolling-tail-no-add") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_rolling_tail_no_add_gate.json")
+    assert commands["dynamic_cvar_tail_cost_readiness_review"][
         commands["dynamic_cvar_tail_cost_readiness_review"].index("--output") + 1
     ].endswith("report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json")
     assert "dynamic_cvar_tail_cost_readiness_review" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["cvar_cost_window_split_2606_26625"][1] == (
+        "scripts/evaluate/evaluate_group_a_plus_2606_26625_cvar_cost_window_split.py"
+    )
+    assert commands["cvar_cost_window_split_2606_26625"][
+        commands["cvar_cost_window_split_2606_26625"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_cvar_cost_window_split.json")
+    assert commands["cvar_cost_window_split_2606_26625"][
+        commands["cvar_cost_window_split_2606_26625"].index("--md-output") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_cvar_cost_window_split.md")
+    assert "cvar_cost_window_split_2606_26625" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["rolling_tail_no_add_gate_2606_26625"][1] == (
+        "scripts/evaluate/build_group_a_plus_2606_26625_rolling_tail_no_add_gate.py"
+    )
+    assert commands["rolling_tail_no_add_gate_2606_26625"][
+        commands["rolling_tail_no_add_gate_2606_26625"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_rolling_tail_no_add_gate.json")
+    assert commands["rolling_tail_no_add_gate_2606_26625"][
+        commands["rolling_tail_no_add_gate_2606_26625"].index("--md-output") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_rolling_tail_no_add_gate.md")
+    assert "rolling_tail_no_add_gate_2606_26625" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["dynamic_cvar_constraint_shadow_2608_20179"][1] == (
+        "scripts/evaluate/build_group_a_plus_2608_20179_dynamic_cvar_constraint_shadow.py"
+    )
+    assert commands["dynamic_cvar_constraint_shadow_2608_20179"][
+        commands["dynamic_cvar_constraint_shadow_2608_20179"].index("--rolling-tail-gate") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_rolling_tail_no_add_gate.json")
+    assert commands["dynamic_cvar_constraint_shadow_2608_20179"][
+        commands["dynamic_cvar_constraint_shadow_2608_20179"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2608_20179_dynamic_cvar_constraint_shadow.json")
+    assert commands["dynamic_cvar_constraint_shadow_2608_20179"][
+        commands["dynamic_cvar_constraint_shadow_2608_20179"].index("--md-output") + 1
+    ].endswith("report/group_a_plus/latest/2608_20179_dynamic_cvar_constraint_shadow.md")
+    assert "dynamic_cvar_constraint_shadow_2608_20179" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["dynamic_cvar_forward_validation_2608_20179"][1] == (
+        "scripts/evaluate/validate_group_a_plus_2608_20179_dynamic_cvar_forward.py"
+    )
+    assert commands["dynamic_cvar_forward_validation_2608_20179"][
+        commands["dynamic_cvar_forward_validation_2608_20179"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2608_20179_dynamic_cvar_forward_validation.json")
+    assert commands["dynamic_cvar_forward_validation_2608_20179"][
+        commands["dynamic_cvar_forward_validation_2608_20179"].index("--md-output") + 1
+    ].endswith("report/group_a_plus/latest/2608_20179_dynamic_cvar_forward_validation.md")
+    assert "dynamic_cvar_forward_validation_2608_20179" in module.BEST_EFFORT_STEP_NAMES
     assert commands["synthetic_augmentation_validation_audit"][1] == (
         "scripts/evaluate/build_group_a_plus_synthetic_augmentation_validation_audit.py"
     )
@@ -434,6 +835,68 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["broker_holdings_reconciliation_review"].index("--output") + 1
     ].endswith("report/group_a_plus/latest/broker_holdings_reconciliation_review.json")
     assert "broker_holdings_reconciliation_review" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["assigned_realized_deployment_shadow_2608_08405"][1] == (
+        "scripts/evaluate/build_group_a_plus_2608_08405_assigned_realized_deployment_shadow.py"
+    )
+    assert commands["assigned_realized_deployment_shadow_2608_08405"][
+        commands["assigned_realized_deployment_shadow_2608_08405"].index("--live-signal") + 1
+    ].endswith("results/group_a_plus_live_signal_v2_20260627.json")
+    assert commands["assigned_realized_deployment_shadow_2608_08405"][
+        commands["assigned_realized_deployment_shadow_2608_08405"].index("--broker-reconciliation") + 1
+    ].endswith("report/group_a_plus/latest/broker_holdings_reconciliation_review.json")
+    assert commands["assigned_realized_deployment_shadow_2608_08405"][
+        commands["assigned_realized_deployment_shadow_2608_08405"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_assigned_realized_deployment_shadow.json")
+    assert "assigned_realized_deployment_shadow_2608_08405" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["capacity_grid_shadow_2608_08405"][1] == (
+        "scripts/evaluate/build_group_a_plus_2608_08405_capacity_grid_shadow.py"
+    )
+    assert commands["capacity_grid_shadow_2608_08405"][
+        commands["capacity_grid_shadow_2608_08405"].index("--live-signal") + 1
+    ].endswith("results/group_a_plus_live_signal_v2_20260627.json")
+    assert commands["capacity_grid_shadow_2608_08405"][
+        commands["capacity_grid_shadow_2608_08405"].index("--assigned-realized") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_assigned_realized_deployment_shadow.json")
+    assert commands["capacity_grid_shadow_2608_08405"][
+        commands["capacity_grid_shadow_2608_08405"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_capacity_grid_shadow.json")
+    assert "capacity_grid_shadow_2608_08405" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["erosion_persistence_shadow_2608_08405"][1] == (
+        "scripts/evaluate/build_group_a_plus_2608_08405_erosion_persistence_shadow.py"
+    )
+    assert commands["erosion_persistence_shadow_2608_08405"][
+        commands["erosion_persistence_shadow_2608_08405"].index("--as-of") + 1
+    ] == "2026-06-27"
+    assert commands["erosion_persistence_shadow_2608_08405"][
+        commands["erosion_persistence_shadow_2608_08405"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_erosion_persistence_shadow.json")
+    assert "erosion_persistence_shadow_2608_08405" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["instrument_readiness_shadow_2608_08405"][1] == (
+        "scripts/evaluate/build_group_a_plus_2608_08405_instrument_readiness_shadow.py"
+    )
+    assert commands["instrument_readiness_shadow_2608_08405"][
+        commands["instrument_readiness_shadow_2608_08405"].index("--securities-lending-status") + 1
+    ].endswith("report/group_a_plus/latest/securities_lending_0050_source_status.json")
+    assert commands["instrument_readiness_shadow_2608_08405"][
+        commands["instrument_readiness_shadow_2608_08405"].index("--assigned-realized") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_assigned_realized_deployment_shadow.json")
+    assert commands["instrument_readiness_shadow_2608_08405"][
+        commands["instrument_readiness_shadow_2608_08405"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_instrument_readiness_shadow.json")
+    assert "instrument_readiness_shadow_2608_08405" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["ramp_path_dependence_shadow_2608_08405"][1] == (
+        "scripts/evaluate/build_group_a_plus_2608_08405_ramp_path_dependence_shadow.py"
+    )
+    assert commands["ramp_path_dependence_shadow_2608_08405"][
+        commands["ramp_path_dependence_shadow_2608_08405"].index("--intervention-history") + 1
+    ].endswith("report/group_a_plus/latest/intervention_history.json")
+    assert commands["ramp_path_dependence_shadow_2608_08405"][
+        commands["ramp_path_dependence_shadow_2608_08405"].index("--assigned-realized") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_assigned_realized_deployment_shadow.json")
+    assert commands["ramp_path_dependence_shadow_2608_08405"][
+        commands["ramp_path_dependence_shadow_2608_08405"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2608_08405_ramp_path_dependence_shadow.json")
+    assert "ramp_path_dependence_shadow_2608_08405" in module.BEST_EFFORT_STEP_NAMES
     assert commands["intervention_fatigue_risk_budget_readiness_review"][1] == (
         "scripts/evaluate/build_group_a_plus_intervention_fatigue_risk_budget_readiness_review.py"
     )
@@ -460,6 +923,32 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["letf_tracking_error_effective_fee_readiness_review"].index("--output") + 1
     ].endswith("report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json")
     assert "letf_tracking_error_effective_fee_readiness_review" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["00632r_discipline_guard"][1] == (
+        "scripts/evaluate/build_group_a_plus_00632r_discipline_guard.py"
+    )
+    assert commands["00632r_discipline_guard"][
+        commands["00632r_discipline_guard"].index("--live-signal") + 1
+    ].endswith("results/group_a_plus_live_signal_v2_20260627.json")
+    assert commands["00632r_discipline_guard"][
+        commands["00632r_discipline_guard"].index("--letf-readiness") + 1
+    ].endswith("report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json")
+    assert commands["00632r_discipline_guard"][
+        commands["00632r_discipline_guard"].index("--max-manual-weight") + 1
+    ] == "0.05"
+    assert commands["00632r_discipline_guard"][
+        commands["00632r_discipline_guard"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/00632r_discipline_guard.json")
+    assert "00632r_discipline_guard" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["letf_liquidity_feedback_watch_shadow_backtest"][1] == (
+        "scripts/evaluate/backtest_group_a_plus_letf_liquidity_feedback_watch_shadow.py"
+    )
+    assert commands["letf_liquidity_feedback_watch_shadow_backtest"][
+        commands["letf_liquidity_feedback_watch_shadow_backtest"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/letf_liquidity_feedback_watch_shadow_backtest.json")
+    assert commands["letf_liquidity_feedback_watch_shadow_backtest"][
+        commands["letf_liquidity_feedback_watch_shadow_backtest"].index("--min-trigger-count") + 1
+    ] == "20"
+    assert "letf_liquidity_feedback_watch_shadow_backtest" in module.BEST_EFFORT_STEP_NAMES
     assert commands["asian_etf_tail_analytics_readiness_review"][1] == (
         "scripts/evaluate/build_group_a_plus_asian_etf_tail_analytics_readiness_review.py"
     )
@@ -523,6 +1012,46 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["gift_pdf_advantage_coverage_review"].index("--as-of") + 1
     ] == "2026-06-27"
     assert "gift_pdf_advantage_coverage_review" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["defensive_cash_floor_signed_approval_validation"][1] == (
+        "scripts/evaluate/validate_group_a_plus_defensive_cash_floor_signed_approval_record.py"
+    )
+    assert commands["defensive_cash_floor_signed_approval_validation"][
+        commands["defensive_cash_floor_signed_approval_validation"].index("--as-of") + 1
+    ] == "2026-06-27"
+    assert commands["defensive_cash_floor_signed_approval_validation"][
+        commands["defensive_cash_floor_signed_approval_validation"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/defensive_cash_floor_signed_approval_validation.json")
+    assert "defensive_cash_floor_signed_approval_validation" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["defensive_cash_floor_guarded_candidate"][1] == (
+        "scripts/evaluate/build_group_a_plus_defensive_cash_floor_guarded_candidate.py"
+    )
+    assert commands["defensive_cash_floor_guarded_candidate"][
+        commands["defensive_cash_floor_guarded_candidate"].index("--live-signal") + 1
+    ].endswith("results/group_a_plus_live_signal_v2_20260627.json")
+    assert commands["defensive_cash_floor_guarded_candidate"][
+        commands["defensive_cash_floor_guarded_candidate"].index("--signed-review") + 1
+    ].endswith("report/group_a_plus/latest/defensive_cash_floor_signed_approval_validation.json")
+    assert commands["defensive_cash_floor_guarded_candidate"][
+        commands["defensive_cash_floor_guarded_candidate"].index("--as-of") + 1
+    ] == "2026-06-27"
+    assert "--enable" in commands["defensive_cash_floor_guarded_candidate"]
+    assert commands["defensive_cash_floor_guarded_candidate"][
+        commands["defensive_cash_floor_guarded_candidate"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/defensive_cash_floor_guarded_candidate.json")
+    assert "defensive_cash_floor_guarded_candidate" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["defensive_cash_floor_guarded_monitor"][1] == (
+        "scripts/evaluate/build_group_a_plus_defensive_cash_floor_guarded_monitor.py"
+    )
+    assert commands["defensive_cash_floor_guarded_monitor"][
+        commands["defensive_cash_floor_guarded_monitor"].index("--as-of") + 1
+    ] == "2026-06-27"
+    assert commands["defensive_cash_floor_guarded_monitor"][
+        commands["defensive_cash_floor_guarded_monitor"].index("--log") + 1
+    ].endswith("results/defensive_cash_floor_guarded_candidate_log.jsonl")
+    assert commands["defensive_cash_floor_guarded_monitor"][
+        commands["defensive_cash_floor_guarded_monitor"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/defensive_cash_floor_guarded_monitor.json")
+    assert "defensive_cash_floor_guarded_monitor" in module.BEST_EFFORT_STEP_NAMES
     assert commands["research_shadow_decision_snapshot"][1] == (
         "scripts/evaluate/build_group_a_plus_research_shadow_decision_snapshot.py"
     )
@@ -542,8 +1071,32 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["research_shadow_decision_snapshot"].index("--hmm-wj") + 1
     ].endswith("report/group_a_plus/latest/hmm_wj_synthetic_scenario_readiness_review.json")
     assert commands["research_shadow_decision_snapshot"][
+        commands["research_shadow_decision_snapshot"].index("--scr-readiness") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_readiness_review.json")
+    assert commands["research_shadow_decision_snapshot"][
+        commands["research_shadow_decision_snapshot"].index("--scr-robustness") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_readiness_robustness.json")
+    assert commands["research_shadow_decision_snapshot"][
+        commands["research_shadow_decision_snapshot"].index("--scr-window-split") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_readiness_window_split.json")
+    assert commands["research_shadow_decision_snapshot"][
+        commands["research_shadow_decision_snapshot"].index("--scr-stress-score") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_scenario_stress_score.json")
+    assert commands["research_shadow_decision_snapshot"][
         commands["research_shadow_decision_snapshot"].index("--dynamic-cvar") + 1
     ].endswith("report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json")
+    assert commands["research_shadow_decision_snapshot"][
+        commands["research_shadow_decision_snapshot"].index("--cvar-cost-window-split-2606-26625") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_cvar_cost_window_split.json")
+    assert commands["research_shadow_decision_snapshot"][
+        commands["research_shadow_decision_snapshot"].index("--rolling-tail-no-add-2606-26625") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_rolling_tail_no_add_gate.json")
+    assert commands["research_shadow_decision_snapshot"][
+        commands["research_shadow_decision_snapshot"].index("--dynamic-cvar-constraint-2608-20179") + 1
+    ].endswith("report/group_a_plus/latest/2608_20179_dynamic_cvar_constraint_shadow.json")
+    assert commands["research_shadow_decision_snapshot"][
+        commands["research_shadow_decision_snapshot"].index("--dynamic-cvar-forward-2608-20179") + 1
+    ].endswith("report/group_a_plus/latest/2608_20179_dynamic_cvar_forward_validation.json")
     assert commands["research_shadow_decision_snapshot"][
         commands["research_shadow_decision_snapshot"].index("--synthetic-augmentation") + 1
     ].endswith("report/group_a_plus/latest/synthetic_augmentation_validation_readiness_review.json")
@@ -566,6 +1119,100 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["research_shadow_decision_snapshot"].index("--output") + 1
     ].endswith("report/group_a_plus/latest/research_shadow_decision_snapshot.json")
     assert "research_shadow_decision_snapshot" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["research_governance_gate"][1] == (
+        "scripts/evaluate/build_group_a_plus_research_governance_gate.py"
+    )
+    assert commands["research_governance_gate"][
+        commands["research_governance_gate"].index("--reports-dir") + 1
+    ].endswith("report/group_a_plus/latest")
+    assert commands["research_governance_gate"][
+        commands["research_governance_gate"].index("--as-of") + 1
+    ] == "2026-06-27"
+    assert commands["research_governance_gate"][
+        commands["research_governance_gate"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/research_governance_gate.json")
+    assert commands["research_governance_gate"][
+        commands["research_governance_gate"].index("--output-md") + 1
+    ].endswith("report/group_a_plus/latest/research_governance_gate.md")
+    assert "research_governance_gate" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["shadow_artifact_registry"][1] == (
+        "scripts/evaluate/build_group_a_plus_shadow_artifact_registry.py"
+    )
+    assert commands["shadow_artifact_registry"][
+        commands["shadow_artifact_registry"].index("--reports-dir") + 1
+    ].endswith("report/group_a_plus/latest")
+    assert commands["shadow_artifact_registry"][
+        commands["shadow_artifact_registry"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/shadow_artifact_registry.json")
+    assert commands["shadow_artifact_registry"][
+        commands["shadow_artifact_registry"].index("--output-md") + 1
+    ].endswith("report/group_a_plus/latest/shadow_artifact_registry.md")
+    assert "shadow_artifact_registry" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["latest_strategy_target_weight_export"][1] == (
+        "scripts/evaluate/export_group_a_plus_latest_strategy_target_weights.py"
+    )
+    assert commands["latest_strategy_target_weight_export"][
+        commands["latest_strategy_target_weight_export"].index("--db") + 1
+    ] == "/nonexistent/path/stock_data.db"
+    assert commands["latest_strategy_target_weight_export"][
+        commands["latest_strategy_target_weight_export"].index("--end") + 1
+    ] == "latest"
+    assert commands["latest_strategy_target_weight_export"][
+        commands["latest_strategy_target_weight_export"].index("--output-json") + 1
+    ].endswith("report/group_a_plus/latest/latest_strategy_historical_target_weights.json")
+    assert commands["latest_strategy_target_weight_export"][
+        commands["latest_strategy_target_weight_export"].index("--output-csv") + 1
+    ].endswith("report/group_a_plus/latest/latest_strategy_historical_target_weights.csv")
+    assert "latest_strategy_target_weight_export" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["latest_strategy_explain_snapshot"][1] == (
+        "scripts/evaluate/build_group_a_plusplus_latest_strategy_explain_snapshot.py"
+    )
+    assert commands["latest_strategy_explain_snapshot"][
+        commands["latest_strategy_explain_snapshot"].index("--watchlist") + 1
+    ].endswith("config/group_a_plus_watchlist.json")
+    assert commands["latest_strategy_explain_snapshot"][
+        commands["latest_strategy_explain_snapshot"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/group_a_plusplus_latest_strategy_explain_snapshot.json")
+    assert commands["latest_strategy_explain_snapshot"][
+        commands["latest_strategy_explain_snapshot"].index("--output-md") + 1
+    ].endswith("report/group_a_plus/latest/group_a_plusplus_latest_strategy_explain_snapshot.md")
+    assert "latest_strategy_explain_snapshot" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["data_freshness_gate"][1] == (
+        "scripts/evaluate/build_group_a_plus_data_freshness_gate.py"
+    )
+    assert commands["data_freshness_gate"][
+        commands["data_freshness_gate"].index("--live-signal") + 1
+    ].endswith("report/group_a_plus/latest/live_signal.json")
+    assert commands["data_freshness_gate"][
+        commands["data_freshness_gate"].index("--output-md") + 1
+    ].endswith("report/group_a_plus/latest/data_freshness_gate.md")
+    assert "data_freshness_gate" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["ncf_panel_drift_auto_attribution"][1] == (
+        "scripts/evaluate/build_ncf_panel_drift_auto_attribution.py"
+    )
+    assert commands["ncf_panel_drift_auto_attribution"][
+        commands["ncf_panel_drift_auto_attribution"].index("--remediation-plan") + 1
+    ].endswith("results/ncf_panel_drift_remediation_plan_20260627.json")
+    assert commands["ncf_panel_drift_auto_attribution"][
+        commands["ncf_panel_drift_auto_attribution"].index("--external-sensitivity-governance") + 1
+    ].endswith("results/ncf_panel_external_feature_sensitivity_governance_20260627.json")
+    assert commands["ncf_panel_drift_auto_attribution"][
+        commands["ncf_panel_drift_auto_attribution"].index("--panel-manifest") + 1
+    ].endswith("results/ncf_panel_manifest_20260627.json")
+    assert commands["ncf_panel_drift_auto_attribution"][
+        commands["ncf_panel_drift_auto_attribution"].index("--output-md") + 1
+    ].endswith("report/group_a_plus/latest/ncf_panel_drift_auto_attribution.md")
+    assert "ncf_panel_drift_auto_attribution" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["golden_release_separation_audit"][1] == (
+        "scripts/evaluate/build_group_a_plus_golden_release_separation_audit.py"
+    )
+    assert commands["golden_release_separation_audit"][
+        commands["golden_release_separation_audit"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/golden_release_separation_audit.json")
+    assert commands["golden_release_separation_audit"][
+        commands["golden_release_separation_audit"].index("--output-md") + 1
+    ].endswith("report/group_a_plus/latest/golden_release_separation_audit.md")
+    assert "golden_release_separation_audit" in module.BEST_EFFORT_STEP_NAMES
     assert commands["daily_status"][
         commands["daily_status"].index("--gift-signed-approval-checklist-review") + 1
     ].endswith("report/group_a_plus/latest/gift_signed_approval_checklist_review.json")
@@ -579,11 +1226,12 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert any(item.endswith("results/ncf_0050_latest_20260627.json") for item in commands["ncf_0050"])
     assert any(item.endswith("results/ncf_0050_panel_latest_20260627.csv") for item in commands["ncf_0050"])
     assert "--full-panel" in commands["ncf_00631l"]
-    assert "--no-tabnet" in commands["ncf_00631l"]
+    assert "--no-tabnet" not in commands["ncf_00631l"]
     assert "--full-panel" in commands["ncf_0050"]
-    assert "--no-tabnet" in commands["ncf_0050"]
+    assert "--no-tabnet" not in commands["ncf_0050"]
     assert commands["ncf_00631l_no_external_shadow"][1] == "scripts/misc/ncf_00631l.py"
     assert "--no-external-features" in commands["ncf_00631l_no_external_shadow"]
+    assert "--no-tabnet" not in commands["ncf_00631l_no_external_shadow"]
     assert any(
         item.endswith("results/ncf_00631l_latest_20260627_no_external.json")
         for item in commands["ncf_00631l_no_external_shadow"]
@@ -609,6 +1257,115 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["ncf_0050_threshold_eval"].index("--output-md") + 1
     ].endswith("results/ncf_0050_threshold_eval_20260627.md")
     assert "ncf_0050_threshold_eval" in module.BEST_EFFORT_STEP_NAMES
+    lift_cmd = commands["auxiliary_policy_lift_shadow_2608_15841"]
+    assert lift_cmd[1] == "scripts/evaluate/evaluate_ncf_downside_upside_net_derisk_score.py"
+    assert "auxiliary_policy_lift_shadow_2608_15841" in module.BEST_EFFORT_STEP_NAMES
+    assert any(item.endswith("results/ncf_00631l_panel_latest_20260627.csv") for item in lift_cmd)
+    assert any(item.endswith("results/ncf_00632r_panel_latest_20260627.csv") for item in lift_cmd)
+    assert lift_cmd[lift_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_existing_aux_heads_policy_lift_shadow.json"
+    )
+    churn_cmd = commands["auxiliary_churn_shadow_2608_15841"]
+    assert churn_cmd[1] == "scripts/evaluate/build_group_a_plus_2608_15841_auxiliary_churn_shadow.py"
+    assert "auxiliary_churn_shadow_2608_15841" in module.BEST_EFFORT_STEP_NAMES
+    assert churn_cmd[churn_cmd.index("--policy-lift") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_existing_aux_heads_policy_lift_shadow.json"
+    )
+    assert churn_cmd[churn_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_auxiliary_churn_shadow.json"
+    )
+    wf_cmd = commands["auxiliary_purged_walkforward_2608_15841"]
+    assert wf_cmd[1] == "scripts/evaluate/evaluate_group_a_plus_2608_15841_auxiliary_purged_walkforward.py"
+    assert "auxiliary_purged_walkforward_2608_15841" in module.BEST_EFFORT_STEP_NAMES
+    assert list(commands).index("auxiliary_policy_lift_shadow_2608_15841") < list(commands).index(
+        "auxiliary_churn_shadow_2608_15841"
+    )
+    assert list(commands).index("auxiliary_churn_shadow_2608_15841") < list(commands).index(
+        "auxiliary_task_discovery_readiness_2608_15841"
+    )
+    assert list(commands).index("auxiliary_purged_walkforward_2608_15841") < list(commands).index(
+        "auxiliary_task_discovery_readiness_2608_15841"
+    )
+    assert any(item.endswith("results/ncf_00631l_panel_latest_20260627.csv") for item in wf_cmd)
+    assert any(item.endswith("results/ncf_00632r_panel_latest_20260627.csv") for item in wf_cmd)
+    regime_decay_cmd = commands["auxiliary_regime_decay_audit_2608_15841"]
+    assert regime_decay_cmd[1] == "scripts/evaluate/build_group_a_plus_2608_15841_auxiliary_regime_decay_audit.py"
+    assert "auxiliary_regime_decay_audit_2608_15841" in module.BEST_EFFORT_STEP_NAMES
+    assert list(commands).index("auxiliary_regime_decay_audit_2608_15841") < list(commands).index(
+        "auxiliary_task_discovery_readiness_2608_15841"
+    )
+    assert any(item.endswith("results/ncf_00631l_panel_latest_20260627.csv") for item in regime_decay_cmd)
+    assert any(item.endswith("results/ncf_00632r_panel_latest_20260627.csv") for item in regime_decay_cmd)
+    assert any(item.endswith("results/ncf_0050_panel_latest_20260627.csv") for item in regime_decay_cmd)
+    assert regime_decay_cmd[regime_decay_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_auxiliary_regime_decay_audit.json"
+    )
+    lifecycle_cmd = commands["auxiliary_lifecycle_audit_2608_15841"]
+    assert lifecycle_cmd[1] == "scripts/evaluate/build_group_a_plus_2608_15841_auxiliary_lifecycle_audit.py"
+    assert "auxiliary_lifecycle_audit_2608_15841" in module.BEST_EFFORT_STEP_NAMES
+    assert list(commands).index("auxiliary_regime_decay_audit_2608_15841") < list(commands).index(
+        "auxiliary_lifecycle_audit_2608_15841"
+    )
+    assert list(commands).index("auxiliary_lifecycle_audit_2608_15841") < list(commands).index(
+        "auxiliary_task_discovery_readiness_2608_15841"
+    )
+    assert lifecycle_cmd[lifecycle_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_auxiliary_lifecycle_audit.json"
+    )
+    delayed_cmd = commands["delayed_credit_audit_2608_15841"]
+    assert delayed_cmd[1] == "scripts/evaluate/build_group_a_plus_2608_15841_delayed_credit_audit.py"
+    assert "delayed_credit_audit_2608_15841" in module.BEST_EFFORT_STEP_NAMES
+    assert list(commands).index("delayed_credit_audit_2608_15841") < list(commands).index(
+        "auxiliary_task_discovery_readiness_2608_15841"
+    )
+    assert any(item.endswith("results/ncf_00631l_panel_latest_20260627.csv") for item in delayed_cmd)
+    assert any(item.endswith("results/ncf_00632r_panel_latest_20260627.csv") for item in delayed_cmd)
+    assert any(item.endswith("results/ncf_0050_panel_latest_20260627.csv") for item in delayed_cmd)
+    assert delayed_cmd[delayed_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_delayed_credit_audit.json"
+    )
+    blueprint_cmd = commands["candidate_auxiliary_bank_blueprint_2608_15841"]
+    assert blueprint_cmd[1] == "scripts/evaluate/build_group_a_plus_2608_15841_candidate_auxiliary_bank_blueprint.py"
+    assert "candidate_auxiliary_bank_blueprint_2608_15841" in module.BEST_EFFORT_STEP_NAMES
+    assert list(commands).index("candidate_auxiliary_bank_blueprint_2608_15841") < list(commands).index(
+        "auxiliary_task_discovery_readiness_2608_15841"
+    )
+    assert blueprint_cmd[blueprint_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_candidate_auxiliary_bank_blueprint.json"
+    )
+    aux_cmd = commands["auxiliary_task_discovery_readiness_2608_15841"]
+    assert aux_cmd[1] == "scripts/evaluate/build_group_a_plus_2608_15841_auxiliary_task_discovery_readiness.py"
+    assert "auxiliary_task_discovery_readiness_2608_15841" in module.BEST_EFFORT_STEP_NAMES
+    assert any(item.endswith("results/ncf_00631l_panel_latest_20260627.csv") for item in aux_cmd)
+    assert any(item.endswith("results/ncf_00632r_panel_latest_20260627.csv") for item in aux_cmd)
+    assert any(item.endswith("results/ncf_0050_panel_latest_20260627.csv") for item in aux_cmd)
+    assert any(item.endswith("results/ncf_00631l_latest_20260627.json") for item in aux_cmd)
+    assert any(item.endswith("results/ncf_00632r_latest_20260627.json") for item in aux_cmd)
+    assert any(item.endswith("results/ncf_0050_latest_20260627.json") for item in aux_cmd)
+    assert aux_cmd[aux_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_auxiliary_task_discovery_readiness.json"
+    )
+    assert aux_cmd[aux_cmd.index("--policy-lift") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_existing_aux_heads_policy_lift_shadow.json"
+    )
+    assert aux_cmd[aux_cmd.index("--purged-wf") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_auxiliary_purged_walkforward.json"
+    )
+    assert aux_cmd[aux_cmd.index("--churn-shadow") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_auxiliary_churn_shadow.json"
+    )
+    assert aux_cmd[aux_cmd.index("--regime-decay") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_auxiliary_regime_decay_audit.json"
+    )
+    assert aux_cmd[aux_cmd.index("--candidate-bank-blueprint") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_candidate_auxiliary_bank_blueprint.json"
+    )
+    assert aux_cmd[aux_cmd.index("--lifecycle-audit") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_auxiliary_lifecycle_audit.json"
+    )
+    assert aux_cmd[aux_cmd.index("--delayed-credit") + 1].endswith(
+        "report/group_a_plus/latest/2608_15841_delayed_credit_audit.json"
+    )
     assert any(item.endswith("results/ncf_00631l_panel_latest_20260627.csv") for item in commands["ncf_panel_drift"])
     assert any(item.endswith("results/ncf_panel_drift_active_vs_20260627.json") for item in commands["ncf_panel_drift"])
     assert any(item.endswith("results/ncf_panel_drift_active_vs_20260627.csv") for item in commands["ncf_panel_drift"])
@@ -827,6 +1584,84 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert commands["dfl_shadow_ensemble"][commands["dfl_shadow_ensemble"].index("--log") + 1].endswith(
         "results/a2118_dfl_shadow_ensemble_log.jsonl"
     )
+    assert commands["a2118_seed_averaging_live_inference_snapshot"][1] == (
+        "scripts/evaluate/build_a2118_seed_averaging_live_inference_snapshot.py"
+    )
+    seed_inference_cmd = commands["a2118_seed_averaging_live_inference_snapshot"]
+    assert seed_inference_cmd[seed_inference_cmd.index("--live-signal") + 1].endswith(
+        "results/group_a_plus_live_signal_v2_20260627.json"
+    )
+    assert seed_inference_cmd[seed_inference_cmd.index("--holdings-snapshot") + 1].endswith(
+        "report/group_a_plus/latest/holdings_authoritative_snapshot.json"
+    )
+    assert seed_inference_cmd[seed_inference_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/a2118_seed_averaging_live_inference_snapshot.json"
+    )
+    assert commands["a2118_seed_averaging_forward_shadow_monitor"][1] == (
+        "scripts/evaluate/build_a2118_seed_averaging_forward_shadow_monitor.py"
+    )
+    seed_monitor_cmd = commands["a2118_seed_averaging_forward_shadow_monitor"]
+    assert seed_monitor_cmd[seed_monitor_cmd.index("--shadow") + 1].endswith(
+        "report/group_a_plus/latest/a2118_seed_averaging_shadow.json"
+    )
+    assert seed_monitor_cmd[seed_monitor_cmd.index("--live-signal") + 1].endswith(
+        "results/group_a_plus_live_signal_v2_20260627.json"
+    )
+    assert seed_monitor_cmd[seed_monitor_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/a2118_seed_averaging_forward_shadow_monitor.json"
+    )
+    assert seed_monitor_cmd[seed_monitor_cmd.index("--log") + 1].endswith(
+        "results/a2118_seed_averaging_forward_shadow_monitor_log.jsonl"
+    )
+    assert seed_monitor_cmd[seed_monitor_cmd.index("--optional-inference-snapshot") + 1].endswith(
+        "report/group_a_plus/latest/a2118_seed_averaging_live_inference_snapshot.json"
+    )
+    assert "a2118_seed_averaging_live_inference_snapshot" in module.BEST_EFFORT_STEP_NAMES
+    assert "a2118_seed_averaging_forward_shadow_monitor" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["a2118_seed_averaging_promotion_gate"][1] == (
+        "scripts/evaluate/build_a2118_seed_averaging_promotion_gate.py"
+    )
+    seed_gate_cmd = commands["a2118_seed_averaging_promotion_gate"]
+    assert seed_gate_cmd[seed_gate_cmd.index("--monitor") + 1].endswith(
+        "report/group_a_plus/latest/a2118_seed_averaging_forward_shadow_monitor.json"
+    )
+    assert seed_gate_cmd[seed_gate_cmd.index("--log") + 1].endswith(
+        "results/a2118_seed_averaging_forward_shadow_monitor_log.jsonl"
+    )
+    assert seed_gate_cmd[seed_gate_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/a2118_seed_averaging_promotion_gate.json"
+    )
+    assert "a2118_seed_averaging_promotion_gate" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["a2118_risk_down_mapped_shadow"][1] == (
+        "scripts/evaluate/build_a2118_risk_down_mapped_shadow.py"
+    )
+    assert "a2118_risk_down_mapped_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["paper_2606_09104_00631l_regime_split"][1] == (
+        "scripts/evaluate/build_group_a_plus_2606_09104_00631l_4pct_regime_split.py"
+    )
+    assert commands["paper_2606_09104_00631l_staged_ladder_readiness"][1] == (
+        "scripts/evaluate/build_group_a_plus_2606_09104_00631l_staged_ladder_readiness.py"
+    )
+    staged_ladder_cmd = commands["paper_2606_09104_00631l_staged_ladder_readiness"]
+    assert staged_ladder_cmd[staged_ladder_cmd.index("--live-snapshot") + 1].endswith(
+        "report/group_a_plus/latest/a2118_seed_averaging_live_inference_snapshot.json"
+    )
+    assert staged_ladder_cmd[staged_ladder_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/2606_09104_00631l_staged_ladder_readiness.json"
+    )
+    assert commands["paper_2606_09104_extreme_state_monitor"][1] == (
+        "scripts/evaluate/build_group_a_plus_2606_09104_extreme_state_monitor.py"
+    )
+    extreme_monitor_cmd = commands["paper_2606_09104_extreme_state_monitor"]
+    assert extreme_monitor_cmd[extreme_monitor_cmd.index("--ladder") + 1].endswith(
+        "report/group_a_plus/latest/2606_09104_00631l_staged_ladder_readiness.json"
+    )
+    assert extreme_monitor_cmd[extreme_monitor_cmd.index("--output") + 1].endswith(
+        "report/group_a_plus/latest/2606_09104_extreme_state_monitor.json"
+    )
+    assert "paper_2606_09104_00631l_regime_split" in module.BEST_EFFORT_STEP_NAMES
+    assert "paper_2606_09104_00631l_staged_ladder_readiness" in module.BEST_EFFORT_STEP_NAMES
+    assert "paper_2606_09104_extreme_state_monitor" in module.BEST_EFFORT_STEP_NAMES
     assert commands["relative_reentry_opportunity_shadow"][1] == (
         "scripts/evaluate/evaluate_00631l_0050_relative_reentry_opportunity.py"
     )
@@ -904,6 +1739,25 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "report/group_a_plus/latest/relative_reentry_promotion_gate.md"
     )
     assert "relative_reentry_promotion_gate" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["staged_reentry_event_study"][1] == (
+        "scripts/evaluate/build_group_a_plus_staged_reentry_shadow.py"
+    )
+    assert "--evaluate-history" in commands["staged_reentry_event_study"]
+    assert "staged_reentry_event_study" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["staged_reentry_promotion_review"][1] == (
+        "scripts/evaluate/build_group_a_plus_staged_reentry_promotion_review.py"
+    )
+    assert "staged_reentry_promotion_review" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["staged_reentry_confirmatory_tracker_2609_04917"][1] == (
+        "scripts/evaluate/build_group_a_plusplus_2609_04917_staged_reentry_confirmatory_tracker.py"
+    )
+    assert commands["staged_reentry_confirmatory_tracker_2609_04917"][
+        commands["staged_reentry_confirmatory_tracker_2609_04917"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2609_04917_staged_reentry_confirmatory_tracker.json")
+    assert commands["staged_reentry_confirmatory_tracker_2609_04917"][
+        commands["staged_reentry_confirmatory_tracker_2609_04917"].index("--markdown") + 1
+    ].endswith("report/group_a_plus/latest/2609_04917_staged_reentry_confirmatory_tracker.md")
+    assert "staged_reentry_confirmatory_tracker_2609_04917" in module.BEST_EFFORT_STEP_NAMES
     assert commands["ncf_decision_calibration_shadow"][1] == "scripts/evaluate/evaluate_ncf_decision_calibration.py"
     assert commands["ncf_decision_calibration_shadow"][
         commands["ncf_decision_calibration_shadow"].index("--panel") + 1
@@ -918,6 +1772,27 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["ncf_decision_calibration_shadow"].index("--output") + 1
     ].endswith("results/ncf_decision_calibration_shadow_20260627.json")
     assert "ncf_decision_calibration_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["tsi_stress_shadow"][1] == "scripts/evaluate/build_group_a_plus_tsi_stress_shadow.py"
+    assert commands["tsi_stress_shadow"][commands["tsi_stress_shadow"].index("--as-of") + 1] == "2026-06-27"
+    assert commands["tsi_stress_shadow"][commands["tsi_stress_shadow"].index("--output") + 1].endswith(
+        "report/group_a_plus/latest/tsi_stress_shadow.json"
+    )
+    assert commands["tsi_stress_shadow"][commands["tsi_stress_shadow"].index("--history-dir") + 1].endswith(
+        "report/group_a_plus/tsi_stress_shadow/history"
+    )
+    assert "tsi_stress_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["tsi_stress_oos"][1] == "scripts/evaluate/evaluate_group_a_plus_tsi_stress_oos.py"
+    assert commands["tsi_stress_oos"][commands["tsi_stress_oos"].index("--as-of") + 1] == "2026-06-27"
+    assert commands["tsi_stress_oos"][commands["tsi_stress_oos"].index("--output-md") + 1].endswith(
+        "report/group_a_plus/latest/tsi_stress_oos.md"
+    )
+    assert "tsi_stress_oos" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["tsi_no_add_shadow"][1] == "scripts/evaluate/evaluate_group_a_plus_tsi_no_add_shadow.py"
+    assert commands["tsi_no_add_shadow"][commands["tsi_no_add_shadow"].index("--threshold") + 1] == "0.90"
+    assert commands["tsi_no_add_shadow"][commands["tsi_no_add_shadow"].index("--output") + 1].endswith(
+        "report/group_a_plus/latest/tsi_no_add_shadow.json"
+    )
+    assert "tsi_no_add_shadow" in module.BEST_EFFORT_STEP_NAMES
     assert commands["daily_artifact_integrity"][1] == (
         "scripts/evaluate/build_group_a_plus_daily_artifact_integrity.py"
     )
@@ -987,10 +1862,42 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert commands["daily_status"][
         commands["daily_status"].index("--hmm-wj-synthetic-scenario-readiness-review") + 1
     ].endswith("report/group_a_plus/latest/hmm_wj_synthetic_scenario_readiness_review.json")
+    assert "--scr-readiness-review-2602-24037" in commands["daily_status"]
+    assert commands["daily_status"][
+        commands["daily_status"].index("--scr-readiness-review-2602-24037") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_readiness_review.json")
+    assert "--scr-readiness-robustness-2602-24037" in commands["daily_status"]
+    assert commands["daily_status"][
+        commands["daily_status"].index("--scr-readiness-robustness-2602-24037") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_readiness_robustness.json")
+    assert "--scr-readiness-window-split-2602-24037" in commands["daily_status"]
+    assert commands["daily_status"][
+        commands["daily_status"].index("--scr-readiness-window-split-2602-24037") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_readiness_window_split.json")
+    assert "--scr-scenario-stress-score-2602-24037" in commands["daily_status"]
+    assert commands["daily_status"][
+        commands["daily_status"].index("--scr-scenario-stress-score-2602-24037") + 1
+    ].endswith("report/group_a_plus/latest/2602_24037_scr_scenario_stress_score.json")
     assert "--dynamic-cvar-tail-cost-readiness-review" in commands["daily_status"]
     assert commands["daily_status"][
         commands["daily_status"].index("--dynamic-cvar-tail-cost-readiness-review") + 1
     ].endswith("report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json")
+    assert "--cvar-cost-window-split-2606-26625" in commands["daily_status"]
+    assert commands["daily_status"][
+        commands["daily_status"].index("--cvar-cost-window-split-2606-26625") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_cvar_cost_window_split.json")
+    assert "--rolling-tail-no-add-2606-26625" in commands["daily_status"]
+    assert commands["daily_status"][
+        commands["daily_status"].index("--rolling-tail-no-add-2606-26625") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_rolling_tail_no_add_gate.json")
+    assert "--dynamic-cvar-constraint-2608-20179" in commands["daily_status"]
+    assert commands["daily_status"][
+        commands["daily_status"].index("--dynamic-cvar-constraint-2608-20179") + 1
+    ].endswith("report/group_a_plus/latest/2608_20179_dynamic_cvar_constraint_shadow.json")
+    assert "--dynamic-cvar-forward-2608-20179" in commands["daily_status"]
+    assert commands["daily_status"][
+        commands["daily_status"].index("--dynamic-cvar-forward-2608-20179") + 1
+    ].endswith("report/group_a_plus/latest/2608_20179_dynamic_cvar_forward_validation.json")
     assert "--synthetic-augmentation-validation-readiness-review" in commands["daily_status"]
     assert commands["daily_status"][
         commands["daily_status"].index("--synthetic-augmentation-validation-readiness-review") + 1
@@ -1026,6 +1933,15 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert commands["promotion_gate"][commands["promotion_gate"].index("--deployment-summary") + 1].endswith(
         "report/group_a_plus/latest/deployment_summary.json"
     )
+    assert commands["golden2_promotion_candidate_review"][1] == (
+        "scripts/evaluate/build_group_a_plus_golden2_promotion_candidate_review.py"
+    )
+    assert commands["golden2_promotion_candidate_review"][
+        commands["golden2_promotion_candidate_review"].index("--promotion-gate") + 1
+    ].endswith("results/group_a_plus_promotion_gate_20260627.json")
+    assert commands["golden2_promotion_candidate_review"][
+        commands["golden2_promotion_candidate_review"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/golden2_promotion_candidate_review.json")
     assert commands["multi_window_failure_attribution"][1] == (
         "scripts/evaluate/build_group_a_plus_multi_window_failure_attribution.py"
     )
@@ -1055,6 +1971,135 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
     assert commands["daily_status_final"][commands["daily_status_final"].index("--live-signal") + 1].endswith(
         "results/group_a_plus_live_signal_v2_20260627.json"
     )
+    assert commands["moira_relative_exposure_thesis_shadow"][1] == (
+        "scripts/evaluate/build_group_a_plus_relative_exposure_thesis_shadow.py"
+    )
+    assert commands["moira_relative_exposure_thesis_shadow"][
+        commands["moira_relative_exposure_thesis_shadow"].index("--live-signal") + 1
+    ].endswith("results/group_a_plus_live_signal_v2_20260627.json")
+    assert commands["moira_relative_exposure_thesis_shadow"][
+        commands["moira_relative_exposure_thesis_shadow"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/relative_exposure_thesis_shadow.json")
+    assert "moira_relative_exposure_thesis_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["moira_hierarchical_credit_review_shadow"][1] == (
+        "scripts/evaluate/build_group_a_plus_hierarchical_credit_review_shadow.py"
+    )
+    assert commands["moira_hierarchical_credit_review_shadow"][
+        commands["moira_hierarchical_credit_review_shadow"].index("--forecast") + 1
+    ].endswith("results/group_a_plus_live_signal_v2_20260627.json")
+    assert commands["moira_hierarchical_credit_review_shadow"][
+        commands["moira_hierarchical_credit_review_shadow"].index("--actual") + 1
+    ].endswith("results/group_a_plus_live_signal_v2_20260627.json")
+    assert "moira_hierarchical_credit_review_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["moira_event_aware_execution_quality_shadow"][1] == (
+        "scripts/evaluate/build_group_a_plus_event_aware_execution_quality_shadow.py"
+    )
+    assert commands["moira_event_aware_execution_quality_shadow"][
+        commands["moira_event_aware_execution_quality_shadow"].index("--execution-plan") + 1
+    ].endswith("report/group_a_plus/latest/execution_plan.json")
+    assert commands["moira_event_aware_execution_quality_shadow"][
+        commands["moira_event_aware_execution_quality_shadow"].index("--liquidity-feedback") + 1
+    ].endswith("report/group_a_plus/latest/letf_liquidity_feedback_watch_shadow_backtest.json")
+    assert "moira_event_aware_execution_quality_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["moira_policy_critic_shadow"][1] == (
+        "scripts/evaluate/build_group_a_plus_moira_policy_critic_shadow.py"
+    )
+    assert commands["moira_policy_critic_shadow"][
+        commands["moira_policy_critic_shadow"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/moira_policy_critic_shadow.json")
+    assert "moira_policy_critic_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["moira_policy_critic_validation_shadow"][1] == (
+        "scripts/evaluate/validate_group_a_plus_moira_policy_critic_shadow.py"
+    )
+    assert commands["moira_policy_critic_validation_shadow"][
+        commands["moira_policy_critic_validation_shadow"].index("--signal-glob") + 1
+    ] == "results/group_a_plus_live_signal_v2_2026*.json"
+    assert commands["moira_policy_critic_validation_shadow"][
+        commands["moira_policy_critic_validation_shadow"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/moira_policy_critic_validation_shadow.json")
+    assert "moira_policy_critic_validation_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["moira_execution_guard_hard_stop_backtest_shadow"][1] == (
+        "scripts/evaluate/backtest_group_a_plus_moira_execution_guard_hard_stop_shadow.py"
+    )
+    assert commands["moira_execution_guard_hard_stop_backtest_shadow"][
+        commands["moira_execution_guard_hard_stop_backtest_shadow"].index("--signal-glob") + 1
+    ] == "results/group_a_plus_live_signal_v2_2026*.json"
+    assert commands["moira_execution_guard_hard_stop_backtest_shadow"][
+        commands["moira_execution_guard_hard_stop_backtest_shadow"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/moira_execution_guard_hard_stop_backtest_shadow.json")
+    assert "moira_execution_guard_hard_stop_backtest_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["daily_semantic_context_summary"][1] == (
+        "scripts/evaluate/build_group_a_plus_daily_semantic_context_summary.py"
+    )
+    assert commands["daily_semantic_context_summary"][
+        commands["daily_semantic_context_summary"].index("--critic") + 1
+    ].endswith("report/group_a_plus/latest/moira_policy_critic_shadow.json")
+    assert commands["daily_semantic_context_summary"][
+        commands["daily_semantic_context_summary"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/daily_semantic_context_summary.json")
+    assert "daily_semantic_context_summary" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["paper_2609_08106_complementarity_forward_shadow"][1] == (
+        "scripts/run/build_group_a_plus_2609_08106_complementarity_forward_shadow.py"
+    )
+    assert commands["paper_2609_08106_complementarity_forward_shadow"][
+        commands["paper_2609_08106_complementarity_forward_shadow"].index("--as-of") + 1
+    ] == "2026-06-27"
+    assert commands["paper_2609_08106_complementarity_forward_shadow"][
+        commands["paper_2609_08106_complementarity_forward_shadow"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2609_08106_complementarity_forward_shadow_latest.json")
+    assert commands["paper_2609_08106_complementarity_forward_shadow"][
+        commands["paper_2609_08106_complementarity_forward_shadow"].index("--log") + 1
+    ].endswith("results/2609_08106_complementarity_forward_shadow_log.jsonl")
+    assert "paper_2609_08106_complementarity_forward_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["paper_2609_08106_latest_target_weight_replay"][1] == (
+        "scripts/evaluate/replay_group_a_plus_2609_08106_latest_target_weights.py"
+    )
+    assert commands["paper_2609_08106_latest_target_weight_replay"][
+        commands["paper_2609_08106_latest_target_weight_replay"].index("--target-weights") + 1
+    ].endswith("report/group_a_plus/latest/latest_strategy_historical_target_weights.csv")
+    assert commands["paper_2609_08106_latest_target_weight_replay"][
+        commands["paper_2609_08106_latest_target_weight_replay"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2609_08106_latest_target_weight_replay.json")
+    assert "paper_2609_08106_latest_target_weight_replay" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["paper_2609_08106_latest_target_weight_param_sweep"][1] == (
+        "scripts/evaluate/sweep_group_a_plus_2609_08106_latest_target_replay_params.py"
+    )
+    assert commands["paper_2609_08106_latest_target_weight_param_sweep"][
+        commands["paper_2609_08106_latest_target_weight_param_sweep"].index("--target-weights") + 1
+    ].endswith("report/group_a_plus/latest/latest_strategy_historical_target_weights.csv")
+    assert commands["paper_2609_08106_latest_target_weight_param_sweep"][
+        commands["paper_2609_08106_latest_target_weight_param_sweep"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2609_08106_latest_target_weight_replay_param_sweep.json")
+    assert "paper_2609_08106_latest_target_weight_param_sweep" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["paper_2609_08106_adoption_matrix"][1] == (
+        "scripts/evaluate/build_group_a_plus_2609_08106_adoption_matrix.py"
+    )
+    assert commands["paper_2609_08106_adoption_matrix"][
+        commands["paper_2609_08106_adoption_matrix"].index("--latest-target-replay") + 1
+    ].endswith("report/group_a_plus/latest/2609_08106_latest_target_weight_replay.json")
+    assert commands["paper_2609_08106_adoption_matrix"][
+        commands["paper_2609_08106_adoption_matrix"].index("--latest-target-param-sweep") + 1
+    ].endswith("report/group_a_plus/latest/2609_08106_latest_target_weight_replay_param_sweep.json")
+    assert commands["paper_2609_08106_adoption_matrix"][
+        commands["paper_2609_08106_adoption_matrix"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2609_08106_adoption_matrix.json")
+    assert "paper_2609_08106_adoption_matrix" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["paper_convergence_review"][1] == (
+        "scripts/evaluate/build_group_a_plus_paper_convergence_review.py"
+    )
+    assert commands["paper_convergence_review"][
+        commands["paper_convergence_review"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/paper_convergence_review.json")
+    assert commands["paper_convergence_review"][
+        commands["paper_convergence_review"].index("--cvar-cost-window-split") + 1
+    ].endswith("report/group_a_plus/latest/2606_26625_cvar_cost_window_split.json")
+    assert commands["paper_convergence_review"][
+        commands["paper_convergence_review"].index("--history-dir") + 1
+    ].endswith("report/group_a_plus/paper_convergence_review/history")
+    assert commands["paper_convergence_review"][
+        commands["paper_convergence_review"].index("--adoption-2609-08106") + 1
+    ].endswith("report/group_a_plus/latest/2609_08106_adoption_matrix.json")
+    assert "paper_convergence_review" in module.BEST_EFFORT_STEP_NAMES
     assert commands["final_governance_snapshot"][1] == (
         "scripts/evaluate/build_group_a_plus_final_governance_snapshot.py"
     )
@@ -1114,13 +2159,27 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
     assert list(commands) == [
         "ohlcv_freshness",
         "ncf_data_validation",
-        "ncf_00631l",
-        "ncf_00632r",
-        "ncf_0050",
-        "ncf_signal_archive",
-        "ncf_2330",
-        "ncf_panel_manifest",
-        "ncf_0050_threshold_eval",
+            "ncf_00631l",
+            "ncf_00632r",
+            "ncf_0050",
+            "ncf_00713",
+            "ncf_signal_archive",
+            "ncf_2330",
+            "ncf_panel_manifest",
+            "ncf_0050_threshold_eval",
+                "ctbc_debounce_shadow_2509_02986",
+                "ctbc_00713_debounce_shadow_2509_02986",
+                "ctbc_00713_domain_randomization_2509_02986",
+                "ctbc_groupa_plusplus_review_2509_02986",
+                "ctbc_promotion_readiness_gate_2509_02986",
+            "auxiliary_policy_lift_shadow_2608_15841",
+        "auxiliary_churn_shadow_2608_15841",
+        "auxiliary_purged_walkforward_2608_15841",
+        "auxiliary_regime_decay_audit_2608_15841",
+        "auxiliary_lifecycle_audit_2608_15841",
+        "delayed_credit_audit_2608_15841",
+        "candidate_auxiliary_bank_blueprint_2608_15841",
+        "auxiliary_task_discovery_readiness_2608_15841",
         "ncf_panel_drift",
         "ncf_panel_refresh_recommendation",
         "ncf_panel_drift_diagnosis",
@@ -1136,16 +2195,41 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
         "ncf_panel_coverage",
         "advisory_panel",
         "factor_lens",
+        "golden1_combined_signal",
         "daily_signal",
+        "riccati_mv_shadow",
+        "current_policy_re_evaluation_gate",
+        "rebalance_review",
         "compounding_regime",
         "gjr_garch_shadow",
         "a2120_shadow_pipeline",
         "recovery_boost_spillover_gate_shadow_log",
         "trough_override_eligibility_shadow_log",
+        "add_0050_instead_shadow_log",
+        "adaptive_review_interval_shadow_log",
+        "gatedlinear_drawdown_forecast_shadow_log",
         "cvar_tail_risk_diagnostic",
-        "option_state_coverage_review",
-        "adversarial_market_integrity_review",
-        "sciphyrl_readiness_review",
+        "taiwan_etf_2607_16450_review",
+        "taiwan_etf_2607_16450_tail_scorecard",
+        "taiwan_etf_2607_16450_cost_robustness",
+        "taiwan_etf_2607_16450_candidate_tail_review",
+        "taiwan_etf_2607_16450_regime_vol_forecast_quality",
+        "taiwan_etf_2607_16450_regime_vol_gate",
+            "taiwan_etf_2607_16450_tail_dependence_monitor",
+            "taiwan_etf_2607_16450_geopolitical_cvar_overlay",
+            "taiwan_etf_2607_16450_bootstrap_promotion_gate",
+            "paper_2609_07946_00635u_instrument_review",
+            "paper_2609_07946_stock_bond_gold_forward_shadow",
+            "paper_2609_07946_bond_only_forward_shadow",
+            "paper_2609_07946_complementarity_promotion_gate",
+            "paper_2609_07946_adoption_matrix",
+            "paper_2609_08106_complementarity_forward_shadow",
+            "paper_2609_08106_latest_target_weight_replay",
+            "paper_2609_08106_latest_target_weight_param_sweep",
+            "paper_2609_08106_adoption_matrix",
+            "option_state_coverage_review",
+            "adversarial_market_integrity_review",
+            "sciphyrl_readiness_review",
         "market_impact_readiness_review",
         "finstressts_readiness_review",
         "finstressts_counterfactual_shadow",
@@ -1154,17 +2238,33 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
         "trigate_vol_memory_shadow",
         "systemic_bubble_time_at_risk_review",
         "illiquidity_network_readiness_review",
-        "speculative_influence_network_readiness_review",
-        "sin_lite_proxy",
-        "hmm_wj_synthetic_scenario_readiness_review",
-        "dynamic_cvar_tail_cost_readiness_review",
-        "synthetic_augmentation_validation_audit",
-        "synthetic_augmentation_validation_readiness_review",
+            "speculative_influence_network_readiness_review",
+            "sin_lite_proxy",
+            "hmm_wj_synthetic_scenario_readiness_review",
+            "scr_readiness_review_2602_24037",
+            "scr_readiness_robustness_2602_24037",
+            "scr_readiness_window_split_2602_24037",
+            "scr_scenario_stress_score_2602_24037",
+            "cvar_cost_window_split_2606_26625",
+            "rolling_tail_no_add_gate_2606_26625",
+            "dynamic_cvar_constraint_shadow_2608_20179",
+            "dynamic_cvar_forward_validation_2608_20179",
+            "dynamic_cvar_tail_cost_readiness_review",
+            "synthetic_augmentation_validation_audit",
+            "synthetic_augmentation_validation_readiness_review",
         "intervention_history",
         "broker_holdings_time_series_sample",
         "broker_holdings_reconciliation_review",
+        "assigned_realized_deployment_shadow_2608_08405",
+        "capacity_grid_shadow_2608_08405",
+        "erosion_persistence_shadow_2608_08405",
+        "instrument_readiness_shadow_2608_08405",
+        "ramp_path_dependence_shadow_2608_08405",
+            "capacity_crowding_readiness_2608_08405",
             "intervention_fatigue_risk_budget_readiness_review",
             "letf_tracking_error_effective_fee_readiness_review",
+            "00632r_discipline_guard",
+            "letf_liquidity_feedback_watch_shadow_backtest",
             "asian_etf_tail_analytics_readiness_review",
             "gift_human_exception_record_draft",
             "gift_human_exception_approval_record_schema",
@@ -1173,31 +2273,65 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
             "gift_signed_approval_checklist_review",
             "gift_signed_approval_validator_smoke",
             "gift_manual_approval_readiness",
-            "gift_pdf_advantage_coverage_review",
+                "gift_pdf_advantage_coverage_review",
+        "defensive_cash_floor_signed_approval_validation",
+        "defensive_cash_floor_guarded_candidate",
+        "defensive_cash_floor_guarded_monitor",
+        "ncf_panel_drift_auto_attribution",
         "dfl_shadow_refresh_main",
         "dfl_shadow_refresh_p50",
         "dfl_shadow_refresh_p70",
         "dfl_advisory",
-        "dfl_shadow_refresh_overlap",
-        "dfl_active_date_audit",
-        "dfl_shadow_ensemble",
-        "relative_reentry_opportunity_shadow",
-        "relative_reentry_advisory_shadow",
-        "relative_reentry_candidate_review",
+            "dfl_shadow_refresh_overlap",
+            "dfl_active_date_audit",
+            "dfl_shadow_ensemble",
+            "a2118_seed_averaging_live_inference_snapshot",
+                "a2118_seed_averaging_forward_shadow_monitor",
+                "a2118_seed_averaging_promotion_gate",
+                "a2118_risk_down_mapped_shadow",
+                "paper_2606_09104_00631l_regime_split",
+                "paper_2606_09104_00631l_staged_ladder_readiness",
+                "paper_2606_09104_extreme_state_monitor",
+                "relative_reentry_opportunity_shadow",
+                "relative_reentry_advisory_shadow",
+                "relative_reentry_candidate_review",
         "relative_reentry_promotion_gate",
+        "staged_reentry_event_study",
+        "staged_reentry_promotion_review",
+        "staged_reentry_confirmatory_tracker_2609_04917",
         "ncf_decision_calibration_shadow",
+        "tsi_stress_shadow",
+        "tsi_stress_oos",
+        "tsi_no_add_shadow",
         "daily_artifact_integrity",
             "research_shadow_decision_snapshot",
-        "daily_status",
-        "deployment_consistency_review",
-        "deployment_summary",
-        "promotion_gate",
-        "multi_window_failure_attribution",
+            "research_governance_gate",
+            "shadow_artifact_registry",
+            "latest_strategy_target_weight_export",
+            "latest_strategy_explain_snapshot",
+            "data_freshness_gate",
+            "golden_release_separation_audit",
+                    "daily_status",
+                    "deployment_consistency_review",
+                    "deployment_summary",
+                    "promotion_gate",
+                    "golden2_same_window_candidate_backtests",
+                    "golden2_multi_window_gate",
+                    "golden2_promotion_candidate_review",
+            "multi_window_failure_attribution",
         "promotion_blocked_diagnostic",
         "daily_status_final",
-        "final_governance_snapshot",
-        "ncf_2330_checklist",
-    ]
+        "moira_relative_exposure_thesis_shadow",
+        "moira_hierarchical_credit_review_shadow",
+        "moira_event_aware_execution_quality_shadow",
+        "moira_policy_critic_shadow",
+                "moira_policy_critic_validation_shadow",
+                "moira_execution_guard_hard_stop_backtest_shadow",
+                "daily_semantic_context_summary",
+            "paper_convergence_review",
+            "final_governance_snapshot",
+            "ncf_2330_checklist",
+        ]
     assert "--no-external-features" in commands["ncf_00631l"]
     assert "--no-external-features" in commands["ncf_00632r"]
     assert "--no-external-features" in commands["ncf_0050"]
@@ -1323,6 +2457,33 @@ def test_build_commands_can_override_downstream_live_signal() -> None:
         commands["deployment_consistency_review"].index("--live-signal") + 1
     ] == expected
     assert commands["deployment_summary"][commands["deployment_summary"].index("--live-signal") + 1] == expected
+    assert commands["riccati_mv_shadow"][commands["riccati_mv_shadow"].index("--execution-plan") + 1] == expected
+
+
+def test_riccati_mv_shadow_is_best_effort_after_daily_signal() -> None:
+    module = _load_module()
+    commands = module.build_commands(_command_args())
+
+    assert "riccati_mv_shadow" in module.BEST_EFFORT_STEP_NAMES
+    assert list(commands).index("daily_signal") < list(commands).index("riccati_mv_shadow")
+    assert commands["riccati_mv_shadow"][1] == "scripts/run/build_group_a_plus_riccati_mv_shadow.py"
+    assert commands["riccati_mv_shadow"][commands["riccati_mv_shadow"].index("--execution-plan") + 1].endswith(
+        "results/group_a_plus_live_signal_v2_20260627.json"
+    )
+
+
+def test_current_policy_re_evaluation_gate_is_best_effort_after_riccati_shadow() -> None:
+    module = _load_module()
+    commands = module.build_commands(_command_args())
+
+    assert "current_policy_re_evaluation_gate" in module.BEST_EFFORT_STEP_NAMES
+    assert list(commands).index("riccati_mv_shadow") < list(commands).index("current_policy_re_evaluation_gate")
+    assert commands["current_policy_re_evaluation_gate"][1] == (
+        "scripts/evaluate/build_group_a_plus_current_policy_re_evaluation_gate.py"
+    )
+    assert commands["current_policy_re_evaluation_gate"][
+        commands["current_policy_re_evaluation_gate"].index("--shadow") + 1
+    ].endswith("report/group_a_plus/latest/riccati_mv_shadow.json")
 
 
 def test_build_commands_can_pin_refresh_target_date_and_strict_mode() -> None:
@@ -1647,5 +2808,23 @@ def test_main_manifest_includes_latest_deployment_summary_outputs(tmp_path: Path
     )
     assert outputs["securities_lending_0050_source_status"].endswith(
         "report/group_a_plus/latest/securities_lending_0050_source_status.json"
+    )
+    assert outputs["instrument_readiness_shadow_2608_08405"].endswith(
+        "report/group_a_plus/latest/2608_08405_instrument_readiness_shadow.json"
+    )
+    assert outputs["instrument_readiness_shadow_2608_08405_md"].endswith(
+        "report/group_a_plus/latest/2608_08405_instrument_readiness_shadow.md"
+    )
+    assert outputs["ramp_path_dependence_shadow_2608_08405"].endswith(
+        "report/group_a_plus/latest/2608_08405_ramp_path_dependence_shadow.json"
+    )
+    assert outputs["ramp_path_dependence_shadow_2608_08405_md"].endswith(
+        "report/group_a_plus/latest/2608_08405_ramp_path_dependence_shadow.md"
+    )
+    assert outputs["00632r_discipline_guard"].endswith(
+        "report/group_a_plus/latest/00632r_discipline_guard.json"
+    )
+    assert outputs["00632r_discipline_guard_md"].endswith(
+        "report/group_a_plus/latest/00632r_discipline_guard.md"
     )
     assert outputs["daily_status_pointer"].endswith("report/group_a_plus/latest/daily_status.json")

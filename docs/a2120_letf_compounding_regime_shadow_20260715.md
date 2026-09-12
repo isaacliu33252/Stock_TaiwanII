@@ -1,5 +1,24 @@
 # A21.20 LETF Compounding Regime Shadow Handoff - 2026-07-15
 
+**2026-08-08 update (found during a paper-audit cross-check):** the regime
+classifier this document describes was later wired live into
+`execution_guard.py::apply_compounding_regime_pre_trade_guard()`, called from
+`execution_plan.py` -- it now actively blocks new 00631L buy-side additions
+in production whenever the regime reads MEAN_REVERTING (never forces sells).
+Wherever this document says "shadow" or "diagnostic," treat that as describing
+the state as of 2026-07-15, not necessarily today; check
+`execution_guard.py` directly for current live behavior.
+
+**2026-08-09 further update:** the auto-enforcement was reverted. The live
+daily pipeline feeds this guard the *untuned* default-threshold classifier
+-- exactly the "Baseline Threshold Result" configuration this document
+found backtests negative (-8281.77, 2/5 positive windows) -- not the
+tuned/validated candidate from Steps 2-9, and Step 13's own scorecard
+concluded `production = do_not_promote` even for that validated candidate.
+`execution_plan.py` now unconditionally downgrades this guard to
+advisory-only. See
+`docs/COMPOUNDING_REGIME_GUARD_REVERTED_TO_ADVISORY_20260809.md`.
+
 ## Reference
 
 Paper:

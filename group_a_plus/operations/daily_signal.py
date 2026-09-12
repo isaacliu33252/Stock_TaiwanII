@@ -26,7 +26,14 @@ from group_a_plus.integrations.garch_regime_shadow import (
     append_garch_regime_shadow_log,
     compute_garch_regime_shadow,
 )
+from group_a_plus.integrations.rg_resmoe_volatility_gate_shadow import (
+    append_rg_resmoe_h5_high_vol_shadow_advisory_log,
+    append_rg_resmoe_volatility_gate_shadow_log,
+    build_rg_resmoe_h5_high_vol_shadow_advisory,
+    compute_group_a_plus_rg_resmoe_volatility_gate_shadow,
+)
 from group_a_plus.integrations.lm_dictionary_sentiment import build_lm_dictionary_snapshot
+from group_a_plus.integrations.tsmc_concentration_divergence import top5_breadth_snapshot
 from group_a_plus.integrations.signal_alignment import (
     append_signal_alignment_shadow_log,
     build_signal_alignment,
@@ -38,7 +45,12 @@ from group_a_plus.integrations.trough_nowcast import compute_trough_nowcast
 from group_a_plus.utils.symbols import build_symbol_metadata
 from group_a_plus.core.signal_contract import from_daily_signal
 from group_a_plus.core.point_in_time_store import write_snapshot
-from group_a_plus.integrations.ncf import load_ncf_2330_checklist, load_ncf_signal, ncf_overlay_summary
+from group_a_plus.integrations.ncf import (
+    load_ncf_2330_checklist,
+    load_ncf_signal,
+    ncf_00713_cash_sleeve_decision,
+    ncf_overlay_summary,
+)
 from group_a_plus.integrations.tbrain_features import (
     kdj_j_quantile_snapshot,
     latest_tbrain_snapshot,
@@ -62,11 +74,20 @@ from tw_output_standard import OutputStandardizer, write_standard_output
 # also write the latest pointer to a stray location.
 DEFAULT_LIVE_SIGNAL = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "live_signal.json"
 GARCH_REGIME_SHADOW_LOG = PROJECT_ROOT / "results" / "garch_regime_shadow_log.jsonl"
+RG_RESMOE_VOLATILITY_GATE_SHADOW_LOG = PROJECT_ROOT / "results" / "rg_resmoe_volatility_gate_shadow_log.jsonl"
+RG_RESMOE_H5_HIGH_VOL_SHADOW_ADVISORY_LOG = (
+    PROJECT_ROOT / "results" / "rg_resmoe_h5_high_vol_shadow_advisory_log.jsonl"
+)
+RG_RESMOE_READINESS_REVIEW = (
+    PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "rg_resmoe_volatility_gate_readiness_review.json"
+)
 SIGNAL_ALIGNMENT_SHADOW_LOG = PROJECT_ROOT / "results" / "signal_alignment_shadow_log.jsonl"
 MARKET_STATE_SHADOW_LOG = PROJECT_ROOT / "results" / "market_state_shadow_log.jsonl"
 SPECIALIST_ROUTING_SHADOW_LOG = PROJECT_ROOT / "results" / "specialist_routing_shadow_log.jsonl"
 OPTIONAL_SOURCE_SPECS = {
-    "institutional_0050": ("institutional_data", "ticker = '0050.TW'", 0),
+    # TWSE institutional data can lag same-day OHLCV during after-close next-day
+    # signal generation; allow T-1 before fail-closing execution.
+    "institutional_0050": ("institutional_data", "ticker = '0050.TW'", 1),
     "margin_0050": ("margin_data", "ticker = '0050.TW'", 1),
     "market_margin": ("market_margin_data", "1 = 1", 1),
     "tdcc_0050": ("shareholding_distribution", "stock_id = '0050'", 10),
@@ -500,12 +521,27 @@ def _tsmc_0050_health_snapshot(
         label_zh = "台積電與 0050 廣度訊號混合"
     reference_guidance = _tsmc_0050_reference_guidance(state)
 
+    # 2026-08-09: purely additive advisory field (user-proposed TSMC
+    # concentration-divergence line, see
+    # docs/TSMC_CONCENTRATION_DIVERGENCE_GROUPA_PLUS_20260809.md). Does not
+    # affect `state`, `reference_guidance`, or anything
+    # _apply_tsmc_weakness_trim()/execution_regime reads -- exists so real
+    # top5_breadth events start accumulating in production daily_signal logs
+    # for future validation, since the shadow backtest only found 3 trigger
+    # events across 6+ years of history and needs more real observations
+    # before this could ever be considered for enforcement.
+    try:
+        top5_breadth = top5_breadth_snapshot(db_path, str(actual.date()))
+    except Exception as exc:
+        top5_breadth = {"status": "error", "reason": str(exc)}
+
     return {
         "status": "available",
         "date": str(actual.date()),
         "state": state,
         "label_zh": label_zh,
         "reference_guidance": reference_guidance,
+        "top5_breadth": top5_breadth,
         "price_latest_dates": latest_dates,
         "tsmc_weight_assumption": tsmc_weight,
         "returns": returns,
@@ -791,6 +827,63 @@ def _apply_tsmc_weakness_trim(
     return weights, overlay
 
 
+def _resize_00713_cash_sleeve(weights: dict[str, float], target_weight: float) -> dict[str, float]:
+    out = dict(weights)
+    current = max(float(out.get("00713.TW", 0.0) or 0.0), 0.0)
+    target = min(max(float(target_weight), 0.0), 1.0)
+    if target < current:
+        out["00713.TW"] = target
+        out["cash"] = max(float(out.get("cash", 0.0) or 0.0), 0.0) + (current - target)
+    elif target > current:
+        available_cash = max(float(out.get("cash", 0.0) or 0.0), 0.0)
+        shift = min(target - current, available_cash)
+        out["00713.TW"] = current + shift
+        out["cash"] = available_cash - shift
+    return _normalize(out)
+
+
+def _apply_00713_ncf_sleeve(
+    target_weights: dict[str, float],
+    report: dict[str, Any],
+    actual_date: pd.Timestamp,
+    ncf_live_overlay: dict[str, Any],
+) -> tuple[dict[str, float], dict[str, Any]]:
+    extension = report.get("group_a_plusplus_extension") or {}
+    if not extension.get("enabled"):
+        return dict(target_weights), ncf_live_overlay
+    if not extension.get("ncf_enabled"):
+        return dict(target_weights), ncf_live_overlay
+
+    path_713 = _latest_ncf_path("00713")
+    if path_713 is not None:
+        sig_713 = load_ncf_signal(path_713)
+        decision = ncf_00713_cash_sleeve_decision(
+            sig_713,
+            actual_date=str(pd.Timestamp(actual_date).date()),
+            base_weight=float(extension.get("cash_sleeve_weight", 0.0) or 0.0),
+            enabled=True,
+        )
+        decision["ncf_00713_file"] = str(path_713.relative_to(PROJECT_ROOT))
+    else:
+        decision = extension.get("ncf_sleeve_decision")
+    if not decision:
+        decision = ncf_00713_cash_sleeve_decision(
+            None,
+            actual_date=str(pd.Timestamp(actual_date).date()),
+            base_weight=float(extension.get("cash_sleeve_weight", 0.0) or 0.0),
+            enabled=True,
+        )
+    adjusted = _resize_00713_cash_sleeve(
+        target_weights,
+        float(decision.get("effective_weight", target_weights.get("00713.TW", 0.0)) or 0.0),
+    )
+    overlay = dict(ncf_live_overlay)
+    overlay["ncf_00713_sleeve"] = decision
+    overlay["ncf_00713_weights_before"] = dict(target_weights)
+    overlay["ncf_00713_weights_after"] = adjusted
+    return adjusted, overlay
+
+
 def _as_float_or_none(value: Any) -> float | None:
     try:
         if value is None:
@@ -865,11 +958,12 @@ def _source_freshness(
             row[0]
             for row in con.execute("SELECT table_name FROM information_schema.tables").fetchall()
         }
+        placeholders = ", ".join(["?"] * len(TICKERS))
         ticker_rows = con.execute(
-            """
+            f"""
             SELECT ticker, max(dt) AS latest_dt, arg_max(close, dt) AS latest_close
             FROM ohlcv
-            WHERE ticker IN (?, ?, ?, ?) AND dt <= ?
+            WHERE ticker IN ({placeholders}) AND dt <= ?
             GROUP BY ticker
             ORDER BY ticker
             """,
@@ -1090,6 +1184,7 @@ def _build_signal_alerts(
     signal_alignment: dict[str, Any] | None = None,
     ncf_panel_coverage: dict[str, Any] | None = None,
     garch_regime_shadow: dict[str, Any] | None = None,
+    rg_resmoe_volatility_gate_shadow: dict[str, Any] | None = None,
     specialist_routing: dict[str, Any] | None = None,
     trough_nowcast: dict[str, Any] | None = None,
     tail_conformal: dict[str, Any] | None = None,
@@ -1149,6 +1244,27 @@ def _build_signal_alerts(
                 "reference_00631l_scale": volatility_gate.get("reference_00631l_scale"),
                 "volatility_gate": volatility_gate.get("gate"),
                 "signal_reliability": volatility_gate.get("signal_reliability"),
+                "inputs": inputs,
+            },
+        )
+    rg_resmoe_gate = (rg_resmoe_volatility_gate_shadow or {}).get("volatility_gate_reference") or {}
+    if rg_resmoe_gate.get("high_vol_reference") is True:
+        inputs = rg_resmoe_gate.get("inputs") or {}
+        add(
+            "rg_resmoe_volatility_gate_high_vol",
+            "medium",
+            "RG-ResMoE volatility reference high",
+            (
+                "RG-ResMoE-lite shadow flags elevated 5-day volatility; advisory-only review of 00631L adds. "
+                f"Reference scale={rg_resmoe_gate.get('reference_00631l_scale')}, "
+                f"h5_gate_weight={inputs.get('h5_gate_weight')}, "
+                f"h5_soft_vs_base_ratio={inputs.get('h5_soft_vs_base_ratio')}."
+            ),
+            {
+                "allow_00631l_add_reference": rg_resmoe_gate.get("allow_00631l_add_reference"),
+                "trade_policy": rg_resmoe_gate.get("trade_policy"),
+                "reference_00631l_scale": rg_resmoe_gate.get("reference_00631l_scale"),
+                "volatility_gate": rg_resmoe_gate.get("gate"),
                 "inputs": inputs,
             },
         )
@@ -1653,6 +1769,12 @@ def build_daily_signal(
         target_weights,
         ncf_live_overlay,
     )
+    target_weights, ncf_live_overlay = _apply_00713_ncf_sleeve(
+        target_weights,
+        report,
+        actual,
+        ncf_live_overlay,
+    )
     market_state = classify_market_state(
         _market_state_regime(execution_regime, ncf_live_overlay),
         latest_features,
@@ -1684,6 +1806,21 @@ def build_daily_signal(
     append_garch_regime_shadow_log(
         GARCH_REGIME_SHADOW_LOG,
         garch_regime_shadow,
+        execution_regime=execution_regime,
+    )
+    rg_resmoe_volatility_gate_shadow = compute_group_a_plus_rg_resmoe_volatility_gate_shadow(db_path, actual)
+    append_rg_resmoe_volatility_gate_shadow_log(
+        RG_RESMOE_VOLATILITY_GATE_SHADOW_LOG,
+        rg_resmoe_volatility_gate_shadow,
+        execution_regime=execution_regime,
+    )
+    rg_resmoe_h5_high_vol_shadow_advisory = build_rg_resmoe_h5_high_vol_shadow_advisory(
+        rg_resmoe_volatility_gate_shadow,
+        readiness_review_path=RG_RESMOE_READINESS_REVIEW,
+    )
+    append_rg_resmoe_h5_high_vol_shadow_advisory_log(
+        RG_RESMOE_H5_HIGH_VOL_SHADOW_ADVISORY_LOG,
+        rg_resmoe_h5_high_vol_shadow_advisory,
         execution_regime=execution_regime,
     )
     specialist_routing = route_specialist(
@@ -1724,6 +1861,7 @@ def build_daily_signal(
         signal_alignment=signal_alignment,
         ncf_panel_coverage=report.get("ncf_panel_coverage"),
         garch_regime_shadow=garch_regime_shadow,
+        rg_resmoe_volatility_gate_shadow=rg_resmoe_volatility_gate_shadow,
         specialist_routing=specialist_routing,
         trough_nowcast=trough_nowcast,
         tail_conformal=tail_conformal,
@@ -1743,10 +1881,42 @@ def build_daily_signal(
         for ticker in TICKERS
     }
     estimated_cash_after_rounding = portfolio_value - sum(target_market_values.values())
+    golden_signal_coverage = report.get("golden_signal_coverage")
+    golden_signal_warnings: list[str] = []
+    if isinstance(golden_signal_coverage, dict):
+        golden_signal_modified_at = golden_signal_coverage.get("golden_signal_modified_at")
+        if golden_signal_modified_at:
+            try:
+                golden_signal_age_days = _business_days_between(
+                    pd.Timestamp(golden_signal_modified_at).tz_localize(None), actual
+                )
+            except (TypeError, ValueError):
+                golden_signal_age_days = None
+            # 2026-08-12 incident (GROUP_A_PLUS_20260812_GOLDEN1_SIGNAL_STALE_MTIME_INCIDENT_HANDOFF.md):
+            # _resolve_golden_signal_path() picks results/signal_group_a_*.json by
+            # mtime with no distinction between a genuine daily run and an old
+            # leftover file, and generation isn't part of the automated daily
+            # pipeline. A pre-existing test artifact silently served as "today's
+            # golden1" for 9 days undetected because this age was computed
+            # (golden_signal_coverage) but never surfaced anywhere. Surface it here
+            # as a soft warning -- does not block execution, mirrors how other
+            # soft/advisory staleness issues are handled in this function.
+            if golden_signal_age_days is not None and golden_signal_age_days > 2:
+                golden_signal_warnings.append(
+                    f"golden1 signal basis ({golden_signal_coverage.get('golden_signal_path')}) "
+                    f"is {golden_signal_age_days} business days old (modified_at="
+                    f"{golden_signal_modified_at}) -- may not reflect current market state, "
+                    "consider running scripts/run/run_group_a_combined_signal.py"
+                )
+    group_a_plusplus_extension = dict(report.get("group_a_plusplus_extension", {"enabled": False}))
+    if "ncf_00713_sleeve" in ncf_live_overlay:
+        group_a_plusplus_extension["ncf_sleeve_decision"] = ncf_live_overlay["ncf_00713_sleeve"]
     return {
         "signal_version": 2,
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "strategy_id": report["active_strategy_id"],
+        "strategy_family": report.get("strategy_family", "groupA+"),
+        "group_a_plusplus_extension": group_a_plusplus_extension,
         "strategy_status": report["status"],
         "requested_as_of_date": str(as_of.date()),
         "actual_data_date": str(actual.date()),
@@ -1771,7 +1941,8 @@ def build_daily_signal(
                 (bool(optional_warnings), f"soft strategy sources are stale or missing: {optional_warnings}"),
             )
             if condition
-        ] + ncf_warnings,
+        ] + ncf_warnings + golden_signal_warnings,
+        "golden_signal_coverage": golden_signal_coverage,
         "base_regime": base_regime,
         "execution_regime": execution_regime,
         "regime_reason": reason,
@@ -1793,6 +1964,8 @@ def build_daily_signal(
         "cross_market_graph_shadow": cross_market_graph_shadow,
         "srr_lite_shadow": srr_lite_shadow,
         "garch_regime_shadow": garch_regime_shadow,
+        "rg_resmoe_volatility_gate_shadow": rg_resmoe_volatility_gate_shadow,
+        "rg_resmoe_h5_high_vol_shadow_advisory": rg_resmoe_h5_high_vol_shadow_advisory,
         "specialist_routing": specialist_routing,
         "execution_risk": execution_risk,
         "signal_alerts": signal_alerts,

@@ -29,7 +29,11 @@ from group_a_plus.integrations.ncf_signal_archive import append_archive_rows, bu
 
 DEFAULT_ARCHIVE_PATH = PROJECT_ROOT / "results" / "ncf_signal_archive.jsonl"
 RESULTS_DIR = PROJECT_ROOT / "results"
-DATED_FILE_PATTERNS = ("ncf_00631l_latest_{stamp}.json", "ncf_00632r_latest_{stamp}.json")
+DATED_FILE_PATTERNS = (
+    "ncf_00631l_latest_{stamp}.json",
+    "ncf_00632r_latest_{stamp}.json",
+    "ncf_00713_latest_{stamp}.json",
+)
 
 
 def _dated_sources(stamp: str) -> list[Path]:
@@ -37,9 +41,9 @@ def _dated_sources(stamp: str) -> list[Path]:
 
 
 def _all_backfillable_sources() -> list[Path]:
-    """Every ncf_{00631l,00632r}_latest_YYYYMMDD.json already on disk."""
+    """Every ncf_{00631l,00632r,00713}_latest_YYYYMMDD.json already on disk."""
     found = []
-    for prefix in ("ncf_00631l_latest_", "ncf_00632r_latest_"):
+    for prefix in ("ncf_00631l_latest_", "ncf_00632r_latest_", "ncf_00713_latest_"):
         for path in sorted(RESULTS_DIR.glob(f"{prefix}*.json")):
             stamp = path.stem[len(prefix) :]
             if len(stamp) == 8 and stamp.isdigit():
@@ -65,8 +69,8 @@ def _load_rows(sources: list[Path]) -> list[dict]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", action="append", default=[], help="One or more NCF JSON files to append (repeatable). Overrides --date-stamp/--backfill.")
-    parser.add_argument("--date-stamp", default=date.today().strftime("%Y%m%d"), help="YYYYMMDD stamp used to locate today's ncf_00631l_latest_<stamp>.json / ncf_00632r_latest_<stamp>.json.")
-    parser.add_argument("--backfill", action="store_true", help="Scan results/ for every existing dated ncf_{00631l,00632r}_latest_YYYYMMDD.json and append all of them.")
+    parser.add_argument("--date-stamp", default=date.today().strftime("%Y%m%d"), help="YYYYMMDD stamp used to locate today's ncf_00631l/ncf_00632r/ncf_00713 latest JSON files.")
+    parser.add_argument("--backfill", action="store_true", help="Scan results/ for every existing dated ncf_{00631l,00632r,00713}_latest_YYYYMMDD.json and append all of them.")
     parser.add_argument("--archive", default=str(DEFAULT_ARCHIVE_PATH))
     args = parser.parse_args()
 

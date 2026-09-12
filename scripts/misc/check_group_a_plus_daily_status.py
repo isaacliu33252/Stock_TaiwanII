@@ -392,7 +392,17 @@ def _markdown_text(report: dict[str, Any]) -> str:
     )
     sin_lite_proxy = report["group_a_plus"].get("sin_lite_proxy") or {}
     hmm_wj_readiness = report["group_a_plus"].get("hmm_wj_synthetic_scenario_readiness_review") or {}
+    scr_readiness = report["group_a_plus"].get("scr_readiness_review_2602_24037") or {}
+    scr_robustness = report["group_a_plus"].get("scr_readiness_robustness_2602_24037") or {}
+    scr_window_split = report["group_a_plus"].get("scr_readiness_window_split_2602_24037") or {}
+    scr_stress_score = report["group_a_plus"].get("scr_scenario_stress_score_2602_24037") or {}
     dynamic_cvar_readiness = report["group_a_plus"].get("dynamic_cvar_tail_cost_readiness_review") or {}
+    cvar_cost_window_split_2606_26625 = (
+        report["group_a_plus"].get("cvar_cost_window_split_2606_26625") or {}
+    )
+    rolling_tail_no_add_2606_26625 = report["group_a_plus"].get("rolling_tail_no_add_2606_26625") or {}
+    dynamic_cvar_constraint_2608_20179 = report["group_a_plus"].get("dynamic_cvar_constraint_2608_20179") or {}
+    dynamic_cvar_forward_2608_20179 = report["group_a_plus"].get("dynamic_cvar_forward_2608_20179") or {}
     synthetic_augmentation_readiness = (
         report["group_a_plus"].get("synthetic_augmentation_validation_readiness_review") or {}
     )
@@ -699,6 +709,30 @@ def _markdown_text(report: dict[str, Any]) -> str:
                 "- Policy: `research_only_hmm_wj_readiness_no_synthetic_alpha_no_weight_change`",
             ]
         )
+    if scr_readiness or scr_robustness or scr_window_split or scr_stress_score:
+        readiness_summary = scr_readiness.get("summary") or {}
+        robustness_summary = scr_robustness.get("summary") or {}
+        window_summary = scr_window_split.get("summary") or {}
+        stress_summary = scr_stress_score.get("summary") or {}
+        stress_decision = scr_stress_score.get("decision") or {}
+        lines.extend(
+            [
+                "",
+                "## SCR Readiness / Scenario Stress",
+                "",
+                f"- Readiness status: `{scr_readiness.get('status')}`",
+                f"- Gap gate passed: `{readiness_summary.get('scenario_real_gap_gate_passed')}`",
+                f"- Mean / P90 scenario-real gap: `{readiness_summary.get('mean_abs_scenario_real_gap')}` / `{readiness_summary.get('p90_abs_scenario_real_gap')}`",
+                f"- Beta cf proxy: `{readiness_summary.get('beta_cf_from_bias_variance_proxy')}`",
+                f"- Robust gap pass runs: `{robustness_summary.get('gap_gate_pass_runs')}` / `{robustness_summary.get('valid_runs')}`",
+                f"- Stress-window gap pass: `{window_summary.get('gap_gate_pass_windows')}` / `{window_summary.get('valid_windows')}`",
+                f"- Latest scenario count: `{stress_summary.get('scenario_count')}`",
+                f"- Latest VaR / ES: `{stress_summary.get('var_next_return')}` / `{stress_summary.get('es_next_return')}`",
+                f"- Downside warning active: `{stress_summary.get('downside_warning_active')}`",
+                f"- Target-weight change: `{'allowed' if stress_decision.get('target_weight_change_allowed') else 'blocked'}`",
+                "- Policy: `research_only_scr_readiness_no_scr_ppo_no_weight_change`",
+            ]
+        )
     if dynamic_cvar_readiness:
         component = dynamic_cvar_readiness.get("component_readiness") or {}
         cvar = component.get("cvar_tail_risk") or {}
@@ -718,6 +752,77 @@ def _markdown_text(report: dict[str, Any]) -> str:
                 f"- Turnover: `{market_impact.get('turnover')}`",
                 f"- Blocking reasons: `{dynamic_cvar_readiness.get('blocking_reasons')}`",
                 "- Policy: `research_only_dynamic_cvar_tail_cost_readiness_no_optimizer_no_weight_change`",
+            ]
+        )
+    if cvar_cost_window_split_2606_26625:
+        summary = cvar_cost_window_split_2606_26625.get("summary") or {}
+        decision = cvar_cost_window_split_2606_26625.get("decision") or {}
+        lines.extend(
+            [
+                "",
+                "## 2606.26625 CVaR/Cost Window Split",
+                "",
+                f"- Status: `{cvar_cost_window_split_2606_26625.get('status')}`",
+                f"- Valid windows: `{summary.get('valid_windows')}`",
+                f"- Tail/cost window split passed: `{summary.get('tail_cost_window_split_passed')}`",
+                f"- Latest loses to no-00631L windows: `{summary.get('latest_loses_to_no_00631l_windows')}`",
+                f"- Latest loses to no-LETF windows: `{summary.get('latest_loses_to_no_letf_windows')}`",
+                f"- Target-weight change: `{'allowed' if decision.get('target_weight_change_allowed') else 'blocked'}`",
+                "- Policy: `research_only_cvar_cost_window_split_no_optimizer_no_weight_change`",
+            ]
+        )
+    if rolling_tail_no_add_2606_26625:
+        summary = rolling_tail_no_add_2606_26625.get("summary") or {}
+        decision = rolling_tail_no_add_2606_26625.get("decision") or {}
+        lines.extend(
+            [
+                "",
+                "## 2606.26625 Rolling Tail No-Add Gate",
+                "",
+                f"- Status: `{rolling_tail_no_add_2606_26625.get('status')}`",
+                f"- Windows: `{summary.get('window_count')}`",
+                f"- 00631L add blocked windows: `{summary.get('block_00631l_add_windows')}`",
+                f"- 00632R open blocked windows: `{summary.get('block_00632r_open_windows')}`",
+                f"- 00631L add: `{'allowed' if summary.get('allow_00631l_add') else 'blocked'}`",
+                f"- 00632R open: `{'allowed' if summary.get('allow_00632r_open') else 'blocked'}`",
+                f"- Target-weight change: `{'allowed' if decision.get('target_weight_change_allowed') else 'blocked'}`",
+                "- Policy: `research_only_rolling_cvar_evt_no_add_gate_no_optimizer_no_weight_change`",
+            ]
+        )
+    if dynamic_cvar_constraint_2608_20179:
+        summary = dynamic_cvar_constraint_2608_20179.get("summary") or {}
+        decision = dynamic_cvar_constraint_2608_20179.get("decision") or {}
+        lines.extend(
+            [
+                "",
+                "## 2608.20179 Dynamic CVaR Constraint Shadow",
+                "",
+                f"- Status: `{dynamic_cvar_constraint_2608_20179.get('status')}`",
+                f"- CVaR residual breach windows: `{summary.get('cvar_residual_breach_windows')}`",
+                f"- Material CVaR95 residual windows: `{summary.get('material_cvar95_residual_windows')}`",
+                f"- Latest worse than no-00631L ES95 windows: `{summary.get('latest_worse_than_no_00631l_es95_windows')}`",
+                f"- Latest worse than no-LETF ES95 windows: `{summary.get('latest_worse_than_no_letf_es95_windows')}`",
+                f"- Sensitivity breach windows by buffer: `{summary.get('sensitivity_breach_windows_by_buffer')}`",
+                f"- 00631L add pacing: `{summary.get('recommended_00631l_add_pacing_multiplier')}`",
+                f"- 00631L add: `{'allowed' if summary.get('allow_00631l_add') else 'blocked'}`",
+                f"- Target-weight change: `{'allowed' if decision.get('target_weight_change_allowed') else 'blocked'}`",
+                "- Policy: `research_only_dynamic_cvar_constraint_shadow_no_weight_change`",
+            ]
+        )
+    if dynamic_cvar_forward_2608_20179:
+        summary = dynamic_cvar_forward_2608_20179.get("summary") or {}
+        decision = dynamic_cvar_forward_2608_20179.get("decision") or {}
+        lines.extend(
+            [
+                "",
+                "## 2608.20179 Dynamic CVaR Forward Validation",
+                "",
+                f"- Status: `{dynamic_cvar_forward_2608_20179.get('status')}`",
+                f"- Forward validation passed: `{summary.get('forward_validation_passed')}`",
+                f"- Pass windows: `{summary.get('forward_validation_pass_windows')}` / `{summary.get('valid_windows')}`",
+                f"- 00631L add: `{'allowed' if summary.get('allow_00631l_add') else 'blocked'}`",
+                f"- Target-weight change: `{'allowed' if decision.get('target_weight_change_allowed') else 'blocked'}`",
+                "- Policy: `research_only_dynamic_cvar_forward_validation_no_weight_change`",
             ]
         )
     if synthetic_augmentation_readiness:
@@ -985,8 +1090,32 @@ def _live_status_report(args: argparse.Namespace) -> dict[str, Any]:
     hmm_wj_synthetic_scenario_readiness_review = _unwrap_standard_payload(
         _load_optional(getattr(args, "hmm_wj_synthetic_scenario_readiness_review", None))
     )
+    scr_readiness_review_2602_24037 = _unwrap_standard_payload(
+        _load_optional(getattr(args, "scr_readiness_review_2602_24037", None))
+    )
+    scr_readiness_robustness_2602_24037 = _unwrap_standard_payload(
+        _load_optional(getattr(args, "scr_readiness_robustness_2602_24037", None))
+    )
+    scr_readiness_window_split_2602_24037 = _unwrap_standard_payload(
+        _load_optional(getattr(args, "scr_readiness_window_split_2602_24037", None))
+    )
+    scr_scenario_stress_score_2602_24037 = _unwrap_standard_payload(
+        _load_optional(getattr(args, "scr_scenario_stress_score_2602_24037", None))
+    )
     dynamic_cvar_tail_cost_readiness_review = _unwrap_standard_payload(
         _load_optional(getattr(args, "dynamic_cvar_tail_cost_readiness_review", None))
+    )
+    cvar_cost_window_split_2606_26625 = _unwrap_standard_payload(
+        _load_optional(getattr(args, "cvar_cost_window_split_2606_26625", None))
+    )
+    rolling_tail_no_add_2606_26625 = _unwrap_standard_payload(
+        _load_optional(getattr(args, "rolling_tail_no_add_2606_26625", None))
+    )
+    dynamic_cvar_constraint_2608_20179 = _unwrap_standard_payload(
+        _load_optional(getattr(args, "dynamic_cvar_constraint_2608_20179", None))
+    )
+    dynamic_cvar_forward_2608_20179 = _unwrap_standard_payload(
+        _load_optional(getattr(args, "dynamic_cvar_forward_2608_20179", None))
     )
     synthetic_augmentation_validation_readiness_review = _unwrap_standard_payload(
         _load_optional(getattr(args, "synthetic_augmentation_validation_readiness_review", None))
@@ -1168,8 +1297,32 @@ def _live_status_report(args: argparse.Namespace) -> dict[str, Any]:
             "hmm_wj_synthetic_scenario_readiness_review": str(
                 Path(getattr(args, "hmm_wj_synthetic_scenario_readiness_review", ""))
             ),
+            "scr_readiness_review_2602_24037": str(
+                Path(getattr(args, "scr_readiness_review_2602_24037", ""))
+            ),
+            "scr_readiness_robustness_2602_24037": str(
+                Path(getattr(args, "scr_readiness_robustness_2602_24037", ""))
+            ),
+            "scr_readiness_window_split_2602_24037": str(
+                Path(getattr(args, "scr_readiness_window_split_2602_24037", ""))
+            ),
+            "scr_scenario_stress_score_2602_24037": str(
+                Path(getattr(args, "scr_scenario_stress_score_2602_24037", ""))
+            ),
             "dynamic_cvar_tail_cost_readiness_review": str(
                 Path(getattr(args, "dynamic_cvar_tail_cost_readiness_review", ""))
+            ),
+            "cvar_cost_window_split_2606_26625": str(
+                Path(getattr(args, "cvar_cost_window_split_2606_26625", ""))
+            ),
+            "rolling_tail_no_add_2606_26625": str(
+                Path(getattr(args, "rolling_tail_no_add_2606_26625", ""))
+            ),
+            "dynamic_cvar_constraint_2608_20179": str(
+                Path(getattr(args, "dynamic_cvar_constraint_2608_20179", ""))
+            ),
+            "dynamic_cvar_forward_2608_20179": str(
+                Path(getattr(args, "dynamic_cvar_forward_2608_20179", ""))
             ),
             "synthetic_augmentation_validation_readiness_review": str(
                 Path(getattr(args, "synthetic_augmentation_validation_readiness_review", ""))
@@ -1227,7 +1380,15 @@ def _live_status_report(args: argparse.Namespace) -> dict[str, Any]:
             ),
             "sin_lite_proxy": sin_lite_proxy or {},
             "hmm_wj_synthetic_scenario_readiness_review": hmm_wj_synthetic_scenario_readiness_review or {},
+            "scr_readiness_review_2602_24037": scr_readiness_review_2602_24037 or {},
+            "scr_readiness_robustness_2602_24037": scr_readiness_robustness_2602_24037 or {},
+            "scr_readiness_window_split_2602_24037": scr_readiness_window_split_2602_24037 or {},
+            "scr_scenario_stress_score_2602_24037": scr_scenario_stress_score_2602_24037 or {},
             "dynamic_cvar_tail_cost_readiness_review": dynamic_cvar_tail_cost_readiness_review or {},
+            "cvar_cost_window_split_2606_26625": cvar_cost_window_split_2606_26625 or {},
+            "rolling_tail_no_add_2606_26625": rolling_tail_no_add_2606_26625 or {},
+            "dynamic_cvar_constraint_2608_20179": dynamic_cvar_constraint_2608_20179 or {},
+            "dynamic_cvar_forward_2608_20179": dynamic_cvar_forward_2608_20179 or {},
             "synthetic_augmentation_validation_readiness_review": (
                 synthetic_augmentation_validation_readiness_review or {}
             ),
@@ -1396,9 +1557,49 @@ def main() -> None:
         help="Optional HMM-WJ synthetic scenario readiness JSON. Missing file is non-blocking.",
     )
     parser.add_argument(
+        "--scr-readiness-review-2602-24037",
+        default="report/group_a_plus/latest/2602_24037_scr_readiness_review.json",
+        help="Optional 2602.24037 SCR readiness JSON. Missing file is non-blocking.",
+    )
+    parser.add_argument(
+        "--scr-readiness-robustness-2602-24037",
+        default="report/group_a_plus/latest/2602_24037_scr_readiness_robustness.json",
+        help="Optional 2602.24037 SCR robustness JSON. Missing file is non-blocking.",
+    )
+    parser.add_argument(
+        "--scr-readiness-window-split-2602-24037",
+        default="report/group_a_plus/latest/2602_24037_scr_readiness_window_split.json",
+        help="Optional 2602.24037 SCR window-split JSON. Missing file is non-blocking.",
+    )
+    parser.add_argument(
+        "--scr-scenario-stress-score-2602-24037",
+        default="report/group_a_plus/latest/2602_24037_scr_scenario_stress_score.json",
+        help="Optional 2602.24037 SCR latest scenario stress JSON. Missing file is non-blocking.",
+    )
+    parser.add_argument(
         "--dynamic-cvar-tail-cost-readiness-review",
         default="report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json",
         help="Optional dynamic CVaR tail/cost readiness JSON. Missing file is non-blocking.",
+    )
+    parser.add_argument(
+        "--cvar-cost-window-split-2606-26625",
+        default="report/group_a_plus/latest/2606_26625_cvar_cost_window_split.json",
+        help="Optional 2606.26625 CVaR/cost window-split JSON. Missing file is non-blocking.",
+    )
+    parser.add_argument(
+        "--rolling-tail-no-add-2606-26625",
+        default="report/group_a_plus/latest/2606_26625_rolling_tail_no_add_gate.json",
+        help="Optional 2606.26625 rolling tail no-add gate JSON. Missing file is non-blocking.",
+    )
+    parser.add_argument(
+        "--dynamic-cvar-constraint-2608-20179",
+        default="report/group_a_plus/latest/2608_20179_dynamic_cvar_constraint_shadow.json",
+        help="Optional 2608.20179 dynamic CVaR constraint shadow JSON. Missing file is non-blocking.",
+    )
+    parser.add_argument(
+        "--dynamic-cvar-forward-2608-20179",
+        default="report/group_a_plus/latest/2608_20179_dynamic_cvar_forward_validation.json",
+        help="Optional 2608.20179 dynamic CVaR forward validation JSON. Missing file is non-blocking.",
     )
     parser.add_argument(
         "--synthetic-augmentation-validation-readiness-review",

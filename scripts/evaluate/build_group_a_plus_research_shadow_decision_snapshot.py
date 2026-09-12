@@ -25,7 +25,23 @@ DEFAULT_SPECULATIVE_INFLUENCE = (
 )
 DEFAULT_SIN_LITE_PROXY = PROJECT_ROOT / "report/group_a_plus/latest/sin_lite_proxy.json"
 DEFAULT_HMM_WJ = PROJECT_ROOT / "report/group_a_plus/latest/hmm_wj_synthetic_scenario_readiness_review.json"
+DEFAULT_SCR_READINESS = PROJECT_ROOT / "report/group_a_plus/latest/2602_24037_scr_readiness_review.json"
+DEFAULT_SCR_ROBUSTNESS = PROJECT_ROOT / "report/group_a_plus/latest/2602_24037_scr_readiness_robustness.json"
+DEFAULT_SCR_WINDOW_SPLIT = PROJECT_ROOT / "report/group_a_plus/latest/2602_24037_scr_readiness_window_split.json"
+DEFAULT_SCR_STRESS_SCORE = PROJECT_ROOT / "report/group_a_plus/latest/2602_24037_scr_scenario_stress_score.json"
 DEFAULT_DYNAMIC_CVAR = PROJECT_ROOT / "report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json"
+DEFAULT_CVAR_COST_WINDOW_SPLIT_2606_26625 = (
+    PROJECT_ROOT / "report/group_a_plus/latest/2606_26625_cvar_cost_window_split.json"
+)
+DEFAULT_ROLLING_TAIL_NO_ADD_2606_26625 = (
+    PROJECT_ROOT / "report/group_a_plus/latest/2606_26625_rolling_tail_no_add_gate.json"
+)
+DEFAULT_DYNAMIC_CVAR_CONSTRAINT_2608_20179 = (
+    PROJECT_ROOT / "report/group_a_plus/latest/2608_20179_dynamic_cvar_constraint_shadow.json"
+)
+DEFAULT_DYNAMIC_CVAR_FORWARD_2608_20179 = (
+    PROJECT_ROOT / "report/group_a_plus/latest/2608_20179_dynamic_cvar_forward_validation.json"
+)
 DEFAULT_SYNTHETIC_AUGMENTATION = (
     PROJECT_ROOT / "report/group_a_plus/latest/synthetic_augmentation_validation_readiness_review.json"
 )
@@ -70,6 +86,10 @@ DEFAULT_LLM_STATE_REWARD_MANUAL_APPROVAL_READINESS = (
 DEFAULT_LLM_STATE_REWARD_SIGNED_APPROVAL_VALIDATION = (
     PROJECT_ROOT / "report/group_a_plus/latest/llm_state_reward_human_exception_signed_approval_validation.json"
 )
+DEFAULT_PAPER_2609_07946_ADOPTION_MATRIX = PROJECT_ROOT / "report/group_a_plus/latest/2609_07946_adoption_matrix.json"
+DEFAULT_PAPER_2609_07946_PROMOTION_GATE = (
+    PROJECT_ROOT / "report/group_a_plus/latest/2609_07946_complementarity_promotion_gate.json"
+)
 DEFAULT_NCF_DECISION_CALIBRATION = PROJECT_ROOT / "results/ncf_decision_calibration_shadow_latest.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "report/group_a_plus/latest/research_shadow_decision_snapshot.json"
 
@@ -101,7 +121,15 @@ def build_snapshot(
     speculative_influence_path: Path = DEFAULT_SPECULATIVE_INFLUENCE,
     sin_lite_proxy_path: Path = DEFAULT_SIN_LITE_PROXY,
     hmm_wj_path: Path = DEFAULT_HMM_WJ,
+    scr_readiness_path: Path = DEFAULT_SCR_READINESS,
+    scr_robustness_path: Path = DEFAULT_SCR_ROBUSTNESS,
+    scr_window_split_path: Path = DEFAULT_SCR_WINDOW_SPLIT,
+    scr_stress_score_path: Path = DEFAULT_SCR_STRESS_SCORE,
     dynamic_cvar_path: Path = DEFAULT_DYNAMIC_CVAR,
+    cvar_cost_window_split_2606_26625_path: Path = DEFAULT_CVAR_COST_WINDOW_SPLIT_2606_26625,
+    rolling_tail_no_add_2606_26625_path: Path = DEFAULT_ROLLING_TAIL_NO_ADD_2606_26625,
+    dynamic_cvar_constraint_2608_20179_path: Path = DEFAULT_DYNAMIC_CVAR_CONSTRAINT_2608_20179,
+    dynamic_cvar_forward_2608_20179_path: Path = DEFAULT_DYNAMIC_CVAR_FORWARD_2608_20179,
     synthetic_augmentation_path: Path = DEFAULT_SYNTHETIC_AUGMENTATION,
     intervention_fatigue_path: Path = DEFAULT_INTERVENTION_FATIGUE,
     letf_tracking_path: Path = DEFAULT_LETF_TRACKING,
@@ -118,6 +146,8 @@ def build_snapshot(
     llm_state_reward_regime_filtered_micro_tilt_path: Path = DEFAULT_LLM_STATE_REWARD_REGIME_FILTERED_MICRO_TILT,
     llm_state_reward_manual_approval_readiness_path: Path = DEFAULT_LLM_STATE_REWARD_MANUAL_APPROVAL_READINESS,
     llm_state_reward_signed_approval_validation_path: Path = DEFAULT_LLM_STATE_REWARD_SIGNED_APPROVAL_VALIDATION,
+    paper_2609_07946_adoption_matrix_path: Path = DEFAULT_PAPER_2609_07946_ADOPTION_MATRIX,
+    paper_2609_07946_promotion_gate_path: Path = DEFAULT_PAPER_2609_07946_PROMOTION_GATE,
     ncf_decision_calibration_path: Path = DEFAULT_NCF_DECISION_CALIBRATION,
 ) -> dict[str, Any]:
     finstressts = _load(finstressts_path)
@@ -127,7 +157,15 @@ def build_snapshot(
     speculative_influence = _load(speculative_influence_path)
     sin_lite_proxy = _load(sin_lite_proxy_path)
     hmm_wj = _load(hmm_wj_path)
+    scr_readiness = _load(scr_readiness_path)
+    scr_robustness = _load(scr_robustness_path)
+    scr_window_split = _load(scr_window_split_path)
+    scr_stress_score = _load(scr_stress_score_path)
     dynamic_cvar = _load(dynamic_cvar_path)
+    cvar_cost_window_split_2606_26625 = _load(cvar_cost_window_split_2606_26625_path)
+    rolling_tail_no_add_2606_26625 = _load(rolling_tail_no_add_2606_26625_path)
+    dynamic_cvar_constraint_2608_20179 = _load(dynamic_cvar_constraint_2608_20179_path)
+    dynamic_cvar_forward_2608_20179 = _load(dynamic_cvar_forward_2608_20179_path)
     synthetic_augmentation = _load(synthetic_augmentation_path)
     intervention_fatigue = _load(intervention_fatigue_path)
     letf_tracking = _load(letf_tracking_path)
@@ -144,6 +182,8 @@ def build_snapshot(
     llm_state_reward_regime_filtered_micro_tilt = _load(llm_state_reward_regime_filtered_micro_tilt_path)
     llm_state_reward_manual_approval_readiness = _load(llm_state_reward_manual_approval_readiness_path)
     llm_state_reward_signed_approval_validation = _load(llm_state_reward_signed_approval_validation_path)
+    paper_2609_07946_adoption_matrix = _load(paper_2609_07946_adoption_matrix_path)
+    paper_2609_07946_promotion_gate = _load(paper_2609_07946_promotion_gate_path)
     ncf_decision_calibration = _load(ncf_decision_calibration_path)
     fin_decision = _decision(finstressts)
     tri_decision = _decision(trigate)
@@ -152,7 +192,15 @@ def build_snapshot(
     speculative_influence_decision = _decision(speculative_influence)
     sin_lite_decision = _decision(sin_lite_proxy)
     hmm_wj_decision = _decision(hmm_wj)
+    scr_readiness_decision = _decision(scr_readiness)
+    scr_robustness_decision = _decision(scr_robustness)
+    scr_window_split_decision = _decision(scr_window_split)
+    scr_stress_score_decision = _decision(scr_stress_score)
     dynamic_cvar_decision = _decision(dynamic_cvar)
+    cvar_cost_window_split_2606_26625_decision = _decision(cvar_cost_window_split_2606_26625)
+    rolling_tail_no_add_2606_26625_decision = _decision(rolling_tail_no_add_2606_26625)
+    dynamic_cvar_constraint_2608_20179_decision = _decision(dynamic_cvar_constraint_2608_20179)
+    dynamic_cvar_forward_2608_20179_decision = _decision(dynamic_cvar_forward_2608_20179)
     synthetic_augmentation_decision = _decision(synthetic_augmentation)
     intervention_fatigue_decision = _decision(intervention_fatigue)
     letf_tracking_decision = _decision(letf_tracking)
@@ -169,6 +217,8 @@ def build_snapshot(
     llm_state_reward_regime_filtered_micro_tilt_decision = _decision(llm_state_reward_regime_filtered_micro_tilt)
     llm_state_reward_manual_approval_readiness_decision = _decision(llm_state_reward_manual_approval_readiness)
     llm_state_reward_signed_approval_validation_decision = _decision(llm_state_reward_signed_approval_validation)
+    paper_2609_07946_adoption_decision = _decision(paper_2609_07946_adoption_matrix)
+    paper_2609_07946_promotion_decision = _decision(paper_2609_07946_promotion_gate)
     tri_state = trigate.get("tri_gate_state") or {}
     systemic_states = systemic_bubble.get("states") or {}
     illiquidity_proxy = illiquidity_network.get("daily_ohlcv_liquidity_stress_proxy") or {}
@@ -190,8 +240,24 @@ def build_snapshot(
         blockers.append("missing_sin_lite_proxy")
     if not hmm_wj:
         blockers.append("missing_hmm_wj_synthetic_scenario_readiness_review")
+    if not scr_readiness:
+        blockers.append("missing_2602_24037_scr_readiness_review")
+    if not scr_robustness:
+        blockers.append("missing_2602_24037_scr_readiness_robustness")
+    if not scr_window_split:
+        blockers.append("missing_2602_24037_scr_readiness_window_split")
+    if not scr_stress_score:
+        blockers.append("missing_2602_24037_scr_scenario_stress_score")
     if not dynamic_cvar:
         blockers.append("missing_dynamic_cvar_tail_cost_readiness_review")
+    if not cvar_cost_window_split_2606_26625:
+        blockers.append("missing_cvar_cost_window_split_2606_26625")
+    if not rolling_tail_no_add_2606_26625:
+        warnings.append("missing_rolling_tail_no_add_gate_2606_26625")
+    if not dynamic_cvar_constraint_2608_20179:
+        warnings.append("missing_dynamic_cvar_constraint_shadow_2608_20179")
+    if not dynamic_cvar_forward_2608_20179:
+        warnings.append("missing_dynamic_cvar_forward_validation_2608_20179")
     if not synthetic_augmentation:
         blockers.append("missing_synthetic_augmentation_validation_readiness_review")
     if not intervention_fatigue:
@@ -216,6 +282,10 @@ def build_snapshot(
         warnings.append("missing_llm_state_reward_manual_approval_readiness_review")
     if not llm_state_reward_signed_approval_validation:
         warnings.append("missing_llm_state_reward_signed_approval_validation")
+    if not paper_2609_07946_adoption_matrix:
+        warnings.append("missing_2609_07946_adoption_matrix")
+    if not paper_2609_07946_promotion_gate:
+        warnings.append("missing_2609_07946_complementarity_promotion_gate")
     if not ncf_decision_calibration:
         warnings.append("missing_ncf_decision_calibration_shadow")
     if finstressts.get("status") == "blocked":
@@ -232,8 +302,31 @@ def build_snapshot(
         blockers.append("sin_lite_proxy_blocked")
     if hmm_wj.get("status") == "blocked":
         blockers.append("hmm_wj_synthetic_scenario_readiness_blocked")
+    if scr_readiness.get("status") == "blocked":
+        blockers.append("scr_readiness_2602_24037_blocked")
+    if scr_robustness.get("status") == "blocked":
+        blockers.append("scr_readiness_robustness_2602_24037_blocked")
+    if scr_window_split.get("status") == "blocked":
+        blockers.append("scr_readiness_window_split_2602_24037_blocked")
+    if scr_stress_score.get("status") == "blocked":
+        blockers.append("scr_scenario_stress_score_2602_24037_blocked")
     if dynamic_cvar.get("status") == "blocked":
         blockers.append("dynamic_cvar_tail_cost_readiness_blocked")
+    if cvar_cost_window_split_2606_26625.get("status") == "blocked_for_live_promotion":
+        blockers.append("cvar_cost_window_split_2606_26625_blocked_for_live_promotion")
+    rolling_summary = rolling_tail_no_add_2606_26625.get("summary") or {}
+    if rolling_tail_no_add_2606_26625 and rolling_summary.get("allow_00631l_add") is not True:
+        blockers.append("rolling_tail_no_add_gate_2606_26625_blocks_00631l_add")
+    cvar_constraint_summary = dynamic_cvar_constraint_2608_20179.get("summary") or {}
+    if dynamic_cvar_constraint_2608_20179.get("status") == "blocked_for_live_promotion":
+        blockers.append("dynamic_cvar_constraint_shadow_2608_20179_blocked_for_live_promotion")
+    if dynamic_cvar_constraint_2608_20179 and cvar_constraint_summary.get("allow_00631l_add") is not True:
+        blockers.append("dynamic_cvar_constraint_shadow_2608_20179_blocks_00631l_add")
+    cvar_forward_summary = dynamic_cvar_forward_2608_20179.get("summary") or {}
+    if dynamic_cvar_forward_2608_20179.get("status") == "blocked_for_live_promotion":
+        blockers.append("dynamic_cvar_forward_validation_2608_20179_blocked_for_live_promotion")
+    if dynamic_cvar_forward_2608_20179 and cvar_forward_summary.get("forward_validation_passed") is not True:
+        blockers.append("dynamic_cvar_forward_validation_2608_20179_failed")
     if synthetic_augmentation.get("status") == "blocked":
         blockers.append("synthetic_augmentation_validation_readiness_blocked")
     if intervention_fatigue.get("status") == "blocked":
@@ -258,6 +351,10 @@ def build_snapshot(
         warnings.append("llm_state_reward_manual_approval_readiness_blocked")
     if llm_state_reward_signed_approval_validation.get("status") == "blocked":
         warnings.append("llm_state_reward_signed_approval_validation_blocked")
+    if paper_2609_07946_adoption_decision.get("adopt_into_latest_strategy_now") is True:
+        warnings.append("2609_07946_adoption_matrix_unexpected_live_adopt_true")
+    if paper_2609_07946_promotion_decision.get("any_ready_for_live_review") is True:
+        warnings.append("2609_07946_promotion_gate_ready_for_manual_live_review")
     if tri_state.get("stress_gate_count") is not None:
         warnings.append(f"trigate_stress_gate_count:{tri_state.get('stress_gate_count')}")
     if systemic_states.get("systemic_score") is not None:
@@ -276,8 +373,30 @@ def build_snapshot(
         warnings.append(f"sin_lite_state:{sin_lite_latest.get('state')}")
     if hmm_wj.get("status"):
         warnings.append(f"hmm_wj_status:{hmm_wj.get('status')}")
+    if scr_readiness.get("status"):
+        warnings.append(f"scr_readiness_2602_24037_status:{scr_readiness.get('status')}")
+    if scr_robustness.get("status"):
+        warnings.append(f"scr_readiness_robustness_2602_24037_status:{scr_robustness.get('status')}")
+    if scr_window_split.get("status"):
+        warnings.append(f"scr_readiness_window_split_2602_24037_status:{scr_window_split.get('status')}")
+    if scr_stress_score.get("status"):
+        warnings.append(f"scr_scenario_stress_score_2602_24037_status:{scr_stress_score.get('status')}")
     if dynamic_cvar.get("status"):
         warnings.append(f"dynamic_cvar_status:{dynamic_cvar.get('status')}")
+    if cvar_cost_window_split_2606_26625.get("status"):
+        warnings.append(
+            f"cvar_cost_window_split_2606_26625_status:{cvar_cost_window_split_2606_26625.get('status')}"
+        )
+    if rolling_tail_no_add_2606_26625.get("status"):
+        warnings.append(f"rolling_tail_no_add_gate_2606_26625_status:{rolling_tail_no_add_2606_26625.get('status')}")
+    if dynamic_cvar_constraint_2608_20179.get("status"):
+        warnings.append(
+            f"dynamic_cvar_constraint_shadow_2608_20179_status:{dynamic_cvar_constraint_2608_20179.get('status')}"
+        )
+    if dynamic_cvar_forward_2608_20179.get("status"):
+        warnings.append(
+            f"dynamic_cvar_forward_validation_2608_20179_status:{dynamic_cvar_forward_2608_20179.get('status')}"
+        )
     if synthetic_augmentation.get("status"):
         warnings.append(f"synthetic_augmentation_status:{synthetic_augmentation.get('status')}")
     if intervention_fatigue.get("status"):
@@ -388,10 +507,116 @@ def build_snapshot(
             "hmm_wj_data_ready": (hmm_wj.get("data_readiness") or {}).get("all_required_tickers_ready"),
             "hmm_wj_can_generate_scenarios_for_decision": hmm_wj_decision.get("can_generate_scenarios_for_decision"),
             "hmm_wj_allow_00631l_add": hmm_wj_decision.get("allow_00631l_add"),
+            "scr_readiness_2602_24037_status": scr_readiness.get("status"),
+            "scr_readiness_2602_24037_gap_gate_passed": (scr_readiness.get("summary") or {}).get(
+                "scenario_real_gap_gate_passed"
+            ),
+            "scr_readiness_2602_24037_mean_gap": (scr_readiness.get("summary") or {}).get(
+                "mean_abs_scenario_real_gap"
+            ),
+            "scr_readiness_2602_24037_beta_cf": (scr_readiness.get("summary") or {}).get(
+                "beta_cf_from_bias_variance_proxy"
+            ),
+            "scr_readiness_2602_24037_ppo_training_allowed": scr_readiness_decision.get("ppo_training_allowed"),
+            "scr_readiness_2602_24037_target_weight_change_allowed": scr_readiness_decision.get(
+                "target_weight_change_allowed"
+            ),
+            "scr_robustness_2602_24037_gap_pass_rate": (scr_robustness.get("summary") or {}).get(
+                "gap_gate_pass_rate"
+            ),
+            "scr_robustness_2602_24037_beta_moderate_rate": (scr_robustness.get("summary") or {}).get(
+                "beta_moderate_rate"
+            ),
+            "scr_robustness_2602_24037_ppo_training_allowed": scr_robustness_decision.get(
+                "ppo_training_allowed"
+            ),
+            "scr_window_split_2602_24037_gap_pass_windows": (scr_window_split.get("summary") or {}).get(
+                "gap_gate_pass_windows"
+            ),
+            "scr_window_split_2602_24037_valid_windows": (scr_window_split.get("summary") or {}).get(
+                "valid_windows"
+            ),
+            "scr_window_split_2602_24037_ppo_training_allowed": scr_window_split_decision.get(
+                "ppo_training_allowed"
+            ),
+            "scr_stress_score_2602_24037_downside_warning_active": (scr_stress_score.get("summary") or {}).get(
+                "downside_warning_active"
+            ),
+            "scr_stress_score_2602_24037_var_next_return": (scr_stress_score.get("summary") or {}).get(
+                "var_next_return"
+            ),
+            "scr_stress_score_2602_24037_es_next_return": (scr_stress_score.get("summary") or {}).get(
+                "es_next_return"
+            ),
+            "scr_stress_score_2602_24037_target_weight_change_allowed": scr_stress_score_decision.get(
+                "target_weight_change_allowed"
+            ),
             "dynamic_cvar_status": dynamic_cvar.get("status"),
             "dynamic_cvar_tail_cost_ready": dynamic_cvar_decision.get("tail_cost_readiness_ready"),
             "dynamic_cvar_optimizer_ready": dynamic_cvar_decision.get("dynamic_optimizer_ready"),
             "dynamic_cvar_allow_00631l_add": dynamic_cvar_decision.get("allow_00631l_add"),
+            "cvar_cost_window_split_2606_26625_status": cvar_cost_window_split_2606_26625.get("status"),
+            "cvar_cost_window_split_2606_26625_passed": (
+                cvar_cost_window_split_2606_26625.get("summary") or {}
+            ).get("tail_cost_window_split_passed"),
+            "cvar_cost_window_split_2606_26625_latest_loses_to_no_00631l_windows": (
+                cvar_cost_window_split_2606_26625.get("summary") or {}
+            ).get("latest_loses_to_no_00631l_windows"),
+            "cvar_cost_window_split_2606_26625_latest_loses_to_no_letf_windows": (
+                cvar_cost_window_split_2606_26625.get("summary") or {}
+            ).get("latest_loses_to_no_letf_windows"),
+            "cvar_cost_window_split_2606_26625_target_weight_change_allowed": (
+                cvar_cost_window_split_2606_26625_decision.get("target_weight_change_allowed")
+            ),
+            "rolling_tail_no_add_2606_26625_status": rolling_tail_no_add_2606_26625.get("status"),
+            "rolling_tail_no_add_2606_26625_allow_00631l_add": rolling_summary.get("allow_00631l_add"),
+            "rolling_tail_no_add_2606_26625_allow_00632r_open": rolling_summary.get("allow_00632r_open"),
+            "rolling_tail_no_add_2606_26625_block_00631l_add_windows": rolling_summary.get(
+                "block_00631l_add_windows"
+            ),
+            "rolling_tail_no_add_2606_26625_block_00632r_open_windows": rolling_summary.get(
+                "block_00632r_open_windows"
+            ),
+            "rolling_tail_no_add_2606_26625_target_weight_change_allowed": (
+                rolling_tail_no_add_2606_26625_decision.get("target_weight_change_allowed")
+            ),
+            "dynamic_cvar_constraint_2608_20179_status": dynamic_cvar_constraint_2608_20179.get("status"),
+            "dynamic_cvar_constraint_2608_20179_breach_windows": cvar_constraint_summary.get(
+                "cvar_residual_breach_windows"
+            ),
+            "dynamic_cvar_constraint_2608_20179_material_cvar95_residual_windows": (
+                cvar_constraint_summary.get("material_cvar95_residual_windows")
+            ),
+            "dynamic_cvar_constraint_2608_20179_sensitivity_breach_windows_by_buffer": (
+                cvar_constraint_summary.get("sensitivity_breach_windows_by_buffer")
+            ),
+            "dynamic_cvar_constraint_2608_20179_latest_worse_than_no_00631l_es95_windows": (
+                cvar_constraint_summary.get("latest_worse_than_no_00631l_es95_windows")
+            ),
+            "dynamic_cvar_constraint_2608_20179_latest_worse_than_no_letf_es95_windows": (
+                cvar_constraint_summary.get("latest_worse_than_no_letf_es95_windows")
+            ),
+            "dynamic_cvar_constraint_2608_20179_relative_baseline_blocks_00631l": (
+                cvar_constraint_summary.get("relative_baseline_blocks_00631l")
+            ),
+            "dynamic_cvar_constraint_2608_20179_recommended_00631l_add_pacing_multiplier": (
+                cvar_constraint_summary.get("recommended_00631l_add_pacing_multiplier")
+            ),
+            "dynamic_cvar_constraint_2608_20179_allow_00631l_add": cvar_constraint_summary.get(
+                "allow_00631l_add"
+            ),
+            "dynamic_cvar_constraint_2608_20179_target_weight_change_allowed": (
+                dynamic_cvar_constraint_2608_20179_decision.get("target_weight_change_allowed")
+            ),
+            "dynamic_cvar_forward_2608_20179_status": dynamic_cvar_forward_2608_20179.get("status"),
+            "dynamic_cvar_forward_2608_20179_passed": cvar_forward_summary.get("forward_validation_passed"),
+            "dynamic_cvar_forward_2608_20179_pass_windows": cvar_forward_summary.get(
+                "forward_validation_pass_windows"
+            ),
+            "dynamic_cvar_forward_2608_20179_valid_windows": cvar_forward_summary.get("valid_windows"),
+            "dynamic_cvar_forward_2608_20179_target_weight_change_allowed": (
+                dynamic_cvar_forward_2608_20179_decision.get("target_weight_change_allowed")
+            ),
             "synthetic_augmentation_status": synthetic_augmentation.get("status"),
             "synthetic_validation_ready": synthetic_augmentation_decision.get("synthetic_validation_ready"),
             "directional_synthetic_alpha_allowed": synthetic_augmentation_decision.get(
@@ -616,6 +841,21 @@ def build_snapshot(
             "llm_state_reward_signed_approval_promote_to_live": (
                 llm_state_reward_signed_approval_validation_decision.get("promote_to_live")
             ),
+            "paper_2609_07946_adopt_into_latest_strategy_now": (
+                paper_2609_07946_adoption_decision.get("adopt_into_latest_strategy_now")
+            ),
+            "paper_2609_07946_promotion_gate_ready": (
+                paper_2609_07946_adoption_decision.get("promotion_gate_ready")
+            ),
+            "paper_2609_07946_any_ready_for_live_review": (
+                paper_2609_07946_promotion_decision.get("any_ready_for_live_review")
+            ),
+            "paper_2609_07946_stock_bond_gold_ready_for_live_review": (
+                paper_2609_07946_promotion_decision.get("stock_bond_gold_ready_for_live_review")
+            ),
+            "paper_2609_07946_bond_only_ready_for_live_review": (
+                paper_2609_07946_promotion_decision.get("bond_only_ready_for_live_review")
+            ),
             "ncf_decision_calibration_status": ncf_decision_calibration.get("status"),
             "ncf_decision_calibration_governance_status": ncf_calibration_governance.get("status"),
             "ncf_decision_confidence_contract": ncf_calibration_governance.get("decision_confidence_contract"),
@@ -653,7 +893,15 @@ def build_snapshot(
             "speculative_influence_network_readiness": str(speculative_influence_path),
             "sin_lite_proxy": str(sin_lite_proxy_path),
             "hmm_wj_synthetic_scenario_readiness": str(hmm_wj_path),
+            "scr_readiness_2602_24037": str(scr_readiness_path),
+            "scr_readiness_robustness_2602_24037": str(scr_robustness_path),
+            "scr_readiness_window_split_2602_24037": str(scr_window_split_path),
+            "scr_scenario_stress_score_2602_24037": str(scr_stress_score_path),
             "dynamic_cvar_tail_cost_readiness": str(dynamic_cvar_path),
+            "cvar_cost_window_split_2606_26625": str(cvar_cost_window_split_2606_26625_path),
+            "rolling_tail_no_add_gate_2606_26625": str(rolling_tail_no_add_2606_26625_path),
+            "dynamic_cvar_constraint_shadow_2608_20179": str(dynamic_cvar_constraint_2608_20179_path),
+            "dynamic_cvar_forward_validation_2608_20179": str(dynamic_cvar_forward_2608_20179_path),
             "synthetic_augmentation_validation_readiness": str(synthetic_augmentation_path),
             "intervention_fatigue_risk_budget_readiness": str(intervention_fatigue_path),
             "letf_tracking_error_effective_fee_readiness": str(letf_tracking_path),
@@ -670,6 +918,8 @@ def build_snapshot(
             "llm_state_reward_regime_filtered_micro_tilt": str(llm_state_reward_regime_filtered_micro_tilt_path),
             "llm_state_reward_manual_approval_readiness": str(llm_state_reward_manual_approval_readiness_path),
             "llm_state_reward_signed_approval_validation": str(llm_state_reward_signed_approval_validation_path),
+            "paper_2609_07946_adoption_matrix": str(paper_2609_07946_adoption_matrix_path),
+            "paper_2609_07946_complementarity_promotion_gate": str(paper_2609_07946_promotion_gate_path),
             "ncf_decision_calibration": str(ncf_decision_calibration_path),
         },
     }
@@ -689,7 +939,27 @@ def main() -> None:
     parser.add_argument("--speculative-influence", default=str(DEFAULT_SPECULATIVE_INFLUENCE))
     parser.add_argument("--sin-lite-proxy", default=str(DEFAULT_SIN_LITE_PROXY))
     parser.add_argument("--hmm-wj", default=str(DEFAULT_HMM_WJ))
+    parser.add_argument("--scr-readiness", default=str(DEFAULT_SCR_READINESS))
+    parser.add_argument("--scr-robustness", default=str(DEFAULT_SCR_ROBUSTNESS))
+    parser.add_argument("--scr-window-split", default=str(DEFAULT_SCR_WINDOW_SPLIT))
+    parser.add_argument("--scr-stress-score", default=str(DEFAULT_SCR_STRESS_SCORE))
     parser.add_argument("--dynamic-cvar", default=str(DEFAULT_DYNAMIC_CVAR))
+    parser.add_argument(
+        "--cvar-cost-window-split-2606-26625",
+        default=str(DEFAULT_CVAR_COST_WINDOW_SPLIT_2606_26625),
+    )
+    parser.add_argument(
+        "--rolling-tail-no-add-2606-26625",
+        default=str(DEFAULT_ROLLING_TAIL_NO_ADD_2606_26625),
+    )
+    parser.add_argument(
+        "--dynamic-cvar-constraint-2608-20179",
+        default=str(DEFAULT_DYNAMIC_CVAR_CONSTRAINT_2608_20179),
+    )
+    parser.add_argument(
+        "--dynamic-cvar-forward-2608-20179",
+        default=str(DEFAULT_DYNAMIC_CVAR_FORWARD_2608_20179),
+    )
     parser.add_argument("--synthetic-augmentation", default=str(DEFAULT_SYNTHETIC_AUGMENTATION))
     parser.add_argument("--intervention-fatigue", default=str(DEFAULT_INTERVENTION_FATIGUE))
     parser.add_argument("--letf-tracking", default=str(DEFAULT_LETF_TRACKING))
@@ -721,6 +991,8 @@ def main() -> None:
         "--llm-state-reward-signed-approval-validation",
         default=str(DEFAULT_LLM_STATE_REWARD_SIGNED_APPROVAL_VALIDATION),
     )
+    parser.add_argument("--paper-2609-07946-adoption-matrix", default=str(DEFAULT_PAPER_2609_07946_ADOPTION_MATRIX))
+    parser.add_argument("--paper-2609-07946-promotion-gate", default=str(DEFAULT_PAPER_2609_07946_PROMOTION_GATE))
     parser.add_argument("--ncf-decision-calibration", default=str(DEFAULT_NCF_DECISION_CALIBRATION))
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     args = parser.parse_args()
@@ -733,7 +1005,15 @@ def main() -> None:
         speculative_influence_path=_resolve(args.speculative_influence),
         sin_lite_proxy_path=_resolve(args.sin_lite_proxy),
         hmm_wj_path=_resolve(args.hmm_wj),
+        scr_readiness_path=_resolve(args.scr_readiness),
+        scr_robustness_path=_resolve(args.scr_robustness),
+        scr_window_split_path=_resolve(args.scr_window_split),
+        scr_stress_score_path=_resolve(args.scr_stress_score),
         dynamic_cvar_path=_resolve(args.dynamic_cvar),
+        cvar_cost_window_split_2606_26625_path=_resolve(args.cvar_cost_window_split_2606_26625),
+        rolling_tail_no_add_2606_26625_path=_resolve(args.rolling_tail_no_add_2606_26625),
+        dynamic_cvar_constraint_2608_20179_path=_resolve(args.dynamic_cvar_constraint_2608_20179),
+        dynamic_cvar_forward_2608_20179_path=_resolve(args.dynamic_cvar_forward_2608_20179),
         synthetic_augmentation_path=_resolve(args.synthetic_augmentation),
         intervention_fatigue_path=_resolve(args.intervention_fatigue),
         letf_tracking_path=_resolve(args.letf_tracking),
@@ -758,6 +1038,8 @@ def main() -> None:
         llm_state_reward_signed_approval_validation_path=_resolve(
             args.llm_state_reward_signed_approval_validation
         ),
+        paper_2609_07946_adoption_matrix_path=_resolve(args.paper_2609_07946_adoption_matrix),
+        paper_2609_07946_promotion_gate_path=_resolve(args.paper_2609_07946_promotion_gate),
         ncf_decision_calibration_path=_resolve(args.ncf_decision_calibration),
     )
     write_snapshot(snapshot, _resolve(args.output))

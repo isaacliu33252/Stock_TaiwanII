@@ -32,6 +32,41 @@ import warnings
 
 from .performance_metrics import PerformanceMetrics, PerformanceResult
 
+# =============================================================================
+# Progress Bar Wrapper (graceful fallback — no hard dependency on tqdm)
+# =============================================================================
+
+def _get_progress_bar(total: int, desc: str = "", disable: bool = False):
+    if disable:
+        class _NoOpBar:
+            def update(self, n: int = 1): pass
+            def set_postfix(self, **kwargs): pass
+            def __enter__(self): return self
+            def __exit__(self, *args): pass
+        return _NoOpBar()
+    try:
+        from tqdm import tqdm as _tqdm
+        class _TqdmWrapper:
+            def __init__(self, total, desc, disable):
+                self._bar = _tqdm(total=total, desc=desc, disable=disable,
+                    bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]')
+            def update(self, n: int = 1): self._bar.update(n)
+            def set_postfix(self, **kwargs): self._bar.set_postfix(**kwargs)
+            def __enter__(self): return self._bar.__enter__()
+            def __exit__(self, *args): self._bar.__exit__(*args)
+        return _TqdmWrapper(total=total, desc=desc, disable=disable)
+    except Exception:
+        class _NoOpBarSilent:
+            def update(self, n: int = 1): pass
+            def set_postfix(self, **kwargs): pass
+            def __enter__(self): return self
+            def __exit__(self, *args): pass
+        return _NoOpBarSilent()
+
+
+
+
+
 
 # =============================================================================
 # 回測配置
@@ -214,7 +249,7 @@ class BacktestEngine:
         price: float,
         date: str,
         target_shares: int = 0
-    ) -> Tuple[int, float, float, float]:
+    ) -> Tuple[int, float, float, float, float]:
         """
         執行交易
         
@@ -225,12 +260,14 @@ class BacktestEngine:
             target_shares: 目標買入股數（用於大額買入，如 action 5=BUY_3000, 7=BUY_5000）
             
         返回:
-            (shares, turnover, commission, tax)
+            (shares, turnover, commission, tax, pnl_realized)
+            - pnl_realized: 已實現損益（僅 sell/close/stop_loss 時有意義）
         """
         shares = 0
         turnover = 0.0
         commission = 0.0
         tax = 0.0
+        pnl_realized = 0.0
 
         # 涨跌停檢查（台股规则：±10%）
         if self.current_step > 0:
@@ -239,7 +276,7 @@ class BacktestEngine:
             if price > limit_up or price < limit_down:
                 if not self.config.allow_limit_up_trade:
                     # 超出涨跌停，不允許交易
-                    return shares, turnover, commission, tax
+                    return shares, turnover, commission, tax, pnl_realized
 
         if action == 'buy':
             # 計算最大可買數量
@@ -293,6 +330,10 @@ class BacktestEngine:
                 commission = turnover * self.config.brokerage_fee_rate
                 tax = turnover * self.config.transaction_tax_rate
 
+                # 計算已實現損益
+                cost_basis = abs(shares) * self.avg_cost
+                pnl_realized = (turnover - commission - tax) - cost_basis
+
                 self.cash += (turnover - commission - tax)
                 self.position = 0
                 self.avg_cost = 0
@@ -306,11 +347,15 @@ class BacktestEngine:
                 commission = turnover * self.config.brokerage_fee_rate
                 tax = turnover * self.config.transaction_tax_rate  # 交易稅需計入（台股規則）
 
+                # 計算已實現損益
+                cost_basis = abs(shares) * self.avg_cost
+                pnl_realized = (turnover - commission - tax) - cost_basis
+
                 self.cash += (turnover - commission - tax)
                 self.position = 0
                 self.avg_cost = 0
 
-        return shares, turnover, commission, tax
+        return shares, turnover, commission, tax, pnl_realized
     
     def run_with_model(self, model, deterministic: bool = True) -> PerformanceResult:
         """
@@ -325,96 +370,108 @@ class BacktestEngine:
         """
         self.reset()
         
-        from FinRL.v2.environments import TaiwanStockTradingEnv
+        from v2.environments import TaiwanStockTradingEnv
         env = TaiwanStockTradingEnv(self.df)
         
         obs, _ = env.reset()
-        
-        for step in range(len(self.df)):
-            action, _ = model.predict(obs, deterministic=deterministic)
+
+        n_steps = len(self.df)
+        pbar = _get_progress_bar(n_steps, desc="Backtesting (model)", disable=not self.config.verbose)
+        try:
+            if hasattr(pbar, '__enter__'):
+                pbar.__enter__()
+            for step in range(n_steps):
+                pbar.update(1)
+                action, _ = model.predict(obs, deterministic=deterministic)
             
-            current_data = self.df.iloc[step]
-            price = current_data['close']
+                current_data = self.df.iloc[step]
+                price = current_data['close']
             
-            # 更新 current_step（用於涨跌停判斷等內部狀態追蹤）
-            self.current_step = step
+                # 更新 current_step（用於涨跌停判斷等內部狀態追蹤）
+                self.current_step = step
             
-            # 執行交易 - 轉換 RL action 為交易動作
-            # Action: 0=HOLD, 1=BUY_1000, 2=SELL_1000, 3=CLOSE, 4=STOP_LOSS, 5=BUY_3000, 6=SELL_3000, 7=BUY_5000, 8=SELL_5000
-            trade_action = 'hold'
-            target_shares = 0
-            
-            if action == 0:
+                # 執行交易 - 轉換 RL action 為交易動作
+                # Action: 0=HOLD, 1=BUY_1000, 2=SELL_1000, 3=CLOSE, 4=STOP_LOSS, 5=BUY_3000, 6=SELL_3000, 7=BUY_5000, 8=SELL_5000
                 trade_action = 'hold'
-            elif action == 1:  # BUY_1000
-                trade_action = 'buy'
-                target_shares = 1000
-            elif action == 5:  # BUY_3000
-                trade_action = 'buy'
-                target_shares = 3000
-            elif action == 7:  # BUY_5000
-                trade_action = 'buy'
-                target_shares = 5000
-            elif action == 2:  # SELL_1000
-                trade_action = 'sell'
-                target_shares = 1000
-            elif action == 6:  # SELL_3000
-                trade_action = 'sell'
-                target_shares = 3000
-            elif action == 8:  # SELL_5000
-                trade_action = 'sell'
-                target_shares = 5000
-            elif action == 3:  # CLOSE_POSITION
-                trade_action = 'close'
-            elif action == 4:  # STOP_LOSS
-                trade_action = 'stop_loss'
+                target_shares = 0
             
-            shares, turnover, commission, tax = self._execute_trade(
-                trade_action, price, str(current_data['date']), target_shares
-            )
+                if action == 0:
+                    trade_action = 'hold'
+                elif action == 1:  # BUY_1000
+                    trade_action = 'buy'
+                    target_shares = 1000
+                elif action == 5:  # BUY_3000
+                    trade_action = 'buy'
+                    target_shares = 3000
+                elif action == 7:  # BUY_5000
+                    trade_action = 'buy'
+                    target_shares = 5000
+                elif action == 2:  # SELL_1000
+                    trade_action = 'sell'
+                    target_shares = 1000
+                elif action == 6:  # SELL_3000
+                    trade_action = 'sell'
+                    target_shares = 3000
+                elif action == 8:  # SELL_5000
+                    trade_action = 'sell'
+                    target_shares = 5000
+                elif action == 3:  # CLOSE_POSITION
+                    trade_action = 'close'
+                elif action == 4:  # STOP_LOSS
+                    trade_action = 'stop_loss'
             
-            # 記錄交易
-            if shares != 0:
-                trade = TradeRecord(
-                    date=str(current_data['date']),
-                    action=action,
-                    price=price,
-                    shares=shares,
-                    turnover=turnover,
-                    commission=commission,
-                    tax=tax,
-                    position_after=self.position,
-                    cash_after=self.cash,
+                shares, turnover, commission, tax, pnl_realized = self._execute_trade(
+                    trade_action, price, str(current_data['date']), target_shares
                 )
-                self.trade_records.append(trade)
-            
-            # 記錄每日狀態
-            total_value = self.cash + self.position * price
-            if step == 0:
-                # 第一天：相對於初始資金的回报率
-                daily_return = (total_value - self.config.initial_capital) / self.config.initial_capital
-            else:
-                daily_return = (total_value - self._get_prev_value()) / self._get_prev_value()
-            
-            daily = DailyRecord(
-                date=str(current_data['date']),
-                close=price,
-                position=self.position,
-                cash=self.cash,
-                total_value=total_value,
-                daily_return=daily_return,
-                unrealized_pnl=self.position * (price - self.avg_cost) if self.position > 0 else 0,
-            )
-            self.daily_records.append(daily)
 
-            # 更新前一日收盤價（用於下一日的涨跌停判斷）
-            self.prev_close = price
-
-            obs, _, terminated, _, _ = env.step(action)
+                # 記錄交易
+                if shares != 0:
+                    trade = TradeRecord(
+                        date=str(current_data['date']),
+                        action=action,
+                        price=price,
+                        shares=shares,
+                        turnover=turnover,
+                        commission=commission,
+                        tax=tax,
+                        position_after=self.position,
+                        cash_after=self.cash,
+                        pnl_realized=pnl_realized,
+                    )
+                    self.trade_records.append(trade)
             
-            if terminated:
-                break
-        
+                # 記錄每日狀態
+                total_value = self.cash + self.position * price
+                if step == 0:
+                    # 第一天：相對於初始資金的回报率
+                    daily_return = (total_value - self.config.initial_capital) / self.config.initial_capital
+                else:
+                    daily_return = (total_value - self._get_prev_value()) / self._get_prev_value()
+            
+                daily = DailyRecord(
+                    date=str(current_data['date']),
+                    close=price,
+                    position=self.position,
+                    cash=self.cash,
+                    total_value=total_value,
+                    daily_return=daily_return,
+                    unrealized_pnl=self.position * (price - self.avg_cost) if self.position > 0 else 0,
+                )
+                self.daily_records.append(daily)
+
+                # 更新前一日收盤價（用於下一日的涨跌停判斷）
+                self.prev_close = price
+
+                obs, _, terminated, _, _ = env.step(action)
+            
+                if terminated:
+                    break
+        finally:
+            try:
+                if hasattr(pbar, '__exit__'):
+                    pbar.__exit__(None, None, None)
+            except Exception:
+                pass
         return self._calculate_results()
     
     def run_with_strategy(
@@ -433,69 +490,82 @@ class BacktestEngine:
             PerformanceResult
         """
         self.reset()
-        
+
         history = []
-        
-        for step in range(len(self.df)):
-            state = self._get_state(step)
-            
-            # 獲取歷史數據（用於策略計算）
-            if len(history) > 0:
-                state['history'] = history[-20:]  # 最近20筆
-            
-            # 調用策略函數
-            action = strategy_func(state, **kwargs)
-            
-            current_data = self.df.iloc[step]
-            price = current_data['close']
-            
-            # 執行交易
-            shares, turnover, commission, tax = self._execute_trade(
-                action, price, str(current_data['date'])
-            )
-            
-            # 記錄交易
-            if shares != 0:
-                trade = TradeRecord(
-                    date=str(current_data['date']),
-                    action=0,  # 簡化，不區分具體動作
-                    price=price,
-                    shares=shares,
-                    turnover=turnover,
-                    commission=commission,
-                    tax=tax,
-                    position_after=self.position,
-                    cash_after=self.cash,
+        n_steps = len(self.df)
+        pbar = _get_progress_bar(n_steps, desc="Backtesting (strategy)", disable=not self.config.verbose)
+        try:
+            if hasattr(pbar, "__enter__"):
+                pbar.__enter__()
+            for step in range(n_steps):
+                pbar.update(1)
+                state = self._get_state(step)
+
+                # 獲取歷史數據（用於策略計算）
+                if len(history) > 0:
+                    state["history"] = history[-20:]  # 最近20筆
+
+                # 調用策略函數
+                action = strategy_func(state, **kwargs)
+
+                current_data = self.df.iloc[step]
+                price = current_data["close"]
+
+                # 執行交易
+                shares, turnover, commission, tax, pnl_realized = self._execute_trade(
+                    action, price, str(current_data["date"])
                 )
-                self.trade_records.append(trade)
-            
-            # 記錄每日狀態
-            total_value = self.cash + self.position * price
-            if step == 0:
-                # 第一天：相對於初始資金的回报率
-                daily_return = (total_value - self.config.initial_capital) / self.config.initial_capital
-            else:
-                daily_return = (total_value - self._get_prev_value()) / self._get_prev_value()
-            
-            daily = DailyRecord(
-                date=str(current_data['date']),
-                close=price,
-                position=self.position,
-                cash=self.cash,
-                total_value=total_value,
-                daily_return=daily_return,
-                unrealized_pnl=self.position * (price - self.avg_cost) if self.position > 0 else 0,
-            )
-            self.daily_records.append(daily)
 
-            # 更新前一日收盤價（用於下一日的涨跌停判斷）
-            self.prev_close = price
+                # 記錄交易
+                if shares != 0:
+                    # 將 action 字串映射為整數代碼（與 run_with_model 一致）
+                    action_code_map = {"buy": 1, "sell": 2, "close": 3, "stop_loss": 4, "hold": 0}
+                    action_code = action_code_map.get(action, 0)
+                    trade = TradeRecord(
+                        date=str(current_data["date"]),
+                        action=action_code,
+                        price=price,
+                        shares=shares,
+                        turnover=turnover,
+                        commission=commission,
+                        tax=tax,
+                        position_after=self.position,
+                        cash_after=self.cash,
+                        pnl_realized=pnl_realized,
+                    )
+                    self.trade_records.append(trade)
 
-            # 更新歷史
-            history.append(state)
+                # 記錄每日狀態
+                total_value = self.cash + self.position * price
+                if step == 0:
+                    # 第一天：相對於初始資金的回报率
+                    daily_return = (total_value - self.config.initial_capital) / self.config.initial_capital
+                else:
+                    daily_return = (total_value - self._get_prev_value()) / self._get_prev_value()
 
+                daily = DailyRecord(
+                    date=str(current_data["date"]),
+                    close=price,
+                    position=self.position,
+                    cash=self.cash,
+                    total_value=total_value,
+                    daily_return=daily_return,
+                    unrealized_pnl=self.position * (price - self.avg_cost) if self.position > 0 else 0,
+                )
+                self.daily_records.append(daily)
+
+                # 更新前一日收盤價（用於下一日的涨跌停判斷）
+                self.prev_close = price
+
+                # 更新歷史
+                history.append(state)
+        finally:
+            try:
+                if hasattr(pbar, "__exit__"):
+                    pbar.__exit__(None, None, None)
+            except Exception:
+                pass
         return self._calculate_results()
-    
     def _get_prev_value(self) -> float:
         """獲取前一日總市值"""
         if len(self.daily_records) > 0:

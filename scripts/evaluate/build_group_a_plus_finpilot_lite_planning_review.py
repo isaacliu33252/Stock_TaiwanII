@@ -15,8 +15,8 @@ from pathlib import Path
 from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_LIVE_SIGNAL = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "live_signal_20260720_estimate.json"
-DEFAULT_REBALANCE_REVIEW = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "rebalance_review_20260720.json"
+DEFAULT_LIVE_SIGNAL = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "live_signal.json"
+DEFAULT_REBALANCE_REVIEW = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "rebalance_review.json"
 DEFAULT_HETEROGENEOUS_VOL = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "heterogeneous_vol_regime_advisory.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "finpilot_lite_planning_review_20260720.json"
 

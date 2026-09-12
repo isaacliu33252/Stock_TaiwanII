@@ -126,6 +126,42 @@ def _jsonable(value: Any) -> Any:
     return value
 
 
+_PROTECTED_LATEST_DIR_PARTS = ("report", "group_a_plus", "latest")
+
+
+def backup_latest_pointer_before_overwrite(target: Any) -> None:
+    """Keep one rolling backup (<name>.json.bak) of the previous content of
+    any report/group_a_plus/latest/*.json production pointer before it gets
+    overwritten.
+
+    Motivated by a real incident (2026-08-09): a verification run of
+    daily_signal.py without --output silently overwrote the live production
+    pointer. This gives a one-step undo path (inspect/restore the .bak)
+    instead of relying purely on remembering to redirect output during
+    testing. Deliberately scoped to just this one directory, not every
+    write call project-wide, and keeps only the single most recent prior
+    version (not a growing history) to keep disk cost bounded and
+    predictable -- see feedback_no_disk_warning_topic in project memory for
+    why unbounded growth here would be unwelcome.
+
+    Public helper: called automatically by write_standard_output() below,
+    and callable directly by scripts that write their own "latest" pointer
+    via Path.write_text() instead of going through write_standard_output.
+    """
+    if not target.exists():
+        return
+    parts = target.resolve().parts
+    if not any(
+        parts[i : i + 3] == _PROTECTED_LATEST_DIR_PARTS for i in range(len(parts) - 2)
+    ):
+        return
+    try:
+        backup = target.with_suffix(target.suffix + ".bak")
+        backup.write_bytes(target.read_bytes())
+    except OSError:
+        pass
+
+
 def write_standard_output(payload: dict[str, Any], path: str | None = None) -> None:
     text = json.dumps(payload, ensure_ascii=False, indent=2)
     if path:
@@ -133,6 +169,7 @@ def write_standard_output(payload: dict[str, Any], path: str | None = None) -> N
 
         target = Path(path)
         target.parent.mkdir(parents=True, exist_ok=True)
+        backup_latest_pointer_before_overwrite(target)
         target.write_text(text, encoding="utf-8")
     else:
         sys.stdout.write(text + "\n")

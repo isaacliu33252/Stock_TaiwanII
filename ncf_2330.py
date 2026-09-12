@@ -99,6 +99,7 @@ from ncf_external_cache import fetch_yf_close_cached
 
 TICKER = "2330.TW"
 DEFAULT_OUTPUT = PROJECT_ROOT / "results" / f"ncf_2330_{datetime.now().strftime('%Y%m%d')}.json"
+FAST_MODELS = False
 
 # ── Dividend handling ───────────────────────────────────────────────────────
 # external_market_ohlcv (2330.TW's OHLCV source; see load_data()) has NO
@@ -1755,6 +1756,9 @@ def train_classifier(
                                               l2_leaf_reg=3.0, thread_count=2,
                                               random_seed=42, verbose=False)
 
+    if FAST_MODELS:
+        base_defs = {name: base_defs[name] for name in ("rf", "et", "hgb", "gb") if name in base_defs}
+
     BASE_NAMES = list(base_defs.keys())
 
     class _ConstantClassifier:
@@ -2177,6 +2181,8 @@ def _expanding_model_ensemble_weights(
 
 
 def main() -> None:
+    global FAST_MODELS
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", default=str(DB_PATH))
     parser.add_argument("--ticker", default=TICKER)
@@ -2241,7 +2247,13 @@ def main() -> None:
         "--full-panel", action="store_true",
         help="Extend the panel to include the unlabeled tail without forward labels.",
     )
+    parser.add_argument(
+        "--fast-models",
+        action="store_true",
+        help="Use only RF/ET/HGB/GB classifiers for faster daily reruns.",
+    )
     args = parser.parse_args()
+    FAST_MODELS = bool(args.fast_models)
     if args.no_tbrain_features:
         FEATURES[:] = [feature for feature in FEATURES if feature not in set(TBRAIN_FEATURES)]
     if args.no_fourier_features:

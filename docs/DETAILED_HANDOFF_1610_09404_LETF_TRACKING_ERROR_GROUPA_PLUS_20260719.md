@@ -385,7 +385,7 @@ Updated files:
 
 ## Current Open Limits
 
-The artifact intentionally remains blocked because:
+Historical 2026-07-20 limits:
 
 - realized effective-fee proxy is not independently validated;
 - `00632R` hedge neutrality is not promoted into live order logic;
@@ -394,20 +394,123 @@ The artifact intentionally remains blocked because:
 - broker reconciliation remains a separate blocker for live orders;
 - latest data for 2026-07-20 estimate still ends at 2026-07-17.
 
-## Next Step Candidates
+Current 2026-08-29 limits:
 
-Only after newer market data is available:
+- The latest available LETF readiness artifact has refreshed through
+  `2026-08-28`, so the old 2026-07-20 data-staleness item is closed.
+- The substantive blockers remain open: effective-fee proxy validation, live
+  hedge policy validation, 00631L tracking-error/variance gates, 00632R
+  left-tail tracking-error gate, and the explicit no-pair-trade policy.
 
-1. Re-run data refresh and daily pipeline for a true 2026-07-20 market close.
-2. Re-run LETF readiness and compare whether `00631L` 30d tracking-error drag
-   persists.
-3. Keep `00632R` blocked unless a separate live hedge policy validates sizing,
-   execution cost, hedge decay, and broker holdings reconciliation.
-4. Do not change `Golden1_0531` based on this paper alone.
+## 2026-08-29 Refresh: 2026-08-31 Latest Strategy Preview
+
+Purpose:
+
+- Re-check whether the paper's LETF tracking-error framework changes the
+  2026-08-31 GroupA+ latest-strategy preview after the 2026-08-28 data refresh.
+
+Inputs:
+
+- `report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json`
+- `results/group_a_plus_latest_strategy_predict_20260831_from_20260828_total1000000.json`
+
+Latest-strategy preview weights for 1,000,000 TWD:
+
+- `0050.TW`: `47.0000%`
+- `00631L.TW`: `10.0388%`
+- `00632R.TW`: `16.4782%`
+- `00679B.TWO`: `0.0000%`
+- `cash`: `26.4830%`
+
+LETF readiness status:
+
+- `as_of = 2026-08-28`
+- `actual_data_end = 2026-08-28`
+- `status = blocked`
+- `allow_00631l_add = false`
+- `allow_00632r_open = false`
+- `target_weight_change_allowed = false`
+- `auto_rebalance_allowed = false`
+
+Failed readiness checks:
+
+- `00631l_30d_mean_tracking_error_floor`:
+  `-0.005443384995685611 < -0.003`
+- `00631l_30d_p05_tracking_error_floor`:
+  `-0.06726248295164249 < -0.05`
+- `00631l_30d_latest_realized_variance_ceiling`:
+  `0.01674647848524199 > 0.01`
+- `00632r_30d_p05_tracking_error_floor`:
+  `-0.04179082076309815 < -0.03`
+- `effective_fee_proxy_independently_validated = false`
+- `live_hedge_policy_validated = false`
+
+Passed checks that still do not unlock trading:
+
+- `00631l_30d_latest_tracking_error_floor`:
+  `-0.010601223372096472 >= -0.02`
+- `00632r_60d_abs_beta_error_ceiling`:
+  `0.012952470882646505 <= 0.10`
+- `00632r_60d_correlation_ceiling`:
+  `-0.9848231951491087 <= -0.95`
+
+Decision:
+
+- The paper supports the current LETF caution layer.
+- The paper does not justify adding `00631L`.
+- The paper does not justify opening `00632R`.
+- The paper does not justify importing the LETF pair trade.
+- Keep the daily `letf_tracking_error_effective_fee_readiness_review` as a
+  blocker/monitor only.
+- If latest-strategy preview weights and LETF readiness disagree, do not treat
+  this paper as an alpha override. It is governance evidence only.
+
+## Re-Run / Re-Open Rules
+
+Do not re-run the 2026-07-20 review commands by default. The relevant current
+artifact is already refreshed to `2026-08-28`.
+
+Re-open this paper only if one of these happens:
+
+1. New market data materially changes the LETF readiness gates after a normal
+   daily pipeline run.
+2. A separate live hedge policy validation task is approved for `00632R`.
+3. A separate effective-fee proxy validation task demonstrates reliable
+   20/30-day left-tail overlap.
+4. A GroupA+ decision explicitly asks whether a LETF allocation should be
+   blocked or reduced, not whether the paper creates a new alpha signal.
+
+Standing rule: do not change `Golden1_0531`, latest strategy weights, or live
+orders based on this paper alone.
 
 ## Bottom Line
 
 The paper has useful ideas, but the only safe GroupA+ import is a research-only
-LETF tracking-error/effective-fee readiness gate. Current output supports the
-same operational decision: no `00631L` add, no `00632R` hedge, no auto rebalance,
-and no change to `Golden1_0531`.
+LETF tracking-error/effective-fee readiness gate. The 2026-08-29 refresh keeps
+the same operational decision for the 2026-08-31 latest-strategy preview: no
+paper-driven `00631L` add, no paper-driven `00632R` hedge, no LETF pair trade,
+no auto rebalance, and no change to `Golden1_0531`.
+
+## Final Archive Decision
+
+Decision date: `2026-08-29`.
+
+All GroupA+ import experiments for this paper are complete. The best final
+state is documentation plus the existing daily shadow blocker.
+
+Preserve:
+
+- `letf_tracking_error_effective_fee_readiness_review`;
+- 00631L tracking-error, volatility-decay, and holding-horizon diagnostics;
+- 00632R hedge-neutrality and left-tail tracking-error diagnostics;
+- effective-fee proxy validation as a hard blocker;
+- live hedge policy validation as a hard blocker.
+
+Do not do by default:
+
+- do not re-run old 2026-07-20 commands;
+- do not train a new model from this paper;
+- do not import commodity LETF parameters;
+- do not import double-short or long/inverse LETF pair trades;
+- do not use this paper as an alpha override;
+- do not change latest-strategy weights or live orders from this paper alone.

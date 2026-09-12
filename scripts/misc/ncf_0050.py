@@ -84,6 +84,7 @@ from ncf_external_cache import fetch_yf_close_cached
 
 TICKER = "0050.TW"
 DEFAULT_OUTPUT = PROJECT_ROOT / "results" / f"ncf_0050_{datetime.now().strftime('%Y%m%d')}.json"
+FAST_MODELS = False
 TBRAIN_FEATURES = tbrain_feature_columns()
 FOURIER_FEATURES = fourier_feature_columns()
 GLOBAL_FEATURES = global_feature_columns()
@@ -1932,6 +1933,9 @@ def train_classifier(
             except Exception:
                 pass  # keep default if params invalid
 
+    if FAST_MODELS:
+        base_defs = {name: base_defs[name] for name in ("rf", "et", "hgb", "gb") if name in base_defs}
+
     BASE_NAMES = list(base_defs.keys())
 
     # ── TabNet (optional deep tabular model) ───────────────────────────────────
@@ -2337,6 +2341,8 @@ def train_classifier(
 
 
 def main() -> None:
+    global FAST_MODELS
+
     global _HAS_TABNET
 
     parser = argparse.ArgumentParser(description=__doc__)
@@ -2416,7 +2422,13 @@ def main() -> None:
         action="store_true",
         help="Disable optional TabNet classifier training for faster daily panel generation.",
     )
+    parser.add_argument(
+        "--fast-models",
+        action="store_true",
+        help="Use only RF/ET/HGB/GB classifiers for faster daily reruns.",
+    )
     args = parser.parse_args()
+    FAST_MODELS = bool(args.fast_models)
     if args.no_tabnet:
         _HAS_TABNET = False
     use_tbrain_features = bool(args.tbrain_features and not args.no_tbrain_features)

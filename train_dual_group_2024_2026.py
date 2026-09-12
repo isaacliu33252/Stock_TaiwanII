@@ -2745,6 +2745,7 @@ class PortfolioEnv(gym.Env):
         self.dividend_reinvestment_history = []
         self.pva_sigmoid_count = 0
         self.pva_sigmoid_history = []
+        self.daily_target_weight_history = []
         self.sjm_state_history = []
         self.inverse_holding_days = 0
         self.inverse_cooldown_active = False
@@ -2753,10 +2754,13 @@ class PortfolioEnv(gym.Env):
         return self._get_obs(), {}
 
     def step(self, action):
+        decision_date = self.date_strings[self.step_idx]
         decision_prices = self.close_price_array[self.step_idx]
         value_before = self._mark_weights(decision_prices)
+        decision_weights = self.weights.copy()
         base_target_weights = self._target_weights(int(action))
         target_weights = base_target_weights.copy()
+        candidate_target_weights = base_target_weights.copy()
         pva_allowed, sjm_state, sjm_details = self._pva_overlay_allowed()
         pva_details = None
         pva_state_weight = 0.0
@@ -2774,8 +2778,10 @@ class PortfolioEnv(gym.Env):
             }
         )
         trade_idx = self.step_idx + 1
+        execution_date = self.date_strings[trade_idx]
         execution_prices = self.open_price_array[trade_idx]
         execution_value_before = self._mark_weights(execution_prices)
+        execution_pre_trade_weights = self.weights.copy()
         if pva_allowed:
             pva_state_weight = self._pva_state_blend_weight(sjm_state)
             candidate_target_weights, pva_details = self._pva_risk_scaled_weights(
@@ -2802,12 +2808,14 @@ class PortfolioEnv(gym.Env):
         turnover = float(np.abs(target_weights - self.weights).sum())
         needs_rebalance = turnover > 1e-6
 
+        executed_trade = False
         if needs_rebalance and (
             bool(inverse_rule["force_rebalance"])
             or self.step_idx - self.last_rebalance_idx >= self.min_rebalance_days
         ):
             fees = self._rebalance(target_weights, execution_prices)
             if fees > 0:
+                executed_trade = True
                 self.trade_count += 1
                 self.last_rebalance_idx = trade_idx
                 self.fees_paid += fees
@@ -2858,10 +2866,62 @@ class PortfolioEnv(gym.Env):
             self.fees_paid += dividend_fees
         close_prices = self.close_price_array[self.step_idx]
         value_after = self._mark_weights(close_prices)
+        close_weights = self.weights.copy()
         if self.group_a_triplet and self._current_inverse_weight() <= 1e-6:
             self.inverse_holding_days = 0
         self.peak_value = max(self.peak_value, value_after)
         self.equity_curve.append(value_after)
+        self.daily_target_weight_history.append(
+            {
+                "decision_date": decision_date,
+                "execution_date": execution_date,
+                "step_idx": int(trade_idx),
+                "action": int(action),
+                "action_label": _action_label_for_context(
+                    int(action),
+                    self.profile_name,
+                    self.group_a_triplet,
+                    self.group_a_action_schema,
+                ),
+                "decision_value_before": float(value_before),
+                "execution_value_before": float(execution_value_before),
+                "close_value_after": float(value_after),
+                "daily_return": float(value_after / max(value_before, 1.0) - 1.0),
+                "decision_weights": _weights_to_dict(self.tickers, decision_weights),
+                "execution_pre_trade_weights": _weights_to_dict(self.tickers, execution_pre_trade_weights),
+                "base_target_weights": _weights_to_dict(self.tickers, base_target_weights),
+                "candidate_target_weights": _weights_to_dict(self.tickers, candidate_target_weights),
+                "final_target_weights": _weights_to_dict(self.tickers, target_weights),
+                "close_weights": _weights_to_dict(self.tickers, close_weights),
+                "decision_cash_weight": float(max(0.0, 1.0 - float(decision_weights.sum()))),
+                "execution_pre_trade_cash_weight": float(max(0.0, 1.0 - float(execution_pre_trade_weights.sum()))),
+                "final_target_cash_weight": float(max(0.0, 1.0 - float(target_weights.sum()))),
+                "close_cash_weight": float(max(0.0, self.cash) / max(value_after, 1.0)),
+                "turnover": float(turnover),
+                "needs_rebalance": bool(needs_rebalance),
+                "executed_trade": bool(executed_trade),
+                "rebalance_fees": float(fees),
+                "dca_fees": float(dca_fees),
+                "dividend_fees": float(dividend_fees),
+                "execution_source": execution_source,
+                "sjm_state": sjm_state,
+                "sjm_details": sjm_details,
+                "pva_allowed": bool(pva_allowed),
+                "pva_state_weight": float(pva_state_weight),
+                "pva_drift": float(pva_drift),
+                "pva_details": pva_details,
+                "risk_gate": gate_info,
+                "inverse_rule": {
+                    "force_rebalance": bool(inverse_rule["force_rebalance"]),
+                    "reason": inverse_rule["reason"],
+                    "holding_inverse": bool(inverse_rule["holding_inverse"]),
+                    "current_inverse_weight": float(inverse_rule["current_inverse_weight"]),
+                    "inverse_holding_days": int(inverse_rule["inverse_holding_days"]),
+                    "inverse_cooldown_active": bool(inverse_rule["inverse_cooldown_active"]),
+                    "override_active": bool(inverse_rule.get("override_active", False)),
+                },
+            }
+        )
 
         daily_return = value_after / max(value_before, 1.0) - 1
 
@@ -3265,6 +3325,7 @@ def _backtest_group(
         "dca_purchase_history": env.dca_purchase_history,
         "pva_sigmoid_history": env.pva_sigmoid_history,
         "inverse_forced_exit_history": env.inverse_forced_exit_history,
+        "daily_target_weight_history": env.daily_target_weight_history,
         "sjm_state_history": env.sjm_state_history,
         "sjm_state_counts": {
             state: int(sum(1 for item in env.sjm_state_history if item.get("state") == state))
@@ -3318,6 +3379,11 @@ def main():
         "--group-a-resume-model",
         default=None,
         help="Optional existing Group A PPO model checkpoint (.zip or model name) to continue training from",
+    )
+    parser.add_argument(
+        "--group-a-backtest-only-model",
+        default=None,
+        help="Optional existing Group A PPO model checkpoint (.zip or model name) to backtest without training",
     )
     parser.add_argument(
         "--group-a-action-schema",
@@ -3481,6 +3547,9 @@ def main():
         download_end = args.backtest_end
 
     group_a_resume_model_path = _resolve_model_checkpoint(args.group_a_resume_model)
+    group_a_backtest_only_model_path = _resolve_model_checkpoint(args.group_a_backtest_only_model)
+    if group_a_resume_model_path is not None and group_a_backtest_only_model_path is not None:
+        raise ValueError("--group-a-resume-model and --group-a-backtest-only-model cannot be used together")
 
     groups = _load_groups_from_workbook(xlsx_path)
     group_a_tickers = groups["group_a"] or DEFAULT_GROUP_A_TICKERS
@@ -3488,8 +3557,8 @@ def main():
     group_a_profile = _resolve_group_a_profile(args.group_a_profile)
     group_a_action_schema = infer_group_a_action_schema(
         model_name=(
-            group_a_resume_model_path.stem
-            if group_a_resume_model_path is not None
+            (group_a_backtest_only_model_path or group_a_resume_model_path).stem
+            if (group_a_backtest_only_model_path or group_a_resume_model_path) is not None
             else args.group_a_model_name
         ),
         action_schema=args.group_a_action_schema,
@@ -3533,6 +3602,8 @@ def main():
     print(f"Group A action schema: {group_a_action_schema}")
     if group_a_resume_model_path is not None:
         print(f"Group A resume model: {group_a_resume_model_path}")
+    if group_a_backtest_only_model_path is not None:
+        print(f"Group A backtest-only model: {group_a_backtest_only_model_path}")
     print(f"Group A PPO learning rate: {group_a_profile['ppo']['learning_rate']:g}")
     print(f"Group A DJI 5 特徵: {use_group_a_dji_features}")
     print(f"Group A 00631L 上限: {group_a_profile['env']['leverage_cap']:.2%}")
@@ -3722,20 +3793,37 @@ def main():
                     "dca_day": int(args.group_a_dca_day),
                 }
             )
-        model_a, train_panel_a = _train_group(
-            stock_data,
-            group_a_tickers,
-            args.train_start,
-            args.train_end,
-            args.group_a_model_name,
-            shared_feature_cols=group_a_shared_feature_cols,
-            initial_cash=args.initial_cash,
-            timesteps=args.timesteps,
-            seed=args.seed,
-            resume_model_path=group_a_resume_model_path,
-            env_kwargs=group_a_train_env_kwargs,
-            ppo_kwargs=group_a_profile["ppo"],
-        )
+        if group_a_backtest_only_model_path is not None:
+            train_panel_a = _align_panel(
+                stock_data,
+                group_a_tickers,
+                args.train_start,
+                args.train_end,
+                shared_feature_cols=group_a_shared_feature_cols,
+            )
+            train_env = PortfolioEnv(
+                train_panel_a,
+                group_a_tickers,
+                shared_feature_cols=group_a_shared_feature_cols,
+                initial_cash=args.initial_cash,
+                **group_a_train_env_kwargs,
+            )
+            model_a = PPO.load(str(group_a_backtest_only_model_path), env=train_env)
+        else:
+            model_a, train_panel_a = _train_group(
+                stock_data,
+                group_a_tickers,
+                args.train_start,
+                args.train_end,
+                args.group_a_model_name,
+                shared_feature_cols=group_a_shared_feature_cols,
+                initial_cash=args.initial_cash,
+                timesteps=args.timesteps,
+                seed=args.seed,
+                resume_model_path=group_a_resume_model_path,
+                env_kwargs=group_a_train_env_kwargs,
+                ppo_kwargs=group_a_profile["ppo"],
+            )
         result_a = _backtest_group(
             model_a,
             stock_data,
@@ -3791,6 +3879,9 @@ def main():
         "group_filter": args.group_filter,
         "group_a_profile": args.group_a_profile,
         "group_a_resume_model": str(group_a_resume_model_path) if group_a_resume_model_path is not None else None,
+        "group_a_backtest_only_model": (
+            str(group_a_backtest_only_model_path) if group_a_backtest_only_model_path is not None else None
+        ),
         "group_a_action_schema": group_a_action_schema,
         "group_a_ppo_config": {
             "learning_rate": float(group_a_profile["ppo"]["learning_rate"]),
@@ -3915,6 +4006,9 @@ def main():
             "train_end": args.train_end,
             "profile": args.group_a_profile,
             "resume_model": str(group_a_resume_model_path) if group_a_resume_model_path is not None else None,
+            "backtest_only_model": (
+                str(group_a_backtest_only_model_path) if group_a_backtest_only_model_path is not None else None
+            ),
             "action_schema": group_a_action_schema,
             "ppo_config": {
                 "learning_rate": float(group_a_profile["ppo"]["learning_rate"]),

@@ -16,8 +16,8 @@ from typing import Any
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_LIVE_SIGNAL = PROJECT_ROOT / "report/group_a_plus/latest/live_signal_20260720_estimate.json"
-DEFAULT_REBALANCE_REVIEW = PROJECT_ROOT / "report/group_a_plus/latest/rebalance_review_20260720.json"
+DEFAULT_LIVE_SIGNAL = PROJECT_ROOT / "report/group_a_plus/latest/live_signal.json"
+DEFAULT_REBALANCE_REVIEW = PROJECT_ROOT / "report/group_a_plus/latest/rebalance_review.json"
 DEFAULT_OPTION_STATE = PROJECT_ROOT / "report/group_a_plus/latest/option_state_coverage_review.json"
 DEFAULT_ADVERSARIAL = PROJECT_ROOT / "report/group_a_plus/latest/adversarial_market_integrity_review.json"
 DEFAULT_SCIPHYRL = PROJECT_ROOT / "report/group_a_plus/latest/sciphyrl_readiness_review.json"

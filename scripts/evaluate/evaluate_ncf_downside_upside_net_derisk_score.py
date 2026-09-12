@@ -164,6 +164,38 @@ def _simulate(
     }
 
 
+def _score_behavior_summary(
+    score: pd.Series,
+    golden_mask: pd.Series,
+    forward_gain_h20: pd.Series | None = None,
+) -> dict:
+    aligned_score = score.reindex(golden_mask.index).fillna(0.0)
+    active = (aligned_score > 0.0) & golden_mask
+    diffs = aligned_score[golden_mask].diff().abs().dropna()
+    summary = {
+        "golden1_days_score_gt_0": int(active.sum()),
+        "golden1_score_change_days": int((diffs > 1e-9).sum()),
+        "golden1_mean_abs_score_change": float(diffs.mean()) if not diffs.empty else None,
+        "golden1_max_abs_score_change": float(diffs.max()) if not diffs.empty else None,
+    }
+    if forward_gain_h20 is not None:
+        gains = pd.to_numeric(forward_gain_h20.reindex(golden_mask.index), errors="coerce")
+        active_gains = gains[active]
+        inactive_gains = gains[golden_mask & ~active]
+        summary.update(
+            {
+                "missed_upside_proxy_days": int((active & (gains > 0.0)).sum()),
+                "mean_forward_gain_h20_when_active": (
+                    float(active_gains.mean()) if active_gains.notna().any() else None
+                ),
+                "mean_forward_gain_h20_when_inactive": (
+                    float(inactive_gains.mean()) if inactive_gains.notna().any() else None
+                ),
+            }
+        )
+    return summary
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", default=str(DB_PATH))
@@ -212,6 +244,12 @@ def main() -> None:
     weights_by_regime = dict(report["base_weights"])
     baseline_metrics = dict(report["metrics"])
     golden_mask = execution_regime == "golden1"
+    forward_gain_h20 = None
+    if "forward_gain_h20" in panel_631l.columns:
+        forward_gain_h20 = pd.Series(
+            pd.to_numeric(panel_631l["forward_gain_h20"], errors="coerce").to_numpy(),
+            index=pd.to_datetime(panel_631l["date"], errors="coerce"),
+        ).dropna()
 
     zero_score = pd.Series(0.0, index=frame.index)
     downside_reindexed = downside_series.reindex(frame.index).fillna(0.0)
@@ -236,6 +274,8 @@ def main() -> None:
             },
             "mean_score_on_golden1_days": float(score[golden_mask].mean()) if golden_mask.any() else None,
             "days_score_gt_0": int((score > 0.0).sum()),
+            "simulation": sim,
+            "score_behavior": _score_behavior_summary(score, golden_mask, forward_gain_h20),
         }
 
     payload = {

@@ -511,12 +511,16 @@ def build_continuous_targets(
     tilt_frame: pd.DataFrame,
     report: dict[str, Any],
     a207_weights: pd.DataFrame | None = None,
+    defensive_endpoint: dict[str, float] | None = None,
 ) -> pd.DataFrame:
     golden1 = {key: float(value) for key, value in report["base_weights"]["golden1"].items()}
-    defensive_adj = dict(_normalize(DEFENSIVE_BASKETS["bond30_cash30"]))
-    freed_from_cash = MIN_00631L_FLOOR - float(defensive_adj.get("00631L.TW", 0.0))
-    defensive_adj["00631L.TW"] = MIN_00631L_FLOOR
-    defensive_adj["cash"] = float(defensive_adj.get("cash", 0.0)) - freed_from_cash
+    if defensive_endpoint is None:
+        defensive_adj = dict(_normalize(DEFENSIVE_BASKETS["bond30_cash30"]))
+        freed_from_cash = MIN_00631L_FLOOR - float(defensive_adj.get("00631L.TW", 0.0))
+        defensive_adj["00631L.TW"] = MIN_00631L_FLOOR
+        defensive_adj["cash"] = float(defensive_adj.get("cash", 0.0)) - freed_from_cash
+    else:
+        defensive_adj = dict(_normalize(defensive_endpoint))
 
     rows: list[dict[str, float]] = []
     floor_active: list[bool] = []
@@ -556,6 +560,8 @@ def evaluate(
     tilt_update_freq_days: int = 1,
     weights: dict[str, float] | None = None,
     warmup_days: int = 0,
+    defensive_endpoint: dict[str, float] | None = None,
+    defensive_endpoint_name: str = "bond30_cash30_plus_00631l_floor",
 ) -> dict[str, Any]:
     report, frame = run_a2118(
         start=start,
@@ -590,6 +596,7 @@ def evaluate(
         tilt_frame,
         report,
         a207_weights=baseline_targets if apply_regime_floor else None,
+        defensive_endpoint=defensive_endpoint,
     )
     continuous_targets_banded = _apply_no_trade_band(continuous_targets, "00631L.TW", no_trade_band)
     continuous_targets_banded = _apply_no_trade_band(continuous_targets_banded, "0050.TW", no_trade_band)
@@ -622,6 +629,8 @@ def evaluate(
         "no_trade_band": no_trade_band,
         "weights_used": weights if weights is not None else DEFAULT_WEIGHTS,
         "min_00631l_floor": MIN_00631L_FLOOR,
+        "defensive_endpoint_name": defensive_endpoint_name,
+        "defensive_endpoint": defensive_endpoint,
         "apply_regime_floor": apply_regime_floor,
         "regime_floor_active_days": int(continuous_targets.attrs.get("regime_floor_active_days", 0)),
         "cost_multiplier": cost_multiplier,

@@ -1,7 +1,7 @@
 # GroupA+ External Sensitivity Observation Log
 
-- Observations: `7`
-- Valid observations: `6`
+- Observations: `20`
+- Valid observations: `19`
 - Stable observations: `0`
 - Latest trigger-critical exceeded: `['h20_prob_up', 'confidence']`
 

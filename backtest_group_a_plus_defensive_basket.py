@@ -39,6 +39,13 @@ DEFENSIVE_BASKETS = {
     "bond20": {"0050.TW": 0.50, "00631L.TW": 0.10, "00679B.TWO": 0.20, "cash": 0.20},
     "bond40": {"0050.TW": 0.40, "00679B.TWO": 0.40, "cash": 0.20},
     "bond30_cash30": {"0050.TW": 0.40, "00679B.TWO": 0.30, "cash": 0.30},
+    # 2026-08-18 user proposal (arXiv:2601.21447, stock-bond correlation is
+    # time-varying): does 00679B's 30pp allocation inside the *already*
+    # decided-defensive basket actually earn its keep vs just holding more
+    # cash? bond30_cash30 is current live A21.18 defensive basket -- these
+    # two keep 0050 fixed at 40% and only trade off 00679B vs cash.
+    "bond15_cash45": {"0050.TW": 0.40, "00679B.TWO": 0.15, "cash": 0.45},
+    "bond0_cash60": {"0050.TW": 0.40, "00679B.TWO": 0.0, "cash": 0.60},
     "inverse10_bond20": {
         "0050.TW": 0.40,
         "00631L.TW": 0.10,

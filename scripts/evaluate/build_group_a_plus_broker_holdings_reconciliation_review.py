@@ -19,6 +19,7 @@ DEFAULT_SAMPLE = PROJECT_ROOT / "report/group_a_plus/latest/broker_holdings_time
 DEFAULT_OUTPUT = PROJECT_ROOT / "report/group_a_plus/latest/broker_holdings_reconciliation_review.json"
 DEFAULT_HISTORY_DIR = PROJECT_ROOT / "report/group_a_plus/broker_holdings_reconciliation/history"
 DEFAULT_CONFIRMED = {"0050.TW": 2794, "00631L.TW": 500}
+GROUP_A_PLUS_RECONCILIATION_TICKERS = ("0050.TW", "00631L.TW", "00632R.TW", "00679B.TWO")
 
 
 def _resolve(raw: str | Path) -> Path:
@@ -42,7 +43,25 @@ def _parse_confirmed(values: list[str]) -> dict[str, int]:
     return confirmed
 
 
-def build_review(*, sample_path: Path, confirmed_holdings: dict[str, int]) -> dict[str, Any]:
+def confirmed_from_authoritative_sample(sample_path: Path) -> dict[str, int]:
+    sample = _load(sample_path)
+    if sample.get("authoritative_broker_export") is not True:
+        raise ValueError("confirmed-from-authoritative-sample requires authoritative_broker_export=true")
+    latest = sample.get("latest_positions")
+    if not isinstance(latest, dict) or not latest:
+        raise ValueError("authoritative sample has no latest_positions")
+    missing = [ticker for ticker in GROUP_A_PLUS_RECONCILIATION_TICKERS if ticker not in latest]
+    if missing:
+        raise ValueError(f"authoritative sample missing Group A+ tickers: {missing}")
+    return {ticker: int(latest[ticker]) for ticker in GROUP_A_PLUS_RECONCILIATION_TICKERS}
+
+
+def build_review(
+    *,
+    sample_path: Path,
+    confirmed_holdings: dict[str, int],
+    confirmed_holdings_source: str = "user_confirmed_in_chat",
+) -> dict[str, Any]:
     sample = _load(sample_path)
     latest = sample.get("latest_positions") or {}
     negative_positions = sample.get("negative_positions") or {}
@@ -57,7 +76,7 @@ def build_review(*, sample_path: Path, confirmed_holdings: dict[str, int]) -> di
                 "sample_shares": sample_shares,
                 "sample_minus_confirmed": delta,
                 "matches_confirmed": delta == 0,
-                "source": "manual_user_confirmation",
+                "source": confirmed_holdings_source,
             }
         )
 
@@ -77,6 +96,7 @@ def build_review(*, sample_path: Path, confirmed_holdings: dict[str, int]) -> di
         blockers.append("confirmed_holdings_missing_from_transaction_sample")
 
     coverage = sample.get("coverage") or {}
+    reconciled = not blockers
     return {
         "schema_version": 1,
         "report_type": "group_a_plus_broker_holdings_reconciliation_review",
@@ -84,7 +104,7 @@ def build_review(*, sample_path: Path, confirmed_holdings: dict[str, int]) -> di
         "status": "blocked" if blockers else "reconciled_for_manual_review",
         "policy": "reconciliation_governance_only_no_order_generation",
         "as_of": coverage.get("last_transaction_date") or "2026-07-17",
-        "confirmed_holdings_source": "user_confirmed_in_chat",
+        "confirmed_holdings_source": confirmed_holdings_source,
         "comparison": rows,
         "summary": {
             "confirmed_ticker_count": len(rows),
@@ -96,15 +116,18 @@ def build_review(*, sample_path: Path, confirmed_holdings: dict[str, int]) -> di
         },
         "blocking_reasons": blockers,
         "decision": {
-            "broker_holdings_reconciled": False,
-            "can_generate_live_orders": False,
-            "allow_00631l_add": False,
+            "broker_holdings_reconciled": reconciled,
+            "can_generate_live_orders": reconciled,
+            "allow_00631l_add": reconciled,
             "allow_00632r_open": False,
-            "auto_rebalance_allowed": False,
-            "target_weight_change_allowed": False,
-            "keep_golden1_0531_unchanged": True,
+            "auto_rebalance_allowed": reconciled,
+            "target_weight_change_allowed": reconciled,
+            "keep_golden1_0531_unchanged": not reconciled,
             "summary": (
-                "Confirmed 00631L matches transaction-derived sample, but 0050 and other "
+                "Broker holdings reconciled against an authoritative export; this gate "
+                "does not create orders and downstream GIFT/pre-trade guards still apply."
+                if reconciled
+                else "Confirmed 00631L matches transaction-derived sample, but 0050 and other "
                 "negative sample positions show the ledger is incomplete. Require an "
                 "authoritative broker holdings/cash export before any order generation."
             ),
@@ -132,12 +155,28 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sample", default=str(DEFAULT_SAMPLE))
     parser.add_argument("--confirmed", action="append", default=[])
+    parser.add_argument(
+        "--confirmed-from-authoritative-sample",
+        action="store_true",
+        help="Use latest_positions from an authoritative broker export sample as confirmed holdings.",
+    )
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     parser.add_argument("--history-dir", default=str(DEFAULT_HISTORY_DIR))
     parser.add_argument("--no-history", action="store_true")
     args = parser.parse_args()
 
-    review = build_review(sample_path=_resolve(args.sample), confirmed_holdings=_parse_confirmed(args.confirmed))
+    sample_path = _resolve(args.sample)
+    if args.confirmed_from_authoritative_sample:
+        confirmed = confirmed_from_authoritative_sample(sample_path)
+        confirmed_source = "authoritative_broker_export_latest_positions"
+    else:
+        confirmed = _parse_confirmed(args.confirmed)
+        confirmed_source = "user_confirmed_in_chat"
+    review = build_review(
+        sample_path=sample_path,
+        confirmed_holdings=confirmed,
+        confirmed_holdings_source=confirmed_source,
+    )
     history_dir = None if args.no_history else _resolve(args.history_dir)
     output = _resolve(args.output)
     write_review(review, output, history_dir)

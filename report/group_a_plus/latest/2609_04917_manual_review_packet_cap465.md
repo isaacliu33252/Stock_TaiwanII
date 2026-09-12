@@ -1,0 +1,33 @@
+# 2609.04917 Manual Review Packet Cap465
+
+- status: ready_for_manual_review_packet
+- approval_granted: False
+- live_execution_allowed: False
+- actual_data_date: 2026-09-07
+- max_turnover_cap: 0.465
+- bridge_turnover: 0.4649967524898507
+
+## Trade Preview
+
+| ticker | side | current | target | delta | notional |
+| --- | --- | ---: | ---: | ---: | ---: |
+| 00679B.TWO | sell | 5000 | 0 | -5000 | 128100.00 |
+
+## Unresolved Live Blockers
+
+- alpha:external_validity
+- alpha:implementation_realism
+- alpha:risk_benchmark
+- alpha:temporality
+- joint:execution_plan_disallows_execution
+- joint:market_impact_status=blocked
+- joint:turnover_cost_robustness_status=blocked_for_live_promotion
+- market_impact:rebalance_review_disallows_auto_rebalance
+
+## Required Acknowledgements
+
+- This packet is not a signed approval record.
+- The bridge remains shadow-only unless a separate signed approval explicitly authorizes an action.
+- Auto rebalance remains disabled.
+- No 00631L add is included in the reviewed bridge.
+- Joint execution and alpha-translation live promotion gates remain blocked.

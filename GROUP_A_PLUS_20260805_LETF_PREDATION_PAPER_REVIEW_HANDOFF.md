@@ -1,17 +1,19 @@
-# Group A+ 2026-08-05 交接記錄：LETF掠奪論文審查與實測 + 發現execution_plan.json再次踩過期持股雷
+# Group A+ 2026-08-05/06 交接記錄：兩篇論文審查與實測 + execution_plan.json過期持股修復 + market_aligned_sentiment_shadow.json實作
 
-Status: 完整記錄本次對話的工作內容，並記錄一個在準備交接時新發現、與本次對話工作無關但重要的production狀態問題。與同一天稍早的
+Status: 涵蓋08-05到08-06跨日、同一條對話串的完整工作內容，**這是本文件的最終版本**，所有小節都已更新到跟現況一致（不再有「尚未完成」的過期敘述）。與同一天稍早的
 `GROUP_A_PLUS_20260805_TRIPLE_DIRECTION_AUDIT_AND_OPS_FIXES_HANDOFF.md`（三方向研究稽核+兩個真實bug修復+workbook混亂）是**不同session**，本文件不重複那份的內容，只在必要處引用。
 
 ## 目錄
 
 1. 論文審查：arXiv:2608.03703《Preying on Leveraged ETFs》
-2. 實測：00631L/00632R是否對TSMC(2330)造成同樣的收盤拍賣掠奪效應
+2. 實測：00631L/00632R是否對TSMC(2330)/0050造成同樣的收盤拍賣掠奪效應
 3. 執行面討論：兩次成交平均參考價的概念套用在使用者自己手動下單
-4. **新發現的production問題**：execution_plan.json在本次對話期間被重新產生，用的是過期預設workbook持股
+4. production問題：execution_plan.json過期持股（**已修復並確認**）
 5. 本次session的檔案異動清單
 6. 對應memory索引
 7. 未完成/刻意不做的事項
+8. 論文審查：arXiv:2607.28127《FinSMART》+ 現有情緒特徵診斷
+9. **（新增）FinSMART-lite實作：`market_aligned_sentiment_shadow.json`**
 
 ---
 
@@ -61,9 +63,9 @@ Status: 完整記錄本次對話的工作內容，並記錄一個在準備交接
 
 ---
 
-## 4. 新發現的production問題：execution_plan.json再次用到過期預設持股
+## 4. production問題：execution_plan.json再次用到過期預設持股
 
-**這不是本次對話任何操作造成的**，是準備交接記錄時盤點repo現況才發現的，但因為牽涉真實交易決策，必須立刻記錄並告知使用者。
+**發現時不是本次對話任何操作造成的**，是08-05準備交接記錄時盤點repo現況才發現的，因為牽涉真實交易決策，立刻記錄並告知使用者。**08-06已進一步驗證修復方案可行，但尚未把正式檔案寫回正確版本**——見本節末尾「08-06更新」。
 
 **現況**：`report/group_a_plus/latest/execution_plan.json`的`metadata.timestamp`顯示`2026-08-05T16:34:04`——即**本次對話進行期間**，這份檔案被重新產生過。但它的`data.current_holdings`是：
 
@@ -91,6 +93,28 @@ python group_a_plus/operations/execution_plan.py --holdings-json results/group_a
 
 前提是要先確認`taiwan_stock_20260804.xlsx`仍是目前最新（本文件寫成當下確認是），如果之後有更新的workbook要換成對應的holdings-json。
 
+**08-06更新：驗證過修復方案，但刻意沒有覆蓋正式檔案**。重新確認`taiwan_stock_20260804.xlsx`（Aug 4 17:04）仍是最新workbook，用正確的`--holdings-json results/group_a_plus_holdings_20260804.json`重跑：
+
+```
+.venv/bin/python3 -m group_a_plus.operations.execution_plan \
+  --holdings-json results/group_a_plus_holdings_20260804.json \
+  --output results/group_a_plus_execution_plan_v2_20260806_correct_holdings_check.json \
+  --latest-pointer results/group_a_plus_execution_plan_v2_20260806_correct_holdings_check_latest_preview.json
+```
+
+刻意把`--latest-pointer`導向scratch檔案，**沒有**寫回`report/group_a_plus/latest/execution_plan.json`（`execution_plan.py`的`--latest-pointer`預設值就是這個正式路徑，見`feedback_execution_plan_latest_pointer_default_overwrite.md`）。結果跟08-04原始正確版本邏輯一致（股價已更新到08-05收盤，股數略有差異屬正常）：
+
+| 標的 | 動作 | 股數 |
+|---|---|---|
+| 0050 | 賣 | 2,374股（08-04原版為2,371股，差異來自股價更新） |
+| 00631L | 全部賣出 | 800股 |
+| 00679B | 全部賣出 | 3,000股 |
+| 00632R | 買進 | 5,313股（08-04原版為5,002股，差異來自股價更新） |
+
+仍然`execution_allowed: False`、`manual_review_required`，guard原因不變：換手率80.84%超過50%上限、`institutional_0050`資料落後（現在落後到08-06已經2天，查證過是正常盤後資料延遲，不是新問題）。
+
+**現況（08-06最終更新）**：使用者確認後，已執行修復——重新用`--holdings-json results/group_a_plus_holdings_20260804.json`跑`execution_plan.py`（預設`--latest-pointer`，直接寫回正式路徑），`report/group_a_plus/latest/execution_plan.json`**現在是正確版本**（`metadata.timestamp: 2026-08-06T11:14:45`，`current_holdings`正確）。修復前的錯誤版本已備份到scratchpad（`/tmp/.../execution_plan_stale_backup_20260805_1634.json`，不在repo內）。最終交易建議：賣2,374股0050、全部賣出800股00631L、全部賣出3,000股00679B、買進5,313股00632R；`execution_allowed: False`、`manual_review_required`，這次guard只剩換手率80.84%一個原因（`institutional_0050`資料延遲的警示這輪沒有再出現，應是資料已補齊）。**只是重新產生了正式的建議計畫，沒有送出任何真實交易**，是否執行仍是使用者決定。
+
 ---
 
 ## 5. 本次session的檔案異動清單
@@ -98,11 +122,18 @@ python group_a_plus/operations/execution_plan.py --holdings-json results/group_a
 | 檔案 | 性質 |
 |---|---|
 | `scripts/evaluate/letf_close_auction_overshoot_reversal_test.py` | 新增，研究用，read-only查DB+yfinance抓對照組，不寫production DB |
-| `research/shadow/LETF_CLOSE_AUCTION_OVERSHOOT_REVERSAL_TEST_20260805.md` | 新增，實測報告 |
+| `research/shadow/LETF_CLOSE_AUCTION_OVERSHOOT_REVERSAL_TEST_20260805.md` | 新增，實測報告（含0050追加測試） |
 | `research/shadow/_cache/*.csv` | 新增，2317/2412/2454/QQQ/IXIC控制組價格快取，純本地快取檔 |
-| 本檔案 | 新增，交接記錄 |
+| `scripts/evaluate/finsmart_reward_alignment_diagnostic.py` | 新增（08-06，第8節），研究用，read-only |
+| `research/shadow/FINSMART_REWARD_ALIGNMENT_DIAGNOSTIC_20260805.md` | 新增（08-06，第8節），診斷報告 |
+| `results/group_a_plus_execution_plan_v2_20260806_correct_holdings_check.json` + `_latest_preview.json` | 新增（08-06），scratch驗證檔，非正式檔案（保留作對照） |
+| `research/shadow/FINSMART_LITE_MARKET_ALIGNED_SENTIMENT_SHADOW_DESIGN_20260806.md` | 新增（08-06，第9節），設計筆記，已更新為「已實作」狀態 |
+| `scripts/evaluate/build_market_aligned_sentiment_shadow.py` | 新增（08-06，第9節），shadow builder，**有測試** |
+| `tests/test_build_market_aligned_sentiment_shadow.py` | 新增（08-06，第9節），16測試全過 |
+| `report/group_a_plus/latest/market_aligned_sentiment_shadow.json` + `history/2026-08-05.json` | 新增（08-06，第9節），真實資料跑出的shadow產物，未接線 |
+| 本檔案 | 新增+持續更新，交接記錄，本次為最終版本 |
 
-**沒有修改任何production程式碼或既有report/latest/下的檔案**。第4節提到的`execution_plan.json`異動不是本次對話造成的（時間點在對話期間但不是我執行的操作）。
+**本次對話對production的唯一實質異動**：第4節修復`report/group_a_plus/latest/execution_plan.json`（用正確持股重新產生，覆蓋了08-05 16:34那次錯誤重跑），以及第9節新增`report/group_a_plus/latest/market_aligned_sentiment_shadow.json`（全新檔案，非覆蓋，且完全沒被任何既有治理鏈讀取）。**沒有修改任何既有production程式碼邏輯**——所有異動都是新增檔案或修復回正確狀態。
 
 repo working tree裡還有大量**跟本次對話無關**的既有未commit異動（前幾天/今天其他session、每日自動化管線產生的report快照等），本文件不逐一盤點，沿用之前handoff的既有記錄。
 
@@ -110,13 +141,79 @@ repo working tree裡還有大量**跟本次對話無關**的既有未commit異�
 
 ## 6. 對應memory索引
 
-- `project_preying_on_letfs_2608.03703_overshoot_reversal_test_20260805.md`（本次新增，第2節對應）
+- `project_preying_on_letfs_2608.03703_overshoot_reversal_test_20260805.md`（第2節對應）
+- `project_finsmart_2607.28127_reward_alignment_diagnostic_20260805.md`（第8、9節對應，含實作記錄）
+- `reference_20260805_letf_paper_review_and_stale_execution_plan_handoff.md`（本文件的memory索引，已同步更新到最終狀態）
 
 ---
 
 ## 7. 未完成/刻意不做的事項
 
-- **execution_plan.json過期持股問題（第4節）**：發現但沒有修復，留給使用者決定是否要重新產生正確版本，以及要不要進一步查是什麼觸發了16:34那次沒帶`--holdings-json`的重跑（避免下次再犯）。
-- **execution_plan.json原本那筆待決交易本身**（08-04用正確持股產生的版本：賣800股00631L、賣3000股00679B、買5002股00632R避險，因換手率80.84%卡在manual_review_required）：交易與否仍是使用者的決定，沒有被本次對話觸碰或推翻——但**現在這份檔案已經被錯誤持股的版本覆蓋掉了**，如果要參考08-04那個正確版本的建議，需要重新用正確holdings-json產生，或從git歷史/前一份handoff文件裡找回原始數字。
-- **前一session未commit的5個bug修復檔案**：仍未commit，本次對話沒有要求commit。
-- **`institutional_0050`一天延遲的guard新增原因**：只做了初步查證（盤後資料時間差），沒有深入追蹤是否該調整guard的容忍窗口。
+**已解決（保留紀錄）**：
+- **execution_plan.json過期持股問題（第4節）**：08-06已修復並確認，正式檔案現在是正確版本。
+- **FinMind新聞0050子集重複標題dedupe**：第9節已實作並用真實資料重驗（0.2384→0.2299）。
+
+**仍未做**：
+- 沒查出是什麼觸發了08-05 16:34那次沒帶`--holdings-json`的重跑（避免下次再犯——不確定是使用者手動執行還是其他腳本觸發，`execution_plan.py`本來就不在自動化管線裡，理論上只會是手動執行）。
+- **execution_plan.json那筆交易本身**（賣0050+00631L+00679B、買00632R避險，因換手率80%+卡在manual_review_required）：交易與否仍是使用者的決定，沒有被本次對話觸碰或推翻。
+- **前一session未commit的5個bug修復檔案**：仍未commit，使用者08-06明確表示「commit不急」，先擱著。
+- **`institutional_0050`資料延遲的guard原因**：只做了初步查證（盤後資料時間差），沒有深入追蹤是否該調整guard的容忍窗口。
+- **上游`finmind_stock_news_merged_full.jsonl`合併腳本本身的staleness**（停在06-30）：第9節新腳本內部union了`rolling.jsonl`繞過，但沒有修上游合併腳本，之後這個問題還是會再出現。
+- **擴大FinMind分股新聞涵蓋範圍到2330**、**把`market_aligned_sentiment_shadow.json`接進`risk_mechanism_classifier`**：第8、9節都只是設計動機，沒有實作/接線。
+- **重新設計`finbert_sentiment_risk`改用same-day消費方式**：只是記錄在案的研究方向，沒有開始做，也不建議在`market_aligned_sentiment_shadow`更完整驗證前動手。
+- **兩支純研究診斷腳本**(`letf_close_auction_overshoot_reversal_test.py`/`finsmart_reward_alignment_diagnostic.py`)**沒有pytest測試**——刻意維持一次性研究腳本定位；`build_market_aligned_sentiment_shadow.py`則有完整測試，因為它是會被重複執行的builder。
+
+---
+
+## 8.（08-06新增）論文審查：arXiv:2607.28127《FinSMART》+ 現有情緒特徵診斷
+
+使用者提供PDF：`C:\Users\isaac\Downloads\2607.28127.pdf`（Iacovides, Zhou, Mandic, Imperial College London, 2026-07-30, 8頁，短篇）。
+
+**核心論點**：現有財經情緒分析LLM(FinBERT、FinGPT、FinLlama、FinDPO)都是在靜態人工標註資料上訓練，跟市場實際反應脫鉤。FinSMART用GRPO強化學習，直接拿**發布當天個股超額報酬(idiosyncratic alpha，扣大盤)**當reward訓練情緒模型——預測方向對且alpha超過0.5%門檻給+2.0分、方向錯給-1.5分、含糊/漏判給-1.0分，刻意不對稱避免模型collapse成一律中性。關鍵方法論發現：**情緒與「當天」報酬的相關性遠強於「隔天」報酬**（Pearson相關係數0.41→0.03只差一天），訓練用當天報酬當reward，但評估交易報酬時仍用隔天報酬避免look-ahead bias。結果：S&P500多空組合累積報酬264.9% vs FinDPO(現有SOTA)的109.8%，Sharpe 1.97 vs 1.12；每半年retrain可以擴大到406%。運算需求不大：LoRA微調，單張A6000 GPU，8小時。
+
+**可行性查證**：查了repo現有新聞/情緒基礎建設後確認，**完整複製這篇論文（RL微調LLM）目前不可行**：
+- production的`finbert_sentiment`其實不是真FinBERT——預設`--scoring-mode proxy`是純中文關鍵字比對，只有標記為`--scoring-mode model`的路徑才真的呼叫`ProsusAI/finbert`，但不是預設用的（`FinRL/data/sentiment/finbert_market_sentiment_daily.csv`確認100%是`rule_based_finbert_proxy`）。
+- 新聞資料薄：LTN(自由時報)是市場全體混雜新聞、不分股票；FinMind有分股票標籤但**只有標題沒有內文**；跟論文用的完整文章天差地遠。
+- DB裡完全沒有新聞/情緒的表，都是散落JSONL/CSV檔案。
+- **完全沒有LLM微調/RL訓練環境**——沒有PEFT/LoRA/TRL/GRPO，這個環境也沒偵測到GPU。
+- repo裡有一份`llm_state_reward_interface_readiness_review`治理文件，明確寫著「research-only，絕不允許LLM直接下交易決策」，顯示這方向本來就被刻意謹慎對待。
+
+**改做的事：借用方法論做零成本診斷，不訓練任何模型**。腳本：`scripts/evaluate/finsmart_reward_alignment_diagnostic.py`（新增，read-only）。報告：`research/shadow/FINSMART_REWARD_ALIGNMENT_DIAGNOSTIC_20260805.md`（新增）。用repo現成的關鍵字情緒評分器（`score_text_finbert_proxy`），測「同一套評分器對0050當天報酬 vs 隔天報酬的相關性」，複製論文的核心診斷但不訓練任何模型：
+
+| 訊號來源 | 當天相關係數 | 隔天相關係數 |
+|---|---|---|
+| production `finbert_sentiment`(LTN，市場全體) vs 0050 | 0.1148（n=1555, t≈4.5, p<0.0001，真訊號但小） | 0.0052（雜訊） |
+| FinMind分股新聞(0050專屬)套同一評分器 vs 0050 | **0.2355**（n=354, t≈4.5, p<0.0001） | 0.0884 |
+| production `llm_sentiment_score`(另一條LTN-based pipeline) vs 0050 | -0.0203（雜訊） | -0.0252（雜訊） |
+
+**發現一：論文的核心方法論定性上成立**——不管訊號來源好壞，當天相關性都比隔天高，粗糙的關鍵字proxy上同一個模式重現。**發現二：分股新聞(FinMind)比市場全體新聞(LTN)訊號強一倍**——在這個粗糙程度的評分器上，訊號來源的針對性比模型好壞更重要，值得注意的低成本槓桿（但目前FinMind分股標籤只涵蓋0050/00631L/00632R/00679B四檔，沒有2330）。**發現三**：`llm_sentiment_score`那條平行pipeline完全沒訊號，比finbert_sentiment還差。
+
+**後續追查：`finbert_sentiment_risk`在production裡實際怎麼被消費**。確認`group_a_plus/integrations/finbert.py:load_finbert_daily_snapshot(as_of, actual)`抓「不晚於actual_data_date的最新一筆」情緒分數，`daily_signal.py:1629`餵進當日綜合風險分數（權重0.03，line 1058）+一個`>=0.55`的離散警示旗標（line 1062, 1125-1126）。這份分數的影響落在**下一個交易日**，結構上正好對應「隔天」那個相關性≈0的時間差。額外測了「當風險/波動度警示」這個更貼切的解讀（因為它餵的是風險分數不是方向性下注）：`finbert_negative_ratio` vs 隔天|0050報酬|相關係數 = 0.0026，t≈0.10——**完全是零**，比方向性測試還乾淨的空結果。
+
+**結論**：由這個特徵實際被使用的時間點來看，不管當方向性訊號還是當波動度警示，都測不到任何東西。目前0.03的權重不算錯（本來就很小），但沒有證據支持它現在真的在做任何事——不是bug，是一個從沒被驗證過、看起來形同虛設的小權重。**沒有修改任何production程式碼**，這是純診斷。
+
+已寫入memory `project_finsmart_2607.28127_reward_alignment_diagnostic_20260805.md`，MEMORY.md索引已更新。判定：全套RL微調不可行已收手；診斷本身是小的正面發現（不是空結果），值得留著；如果之後要投入，比較划算的方向是擴大FinMind分股新聞涵蓋範圍，而不是往`llm_state_reward`那類更重的方向走。
+
+---
+
+## 9. FinSMART-lite實作：`market_aligned_sentiment_shadow.json`
+
+使用者要求完整規格清單（論文重點/FinSMART-lite設計/診斷結果/程式路徑/readiness review邊界/8/6背景/建置具體做法/風險）後，先寫了設計筆記`research/shadow/FINSMART_LITE_MARKET_ALIGNED_SENTIMENT_SHADOW_DESIGN_20260806.md`，使用者確認後**同一session內完成實作**（設計筆記已同步更新為「已實作」狀態，不再是純設計稿）。
+
+**新增檔案**：
+- `scripts/evaluate/build_market_aligned_sentiment_shadow.py`——純函式+CLI包裝，讀FinMind分股新聞、去重、用既有`score_text_finbert_proxy`評分、跟`ohlcv`的同日報酬比對，輸出到`report/group_a_plus/latest/market_aligned_sentiment_shadow.json`+`history/`目錄。
+- `tests/test_build_market_aligned_sentiment_shadow.py`——16個測試，全過，涵蓋去重/聚合/`move_explained_by_news`四種情境/rolling correlation樣本量門檻/多檔案union/交易所後綴regression。
+
+**readiness review決策邊界查證**：既有`llm_state_reward_interface_readiness_review`（靈感來自另一篇論文arXiv:2606.08450 GIFT，非FinSMART，但邊界規則通用）明確禁止`llm_queries_allowed_at_test_time`——正式環境不能live呼叫LLM，確認完整版FinSMART本來就出局，不只是運算資源問題。這個gate本身狀態`blocked`（卡在六個不相關組件），代表就算`market_aligned_sentiment_shadow.json`做得再乾淨，現在結構上也走不到影響即時決策那一步。
+
+**實作過程中發現並修復兩個真問題**：
+1. **`00679B`交易所後綴寫錯**：它是上櫃(TPEx)不是上市(TWSE)，`ohlcv`表存的是`00679B.TWO`不是`00679B.TW`，第一版程式碼寫死`.TW`，導致這檔價格/報酬整組默默回傳`None`卻不報錯。已修復（`TICKER_EXCHANGE_SUFFIX`映射），補了regression test鎖住。
+2. **FinMind新聞合併檔案本身過期**：`finmind_stock_news_merged_full.jsonl`停在2026-06-30，比實作當下(08-06)舊了超過一個月；改讀取該檔案+`finmind_stock_news_rolling.jsonl`(涵蓋到08-05)union後dedupe繞過。**沒有**修上游合併腳本本身，這是獨立於本次任務的既有staleness問題，之後還是會再發生，需要另外處理上游合併排程。
+
+**用真實資料重驗dedupe效果**：08-05報告裡的0.2355相關係數是在未去重的0050 FinMind資料上算出來的。修好去重邏輯後用真實資料重算：same-day相關係數**0.2384→0.2299**(n=363)——變化不大，方向性結論(FinMind分股訊號比LTN市場全體訊號強一倍)沒被推翻，但0.2299才是修正後的乾淨數字。
+
+**08-05真實快照內容**(`report/group_a_plus/latest/market_aligned_sentiment_shadow.json`)：0050情緒分數−0.087但當天大漲3.13%(`move_explained_by_news: false`——新聞情緒跟實際走勢對不上)；00631L情緒分數+0.067、當天大漲6.22%(`move_explained_by_news: true`)；00632R/00679B當天沒有分股新聞覆蓋，情緒欄位正確回傳`null`不是0。`next_day_prediction`欄位刻意寫死`null`並附註原因，避免以後有人忘記這是空結果又重新加方向性預測欄位。
+
+**沒有接線**：`daily_signal.py`、`research_shadow_decision_snapshot.json`都沒有讀這個新檔案，是完全獨立存在的shadow產物，符合design note的邊界設定跟readiness review的限制。
+
+**已確認**：`pytest --collect-only -q`背景工作已完成——**1676個測試全部collect成功，exit code 0，沒有任何collection error**，花了35分鐘(套件本身大，不是卡住，跟本次改動無關)。本次新增的`tests/test_build_market_aligned_sentiment_shadow.py`確認有被正常收錄。本文件所有事項至此全部確認完畢，沒有懸而未決的項目。

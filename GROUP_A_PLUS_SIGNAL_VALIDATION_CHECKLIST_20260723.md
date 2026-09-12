@@ -185,6 +185,203 @@ backtest window:
    events accumulate data, not worth further code-side investigation right
    now.
 
+8. **A base-rate/mean-bias check via conditional breakdown by realized
+   winning side**, added 2026-08-09. Whenever a new candidate's evidence
+   includes any directional-accuracy/hit-rate/win-rate style metric (not a
+   continuous R²/Sharpe/return metric), also split that same metric by
+   which side actually won that day/period and report both halves
+   separately. In a persistently-trending sample (this project's
+   2019-2026 Taiwan bull-market backtest window), an aggregate hit rate
+   that looks statistically significant can be almost entirely a base-rate
+   artifact -- the signal is reading off the sample's own class imbalance
+   (predicting the majority-trend side most of the time) rather than
+   showing genuine bidirectional predictive skill, and this is invisible
+   in the aggregate number alone. Not hypothetical: this exact check had
+   to be independently rediscovered twice in the same 2026-08-09 session
+   before being written down here. `scripts/evaluate/evaluate_cross_market_lead_lag_relative_return_shadow.py`
+   found a surface "53% directional accuracy" was actually 84% accurate
+   when the historically-favored side won vs. only 13% when the other side
+   won (`docs/CROSS_MARKET_LEAD_LAG_RELATIVE_RETURN_GROUPA_PLUS_20260809.md`).
+   Independently, `scripts/evaluate/evaluate_adaptive_window_hit_rate_comparison.py`
+   found a 252-day window's "statistically significant" 56.4% hit rate
+   (z=5.0) was actually 88.1% vs. 13.4% once split by realized winner,
+   because that window's signal was positive (predicting the same side) on
+   87.4% of all days in the sample -- reading off the multi-year uptrend,
+   not forecasting anything
+   (`docs/ADAPTIVE_LOOKBACK_NARROW_LEAD_GROUPA_PLUS_20260809.md`). Applies
+   to any candidate reporting a hit-rate/directional-accuracy style metric
+   as evidence, in addition to (not instead of) items 1-4's walk-forward/
+   crisis-independence/cost-sensitivity checks -- a signal can pass this
+   check and still fail those, or vice versa.
+
+9. **A crash-window conditional check, separate from the mean-alpha
+   regression**, added 2026-08-11 from arXiv:2607.18001 ("AlphaZeroBeta:
+   Deep Reinforcement Learning for Market-Neutral Portfolios"), whose
+   factor-attribution methodology (regress realized returns on
+   market/size/momentum/reversal-style factors to test whether a
+   reported Sharpe ratio is genuine alpha or disguised beta) was adapted
+   -- not its RL architecture, which does not fit this project's
+   single-index/LETF switching setup -- and run against golden1_0531 and
+   the `switch_ma*` family
+   (`scripts/evaluate/build_group_a_plus_golden1_factor_attribution_review.py`).
+   A full-sample regression answers "does this candidate have a
+   statistically distinguishable mean excess return beyond simple market
+   beta" -- for any switching/timing candidate, that is necessary but not
+   sufficient evidence, because a switching rule's actual value
+   proposition is often drawdown protection during crashes, which a
+   linear regression on average daily returns does not directly measure
+   (a rule can show zero unconditional alpha and still meaningfully cut
+   losses in the states it was designed for, or vice versa -- show
+   positive average alpha while doing nothing useful in an actual
+   crash). Run
+   `scripts/evaluate/build_group_a_plus_golden1_crash_window_protection_review.py
+   --auto-detect` (objectively detects drawdown episodes from a trailing
+   1-year rolling peak, rather than hand-picking "famous" crash dates,
+   which this project's own first pass at this check did and which
+   overstated consistency: 3 hand-picked windows showed 18/18
+   perfectly-signed results across 6 rules, while the unbiased 12-episode
+   auto-detected sample showed a real but more modest 67-83% hit rate per
+   rule) and report both the mean excess-return/drawdown-relief-vs-MKT
+   and the positive-hit-rate fraction, not just the mean (a strategy can
+   have a positive mean driven by a few large episodes while losing more
+   often than it wins). First run (2026-08-10/11) found golden1_0531
+   itself -- the frozen static buy-and-hold weight snapshot
+   (0050:0.6/00631L:0.2/cash:0.2), not a switching rule -- underperformed
+   simply holding 0050 in 8 of 12 auto-detected drawdown episodes (mean
+   excess return -2.88%, mean drawdown relief -4.13%), with the
+   underperformance markedly worse in the most recent 2024-2026 episodes
+   (-7% to -10% excess return) than in 2018-2019 (roughly flat to
+   slightly positive) -- consistent with 00631L's leveraged-tracking
+   decay amplifying losses in an unhedged static allocation, and getting
+   worse recently rather than staying constant, which is itself worth a
+   closer look before treating golden1_0531 as a safe reference/fallback
+   allocation. Applies to any candidate whose claimed value is
+   switching/timing/defensive-tilt behavior (not every candidate --
+   e.g. a pure stock-selection or blend-weight candidate with no
+   regime-conditional behavior doesn't need this), in addition to (not
+   instead of) the mean-return checks in items 1-4 and the factor
+   regression above -- a candidate can pass one and fail the other.
+
+10. **A simultaneous-coverage significance check for any candidate selected
+    via multi-round/grid search**, added 2026-09-05 from arXiv:2608.08405
+    ("Robustness or Crowding: Experimental Design for Trading Strategy
+    Capacity" -- desk review: closed_negative overall for its main
+    capacity-experiment framework, see project memory
+    `project_2608_08405_capacity_experiment_design_desk_review_20260904`,
+    but Prop 3.12/Table 8 is a general statistical design point worth
+    importing on its own). Whenever a candidate's promotion evidence
+    includes a Sharpe/return comparison against baseline that was selected
+    by picking the best-looking result out of a multi-round parameter
+    search (grid search, coordinate descent, threshold sweep) on the same
+    fixed window(s), report the significance of that comparison using
+    `group_a_plus/governance/significance.py`'s
+    `bonferroni_grid_significance()` with `candidate_grid_size` set to the
+    actual count of distinct configurations evaluated across the whole
+    search (not just the winning round) -- not the uncorrected
+    per-candidate JK-Memmel p-value or bootstrap CI computed only for the
+    reported winner, which overstates confidence because the candidate was
+    selected *for* looking good. `jobson_korkie_memmel_test()` is two-sided,
+    so read `bonferroni_grid_significance()`'s `significant_improvement`
+    field (added 2026-09-05 after this exact gap was caught reviewing the
+    A22 validation below), not the raw `significant` field, when deciding
+    whether to promote -- `significant` alone is also True for a candidate
+    that is significantly *worse* than baseline, and a promotion check that
+    reads it directly would treat a confirmed regression as confirmed
+    evidence. Retroactively validated 2026-09-05
+    (`scripts/misc/significance_check_a22_bad_vol_overlay_grid_20260905.py`)
+    against the one historical case in this repo where this exact failure
+    mode was later proven real by actual out-of-sample data:
+    A22_bad_vol_overlay's 6-round-plus coordinate-descent champion (see
+    `feedback_overfitting_fixed_window_tuning`), whose apparent in-sample
+    sum-Sharpe improvement (+0.045 across 4 windows) did not survive
+    correction for its actual 33-candidate search grid in any of the 4
+    tuning windows individually (nothing even cleared the *uncorrected* 5%
+    level in the champion's favor). The 4 per-window checks are themselves
+    only an approximation, though, since the actual historical selection
+    criterion was the SUM of Sharpe deltas across all 4 windows -- a single
+    joint statistic, not 4 independent ones; a Stouffer combined-z test
+    across the 4 window z-statistics is the more faithful reconstruction of
+    that selection criterion, and it makes the null result far starker: the
+    4 windows' effects (2 negative, 2 positive, similar magnitude) largely
+    cancel, giving a combined z of 0.076 (p=0.94) -- consistent with each
+    window separately fitting its own noise rather than any shared signal,
+    matching what the far more expensive later OOS test found the hard way
+    (3-year aggregate delta Sharpe -0.058). When applying this check to a
+    candidate selected on a summed/pooled multi-window criterion, prefer the
+    combined-z reconstruction over 4 marginal per-window Bonferroni checks
+    for the same reason. This is a companion check to
+    `feedback_overfitting_fixed_window_tuning`'s
+    existing "more than 2-3 rounds on the same window needs OOS" rule, not
+    a replacement -- this one can be run immediately with only the
+    in-sample data already in hand, as an early-warning gate before
+    committing to (or in cases where data gaps block) an OOS validation.
+
+11. **A manager-scaling-endogeneity caution for observational
+    turnover/position-size analyses**, added 2026-09-05, also from
+    arXiv:2608.08405 (Assumption 3.2 / Theorem 3.3 discussion). Regressing
+    realized returns on realized turnover, or more generally reading
+    "we sized up after X looked good, and it kept performing well/poorly"
+    as evidence about whether sizing up helped, estimates a mixture of any
+    true edge-decay/capacity slope and the decision-maker's own scaling
+    rule -- because real allocation decisions are typically made *after*
+    observing recent performance, assignment is a function of the outcome,
+    not independent of it. Before citing any backtest/live-history
+    turnover-vs-return or position-size-vs-subsequent-performance analysis
+    as evidence for or against a rule, confirm whether the sizing decision
+    itself was triggered by the same recent-performance signal being
+    evaluated; if so, the correlation has no causal read on whether sizing
+    up helped, only on whether the trigger itself was already informative.
+    Generalizes `feedback_lookahead_bug_same_day_signal_decision`'s
+    same-day-drawdown-decides-same-day-position finding to any deliberate
+    allocation-after-signal decision, not just same-day mechanical rules.
+
+12. **A same-complexity-class naive-baseline requirement for any RL or
+    optimizer-based candidate**, added 2026-09-05 from arXiv:2603.22880
+    ("Portfolio Optimization under Recursive Utility via Reinforcement
+    Learning" -- desk review: closed_negative overall, see project memory
+    `project_2603_22880_recursive_utility_rl_desk_review_20260905`; the
+    paper's main recursive-utility-in-RL-value-target mechanism and its
+    Campbell-Viceira closed-form allocation rule both fail for GroupA+'s
+    tiny, highly-correlated core universe -- 0050 long, 00631L 2x long,
+    00632R inverse, 00679B bonds, cash -- for the same reason: the
+    "hedging demand" / diversification value both mechanisms rely on needs
+    genuinely independent cross-asset risk exposures that this universe
+    does not have). The paper's own most credible result is not about
+    recursive utility at all: a trivial equal-weight (1/N) benchmark (SR
+    2.3-2.7) beats every RL variant tested, including the paper's own
+    headline recursive-utility PPO result (SR 2.07) -- the entire RL
+    framework never actually clears the bar of a benchmark with zero
+    training and zero overfitting surface. Before crediting any future
+    RL-policy or formal-optimizer candidate for GroupA+ with an
+    improvement, compare it against a naive baseline of the *same
+    complexity class* (equal-weight across the candidate's own asset set,
+    or the existing rule-based golden strategy itself) -- not just against
+    a weaker variant of the same RL/optimizer framework. Beating a worse
+    RL variant is not evidence the RL approach itself adds value.
+    Consistent with this project's existing skepticism toward formal
+    optimizers (`project_2606_26625_commodity_etf_cvar_tail_cost_20260831`
+    found a claimed "optimizer wins 5/5" result was an in-sample
+    overfitting artifact) and with `feedback_strategy_promotion_caution`.
+
+13. **A hyperparameter-sensitivity-sweep requirement before crediting any
+    RL-based result**, added 2026-09-05, also from arXiv:2603.22880's
+    Appendix D.3 ablation study. On the identical training window, the
+    paper's own recursive-utility PPO swings from SR=4.00 (K=1 Monte
+    Carlo samples for the certainty equivalent) to SR=0.08 (K=5) to
+    SR=1.52 (K=10) -- a non-monotone, order-of-magnitude swing from one
+    hyperparameter change alone, with only one trial per split (no seed
+    averaging, no confidence interval). A result reported at a single
+    hyperparameter setting under these conditions is not evidence of a
+    real effect, only a sample from a highly unstable distribution of
+    outcomes. Before crediting any future RL-based candidate's headline
+    metric for GroupA+, require a sensitivity sweep over its 2-3 most
+    consequential hyperparameters (learning rate, key architecture
+    choices, any Monte-Carlo sample count, training window/episode
+    length) and report the range, not just the best-looking point --
+    treat a single-setting RL result with the same skepticism this
+    project already applies to a single-window backtest result under
+    `feedback_overfitting_fixed_window_tuning`.
+
 ## What this checklist does NOT require
 
 - It does not require adopting continuous-score/smooth-signal designs
@@ -219,4 +416,31 @@ being added to an *existing* candidate's mix (not the initial screen of a
 brand-new candidate's first component). Item 7 applies specifically
 whenever the candidate is (or introduces) a hard threshold gate on a
 composite score built from independent sub-indicators -- not every
-candidate has one.
+candidate has one. Item 8 applies specifically whenever a
+directional-accuracy/hit-rate/win-rate metric is part of the candidate's
+evidence -- not every candidate reports one (many report R²/Sharpe/return
+deltas instead, which don't need this specific check, though a candidate
+using both should still apply it to the hit-rate half). Item 9 applies
+specifically whenever the candidate's claimed value is switching/timing/
+defensive-tilt behavior -- a mean-return-only evaluation of such a
+candidate is incomplete even if items 1-4 all pass, since crash-window
+protection and unconditional mean alpha are different claims that don't
+imply each other. Item 10 applies specifically whenever a candidate's
+headline number was the winner of a multi-round/grid search on fixed
+window(s) -- a single-shot candidate (no search, no coordinate descent)
+doesn't need it, but should still get the plain (uncorrected)
+`jobson_korkie_memmel_test`/`bootstrap_final_value_ci` treatment already
+established. Item 11 applies specifically whenever a candidate's evidence
+includes an observational (not randomized/backtest-mechanical) read of
+"we sized up/down after signal X, and performance changed" -- not every
+candidate makes this kind of claim. Items 12 and 13 apply specifically
+whenever the candidate is an RL-trained policy or a formal
+optimizer-based allocation rule (not every candidate is -- most GroupA+
+shadow candidates are rule-based threshold/overlay changes, which don't
+train a policy or solve an optimization problem, so items 12-13 don't
+apply to them). Item 12's naive-baseline comparison should use the
+simplest baseline of comparable scope to the candidate's own asset set
+(equal-weight if the candidate allocates across multiple assets, or the
+existing rule-based golden strategy if the candidate is meant to replace
+it). Item 13's sweep only needs to cover hyperparameters that plausibly
+drive the headline metric, not every configurable value.

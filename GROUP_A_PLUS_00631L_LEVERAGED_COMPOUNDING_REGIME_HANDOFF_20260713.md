@@ -1,5 +1,34 @@
 # Group A+ 00631L Leveraged Compounding Regime Handoff - 2026-07-13
 
+**2026-08-08 update (found during a paper-audit cross-check, arXiv:2504.20116):**
+the "no-lookahead diagnostic, production allocation is not changed" framing
+below was accurate on 2026-07-13, but is **no longer accurate today**. The
+mechanism was later wired live into
+`group_a_plus/operations/execution_guard.py::apply_compounding_regime_pre_trade_guard()`,
+called from `execution_plan.py`. It now actively caps the 00631L target at
+current shares (blocking new buy-side additions) whenever the regime reads
+MEAN_REVERTING -- a real, auto-enforcing production guard, not merely a
+diagnostic. It is one-directional (never forces a sell/reduction), which is
+the one part of the original "not changed" framing that still holds. Don't
+read the rest of this document as describing current live behavior on that
+point; see `execution_guard.py`'s `policy` field
+(`auto_blocks_00631l_buy_additions_only_never_forces_sells` as of this
+update) for the accurate current state.
+
+**2026-08-09 further update:** the auto-enforcement described directly
+above was itself reverted the next day, once it was noticed the daily
+pipeline feeds this guard the *untuned* default-threshold classifier,
+which this project's own validation (see `docs/a2120_letf_compounding_regime_shadow_20260715.md`,
+"Baseline Threshold Result") found backtests **negative**
+(delta_final_value_sum=-8281.77, 2/5 positive windows) -- and even the
+fully-validated tuned candidate's own promotion-gate scorecard concluded
+`do_not_promote`. `apply_compounding_regime_pre_trade_guard()` itself is
+unchanged; `execution_plan.py` now unconditionally downgrades this guard
+to advisory-only (`flagged_advisory_only`, `enforced=False`), same as the
+existing manual-order-mode pattern. See
+`docs/COMPOUNDING_REGIME_GUARD_REVERTED_TO_ADVISORY_20260809.md` for the
+full story -- this guard's target-capping behavior is currently disabled.
+
 ## Context
 
 User referenced:

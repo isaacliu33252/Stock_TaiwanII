@@ -513,3 +513,42 @@ Read/analyzed, not modified:
 - `/mnt/c/Users/isaac/Downloads/2606.18199v1.pdf` (the reviewed paper)
 - `GROUP_A_PLUS_FABLE_COMBINATION_OPPORTUNITIES_HANDOFF_20260716.md` (item
   #5, documents tail_conformal's existing guard status)
+
+## 2026-08-16 追加：warning-cost方向性 + 首次經濟效益回測（回答07-27標記的「還沒做」缺口）
+
+**觸發脈絡**：審查論文2608.01494（Conformal Kelly）時，其「慢適應conformal校準優於快適應」的核心結論被拿來跟`aci_gamma=0.005`的選擇方法論交叉比對確認一致；使用者接著追問「LLM自主決策的portfolio agent」，帶出對`group_a_plus/integrations/regime_weighted_tail_conformal.py`既有shadow比較腳本(`evaluate_group_a_plus_regime_weighted_tail_conformal_walk_forward.py`)輸出的檢視，發現了本節記錄的新資訊。
+
+### 發現1：`report/group_a_plus/latest/regime_weighted_tail_conformal_walk_forward.json`(2026-08-07產出)的`decision.promotion_blocker`從未被追蹤
+
+欄位寫著`needs_review_of_walk_forward_calibration_and_warning_cost`，`promotion_ready: False`——這份報告本身就是2026-08-07某次工作留下、標記待查但沒人接手的缺口，不是今天才發現的新問題，是撿回一顆掉在地上的球。
+
+### 發現2：`existing_static_bucket`(production實際用的預設方法，`daily_signal.py`呼叫`compute_tail_conformal_diagnostic`從不傳`adaptive`參數)在2015-2026完整walk-forward下，2018/2020兩次真實危機觸發率趨近於零
+
+按年拆解`tail_high_rate`：2018=1.2%(h10)/0%(h5)，2020=0%(h10)/0%(h5)，對照2022=61.8%(h10)/21.5%(h5)。已用`_append_existing_rows_fast`(scripts/evaluate/evaluate_group_a_plus_regime_weighted_tail_conformal_walk_forward.py:162)跟`compute_tail_conformal_diagnostic`真實邏輯逐行比對確認是忠實向量化重現(bucket比對/fallback/雙門檻`-0.08`與`0.35`完全一致)，不是shadow腳本的計算誤差。
+
+### 發現3：warning-cost方向性——被標記「TAIL_RISK_HIGH」的窗口，之後不必然表現更差
+
+`existing_aci_gamma_0_005`(非production預設，但docstring紀錄過的候選)：h10的`severe_mdd_lift`=-3.2pp(方向錯誤，high_tail窗口之後嚴重回撤機率反而更低)；h5的`return_spread`=+0.32%(方向錯誤，high_tail窗口之後報酬反而更高)。`existing_static_bucket`(production預設)同樣呈現backwards或近乎零區分力的pattern。
+
+### 發現4：首次真實經濟效益回測（回答07-27標記的「這需要真正的投組經濟效益回測，這次沒做」）
+
+用最寬鬆的假設測試訊號的經濟價值上界：`existing_static_bucket`合併h5/h10的`TAIL_RISK_HIGH`旗標，前一日觸發就把00631L完全出清到現金（比production實際「暫停加碼」語意強得多，是刻意測上界）。2016-05-17~2026-08-14完整回測：
+
+```
+Baseline(單純buy&hold 00631L)：總報酬4457%，年化45.2%，Sharpe 1.18，MDD -55.1%
+Gated(觸發前一天出清到現金)：總報酬1399%，年化30.3%，Sharpe 0.99，MDD -52.1%
+觸發天數佔比：26.6%
+```
+
+躲開26.6%的交易日只換到3個百分點的MDD改善(-55.1%→-52.1%)，但年化報酬付出15個百分點代價、Sharpe不進反退(1.18→0.99)。**即使用最有利的假設(完全出清而非只暫停加碼)，這個訊號本身也沒有展現正面經濟價值**——這跟發現3(warning-cost方向backwards)、發現2(2018/2020觸發率趨近於零)三個獨立角度互相印證同一個結論：這個訊號辨識「真正該避開的下跌」的能力很弱。
+
+### 為何這不是緊急事件（延續07-27的既有結論，未被推翻）
+
+07-27已確認的兩層保護依然成立且今天沒有新資訊推翻：(1) `execution_plan.py`的`--enforce-advisory-pre-trade-guards`預設`False`，tail_conformal永遠是advisory-only、人工審查，從不自動擋單；(2) 今天的三個新發現都是對「這個訊號的統計/經濟品質有缺口」這個已知事實的進一步量化補強，不是發現了新的自動化風險。**07-27記錄的最終判斷（"現在不用緊急處理，但如果未來要切成自動擋單模式，這些數字才是要優先考慮的因素"）今天被更完整地驗證，結論方向不變。**
+
+### Do Not Do
+- 不要因為今天的發現就主動把tail_conformal切成`enforce_advisory_pre_trade_guards=True`或調整門檻——這是production行為改變，且今天的證據方向是「這個訊號本身經濟價值存疑」，不是「應該更依賴它」。
+- 不要再測「只暫停加碼不出清」的較弱版本——數學上結果必然介於baseline跟今天測出的結果之間，不會推翻結論，邊際資訊價值低。
+
+### Next Step
+若未來真的要考慮把guard切成自動化，今天這組數字(2018/2020觸發率≈0、warning-cost backwards、經濟效益回測負面)應該是重新設計整個tail-risk訊號(不只是調ACI gamma)之前必須面對的基準線，而不是continue優化現有的calibration機制。

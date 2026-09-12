@@ -17,7 +17,15 @@ def test_build_snapshot_blocks_when_research_shadows_block(tmp_path: Path) -> No
     speculative = tmp_path / "speculative.json"
     sin_lite = tmp_path / "sin_lite.json"
     hmm_wj = tmp_path / "hmm_wj.json"
+    scr_readiness = tmp_path / "scr_readiness.json"
+    scr_robustness = tmp_path / "scr_robustness.json"
+    scr_window_split = tmp_path / "scr_window_split.json"
+    scr_stress_score = tmp_path / "scr_stress_score.json"
     dynamic_cvar = tmp_path / "dynamic_cvar.json"
+    cvar_cost_window_split = tmp_path / "cvar_cost_window_split.json"
+    rolling_tail_no_add = tmp_path / "rolling_tail_no_add.json"
+    dynamic_cvar_constraint = tmp_path / "dynamic_cvar_constraint.json"
+    dynamic_cvar_forward = tmp_path / "dynamic_cvar_forward.json"
     synthetic_augmentation = tmp_path / "synthetic_augmentation.json"
     intervention_fatigue = tmp_path / "intervention_fatigue.json"
     letf_tracking = tmp_path / "letf_tracking.json"
@@ -118,6 +126,54 @@ def test_build_snapshot_blocks_when_research_shadows_block(tmp_path: Path) -> No
         ),
         encoding="utf-8",
     )
+    scr_readiness.write_text(
+        json.dumps(
+            {
+                "status": "available_for_shadow_review",
+                "summary": {
+                    "scenario_real_gap_gate_passed": True,
+                    "mean_abs_scenario_real_gap": 0.001249,
+                    "beta_cf_from_bias_variance_proxy": 0.520325,
+                },
+                "decision": {"ppo_training_allowed": False, "target_weight_change_allowed": False},
+            }
+        ),
+        encoding="utf-8",
+    )
+    scr_robustness.write_text(
+        json.dumps(
+            {
+                "status": "available_for_shadow_review",
+                "summary": {"gap_gate_pass_rate": 1.0, "beta_moderate_rate": 1.0},
+                "decision": {"ppo_training_allowed": False},
+            }
+        ),
+        encoding="utf-8",
+    )
+    scr_window_split.write_text(
+        json.dumps(
+            {
+                "status": "available_for_shadow_review",
+                "summary": {"gap_gate_pass_windows": 5, "valid_windows": 5},
+                "decision": {"ppo_training_allowed": False},
+            }
+        ),
+        encoding="utf-8",
+    )
+    scr_stress_score.write_text(
+        json.dumps(
+            {
+                "status": "available_for_shadow_monitoring",
+                "summary": {
+                    "downside_warning_active": False,
+                    "var_next_return": -0.002896,
+                    "es_next_return": -0.004503,
+                },
+                "decision": {"target_weight_change_allowed": False},
+            }
+        ),
+        encoding="utf-8",
+    )
     dynamic_cvar.write_text(
         json.dumps(
             {
@@ -127,6 +183,69 @@ def test_build_snapshot_blocks_when_research_shadows_block(tmp_path: Path) -> No
                     "dynamic_optimizer_ready": False,
                     "allow_00631l_add": False,
                 },
+            }
+        ),
+        encoding="utf-8",
+    )
+    cvar_cost_window_split.write_text(
+        json.dumps(
+            {
+                "status": "blocked_for_live_promotion",
+                "summary": {
+                    "tail_cost_window_split_passed": False,
+                    "latest_loses_to_no_00631l_windows": 5,
+                    "latest_loses_to_no_letf_windows": 4,
+                },
+                "decision": {"target_weight_change_allowed": False},
+            }
+        ),
+        encoding="utf-8",
+    )
+    rolling_tail_no_add.write_text(
+        json.dumps(
+            {
+                "status": "available_for_shadow_monitoring",
+                "summary": {
+                    "window_count": 3,
+                    "block_00631l_add_windows": 3,
+                    "block_00632r_open_windows": 0,
+                    "allow_00631l_add": False,
+                    "allow_00632r_open": True,
+                },
+                "decision": {"target_weight_change_allowed": False},
+            }
+        ),
+        encoding="utf-8",
+    )
+    dynamic_cvar_constraint.write_text(
+        json.dumps(
+            {
+                "status": "blocked_for_live_promotion",
+                "summary": {
+                    "cvar_residual_breach_windows": 3,
+                    "material_cvar95_residual_windows": 3,
+                    "sensitivity_breach_windows_by_buffer": {"0.00": 3, "0.10": 3},
+                    "latest_worse_than_no_00631l_es95_windows": 3,
+                    "latest_worse_than_no_letf_es95_windows": 3,
+                    "relative_baseline_blocks_00631l": True,
+                    "recommended_00631l_add_pacing_multiplier": 0.0,
+                    "allow_00631l_add": False,
+                },
+                "decision": {"target_weight_change_allowed": False},
+            }
+        ),
+        encoding="utf-8",
+    )
+    dynamic_cvar_forward.write_text(
+        json.dumps(
+            {
+                "status": "blocked_for_live_promotion",
+                "summary": {
+                    "valid_windows": 3,
+                    "forward_validation_pass_windows": 0,
+                    "forward_validation_passed": False,
+                },
+                "decision": {"target_weight_change_allowed": False},
             }
         ),
         encoding="utf-8",
@@ -414,7 +533,15 @@ def test_build_snapshot_blocks_when_research_shadows_block(tmp_path: Path) -> No
         speculative_influence_path=speculative,
         sin_lite_proxy_path=sin_lite,
         hmm_wj_path=hmm_wj,
+        scr_readiness_path=scr_readiness,
+        scr_robustness_path=scr_robustness,
+        scr_window_split_path=scr_window_split,
+        scr_stress_score_path=scr_stress_score,
         dynamic_cvar_path=dynamic_cvar,
+        cvar_cost_window_split_2606_26625_path=cvar_cost_window_split,
+        rolling_tail_no_add_2606_26625_path=rolling_tail_no_add,
+        dynamic_cvar_constraint_2608_20179_path=dynamic_cvar_constraint,
+        dynamic_cvar_forward_2608_20179_path=dynamic_cvar_forward,
         synthetic_augmentation_path=synthetic_augmentation,
         intervention_fatigue_path=intervention_fatigue,
         letf_tracking_path=letf_tracking,
@@ -445,6 +572,12 @@ def test_build_snapshot_blocks_when_research_shadows_block(tmp_path: Path) -> No
     assert "sin_lite_proxy_blocked" in snapshot["blocking_reasons"]
     assert "hmm_wj_synthetic_scenario_readiness_blocked" in snapshot["blocking_reasons"]
     assert "dynamic_cvar_tail_cost_readiness_blocked" in snapshot["blocking_reasons"]
+    assert "cvar_cost_window_split_2606_26625_blocked_for_live_promotion" in snapshot["blocking_reasons"]
+    assert "rolling_tail_no_add_gate_2606_26625_blocks_00631l_add" in snapshot["blocking_reasons"]
+    assert "dynamic_cvar_constraint_shadow_2608_20179_blocked_for_live_promotion" in snapshot["blocking_reasons"]
+    assert "dynamic_cvar_constraint_shadow_2608_20179_blocks_00631l_add" in snapshot["blocking_reasons"]
+    assert "dynamic_cvar_forward_validation_2608_20179_blocked_for_live_promotion" in snapshot["blocking_reasons"]
+    assert "dynamic_cvar_forward_validation_2608_20179_failed" in snapshot["blocking_reasons"]
     assert "synthetic_augmentation_validation_readiness_blocked" in snapshot["blocking_reasons"]
     assert "intervention_fatigue_risk_budget_readiness_blocked" in snapshot["blocking_reasons"]
     assert "letf_tracking_error_effective_fee_readiness_blocked" in snapshot["blocking_reasons"]
@@ -467,8 +600,35 @@ def test_build_snapshot_blocks_when_research_shadows_block(tmp_path: Path) -> No
     assert snapshot["summary"]["sin_lite_proxy_score"] == 0.38
     assert snapshot["summary"]["sin_lite_proxy_usable_ticker_count"] == 14
     assert snapshot["summary"]["hmm_wj_data_ready"] is True
+    assert snapshot["summary"]["scr_readiness_2602_24037_gap_gate_passed"] is True
+    assert snapshot["summary"]["scr_readiness_2602_24037_mean_gap"] == 0.001249
+    assert snapshot["summary"]["scr_readiness_2602_24037_ppo_training_allowed"] is False
+    assert snapshot["summary"]["scr_robustness_2602_24037_gap_pass_rate"] == 1.0
+    assert snapshot["summary"]["scr_window_split_2602_24037_gap_pass_windows"] == 5
+    assert snapshot["summary"]["scr_stress_score_2602_24037_downside_warning_active"] is False
+    assert snapshot["summary"]["scr_stress_score_2602_24037_target_weight_change_allowed"] is False
     assert snapshot["summary"]["dynamic_cvar_tail_cost_ready"] is False
     assert snapshot["summary"]["dynamic_cvar_optimizer_ready"] is False
+    assert snapshot["summary"]["cvar_cost_window_split_2606_26625_passed"] is False
+    assert snapshot["summary"]["cvar_cost_window_split_2606_26625_latest_loses_to_no_00631l_windows"] == 5
+    assert snapshot["summary"]["cvar_cost_window_split_2606_26625_latest_loses_to_no_letf_windows"] == 4
+    assert snapshot["summary"]["rolling_tail_no_add_2606_26625_allow_00631l_add"] is False
+    assert snapshot["summary"]["rolling_tail_no_add_2606_26625_allow_00632r_open"] is True
+    assert snapshot["summary"]["rolling_tail_no_add_2606_26625_block_00631l_add_windows"] == 3
+    assert snapshot["summary"]["rolling_tail_no_add_2606_26625_block_00632r_open_windows"] == 0
+    assert snapshot["summary"]["dynamic_cvar_constraint_2608_20179_breach_windows"] == 3
+    assert snapshot["summary"]["dynamic_cvar_constraint_2608_20179_sensitivity_breach_windows_by_buffer"] == {
+        "0.00": 3,
+        "0.10": 3,
+    }
+    assert snapshot["summary"]["dynamic_cvar_constraint_2608_20179_latest_worse_than_no_00631l_es95_windows"] == 3
+    assert snapshot["summary"]["dynamic_cvar_constraint_2608_20179_latest_worse_than_no_letf_es95_windows"] == 3
+    assert snapshot["summary"]["dynamic_cvar_constraint_2608_20179_relative_baseline_blocks_00631l"] is True
+    assert snapshot["summary"]["dynamic_cvar_constraint_2608_20179_recommended_00631l_add_pacing_multiplier"] == 0.0
+    assert snapshot["summary"]["dynamic_cvar_constraint_2608_20179_allow_00631l_add"] is False
+    assert snapshot["summary"]["dynamic_cvar_forward_2608_20179_passed"] is False
+    assert snapshot["summary"]["dynamic_cvar_forward_2608_20179_pass_windows"] == 0
+    assert snapshot["summary"]["dynamic_cvar_forward_2608_20179_valid_windows"] == 3
     assert snapshot["summary"]["synthetic_validation_ready"] is False
     assert snapshot["summary"]["directional_synthetic_alpha_allowed"] is False
     assert snapshot["summary"]["intervention_fatigue_ready"] is False

@@ -18,6 +18,11 @@ from typing import Any
 import pandas as pd
 import numpy as np
 
+from backtesting.performance_metrics import (
+    calculate_max_drawdown_duration,
+    calculate_recovery_duration,
+)
+
 
 def _backtest_vix(actual_date: str) -> float | None:
     """Fetch VIX close <= actual_date. Returns None on failure."""
@@ -221,6 +226,17 @@ PLUS_VARIANT_OVERRIDES: dict[str, dict[str, Any]] = {
         "execution_control.buy_fraction_by_regime": {"risk_on": 1.0, "caution": 1.0, "risk_off": 1.0, "severe": 1.0},
         "execution_control.defensive_sleeve_sell_fraction_by_regime": {"risk_on": 1.0, "caution": 1.0, "risk_off": 1.0, "severe": 1.0},
         "execution_control.max_turnover_ratio_by_regime": {"risk_on": 1.0, "caution": 1.0, "risk_off": 1.0, "severe": 1.0},
+    },
+    # cap_guard_no_inverse: research-only replay of cap_guard_optimized with
+    # all base-event 00632R exposure released to cash before execution.
+    "cap_guard_no_inverse": {
+        "overlay.dynamic_weight_bands": {"risk_on": 0.00, "caution": 0.00, "risk_off": 0.00, "severe": 0.00},
+        "leverage_control.max_weight_by_regime": {"risk_on": 0.20, "caution": 0.18, "risk_off": 0.00, "severe": 0.00},
+        "execution_control.buy_fraction_by_regime": {"risk_on": 1.0, "caution": 1.0, "risk_off": 1.0, "severe": 1.0},
+        "execution_control.defensive_sleeve_sell_fraction_by_regime": {"risk_on": 1.0, "caution": 1.0, "risk_off": 1.0, "severe": 1.0},
+        "execution_control.max_turnover_ratio_by_regime": {"risk_on": 1.0, "caution": 1.0, "risk_off": 1.0, "severe": 1.0},
+        "inverse_control.forbid_auto_exposure": True,
+        "inverse_control.release_to": "cash",
     },
     # pure_zero_overhead: cap=20% for risk_on AND caution. risk_off=8%, severe=0%.
     # Base 00631L max=19.5% (risk_on) and 18% (caution). Neither will bind.
@@ -696,6 +712,38 @@ def _metrics(
     sharpe = float((daily.mean() / daily.std()) * math.sqrt(252)) if len(daily) > 1 and daily.std() > 0 else 0.0
     max_drawdown = float((values / values.cummax() - 1.0).min())
     invested = float(initial_cash + contributions)
+
+    # 2026-08-18 user proposal (arXiv:2607.16450, Taiwan/semiconductor-ETF
+    # heavy-tail study): same tail-risk field names as
+    # backtest_group_a_plus_switch_policy.py::_metrics() and what
+    # group_a_plus/governance/compare.py's TAIL_RISK_METRIC_KEYS reads.
+    value_at_risk_5pct = float(daily.quantile(0.05)) if len(daily) else 0.0
+    tail_losses = daily[daily <= value_at_risk_5pct] if len(daily) else pd.Series(dtype=float)
+    expected_shortfall_loss_95 = float(abs(tail_losses.mean())) if len(tail_losses) else 0.0
+    starr_95 = (
+        float(daily.mean() / expected_shortfall_loss_95)
+        if len(daily) > 1 and expected_shortfall_loss_95 > 0.0
+        else 0.0
+    )
+    top_gains_95 = daily[daily >= daily.quantile(0.95)] if len(daily) else pd.Series(dtype=float)
+    expected_tail_gain_95pct = float(top_gains_95.mean()) if len(top_gains_95) else 0.0
+    rachev_95_95 = (
+        float(expected_tail_gain_95pct / expected_shortfall_loss_95)
+        if expected_shortfall_loss_95 > 0.0
+        else 0.0
+    )
+    downside_daily = daily[daily < 0.0]
+    negative_semivariance = (
+        float(downside_daily.pow(2).mean() * 252) if len(downside_daily) > 0 else 0.0
+    )
+    rolling_5d_return = values.pct_change(5).dropna()
+    rolling_10d_return = values.pct_change(10).dropna()
+    worst_5d_return = float(rolling_5d_return.min()) if len(rolling_5d_return) else 0.0
+    worst_10d_return = float(rolling_10d_return.min()) if len(rolling_10d_return) else 0.0
+    equity_array = values.to_numpy(dtype=float)
+    max_drawdown_duration = calculate_max_drawdown_duration(equity_array)
+    recovery_duration = calculate_recovery_duration(equity_array)
+
     return {
         "final_value": float(values.iloc[-1]),
         "total_return": total_return,
@@ -703,12 +751,22 @@ def _metrics(
         "volatility": volatility,
         "sharpe_ratio": sharpe,
         "max_drawdown": max_drawdown,
+        "max_drawdown_duration": max_drawdown_duration,
+        "recovery_duration": recovery_duration,
         "num_rebalances": int(rebalances),
         "total_cost": float(total_cost),
         "dca_total_contributions": float(contributions),
         "total_invested_capital": invested,
         "net_profit": float(values.iloc[-1] - invested),
         "contribution_return": float((values.iloc[-1] - invested) / max(invested, 1.0)),
+        "value_at_risk_5pct": value_at_risk_5pct,
+        "expected_shortfall_loss_95": expected_shortfall_loss_95,
+        "starr_95": starr_95,
+        "expected_tail_gain_95pct": expected_tail_gain_95pct,
+        "rachev_95_95": rachev_95_95,
+        "negative_semivariance": negative_semivariance,
+        "worst_5d_return": worst_5d_return,
+        "worst_10d_return": worst_10d_return,
     }
 
 
@@ -998,6 +1056,25 @@ def _group_a_plus_target(
     base_cash = float(event.get("target_cash_weight", 0.0))
     base_weights, base_cash = _normalize(base_weights, base_cash)
 
+    inverse_cfg = dict(config.get("inverse_control") or {})
+    inverse_forbid_report: dict[str, Any] = {"enabled": False}
+    if inverse_cfg.get("forbid_auto_exposure"):
+        inv_ticker = str(inverse_cfg.get("ticker", "00632R.TW"))
+        removed = float(base_weights.get(inv_ticker, 0.0))
+        if removed > 0:
+            base_weights[inv_ticker] = 0.0
+            if str(inverse_cfg.get("release_to", "cash")) == "0050.TW":
+                base_weights["0050.TW"] = float(base_weights.get("0050.TW", 0.0)) + removed
+            else:
+                base_cash += removed
+            base_weights, base_cash = _normalize(base_weights, base_cash)
+        inverse_forbid_report = {
+            "enabled": True,
+            "inverse_ticker": inv_ticker,
+            "removed_weight": removed,
+            "release_to": str(inverse_cfg.get("release_to", "cash")),
+        }
+
     control = dict(config.get("leverage_control", {}) or {})
     lev_ticker = str(control.get("ticker") or "00631L.TW")
     caps = dict(control.get("max_weight_by_regime", {}) or {})
@@ -1014,9 +1091,8 @@ def _group_a_plus_target(
     target_cash = group_sleeve * base_cash
 
     # Direction 3: Add 00632R inverse allocation in severe regime
-    inverse_cfg = dict(config.get("inverse_control") or {})
     inverse_report: dict[str, Any] = {"enabled": False}
-    if inverse_cfg.get("enabled") and regime == "severe":
+    if inverse_cfg.get("enabled") and not inverse_cfg.get("forbid_auto_exposure") and regime == "severe":
         sev_inv = float(inverse_cfg.get("severe_inverse_weight", 0.0))
         if sev_inv > 0:
             inv_ticker = str(inverse_cfg.get("ticker", "00632R.TW"))
@@ -1042,6 +1118,7 @@ def _group_a_plus_target(
         "leverage_before": before_leverage,
         "leverage_released_to_cash": released,
         "inverse_control": inverse_report,
+        "inverse_forbid_gate": inverse_forbid_report,
     }
 
 

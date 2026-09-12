@@ -179,9 +179,120 @@ Current action remains:
 - keep `Golden1_0531` unchanged;
 - use this paper as manual-review evidence only.
 
+## 2026-08-29 Refresh Against 2026-08-31 Latest Strategy
+
+Context:
+
+- Review date: `2026-08-29`
+- Latest LETF readiness artifact:
+  `report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json`
+- Artifact `as_of`: `2026-08-28`
+- Artifact `actual_data_end`: `2026-08-28`
+- 2026-08-31 preview file:
+  `results/group_a_plus_latest_strategy_predict_20260831_from_20260828_total1000000.json`
+
+The 2026-08-31 preview latest-strategy weights for 1,000,000 TWD are:
+
+- `0050.TW`: `47.0000%`
+- `00631L.TW`: `10.0388%`
+- `00632R.TW`: `16.4782%`
+- `00679B.TWO`: `0.0000%`
+- `cash`: `26.4830%`
+
+The LETF tracking-error/effective-fee readiness review remains blocked:
+
+- `status = blocked`
+- `allow_00631l_add = false`
+- `allow_00632r_open = false`
+- `target_weight_change_allowed = false`
+- `auto_rebalance_allowed = false`
+
+Current failed checks:
+
+- `00631l_30d_mean_tracking_error_floor`:
+  value `-0.005443384995685611`, threshold `-0.003`, failed.
+- `00631l_30d_p05_tracking_error_floor`:
+  value `-0.06726248295164249`, threshold `-0.05`, failed.
+- `00631l_30d_latest_realized_variance_ceiling`:
+  value `0.01674647848524199`, threshold `0.01`, failed.
+- `00632r_30d_p05_tracking_error_floor`:
+  value `-0.04179082076309815`, threshold `-0.03`, failed.
+- `effective_fee_proxy_independently_validated`: failed.
+- `live_hedge_policy_validated`: failed.
+
+Current passed-but-insufficient checks:
+
+- `00631l_30d_latest_tracking_error_floor` passes:
+  value `-0.010601223372096472`, threshold `-0.02`.
+- `00632r_60d_abs_beta_error_ceiling` passes:
+  value `0.012952470882646505`, threshold `0.10`.
+- `00632r_60d_correlation_ceiling` passes:
+  value `-0.9848231951491087`, threshold `-0.95`.
+
+Interpretation:
+
+- The paper supports tracking-error and effective-drag monitoring for 00631L
+  and 00632R, but it does not support promoting either LETF into automatic
+  orders under the current readiness state.
+- `00632R` hedge beta/correlation is currently close to the intended inverse
+  exposure, but its 30-day left-tail tracking-error gate still fails and the
+  live hedge policy remains unvalidated.
+- `00631L` has both mean tracking-error drag and high current realized variance,
+  so the paper's volatility-decay argument supports caution rather than adding
+  exposure.
+- If latest-strategy preview and LETF readiness disagree, the readiness review
+  is a blocker for promotion/manual relaxation evidence, not a new alpha signal.
+
+Operational decision for this refresh:
+
+- Do not import the LETF pair trade.
+- Do not use this paper to justify adding `00631L`.
+- Do not use this paper to justify opening `00632R`.
+- Keep the existing pipeline step
+  `letf_tracking_error_effective_fee_readiness_review`.
+- Treat the paper as supporting evidence for LETF caution, tracking-error
+  monitoring, and hedge-neutrality review only.
+
+## Final Archive Decision
+
+Decision date: `2026-08-29`.
+
+Status: experiments complete for GroupA+ import purposes. Best treatment is to
+leave this paper as a detailed LETF tracking-error / effective-drag governance
+record and daily shadow blocker.
+
+Do not promote:
+
+- no LETF pair trade;
+- no paper-driven `00631L` add;
+- no paper-driven `00632R` open;
+- no auto rebalance;
+- no target-weight change;
+- no override of `Golden1_0531`, `a2118`, NCF, or latest-strategy governance.
+
+Keep:
+
+- `letf_tracking_error_effective_fee_readiness_review` in the daily pipeline;
+- 00631L holding-horizon / volatility-decay checks;
+- 00632R hedge-neutrality and left-tail tracking-error checks;
+- effective-fee proxy validation as a hard blocker until separately proven.
+
+Re-open only if:
+
+- a new daily pipeline run materially changes LETF readiness gates;
+- effective-fee proxy validation is separately approved and passes;
+- live hedge policy validation for `00632R` is separately approved and passes;
+- the question is explicitly about blocking/reducing an LETF leg, not creating
+  a new alpha signal.
+
 ## Verification
 
-Documentation only in this step.
+2026-07-18: documentation only in this step.
+
+2026-08-29 refresh verification:
+
+- `tests/test_build_group_a_plus_letf_tracking_error_effective_fee_readiness_review.py`
+  passed: `2 passed in 6.85s`.
 
 Files updated:
 

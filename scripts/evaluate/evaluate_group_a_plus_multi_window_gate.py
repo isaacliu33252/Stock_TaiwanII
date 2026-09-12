@@ -144,6 +144,27 @@ def _extract_rows(path: str | Path) -> list[dict[str, Any]]:
         baseline_name = str(report.get("strategy") or "self_metrics")
 
     if isinstance(baseline_metrics, dict):
+        explicit_rows = report.get("rows")
+        if isinstance(explicit_rows, list):
+            for item in explicit_rows:
+                if not isinstance(item, dict):
+                    continue
+                metrics = item.get("metrics") if isinstance(item.get("metrics"), dict) else item
+                if not isinstance(metrics, dict) or "final_value" not in metrics:
+                    continue
+                rows.append(
+                    _metric_row(
+                        path=resolved,
+                        experiment=experiment,
+                        window=window,
+                        baseline_name=baseline_name,
+                        candidate_name=str(item.get("name") or item.get("variant") or "candidate"),
+                        baseline=baseline_metrics,
+                        candidate=metrics,
+                    )
+                )
+            if rows:
+                return rows
         summary = report.get("summary") or {}
         if isinstance(summary, dict):
             for key in ("best_by_final_value", "best_by_max_drawdown", "best_by_sharpe"):

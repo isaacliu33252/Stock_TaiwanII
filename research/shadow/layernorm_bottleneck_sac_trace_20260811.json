@@ -1,0 +1,3862 @@
+{
+  "n_trades": 547,
+  "trades": [
+    {
+      "date": "2024-01-19 00:00:00",
+      "action": 1,
+      "price": 33.224998474121094,
+      "shares": 30000,
+      "position_after": 30000
+    },
+    {
+      "date": "2024-01-22 00:00:00",
+      "action": 2,
+      "price": 33.45000076293945,
+      "shares": -6000,
+      "position_after": 24000
+    },
+    {
+      "date": "2024-01-23 00:00:00",
+      "action": 1,
+      "price": 33.51250076293945,
+      "shares": 6000,
+      "position_after": 30000
+    },
+    {
+      "date": "2024-01-30 00:00:00",
+      "action": 2,
+      "price": 34.037498474121094,
+      "shares": -9000,
+      "position_after": 21000
+    },
+    {
+      "date": "2024-01-31 00:00:00",
+      "action": 1,
+      "price": 33.587501525878906,
+      "shares": 9000,
+      "position_after": 30000
+    },
+    {
+      "date": "2024-02-01 00:00:00",
+      "action": 2,
+      "price": 33.587501525878906,
+      "shares": -5000,
+      "position_after": 25000
+    },
+    {
+      "date": "2024-02-02 00:00:00",
+      "action": 1,
+      "price": 33.775001525878906,
+      "shares": 5000,
+      "position_after": 30000
+    },
+    {
+      "date": "2024-02-19 00:00:00",
+      "action": 2,
+      "price": 35.275001525878906,
+      "shares": -1000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-02-20 00:00:00",
+      "action": 1,
+      "price": 35.412498474121094,
+      "shares": 1000,
+      "position_after": 30000
+    },
+    {
+      "date": "2024-02-21 00:00:00",
+      "action": 2,
+      "price": 35.29999923706055,
+      "shares": -12000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-02-22 00:00:00",
+      "action": 1,
+      "price": 35.70000076293945,
+      "shares": 11000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-02-27 00:00:00",
+      "action": 2,
+      "price": 35.837501525878906,
+      "shares": -8000,
+      "position_after": 21000
+    },
+    {
+      "date": "2024-02-29 00:00:00",
+      "action": 1,
+      "price": 35.82500076293945,
+      "shares": 5000,
+      "position_after": 26000
+    },
+    {
+      "date": "2024-03-01 00:00:00",
+      "action": 1,
+      "price": 35.70000076293945,
+      "shares": 3000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-03-05 00:00:00",
+      "action": 2,
+      "price": 37.037498474121094,
+      "shares": -1000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-03-06 00:00:00",
+      "action": 1,
+      "price": 37.212501525878906,
+      "shares": 1000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-03-08 00:00:00",
+      "action": 2,
+      "price": 38.61249923706055,
+      "shares": -1000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-03-11 00:00:00",
+      "action": 2,
+      "price": 38.224998474121094,
+      "shares": -4000,
+      "position_after": 24000
+    },
+    {
+      "date": "2024-03-12 00:00:00",
+      "action": 1,
+      "price": 38.625,
+      "shares": 5000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-03-13 00:00:00",
+      "action": 2,
+      "price": 38.8125,
+      "shares": -2000,
+      "position_after": 27000
+    },
+    {
+      "date": "2024-03-14 00:00:00",
+      "action": 2,
+      "price": 38.775001525878906,
+      "shares": -9000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-03-15 00:00:00",
+      "action": 1,
+      "price": 38.25,
+      "shares": 11000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-03-22 00:00:00",
+      "action": 2,
+      "price": 39.29999923706055,
+      "shares": -11000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-03-25 00:00:00",
+      "action": 1,
+      "price": 39.375,
+      "shares": 11000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-03-26 00:00:00",
+      "action": 2,
+      "price": 39.400001525878906,
+      "shares": -4000,
+      "position_after": 25000
+    },
+    {
+      "date": "2024-03-27 00:00:00",
+      "action": 1,
+      "price": 39.412498474121094,
+      "shares": 4000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-03-28 00:00:00",
+      "action": 2,
+      "price": 39.224998474121094,
+      "shares": -11000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-03-29 00:00:00",
+      "action": 1,
+      "price": 39.45000076293945,
+      "shares": 11000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-04-09 00:00:00",
+      "action": 2,
+      "price": 40.8125,
+      "shares": -1000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-04-10 00:00:00",
+      "action": 1,
+      "price": 40.75,
+      "shares": 1000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-04-15 00:00:00",
+      "action": 2,
+      "price": 40.0,
+      "shares": -1000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-04-16 00:00:00",
+      "action": 1,
+      "price": 38.912498474121094,
+      "shares": 1000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-04-22 00:00:00",
+      "action": 2,
+      "price": 37.61249923706055,
+      "shares": -1000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-04-23 00:00:00",
+      "action": 1,
+      "price": 37.974998474121094,
+      "shares": 1000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-04-24 00:00:00",
+      "action": 2,
+      "price": 39.087501525878906,
+      "shares": -2000,
+      "position_after": 27000
+    },
+    {
+      "date": "2024-04-25 00:00:00",
+      "action": 1,
+      "price": 38.375,
+      "shares": 2000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-05-06 00:00:00",
+      "action": 2,
+      "price": 39.79999923706055,
+      "shares": -1000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-05-07 00:00:00",
+      "action": 1,
+      "price": 40.025001525878906,
+      "shares": 1000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-05-13 00:00:00",
+      "action": 2,
+      "price": 40.82500076293945,
+      "shares": -1000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-05-14 00:00:00",
+      "action": 1,
+      "price": 41.099998474121094,
+      "shares": 1000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-05-17 00:00:00",
+      "action": 2,
+      "price": 41.8125,
+      "shares": -2000,
+      "position_after": 27000
+    },
+    {
+      "date": "2024-05-20 00:00:00",
+      "action": 1,
+      "price": 41.79999923706055,
+      "shares": 2000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-05-21 00:00:00",
+      "action": 2,
+      "price": 41.75,
+      "shares": -7000,
+      "position_after": 22000
+    },
+    {
+      "date": "2024-05-22 00:00:00",
+      "action": 1,
+      "price": 42.5,
+      "shares": 7000,
+      "position_after": 29000
+    },
+    {
+      "date": "2024-06-05 00:00:00",
+      "action": 2,
+      "price": 42.11249923706055,
+      "shares": -10000,
+      "position_after": 19000
+    },
+    {
+      "date": "2024-06-06 00:00:00",
+      "action": 1,
+      "price": 43.54999923706055,
+      "shares": 9000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-06-27 00:00:00",
+      "action": 2,
+      "price": 46.32500076293945,
+      "shares": -6000,
+      "position_after": 22000
+    },
+    {
+      "date": "2024-06-28 00:00:00",
+      "action": 1,
+      "price": 46.61249923706055,
+      "shares": 6000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-07-10 00:00:00",
+      "action": 2,
+      "price": 49.587501525878906,
+      "shares": -9000,
+      "position_after": 19000
+    },
+    {
+      "date": "2024-07-11 00:00:00",
+      "action": 1,
+      "price": 50.6875,
+      "shares": 9000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-07-22 00:00:00",
+      "action": 1,
+      "price": 45.17499923706055,
+      "shares": 28000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-07-26 00:00:00",
+      "action": 1,
+      "price": 44.75,
+      "shares": 28000,
+      "position_after": 28000
+    },
+    {
+      "date": "2024-07-29 00:00:00",
+      "action": 1,
+      "price": 45.150001525878906,
+      "shares": 19000,
+      "position_after": 19000
+    },
+    {
+      "date": "2024-07-30 00:00:00",
+      "action": 1,
+      "price": 45.150001525878906,
+      "shares": 27000,
+      "position_after": 27000
+    },
+    {
+      "date": "2024-07-31 00:00:00",
+      "action": 1,
+      "price": 45.212501525878906,
+      "shares": 27000,
+      "position_after": 27000
+    },
+    {
+      "date": "2024-08-01 00:00:00",
+      "action": 1,
+      "price": 46.0,
+      "shares": 27000,
+      "position_after": 27000
+    },
+    {
+      "date": "2024-08-02 00:00:00",
+      "action": 1,
+      "price": 43.67499923706055,
+      "shares": 27000,
+      "position_after": 27000
+    },
+    {
+      "date": "2024-08-05 00:00:00",
+      "action": 1,
+      "price": 39.6875,
+      "shares": 27000,
+      "position_after": 27000
+    },
+    {
+      "date": "2024-08-06 00:00:00",
+      "action": 1,
+      "price": 41.875,
+      "shares": 27000,
+      "position_after": 27000
+    },
+    {
+      "date": "2024-08-07 00:00:00",
+      "action": 1,
+      "price": 43.537498474121094,
+      "shares": 26000,
+      "position_after": 26000
+    },
+    {
+      "date": "2024-08-08 00:00:00",
+      "action": 1,
+      "price": 42.63750076293945,
+      "shares": 25000,
+      "position_after": 25000
+    },
+    {
+      "date": "2024-08-09 00:00:00",
+      "action": 1,
+      "price": 43.962501525878906,
+      "shares": 20000,
+      "position_after": 20000
+    },
+    {
+      "date": "2024-08-12 00:00:00",
+      "action": 1,
+      "price": 44.51250076293945,
+      "shares": 17000,
+      "position_after": 17000
+    },
+    {
+      "date": "2024-08-13 00:00:00",
+      "action": 1,
+      "price": 44.625,
+      "shares": 26000,
+      "position_after": 26000
+    },
+    {
+      "date": "2024-08-14 00:00:00",
+      "action": 1,
+      "price": 45.1875,
+      "shares": 26000,
+      "position_after": 26000
+    },
+    {
+      "date": "2024-08-15 00:00:00",
+      "action": 1,
+      "price": 44.837501525878906,
+      "shares": 25000,
+      "position_after": 25000
+    },
+    {
+      "date": "2024-08-16 00:00:00",
+      "action": 1,
+      "price": 45.849998474121094,
+      "shares": 25000,
+      "position_after": 25000
+    },
+    {
+      "date": "2024-08-19 00:00:00",
+      "action": 1,
+      "price": 45.912498474121094,
+      "shares": 25000,
+      "position_after": 25000
+    },
+    {
+      "date": "2024-08-20 00:00:00",
+      "action": 1,
+      "price": 45.9375,
+      "shares": 25000,
+      "position_after": 25000
+    },
+    {
+      "date": "2024-08-21 00:00:00",
+      "action": 1,
+      "price": 45.45000076293945,
+      "shares": 25000,
+      "position_after": 25000
+    },
+    {
+      "date": "2024-08-22 00:00:00",
+      "action": 1,
+      "price": 45.212501525878906,
+      "shares": 21000,
+      "position_after": 21000
+    },
+    {
+      "date": "2024-08-23 00:00:00",
+      "action": 1,
+      "price": 45.23749923706055,
+      "shares": 25000,
+      "position_after": 25000
+    },
+    {
+      "date": "2024-08-26 00:00:00",
+      "action": 1,
+      "price": 45.3125,
+      "shares": 24000,
+      "position_after": 24000
+    },
+    {
+      "date": "2024-08-27 00:00:00",
+      "action": 1,
+      "price": 45.11249923706055,
+      "shares": 24000,
+      "position_after": 24000
+    },
+    {
+      "date": "2024-08-28 00:00:00",
+      "action": 1,
+      "price": 45.75,
+      "shares": 24000,
+      "position_after": 24000
+    },
+    {
+      "date": "2024-08-29 00:00:00",
+      "action": 1,
+      "price": 45.125,
+      "shares": 24000,
+      "position_after": 24000
+    },
+    {
+      "date": "2024-08-30 00:00:00",
+      "action": 1,
+      "price": 45.337501525878906,
+      "shares": 24000,
+      "position_after": 24000
+    },
+    {
+      "date": "2024-09-02 00:00:00",
+      "action": 1,
+      "price": 45.212501525878906,
+      "shares": 24000,
+      "position_after": 24000
+    },
+    {
+      "date": "2024-09-03 00:00:00",
+      "action": 1,
+      "price": 45.01250076293945,
+      "shares": 24000,
+      "position_after": 24000
+    },
+    {
+      "date": "2024-09-04 00:00:00",
+      "action": 1,
+      "price": 42.8125,
+      "shares": 23000,
+      "position_after": 23000
+    },
+    {
+      "date": "2024-09-05 00:00:00",
+      "action": 1,
+      "price": 43.07500076293945,
+      "shares": 23000,
+      "position_after": 23000
+    },
+    {
+      "date": "2024-09-06 00:00:00",
+      "action": 1,
+      "price": 43.6875,
+      "shares": 23000,
+      "position_after": 23000
+    },
+    {
+      "date": "2024-09-09 00:00:00",
+      "action": 1,
+      "price": 43.01250076293945,
+      "shares": 23000,
+      "position_after": 23000
+    },
+    {
+      "date": "2024-09-10 00:00:00",
+      "action": 1,
+      "price": 43.087501525878906,
+      "shares": 23000,
+      "position_after": 23000
+    },
+    {
+      "date": "2024-09-11 00:00:00",
+      "action": 1,
+      "price": 42.962501525878906,
+      "shares": 18000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-09-12 00:00:00",
+      "action": 1,
+      "price": 44.57500076293945,
+      "shares": 22000,
+      "position_after": 22000
+    },
+    {
+      "date": "2024-09-13 00:00:00",
+      "action": 1,
+      "price": 44.599998474121094,
+      "shares": 22000,
+      "position_after": 22000
+    },
+    {
+      "date": "2024-09-16 00:00:00",
+      "action": 1,
+      "price": 44.6875,
+      "shares": 22000,
+      "position_after": 22000
+    },
+    {
+      "date": "2024-09-18 00:00:00",
+      "action": 1,
+      "price": 44.462501525878906,
+      "shares": 22000,
+      "position_after": 22000
+    },
+    {
+      "date": "2024-09-19 00:00:00",
+      "action": 1,
+      "price": 45.037498474121094,
+      "shares": 22000,
+      "position_after": 22000
+    },
+    {
+      "date": "2024-09-20 00:00:00",
+      "action": 1,
+      "price": 45.61249923706055,
+      "shares": 22000,
+      "position_after": 22000
+    },
+    {
+      "date": "2024-09-23 00:00:00",
+      "action": 1,
+      "price": 45.8125,
+      "shares": 22000,
+      "position_after": 22000
+    },
+    {
+      "date": "2024-09-24 00:00:00",
+      "action": 1,
+      "price": 46.25,
+      "shares": 21000,
+      "position_after": 21000
+    },
+    {
+      "date": "2024-09-25 00:00:00",
+      "action": 1,
+      "price": 46.9375,
+      "shares": 21000,
+      "position_after": 21000
+    },
+    {
+      "date": "2024-09-26 00:00:00",
+      "action": 1,
+      "price": 47.32500076293945,
+      "shares": 21000,
+      "position_after": 21000
+    },
+    {
+      "date": "2024-09-27 00:00:00",
+      "action": 1,
+      "price": 47.224998474121094,
+      "shares": 21000,
+      "position_after": 21000
+    },
+    {
+      "date": "2024-09-30 00:00:00",
+      "action": 1,
+      "price": 45.98749923706055,
+      "shares": 21000,
+      "position_after": 21000
+    },
+    {
+      "date": "2024-10-01 00:00:00",
+      "action": 1,
+      "price": 45.900001525878906,
+      "shares": 21000,
+      "position_after": 21000
+    },
+    {
+      "date": "2024-10-04 00:00:00",
+      "action": 1,
+      "price": 45.900001525878906,
+      "shares": 21000,
+      "position_after": 21000
+    },
+    {
+      "date": "2024-10-07 00:00:00",
+      "action": 1,
+      "price": 47.037498474121094,
+      "shares": 21000,
+      "position_after": 21000
+    },
+    {
+      "date": "2024-10-08 00:00:00",
+      "action": 1,
+      "price": 46.8125,
+      "shares": 20000,
+      "position_after": 20000
+    },
+    {
+      "date": "2024-10-09 00:00:00",
+      "action": 1,
+      "price": 47.25,
+      "shares": 20000,
+      "position_after": 20000
+    },
+    {
+      "date": "2024-10-11 00:00:00",
+      "action": 1,
+      "price": 48.037498474121094,
+      "shares": 20000,
+      "position_after": 20000
+    },
+    {
+      "date": "2024-10-14 00:00:00",
+      "action": 1,
+      "price": 48.07500076293945,
+      "shares": 20000,
+      "position_after": 20000
+    },
+    {
+      "date": "2024-10-15 00:00:00",
+      "action": 1,
+      "price": 49.099998474121094,
+      "shares": 20000,
+      "position_after": 20000
+    },
+    {
+      "date": "2024-10-16 00:00:00",
+      "action": 1,
+      "price": 48.25,
+      "shares": 20000,
+      "position_after": 20000
+    },
+    {
+      "date": "2024-10-17 00:00:00",
+      "action": 1,
+      "price": 48.32500076293945,
+      "shares": 20000,
+      "position_after": 20000
+    },
+    {
+      "date": "2024-10-18 00:00:00",
+      "action": 1,
+      "price": 49.525001525878906,
+      "shares": 20000,
+      "position_after": 20000
+    },
+    {
+      "date": "2024-10-21 00:00:00",
+      "action": 1,
+      "price": 49.51250076293945,
+      "shares": 19000,
+      "position_after": 19000
+    },
+    {
+      "date": "2024-10-22 00:00:00",
+      "action": 1,
+      "price": 49.32500076293945,
+      "shares": 19000,
+      "position_after": 19000
+    },
+    {
+      "date": "2024-10-23 00:00:00",
+      "action": 1,
+      "price": 49.0,
+      "shares": 19000,
+      "position_after": 19000
+    },
+    {
+      "date": "2024-10-24 00:00:00",
+      "action": 1,
+      "price": 48.70000076293945,
+      "shares": 18000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-10-25 00:00:00",
+      "action": 1,
+      "price": 49.099998474121094,
+      "shares": 19000,
+      "position_after": 19000
+    },
+    {
+      "date": "2024-10-28 00:00:00",
+      "action": 1,
+      "price": 49.01250076293945,
+      "shares": 19000,
+      "position_after": 19000
+    },
+    {
+      "date": "2024-10-29 00:00:00",
+      "action": 1,
+      "price": 47.875,
+      "shares": 19000,
+      "position_after": 19000
+    },
+    {
+      "date": "2024-10-30 00:00:00",
+      "action": 1,
+      "price": 47.95000076293945,
+      "shares": 19000,
+      "position_after": 19000
+    },
+    {
+      "date": "2024-11-01 00:00:00",
+      "action": 1,
+      "price": 47.625,
+      "shares": 19000,
+      "position_after": 19000
+    },
+    {
+      "date": "2024-11-04 00:00:00",
+      "action": 1,
+      "price": 48.23749923706055,
+      "shares": 18000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-11-05 00:00:00",
+      "action": 1,
+      "price": 48.412498474121094,
+      "shares": 18000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-11-06 00:00:00",
+      "action": 1,
+      "price": 48.79999923706055,
+      "shares": 18000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-11-07 00:00:00",
+      "action": 1,
+      "price": 49.36249923706055,
+      "shares": 18000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-11-08 00:00:00",
+      "action": 1,
+      "price": 49.75,
+      "shares": 18000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-11-11 00:00:00",
+      "action": 1,
+      "price": 49.775001525878906,
+      "shares": 18000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-11-12 00:00:00",
+      "action": 1,
+      "price": 48.5,
+      "shares": 18000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-11-13 00:00:00",
+      "action": 1,
+      "price": 48.1875,
+      "shares": 18000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-11-14 00:00:00",
+      "action": 1,
+      "price": 47.75,
+      "shares": 18000,
+      "position_after": 18000
+    },
+    {
+      "date": "2024-11-15 00:00:00",
+      "action": 1,
+      "price": 48.087501525878906,
+      "shares": 17000,
+      "position_after": 17000
+    },
+    {
+      "date": "2024-11-18 00:00:00",
+      "action": 1,
+      "price": 47.412498474121094,
+      "shares": 17000,
+      "position_after": 17000
+    },
+    {
+      "date": "2024-11-19 00:00:00",
+      "action": 1,
+      "price": 48.0625,
+      "shares": 17000,
+      "position_after": 17000
+    },
+    {
+      "date": "2024-11-20 00:00:00",
+      "action": 1,
+      "price": 47.86249923706055,
+      "shares": 17000,
+      "position_after": 17000
+    },
+    {
+      "date": "2024-11-21 00:00:00",
+      "action": 1,
+      "price": 47.337501525878906,
+      "shares": 17000,
+      "position_after": 17000
+    },
+    {
+      "date": "2024-11-22 00:00:00",
+      "action": 1,
+      "price": 48.26250076293945,
+      "shares": 17000,
+      "position_after": 17000
+    },
+    {
+      "date": "2024-11-25 00:00:00",
+      "action": 1,
+      "price": 48.087501525878906,
+      "shares": 17000,
+      "position_after": 17000
+    },
+    {
+      "date": "2024-11-26 00:00:00",
+      "action": 1,
+      "price": 47.462501525878906,
+      "shares": 17000,
+      "position_after": 17000
+    },
+    {
+      "date": "2024-11-27 00:00:00",
+      "action": 1,
+      "price": 46.775001525878906,
+      "shares": 17000,
+      "position_after": 17000
+    },
+    {
+      "date": "2024-11-28 00:00:00",
+      "action": 1,
+      "price": 46.70000076293945,
+      "shares": 17000,
+      "position_after": 17000
+    },
+    {
+      "date": "2024-11-29 00:00:00",
+      "action": 1,
+      "price": 46.8125,
+      "shares": 16000,
+      "position_after": 16000
+    },
+    {
+      "date": "2024-12-02 00:00:00",
+      "action": 1,
+      "price": 47.92499923706055,
+      "shares": 16000,
+      "position_after": 16000
+    },
+    {
+      "date": "2024-12-03 00:00:00",
+      "action": 1,
+      "price": 48.57500076293945,
+      "shares": 16000,
+      "position_after": 16000
+    },
+    {
+      "date": "2024-12-04 00:00:00",
+      "action": 1,
+      "price": 48.86249923706055,
+      "shares": 16000,
+      "position_after": 16000
+    },
+    {
+      "date": "2024-12-05 00:00:00",
+      "action": 1,
+      "price": 49.125,
+      "shares": 16000,
+      "position_after": 16000
+    },
+    {
+      "date": "2024-12-06 00:00:00",
+      "action": 1,
+      "price": 48.9375,
+      "shares": 16000,
+      "position_after": 16000
+    },
+    {
+      "date": "2024-12-09 00:00:00",
+      "action": 1,
+      "price": 49.0,
+      "shares": 16000,
+      "position_after": 16000
+    },
+    {
+      "date": "2024-12-10 00:00:00",
+      "action": 1,
+      "price": 48.650001525878906,
+      "shares": 16000,
+      "position_after": 16000
+    },
+    {
+      "date": "2024-12-11 00:00:00",
+      "action": 1,
+      "price": 48.224998474121094,
+      "shares": 16000,
+      "position_after": 16000
+    },
+    {
+      "date": "2024-12-12 00:00:00",
+      "action": 1,
+      "price": 48.787498474121094,
+      "shares": 16000,
+      "position_after": 16000
+    },
+    {
+      "date": "2024-12-13 00:00:00",
+      "action": 1,
+      "price": 48.82500076293945,
+      "shares": 15000,
+      "position_after": 15000
+    },
+    {
+      "date": "2024-12-16 00:00:00",
+      "action": 1,
+      "price": 49.025001525878906,
+      "shares": 15000,
+      "position_after": 15000
+    },
+    {
+      "date": "2024-12-17 00:00:00",
+      "action": 1,
+      "price": 49.275001525878906,
+      "shares": 15000,
+      "position_after": 15000
+    },
+    {
+      "date": "2024-12-18 00:00:00",
+      "action": 1,
+      "price": 49.275001525878906,
+      "shares": 15000,
+      "position_after": 15000
+    },
+    {
+      "date": "2024-12-19 00:00:00",
+      "action": 1,
+      "price": 48.599998474121094,
+      "shares": 15000,
+      "position_after": 15000
+    },
+    {
+      "date": "2024-12-20 00:00:00",
+      "action": 1,
+      "price": 48.150001525878906,
+      "shares": 15000,
+      "position_after": 15000
+    },
+    {
+      "date": "2024-12-23 00:00:00",
+      "action": 1,
+      "price": 49.3125,
+      "shares": 15000,
+      "position_after": 15000
+    },
+    {
+      "date": "2024-12-24 00:00:00",
+      "action": 1,
+      "price": 49.45000076293945,
+      "shares": 15000,
+      "position_after": 15000
+    },
+    {
+      "date": "2024-12-25 00:00:00",
+      "action": 1,
+      "price": 49.599998474121094,
+      "shares": 15000,
+      "position_after": 15000
+    },
+    {
+      "date": "2024-12-26 00:00:00",
+      "action": 1,
+      "price": 49.5625,
+      "shares": 15000,
+      "position_after": 15000
+    },
+    {
+      "date": "2024-12-27 00:00:00",
+      "action": 1,
+      "price": 49.724998474121094,
+      "shares": 15000,
+      "position_after": 15000
+    },
+    {
+      "date": "2024-12-30 00:00:00",
+      "action": 1,
+      "price": 49.45000076293945,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2024-12-31 00:00:00",
+      "action": 1,
+      "price": 48.9375,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2025-01-02 00:00:00",
+      "action": 1,
+      "price": 48.51250076293945,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2025-01-03 00:00:00",
+      "action": 1,
+      "price": 49.0,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2025-01-06 00:00:00",
+      "action": 1,
+      "price": 50.537498474121094,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2025-01-07 00:00:00",
+      "action": 1,
+      "price": 51.099998474121094,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2025-01-08 00:00:00",
+      "action": 1,
+      "price": 50.337501525878906,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2025-01-09 00:00:00",
+      "action": 1,
+      "price": 49.76250076293945,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2025-01-10 00:00:00",
+      "action": 1,
+      "price": 49.75,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2025-01-13 00:00:00",
+      "action": 1,
+      "price": 48.599998474121094,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2025-01-14 00:00:00",
+      "action": 1,
+      "price": 48.900001525878906,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2025-01-15 00:00:00",
+      "action": 1,
+      "price": 48.525001525878906,
+      "shares": 14000,
+      "position_after": 14000
+    },
+    {
+      "date": "2025-01-16 00:00:00",
+      "action": 1,
+      "price": 49.51250076293945,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-01-17 00:00:00",
+      "action": 1,
+      "price": 49.07500076293945,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-01-20 00:00:00",
+      "action": 1,
+      "price": 49.57500076293945,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-01-21 00:00:00",
+      "action": 1,
+      "price": 49.67499923706055,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-01-22 00:00:00",
+      "action": 1,
+      "price": 50.32500076293945,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-02-03 00:00:00",
+      "action": 1,
+      "price": 48.17499923706055,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-02-04 00:00:00",
+      "action": 1,
+      "price": 48.462501525878906,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-02-05 00:00:00",
+      "action": 1,
+      "price": 49.20000076293945,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-02-06 00:00:00",
+      "action": 1,
+      "price": 49.412498474121094,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-02-07 00:00:00",
+      "action": 1,
+      "price": 49.63750076293945,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-02-10 00:00:00",
+      "action": 1,
+      "price": 49.07500076293945,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-02-11 00:00:00",
+      "action": 1,
+      "price": 49.375,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-02-12 00:00:00",
+      "action": 1,
+      "price": 49.29999923706055,
+      "shares": 13000,
+      "position_after": 13000
+    },
+    {
+      "date": "2025-02-13 00:00:00",
+      "action": 1,
+      "price": 49.087501525878906,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-02-14 00:00:00",
+      "action": 1,
+      "price": 48.5,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-02-17 00:00:00",
+      "action": 1,
+      "price": 49.23749923706055,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-02-18 00:00:00",
+      "action": 1,
+      "price": 49.412498474121094,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-02-19 00:00:00",
+      "action": 1,
+      "price": 49.32500076293945,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-02-20 00:00:00",
+      "action": 1,
+      "price": 49.13750076293945,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-02-21 00:00:00",
+      "action": 1,
+      "price": 49.48749923706055,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-02-24 00:00:00",
+      "action": 1,
+      "price": 49.04999923706055,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-02-25 00:00:00",
+      "action": 1,
+      "price": 48.412498474121094,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-02-26 00:00:00",
+      "action": 1,
+      "price": 48.67499923706055,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-02-27 00:00:00",
+      "action": 1,
+      "price": 48.125,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-03-03 00:00:00",
+      "action": 1,
+      "price": 47.01250076293945,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-03-04 00:00:00",
+      "action": 1,
+      "price": 46.70000076293945,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-03-05 00:00:00",
+      "action": 1,
+      "price": 47.3125,
+      "shares": 12000,
+      "position_after": 12000
+    },
+    {
+      "date": "2025-03-06 00:00:00",
+      "action": 1,
+      "price": 47.025001525878906,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-07 00:00:00",
+      "action": 1,
+      "price": 46.587501525878906,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-10 00:00:00",
+      "action": 1,
+      "price": 46.3125,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-11 00:00:00",
+      "action": 1,
+      "price": 45.5,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-12 00:00:00",
+      "action": 1,
+      "price": 45.70000076293945,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-13 00:00:00",
+      "action": 1,
+      "price": 45.275001525878906,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-14 00:00:00",
+      "action": 1,
+      "price": 45.125,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-17 00:00:00",
+      "action": 1,
+      "price": 45.51250076293945,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-18 00:00:00",
+      "action": 1,
+      "price": 45.70000076293945,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-19 00:00:00",
+      "action": 1,
+      "price": 45.13750076293945,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-20 00:00:00",
+      "action": 1,
+      "price": 46.11249923706055,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-21 00:00:00",
+      "action": 1,
+      "price": 45.73749923706055,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-24 00:00:00",
+      "action": 1,
+      "price": 45.6875,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-25 00:00:00",
+      "action": 1,
+      "price": 46.162498474121094,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-26 00:00:00",
+      "action": 1,
+      "price": 46.125,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-27 00:00:00",
+      "action": 1,
+      "price": 45.25,
+      "shares": 11000,
+      "position_after": 11000
+    },
+    {
+      "date": "2025-03-28 00:00:00",
+      "action": 1,
+      "price": 44.79999923706055,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-03-31 00:00:00",
+      "action": 1,
+      "price": 43.1875,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-01 00:00:00",
+      "action": 1,
+      "price": 44.07500076293945,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-02 00:00:00",
+      "action": 1,
+      "price": 44.0,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-07 00:00:00",
+      "action": 1,
+      "price": 39.599998474121094,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-08 00:00:00",
+      "action": 1,
+      "price": 38.3125,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-09 00:00:00",
+      "action": 1,
+      "price": 36.54999923706055,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-10 00:00:00",
+      "action": 1,
+      "price": 40.20000076293945,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-11 00:00:00",
+      "action": 1,
+      "price": 41.13750076293945,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-14 00:00:00",
+      "action": 1,
+      "price": 40.92499923706055,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-15 00:00:00",
+      "action": 1,
+      "price": 41.337501525878906,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-16 00:00:00",
+      "action": 1,
+      "price": 40.587501525878906,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-17 00:00:00",
+      "action": 1,
+      "price": 40.13750076293945,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-18 00:00:00",
+      "action": 1,
+      "price": 40.224998474121094,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-21 00:00:00",
+      "action": 1,
+      "price": 39.650001525878906,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-22 00:00:00",
+      "action": 1,
+      "price": 38.98749923706055,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-23 00:00:00",
+      "action": 1,
+      "price": 40.712501525878906,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-24 00:00:00",
+      "action": 1,
+      "price": 40.474998474121094,
+      "shares": 10000,
+      "position_after": 10000
+    },
+    {
+      "date": "2025-04-25 00:00:00",
+      "action": 1,
+      "price": 41.4375,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-04-28 00:00:00",
+      "action": 1,
+      "price": 41.787498474121094,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-04-29 00:00:00",
+      "action": 1,
+      "price": 41.95000076293945,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-04-30 00:00:00",
+      "action": 1,
+      "price": 42.150001525878906,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-02 00:00:00",
+      "action": 1,
+      "price": 43.375,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-05 00:00:00",
+      "action": 1,
+      "price": 42.98749923706055,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-06 00:00:00",
+      "action": 1,
+      "price": 42.75,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-07 00:00:00",
+      "action": 1,
+      "price": 42.587501525878906,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-08 00:00:00",
+      "action": 1,
+      "price": 43.150001525878906,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-09 00:00:00",
+      "action": 1,
+      "price": 43.6875,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-12 00:00:00",
+      "action": 1,
+      "price": 44.17499923706055,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-13 00:00:00",
+      "action": 1,
+      "price": 44.712501525878906,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-14 00:00:00",
+      "action": 1,
+      "price": 45.724998474121094,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-15 00:00:00",
+      "action": 1,
+      "price": 45.625,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-16 00:00:00",
+      "action": 1,
+      "price": 45.75,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-19 00:00:00",
+      "action": 1,
+      "price": 45.11249923706055,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-20 00:00:00",
+      "action": 1,
+      "price": 45.20000076293945,
+      "shares": 9000,
+      "position_after": 9000
+    },
+    {
+      "date": "2025-05-21 00:00:00",
+      "action": 1,
+      "price": 45.900001525878906,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-05-22 00:00:00",
+      "action": 1,
+      "price": 45.400001525878906,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-05-23 00:00:00",
+      "action": 1,
+      "price": 45.212501525878906,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-05-26 00:00:00",
+      "action": 1,
+      "price": 45.162498474121094,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-05-27 00:00:00",
+      "action": 1,
+      "price": 44.76250076293945,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-05-28 00:00:00",
+      "action": 1,
+      "price": 44.837501525878906,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-05-29 00:00:00",
+      "action": 1,
+      "price": 44.9375,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-02 00:00:00",
+      "action": 1,
+      "price": 43.974998474121094,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-03 00:00:00",
+      "action": 1,
+      "price": 44.287498474121094,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-04 00:00:00",
+      "action": 1,
+      "price": 45.32500076293945,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-05 00:00:00",
+      "action": 1,
+      "price": 45.412498474121094,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-06 00:00:00",
+      "action": 1,
+      "price": 45.48749923706055,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-09 00:00:00",
+      "action": 1,
+      "price": 45.92499923706055,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-10 00:00:00",
+      "action": 1,
+      "price": 47.162498474121094,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-11 00:00:00",
+      "action": 1,
+      "price": 47.162498474121094,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-12 00:00:00",
+      "action": 1,
+      "price": 47.162498474121094,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-13 00:00:00",
+      "action": 1,
+      "price": 47.162498474121094,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-16 00:00:00",
+      "action": 1,
+      "price": 47.162498474121094,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-17 00:00:00",
+      "action": 1,
+      "price": 47.162498474121094,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-06-18 00:00:00",
+      "action": 1,
+      "price": 47.56999969482422,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-19 00:00:00",
+      "action": 1,
+      "price": 47.099998474121094,
+      "shares": 8000,
+      "position_after": 8000
+    },
+    {
+      "date": "2025-06-20 00:00:00",
+      "action": 1,
+      "price": 47.029998779296875,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-06-23 00:00:00",
+      "action": 1,
+      "price": 46.63999938964844,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-06-24 00:00:00",
+      "action": 1,
+      "price": 47.4900016784668,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-06-25 00:00:00",
+      "action": 1,
+      "price": 48.18000030517578,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-06-26 00:00:00",
+      "action": 1,
+      "price": 48.2400016784668,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-06-27 00:00:00",
+      "action": 1,
+      "price": 48.290000915527344,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-06-30 00:00:00",
+      "action": 1,
+      "price": 48.36000061035156,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-01 00:00:00",
+      "action": 1,
+      "price": 48.63999938964844,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-02 00:00:00",
+      "action": 1,
+      "price": 48.650001525878906,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-03 00:00:00",
+      "action": 1,
+      "price": 49.31999969482422,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-04 00:00:00",
+      "action": 1,
+      "price": 48.86000061035156,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-07 00:00:00",
+      "action": 1,
+      "price": 48.56999969482422,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-08 00:00:00",
+      "action": 1,
+      "price": 48.349998474121094,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-09 00:00:00",
+      "action": 1,
+      "price": 48.849998474121094,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-10 00:00:00",
+      "action": 1,
+      "price": 49.40999984741211,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-11 00:00:00",
+      "action": 1,
+      "price": 49.619998931884766,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-14 00:00:00",
+      "action": 1,
+      "price": 49.33000183105469,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-15 00:00:00",
+      "action": 1,
+      "price": 50.0,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-16 00:00:00",
+      "action": 1,
+      "price": 50.400001525878906,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-17 00:00:00",
+      "action": 1,
+      "price": 50.70000076293945,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-18 00:00:00",
+      "action": 1,
+      "price": 51.45000076293945,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-21 00:00:00",
+      "action": 1,
+      "price": 50.900001525878906,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-22 00:00:00",
+      "action": 1,
+      "price": 50.54999923706055,
+      "shares": 7000,
+      "position_after": 7000
+    },
+    {
+      "date": "2025-07-23 00:00:00",
+      "action": 1,
+      "price": 50.70000076293945,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-07-24 00:00:00",
+      "action": 1,
+      "price": 51.0,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-07-25 00:00:00",
+      "action": 1,
+      "price": 50.900001525878906,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-07-28 00:00:00",
+      "action": 1,
+      "price": 51.04999923706055,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-07-29 00:00:00",
+      "action": 1,
+      "price": 50.45000076293945,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-07-30 00:00:00",
+      "action": 1,
+      "price": 51.0,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-07-31 00:00:00",
+      "action": 1,
+      "price": 51.54999923706055,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-01 00:00:00",
+      "action": 1,
+      "price": 51.099998474121094,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-04 00:00:00",
+      "action": 1,
+      "price": 50.79999923706055,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-05 00:00:00",
+      "action": 1,
+      "price": 51.45000076293945,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-06 00:00:00",
+      "action": 1,
+      "price": 51.0,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-07 00:00:00",
+      "action": 1,
+      "price": 52.45000076293945,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-08 00:00:00",
+      "action": 1,
+      "price": 52.45000076293945,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-11 00:00:00",
+      "action": 1,
+      "price": 52.849998474121094,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-12 00:00:00",
+      "action": 1,
+      "price": 52.900001525878906,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-13 00:00:00",
+      "action": 1,
+      "price": 53.349998474121094,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-14 00:00:00",
+      "action": 1,
+      "price": 53.150001525878906,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-15 00:00:00",
+      "action": 1,
+      "price": 53.150001525878906,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-18 00:00:00",
+      "action": 1,
+      "price": 53.29999923706055,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-19 00:00:00",
+      "action": 1,
+      "price": 53.20000076293945,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-20 00:00:00",
+      "action": 1,
+      "price": 51.70000076293945,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-21 00:00:00",
+      "action": 1,
+      "price": 52.0,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-22 00:00:00",
+      "action": 1,
+      "price": 51.75,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-25 00:00:00",
+      "action": 1,
+      "price": 52.70000076293945,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-26 00:00:00",
+      "action": 1,
+      "price": 52.75,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-27 00:00:00",
+      "action": 1,
+      "price": 53.0,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-28 00:00:00",
+      "action": 1,
+      "price": 52.5,
+      "shares": 6000,
+      "position_after": 6000
+    },
+    {
+      "date": "2025-08-29 00:00:00",
+      "action": 1,
+      "price": 52.5,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-01 00:00:00",
+      "action": 1,
+      "price": 52.0,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-02 00:00:00",
+      "action": 1,
+      "price": 52.0,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-03 00:00:00",
+      "action": 1,
+      "price": 51.95000076293945,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-04 00:00:00",
+      "action": 1,
+      "price": 52.29999923706055,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-05 00:00:00",
+      "action": 1,
+      "price": 52.849998474121094,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-08 00:00:00",
+      "action": 1,
+      "price": 53.349998474121094,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-09 00:00:00",
+      "action": 1,
+      "price": 53.900001525878906,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-10 00:00:00",
+      "action": 1,
+      "price": 54.95000076293945,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-11 00:00:00",
+      "action": 1,
+      "price": 55.45000076293945,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-12 00:00:00",
+      "action": 1,
+      "price": 56.0,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-15 00:00:00",
+      "action": 1,
+      "price": 56.0,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-16 00:00:00",
+      "action": 1,
+      "price": 56.75,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-17 00:00:00",
+      "action": 1,
+      "price": 56.349998474121094,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-18 00:00:00",
+      "action": 1,
+      "price": 56.95000076293945,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-19 00:00:00",
+      "action": 1,
+      "price": 57.0,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-22 00:00:00",
+      "action": 1,
+      "price": 57.400001525878906,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-23 00:00:00",
+      "action": 1,
+      "price": 58.45000076293945,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-24 00:00:00",
+      "action": 1,
+      "price": 58.400001525878906,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-25 00:00:00",
+      "action": 1,
+      "price": 58.20000076293945,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-26 00:00:00",
+      "action": 1,
+      "price": 57.25,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-09-30 00:00:00",
+      "action": 1,
+      "price": 57.79999923706055,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-10-01 00:00:00",
+      "action": 1,
+      "price": 58.099998474121094,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-10-02 00:00:00",
+      "action": 1,
+      "price": 59.20000076293945,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-10-03 00:00:00",
+      "action": 1,
+      "price": 60.04999923706055,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-10-07 00:00:00",
+      "action": 1,
+      "price": 61.70000076293945,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-10-08 00:00:00",
+      "action": 1,
+      "price": 61.150001525878906,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-10-09 00:00:00",
+      "action": 1,
+      "price": 61.599998474121094,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-10-13 00:00:00",
+      "action": 1,
+      "price": 61.0,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-10-14 00:00:00",
+      "action": 1,
+      "price": 60.70000076293945,
+      "shares": 5000,
+      "position_after": 5000
+    },
+    {
+      "date": "2025-10-15 00:00:00",
+      "action": 1,
+      "price": 61.79999923706055,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-10-16 00:00:00",
+      "action": 1,
+      "price": 63.0,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-10-17 00:00:00",
+      "action": 1,
+      "price": 62.04999923706055,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-10-20 00:00:00",
+      "action": 1,
+      "price": 63.099998474121094,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-10-21 00:00:00",
+      "action": 1,
+      "price": 63.20000076293945,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-10-22 00:00:00",
+      "action": 1,
+      "price": 62.70000076293945,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-10-23 00:00:00",
+      "action": 1,
+      "price": 62.349998474121094,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-10-27 00:00:00",
+      "action": 1,
+      "price": 63.79999923706055,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-10-28 00:00:00",
+      "action": 1,
+      "price": 63.349998474121094,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-10-29 00:00:00",
+      "action": 1,
+      "price": 64.4000015258789,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-10-30 00:00:00",
+      "action": 1,
+      "price": 64.4000015258789,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-10-31 00:00:00",
+      "action": 1,
+      "price": 64.75,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-03 00:00:00",
+      "action": 1,
+      "price": 64.1500015258789,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-04 00:00:00",
+      "action": 1,
+      "price": 63.95000076293945,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-05 00:00:00",
+      "action": 1,
+      "price": 63.150001525878906,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-06 00:00:00",
+      "action": 1,
+      "price": 63.29999923706055,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-07 00:00:00",
+      "action": 1,
+      "price": 62.54999923706055,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-10 00:00:00",
+      "action": 1,
+      "price": 63.349998474121094,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-11 00:00:00",
+      "action": 1,
+      "price": 62.900001525878906,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-12 00:00:00",
+      "action": 1,
+      "price": 63.20000076293945,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-13 00:00:00",
+      "action": 1,
+      "price": 62.900001525878906,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-14 00:00:00",
+      "action": 1,
+      "price": 61.70000076293945,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-17 00:00:00",
+      "action": 1,
+      "price": 61.900001525878906,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-18 00:00:00",
+      "action": 1,
+      "price": 60.45000076293945,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-19 00:00:00",
+      "action": 1,
+      "price": 60.04999923706055,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-20 00:00:00",
+      "action": 1,
+      "price": 61.900001525878906,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-21 00:00:00",
+      "action": 1,
+      "price": 59.849998474121094,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-24 00:00:00",
+      "action": 1,
+      "price": 59.54999923706055,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-25 00:00:00",
+      "action": 1,
+      "price": 60.349998474121094,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-26 00:00:00",
+      "action": 1,
+      "price": 61.349998474121094,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-27 00:00:00",
+      "action": 1,
+      "price": 61.900001525878906,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-11-28 00:00:00",
+      "action": 1,
+      "price": 62.349998474121094,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-12-01 00:00:00",
+      "action": 1,
+      "price": 61.5,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-12-02 00:00:00",
+      "action": 1,
+      "price": 61.70000076293945,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-12-03 00:00:00",
+      "action": 1,
+      "price": 62.29999923706055,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-12-04 00:00:00",
+      "action": 1,
+      "price": 62.20000076293945,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-12-05 00:00:00",
+      "action": 1,
+      "price": 62.75,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-12-08 00:00:00",
+      "action": 1,
+      "price": 63.70000076293945,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-12-09 00:00:00",
+      "action": 1,
+      "price": 63.599998474121094,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-12-10 00:00:00",
+      "action": 1,
+      "price": 64.05000305175781,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-12-11 00:00:00",
+      "action": 1,
+      "price": 63.349998474121094,
+      "shares": 4000,
+      "position_after": 4000
+    },
+    {
+      "date": "2025-12-12 00:00:00",
+      "action": 1,
+      "price": 63.45000076293945,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-15 00:00:00",
+      "action": 1,
+      "price": 62.79999923706055,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-16 00:00:00",
+      "action": 1,
+      "price": 62.25,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-17 00:00:00",
+      "action": 1,
+      "price": 61.900001525878906,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-18 00:00:00",
+      "action": 1,
+      "price": 61.900001525878906,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-19 00:00:00",
+      "action": 1,
+      "price": 62.5,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-22 00:00:00",
+      "action": 1,
+      "price": 63.400001525878906,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-23 00:00:00",
+      "action": 1,
+      "price": 63.70000076293945,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-24 00:00:00",
+      "action": 1,
+      "price": 63.849998474121094,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-26 00:00:00",
+      "action": 1,
+      "price": 64.4000015258789,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-29 00:00:00",
+      "action": 1,
+      "price": 65.25,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-30 00:00:00",
+      "action": 1,
+      "price": 65.1500015258789,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2025-12-31 00:00:00",
+      "action": 1,
+      "price": 65.5999984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-02 00:00:00",
+      "action": 1,
+      "price": 66.94999694824219,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-05 00:00:00",
+      "action": 1,
+      "price": 69.5,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-06 00:00:00",
+      "action": 1,
+      "price": 70.4000015258789,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-07 00:00:00",
+      "action": 1,
+      "price": 69.8499984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-08 00:00:00",
+      "action": 1,
+      "price": 70.0999984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-09 00:00:00",
+      "action": 1,
+      "price": 69.8499984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-12 00:00:00",
+      "action": 1,
+      "price": 70.3499984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-13 00:00:00",
+      "action": 1,
+      "price": 70.69999694824219,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-14 00:00:00",
+      "action": 1,
+      "price": 70.75,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-15 00:00:00",
+      "action": 1,
+      "price": 70.6500015258789,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-16 00:00:00",
+      "action": 1,
+      "price": 72.0,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-19 00:00:00",
+      "action": 1,
+      "price": 72.5999984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-20 00:00:00",
+      "action": 1,
+      "price": 72.5999984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-21 00:00:00",
+      "action": 1,
+      "price": 71.8499984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-22 00:00:00",
+      "action": 1,
+      "price": 71.80000305175781,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-23 00:00:00",
+      "action": 1,
+      "price": 72.25,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-26 00:00:00",
+      "action": 1,
+      "price": 72.25,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-27 00:00:00",
+      "action": 1,
+      "price": 73.05000305175781,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-28 00:00:00",
+      "action": 1,
+      "price": 74.19999694824219,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-29 00:00:00",
+      "action": 1,
+      "price": 73.75,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-01-30 00:00:00",
+      "action": 1,
+      "price": 72.5999984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-02 00:00:00",
+      "action": 1,
+      "price": 71.5,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-03 00:00:00",
+      "action": 1,
+      "price": 72.94999694824219,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-04 00:00:00",
+      "action": 1,
+      "price": 72.9000015258789,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-05 00:00:00",
+      "action": 1,
+      "price": 72.0,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-06 00:00:00",
+      "action": 1,
+      "price": 71.9000015258789,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-09 00:00:00",
+      "action": 1,
+      "price": 73.94999694824219,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-10 00:00:00",
+      "action": 1,
+      "price": 75.5,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-11 00:00:00",
+      "action": 1,
+      "price": 77.19999694824219,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-23 00:00:00",
+      "action": 1,
+      "price": 77.4000015258789,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-24 00:00:00",
+      "action": 1,
+      "price": 79.4000015258789,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-25 00:00:00",
+      "action": 1,
+      "price": 81.0999984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-02-26 00:00:00",
+      "action": 1,
+      "price": 81.1500015258789,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-03-02 00:00:00",
+      "action": 1,
+      "price": 80.3499984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-03-03 00:00:00",
+      "action": 1,
+      "price": 78.75,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-03-04 00:00:00",
+      "action": 1,
+      "price": 75.5999984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-03-05 00:00:00",
+      "action": 1,
+      "price": 77.4000015258789,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-03-06 00:00:00",
+      "action": 1,
+      "price": 76.8499984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-09 00:00:00",
+      "action": 1,
+      "price": 73.5999984741211,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-03-10 00:00:00",
+      "action": 1,
+      "price": 75.19999694824219,
+      "shares": 3000,
+      "position_after": 3000
+    },
+    {
+      "date": "2026-03-11 00:00:00",
+      "action": 1,
+      "price": 78.19999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-12 00:00:00",
+      "action": 1,
+      "price": 76.5999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-13 00:00:00",
+      "action": 1,
+      "price": 75.94999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-16 00:00:00",
+      "action": 1,
+      "price": 75.5999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-17 00:00:00",
+      "action": 1,
+      "price": 76.6500015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-18 00:00:00",
+      "action": 1,
+      "price": 77.80000305175781,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-19 00:00:00",
+      "action": 1,
+      "price": 76.0,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-20 00:00:00",
+      "action": 1,
+      "price": 75.9000015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-23 00:00:00",
+      "action": 1,
+      "price": 74.25,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-24 00:00:00",
+      "action": 1,
+      "price": 74.4000015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-25 00:00:00",
+      "action": 1,
+      "price": 76.19999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-26 00:00:00",
+      "action": 1,
+      "price": 75.80000305175781,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-27 00:00:00",
+      "action": 1,
+      "price": 75.0,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-30 00:00:00",
+      "action": 1,
+      "price": 73.9000015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-03-31 00:00:00",
+      "action": 1,
+      "price": 72.3499984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-01 00:00:00",
+      "action": 1,
+      "price": 75.44999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-02 00:00:00",
+      "action": 1,
+      "price": 73.94999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-07 00:00:00",
+      "action": 1,
+      "price": 75.30000305175781,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-08 00:00:00",
+      "action": 1,
+      "price": 79.19999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-09 00:00:00",
+      "action": 1,
+      "price": 79.1500015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-10 00:00:00",
+      "action": 1,
+      "price": 80.75,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-13 00:00:00",
+      "action": 1,
+      "price": 80.5999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-14 00:00:00",
+      "action": 1,
+      "price": 83.0999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-15 00:00:00",
+      "action": 1,
+      "price": 84.1500015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-16 00:00:00",
+      "action": 1,
+      "price": 85.0,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-17 00:00:00",
+      "action": 1,
+      "price": 84.1500015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-20 00:00:00",
+      "action": 1,
+      "price": 84.55000305175781,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-21 00:00:00",
+      "action": 1,
+      "price": 86.0,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-22 00:00:00",
+      "action": 1,
+      "price": 86.3499984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-23 00:00:00",
+      "action": 1,
+      "price": 86.3499984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-24 00:00:00",
+      "action": 1,
+      "price": 89.94999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-27 00:00:00",
+      "action": 1,
+      "price": 93.0,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-28 00:00:00",
+      "action": 1,
+      "price": 92.0,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-29 00:00:00",
+      "action": 1,
+      "price": 90.75,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-04-30 00:00:00",
+      "action": 1,
+      "price": 90.5,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-04 00:00:00",
+      "action": 1,
+      "price": 94.5999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-05 00:00:00",
+      "action": 1,
+      "price": 94.5999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-06 00:00:00",
+      "action": 1,
+      "price": 95.75,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-07 00:00:00",
+      "action": 1,
+      "price": 97.69999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-08 00:00:00",
+      "action": 1,
+      "price": 97.0,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-11 00:00:00",
+      "action": 1,
+      "price": 96.9000015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-12 00:00:00",
+      "action": 1,
+      "price": 96.8499984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-13 00:00:00",
+      "action": 1,
+      "price": 95.5,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-14 00:00:00",
+      "action": 1,
+      "price": 96.05000305175781,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-15 00:00:00",
+      "action": 1,
+      "price": 95.4000015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-18 00:00:00",
+      "action": 1,
+      "price": 94.9000015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-19 00:00:00",
+      "action": 1,
+      "price": 93.0999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-20 00:00:00",
+      "action": 1,
+      "price": 92.5,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-21 00:00:00",
+      "action": 1,
+      "price": 95.8499984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-22 00:00:00",
+      "action": 1,
+      "price": 97.30000305175781,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-25 00:00:00",
+      "action": 1,
+      "price": 100.80000305175781,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-26 00:00:00",
+      "action": 1,
+      "price": 100.0999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-27 00:00:00",
+      "action": 1,
+      "price": 102.55000305175781,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-28 00:00:00",
+      "action": 1,
+      "price": 100.5,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-05-29 00:00:00",
+      "action": 1,
+      "price": 105.4000015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-01 00:00:00",
+      "action": 1,
+      "price": 105.5,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-02 00:00:00",
+      "action": 1,
+      "price": 105.69999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-03 00:00:00",
+      "action": 1,
+      "price": 107.5999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-04 00:00:00",
+      "action": 1,
+      "price": 106.0999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-05 00:00:00",
+      "action": 1,
+      "price": 104.1500015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-08 00:00:00",
+      "action": 1,
+      "price": 100.94999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-09 00:00:00",
+      "action": 1,
+      "price": 103.5,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-10 00:00:00",
+      "action": 1,
+      "price": 100.25,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-11 00:00:00",
+      "action": 1,
+      "price": 99.8499984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-12 00:00:00",
+      "action": 1,
+      "price": 101.94999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-15 00:00:00",
+      "action": 1,
+      "price": 105.25,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-16 00:00:00",
+      "action": 1,
+      "price": 105.9000015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-17 00:00:00",
+      "action": 1,
+      "price": 106.0,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-18 00:00:00",
+      "action": 1,
+      "price": 107.30000305175781,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-22 00:00:00",
+      "action": 1,
+      "price": 111.1500015258789,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-23 00:00:00",
+      "action": 1,
+      "price": 110.0999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-24 00:00:00",
+      "action": 1,
+      "price": 107.1500015258789,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-06-25 00:00:00",
+      "action": 1,
+      "price": 107.19999694824219,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-06-26 00:00:00",
+      "action": 1,
+      "price": 103.0999984741211,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-29 00:00:00",
+      "action": 1,
+      "price": 104.44999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-06-30 00:00:00",
+      "action": 1,
+      "price": 107.80000305175781,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-01 00:00:00",
+      "action": 1,
+      "price": 109.3499984741211,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-02 00:00:00",
+      "action": 1,
+      "price": 108.80000305175781,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-03 00:00:00",
+      "action": 1,
+      "price": 108.3499984741211,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-06 00:00:00",
+      "action": 1,
+      "price": 108.25,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-07 00:00:00",
+      "action": 1,
+      "price": 106.19999694824219,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-08 00:00:00",
+      "action": 1,
+      "price": 106.05000305175781,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-09 00:00:00",
+      "action": 1,
+      "price": 105.80000305175781,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-10 00:00:00",
+      "action": 1,
+      "price": 105.80000305175781,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-13 00:00:00",
+      "action": 1,
+      "price": 106.0,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-14 00:00:00",
+      "action": 1,
+      "price": 104.4000015258789,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-15 00:00:00",
+      "action": 1,
+      "price": 106.30000305175781,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-16 00:00:00",
+      "action": 1,
+      "price": 106.4000015258789,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-17 00:00:00",
+      "action": 1,
+      "price": 100.1500015258789,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-20 00:00:00",
+      "action": 1,
+      "price": 99.19999694824219,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-21 00:00:00",
+      "action": 1,
+      "price": 102.5,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-22 00:00:00",
+      "action": 1,
+      "price": 103.8499984741211,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-23 00:00:00",
+      "action": 1,
+      "price": 103.9000015258789,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-24 00:00:00",
+      "action": 1,
+      "price": 101.69999694824219,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-27 00:00:00",
+      "action": 1,
+      "price": 101.44999694824219,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-28 00:00:00",
+      "action": 1,
+      "price": 97.1500015258789,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-29 00:00:00",
+      "action": 1,
+      "price": 93.69999694824219,
+      "shares": 2000,
+      "position_after": 2000
+    },
+    {
+      "date": "2026-07-30 00:00:00",
+      "action": 1,
+      "price": 93.5,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-07-31 00:00:00",
+      "action": 1,
+      "price": 102.8499984741211,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-08-03 00:00:00",
+      "action": 1,
+      "price": 102.0,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-08-04 00:00:00",
+      "action": 1,
+      "price": 100.6500015258789,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-08-05 00:00:00",
+      "action": 1,
+      "price": 103.80000305175781,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-08-06 00:00:00",
+      "action": 1,
+      "price": 103.30000305175781,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-08-07 00:00:00",
+      "action": 1,
+      "price": 102.8499984741211,
+      "shares": 1000,
+      "position_after": 1000
+    },
+    {
+      "date": "2026-08-10 00:00:00",
+      "action": 1,
+      "price": 104.25,
+      "shares": 1000,
+      "position_after": 1000
+    }
+  ],
+  "n_position_changes": 54,
+  "unique_position_levels": [
+    0,
+    1000,
+    18000,
+    19000,
+    21000,
+    22000,
+    24000,
+    25000,
+    26000,
+    27000,
+    28000,
+    29000,
+    30000
+  ],
+  "position_at_start": 0,
+  "position_at_end": 1000,
+  "position_reached_max_at_step": null,
+  "action_stats": {
+    "mean": 0.8233565618095368,
+    "std": 0.1433230452118282,
+    "min": 0.10447552800178528,
+    "max": 0.9628380537033081,
+    "frac_above_0.5_buy_threshold": 0.9432739059967585
+  },
+  "final_value": 194054.83528900146,
+  "initial_value": 1000000.0
+}

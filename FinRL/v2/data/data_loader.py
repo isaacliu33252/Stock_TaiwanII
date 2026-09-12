@@ -478,8 +478,8 @@ def save_to_cache(
         df_save['symbol'] = full_symbol
         df_save['date'] = df_save['date'].astype(str)
         
-        # 使用 REPLACE 避免重複
-        df_save.to_sql('stock_daily', conn, if_exists='append', index=False)
+        # 使用 REPLACE 避免重複鍵錯誤（PRIMARY KEY 衝突時覆蓋舊資料）
+        df_save.to_sql('stock_daily', conn, if_exists='append', index=False, method='REPLACE')
         
         conn.commit()
         conn.close()

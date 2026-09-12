@@ -54,6 +54,7 @@ INDEX_SQL = [
 ]
 
 HISTORICAL_COLUMNS = {
+    "日期": "Date",
     "交易日期": "Date",
     "契約": "Contract",
     "到期月份(週別)": "ContractMonth(Week)",
@@ -62,9 +63,11 @@ HISTORICAL_COLUMNS = {
     "開盤價": "Open",
     "最高價": "High",
     "最低價": "Low",
+    "最後成交價": "Close",
     "收盤價": "Close",
     "成交量": "Volume",
     "結算價": "SettlementPrice",
+    "未沖銷契約量": "OpenInterest",
     "未沖銷契約數": "OpenInterest",
     "最後最佳買價": "BestBid",
     "最後最佳賣價": "BestAsk",
@@ -131,7 +134,15 @@ def _fetch_openapi(path: str) -> list[dict[str, Any]]:
     url = f"{OPENAPI_BASE}/{path.lstrip('/')}"
     request = urllib.request.Request(url, headers={"Accept": "application/json"})
     with urllib.request.urlopen(request, timeout=60) as response:
-        payload = json.load(response)
+        raw = response.read()
+    try:
+        payload = json.loads(raw.decode("utf-8-sig"))
+    except json.JSONDecodeError:
+        frame = _read_taifex_csv(raw)
+        frame = frame.rename(
+            columns={key: value for key, value in HISTORICAL_COLUMNS.items() if key in frame.columns}
+        )
+        return [dict(row) for row in frame.to_dict(orient="records")]
     if not isinstance(payload, list):
         raise RuntimeError(f"Unexpected TAIFEX payload for {path}: {type(payload).__name__}")
     return [dict(row) for row in payload]

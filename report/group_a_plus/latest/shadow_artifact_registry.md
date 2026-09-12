@@ -1,0 +1,146 @@
+# GroupA++ Shadow Artifact Registry
+
+- Generated at: `2026-09-10T19:33:39`
+- As of: `2026-09-10`
+- Status: `available`
+- Policy: `registry_only_no_weight_change`
+- Artifact count: `513`
+- Unreadable count: `0`
+- Missing markdown count: `338`
+- Live mutation true count: `0`
+- Promotion true count: `0`
+
+## Families
+
+- `governance_gate`: `114`
+- `research_related`: `95`
+- `research_review`: `105`
+- `shadow_backtest_or_monitor`: `199`
+
+## Missing Markdown
+
+- `report/group_a_plus/latest/00632r_effective_fee_proxy_validation_review.json`
+- `report/group_a_plus/latest/00632r_tail_tracking_error_gate_review.json`
+- `report/group_a_plus/latest/00646_sp500_addition_shadow.json`
+- `report/group_a_plus/latest/2104_03667_00713_asset_pool_expansion_check.json`
+- `report/group_a_plus/latest/2104_03667_cluster_vlstar_and_combination.json`
+- `report/group_a_plus/latest/2104_03667_momentum_filter_year_split_validation.json`
+- `report/group_a_plus/latest/2104_03667_regime_clustering_review.json`
+- `report/group_a_plus/latest/2104_03667_transition_variable_selection.json`
+- `report/group_a_plus/latest/2104_03667_vlstar_lite_sensitivity_sweep.json`
+- `report/group_a_plus/latest/2410_00288_ginn_no_add_forward_shadow.json`
+- `report/group_a_plus/latest/2411_19649_semicovariance_review.json`
+- `report/group_a_plus/latest/2512_22895_cash_temperature_shadow.json`
+- `report/group_a_plus/latest/2512_22895_dynamic_bucket_shadow.json`
+- `report/group_a_plus/latest/2512_22895_explainability_daily_audit.json`
+- `report/group_a_plus/latest/2512_22895_inter_cluster_dependency_shadow.json`
+- `report/group_a_plus/latest/2512_22895_promotion_review.json`
+- `report/group_a_plus/latest/2512_22895_rebound_gate_00631l_shadow.json`
+- `report/group_a_plus/latest/2512_22895_samp_hdrl_readiness_review.json`
+- `report/group_a_plus/latest/2604_02126_robust_hedge_review.json`
+- `report/group_a_plus/latest/2605_17307_adaptive_retraining_cadence_audit.json`
+- `report/group_a_plus/latest/2605_17307_cross_market_confirmation_monitor.json`
+- `report/group_a_plus/latest/2605_17307_hierarchical_cash_equity_shadow.json`
+- `report/group_a_plus/latest/2605_17307_ir2_candidate_scorecard.json`
+- `report/group_a_plus/latest/2605_17307_sac_feasibility_smoke.json`
+- `report/group_a_plus/latest/2605_17307_sac_global_rl_readiness_review.json`
+- `report/group_a_plus/latest/2606_09104_0050_00631l_combo_sweep.json`
+- `report/group_a_plus/latest/2606_09104_00631l_4pct_bavar_direction_filter.json`
+- `report/group_a_plus/latest/2606_09104_00631l_4pct_es_threshold_sensitivity.json`
+- `report/group_a_plus/latest/2606_09104_00631l_4pct_extreme_only_forward_shadow.json`
+- `report/group_a_plus/latest/2606_09104_00631l_4pct_extreme_only_promotion_readiness.json`
+- `report/group_a_plus/latest/2606_09104_00631l_4pct_high_exclusion_gate.json`
+- `report/group_a_plus/latest/2606_09104_00631l_4pct_high_skip_comparison.json`
+- `report/group_a_plus/latest/2606_09104_00631l_4pct_regime_split.json`
+- `report/group_a_plus/latest/2606_09104_00631l_4pct_weekly_shadow_monitor.json`
+- `report/group_a_plus/latest/2606_09104_00631l_micro_add_cap_sweep.json`
+- `report/group_a_plus/latest/2606_09104_00631l_micro_add_forward_shadow.json`
+- `report/group_a_plus/latest/2606_09104_00631l_micro_add_promotion_gate.json`
+- `report/group_a_plus/latest/2606_09104_00631l_stage1_2pct_readiness.json`
+- `report/group_a_plus/latest/2606_09104_00631l_staged_ladder_readiness.json`
+- `report/group_a_plus/latest/2606_09104_bled_tail_adjustment_review.json`
+- `report/group_a_plus/latest/2606_09104_constrained_bled_allocation_review.json`
+- `report/group_a_plus/latest/2606_09104_dynamic_risk_aversion_gate.json`
+- `report/group_a_plus/latest/2606_09104_extreme_state_monitor.json`
+- `report/group_a_plus/latest/2606_09104_har_bavar_prior_shadow.json`
+- `report/group_a_plus/latest/2606_09104_har_horizon_extension_review.json`
+- `report/group_a_plus/latest/2606_09104_monthly_update_cadence_review.json`
+- `report/group_a_plus/latest/2606_09104_promotion_gate_freshness_retry.json`
+- `report/group_a_plus/latest/2606_09104_risk_aversion_forward_shadow.json`
+- `report/group_a_plus/latest/2607_15195_cost_aware_target_holding_shadow.json`
+- `report/group_a_plus/latest/2607_15195_expectile_utility_shadow.json`
+- `report/group_a_plus/latest/2607_15195_quadratic_impact_turnover_gate.json`
+- `report/group_a_plus/latest/2607_15195_real_signal_quality_gate.json`
+- `report/group_a_plus/latest/2607_15195_soft_budget_cash_accounting_shadow.json`
+- `report/group_a_plus/latest/2607_16450_bootstrap_promotion_gate.json`
+- `report/group_a_plus/latest/2607_16450_candidate_tail_review.json`
+- `report/group_a_plus/latest/2607_16450_geopolitical_cvar_overlay.json`
+- `report/group_a_plus/latest/2607_16450_regime_switching_volatility_forecast_quality.json`
+- `report/group_a_plus/latest/2607_16450_regime_switching_volatility_gate.json`
+- `report/group_a_plus/latest/2607_16450_tail_dependence_monitor.json`
+- `report/group_a_plus/latest/2607_16450_tail_sensitive_scorecard.json`
+- ... truncated `278` more
+
+## Recent Artifacts
+
+- `report/group_a_plus/latest/research_shadow_decision_snapshot.json` family=`shadow_backtest_or_monitor` status=`blocked` md=`None`
+- `report/group_a_plus/latest/2609_07946_adoption_matrix.json` family=`research_related` status=`None` md=`report/group_a_plus/latest/2609_07946_adoption_matrix.md`
+- `report/group_a_plus/latest/2609_07946_complementarity_promotion_gate.json` family=`governance_gate` status=`None` md=`report/group_a_plus/latest/2609_07946_complementarity_promotion_gate.md`
+- `report/group_a_plus/latest/2609_07946_bond_only_forward_shadow_latest.json` family=`shadow_backtest_or_monitor` status=`None` md=`report/group_a_plus/latest/2609_07946_bond_only_forward_shadow_latest.md`
+- `report/group_a_plus/latest/00635u_instrument_review.json` family=`research_review` status=`None` md=`report/group_a_plus/latest/00635u_instrument_review.md`
+- `report/group_a_plus/latest/2609_07946_stock_bond_gold_forward_shadow_latest.json` family=`shadow_backtest_or_monitor` status=`None` md=`report/group_a_plus/latest/2609_07946_stock_bond_gold_forward_shadow_latest.md`
+- `report/group_a_plus/latest/2609_07946_monthly_markowitz_shadow.json` family=`shadow_backtest_or_monitor` status=`None` md=`report/group_a_plus/latest/2609_07946_monthly_markowitz_shadow.md`
+- `report/group_a_plus/latest/2609_07946_monthly_markowitz_shadow_quick.json` family=`shadow_backtest_or_monitor` status=`None` md=`report/group_a_plus/latest/2609_07946_monthly_markowitz_shadow_quick.md`
+- `report/group_a_plus/latest/2609_07946_stock_bond_gold_complementarity_shadow.json` family=`shadow_backtest_or_monitor` status=`None` md=`report/group_a_plus/latest/2609_07946_stock_bond_gold_complementarity_shadow.md`
+- `report/group_a_plus/latest/2609_07946_vol_control_cash_scaler_shadow_daily.json` family=`shadow_backtest_or_monitor` status=`None` md=`report/group_a_plus/latest/2609_07946_vol_control_cash_scaler_shadow_daily.md`
+- `report/group_a_plus/latest/2609_07946_vol_control_cash_scaler_shadow_monthly.json` family=`shadow_backtest_or_monitor` status=`None` md=`report/group_a_plus/latest/2609_07946_vol_control_cash_scaler_shadow_monthly.md`
+- `report/group_a_plus/latest/2609_07946_stock_bond_gold_review.json` family=`research_review` status=`None` md=`report/group_a_plus/latest/2609_07946_stock_bond_gold_review.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_forward_shadow_latest.json` family=`shadow_backtest_or_monitor` status=`None` md=`report/group_a_plus/latest/2609_08106_complementarity_forward_shadow_latest.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_mom5gate_robustness.json` family=`governance_gate` status=`None` md=`report/group_a_plus/latest/2609_08106_complementarity_mom5gate_robustness.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_readiness_mom5gate.json` family=`governance_gate` status=`None` md=`report/group_a_plus/latest/2609_08106_complementarity_readiness_mom5gate.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2022rate_thr2_shift3_mom5gate.json` family=`governance_gate` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2022rate_thr2_shift3_mom5gate.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2025_2026_thr2_shift3_mom5gate.json` family=`governance_gate` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2025_2026_thr2_shift3_mom5gate.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2024_thr2_shift3_mom5gate.json` family=`governance_gate` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2024_thr2_shift3_mom5gate.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2020covid_thr2_shift3_mom5gate.json` family=`governance_gate` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2020covid_thr2_shift3_mom5gate.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2018_thr2_shift3_mom5gate.json` family=`governance_gate` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2018_thr2_shift3_mom5gate.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_readiness.json` family=`governance_gate` status=`None` md=`report/group_a_plus/latest/2609_08106_complementarity_readiness.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2018_thr2_shift3.json` family=`shadow_backtest_or_monitor` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2018_thr2_shift3.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2022rate_thr2_shift3.json` family=`shadow_backtest_or_monitor` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2022rate_thr2_shift3.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2024_thr2_shift3.json` family=`shadow_backtest_or_monitor` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2024_thr2_shift3.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2020covid_thr2_shift3.json` family=`shadow_backtest_or_monitor` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_2020covid_thr2_shift3.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_thr25_shift3.json` family=`shadow_backtest_or_monitor` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_thr25_shift3.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_thr2_shift3.json` family=`shadow_backtest_or_monitor` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_thr2_shift3.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_w63_thr2_shift3.json` family=`shadow_backtest_or_monitor` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_w63_thr2_shift3.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_w63_thr25_shift2.json` family=`shadow_backtest_or_monitor` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest_w63_thr25_shift2.md`
+- `report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest.json` family=`shadow_backtest_or_monitor` status=`research_only` md=`report/group_a_plus/latest/2609_08106_complementarity_sleeve_backtest.md`
+- `report/group_a_plus/latest/2609_08106_cross_asset_complementarity_shadow.json` family=`shadow_backtest_or_monitor` status=`None` md=`report/group_a_plus/latest/2609_08106_cross_asset_complementarity_shadow.md`
+- `report/group_a_plus/latest/2609_08106_nystrom_attention_review.json` family=`research_review` status=`None` md=`report/group_a_plus/latest/2609_08106_nystrom_attention_review.md`
+- `report/group_a_plus/latest/securities_lending_0050_source_status.json` family=`research_related` status=`db_snapshot_only` md=`report/group_a_plus/latest/securities_lending_0050_source_status.md`
+- `report/group_a_plus/latest/2609_04917_staged_reentry_confirmatory_tracker.json` family=`shadow_backtest_or_monitor` status=`collecting_confirmatory_evidence` md=`report/group_a_plus/latest/2609_04917_staged_reentry_confirmatory_tracker.md`
+- `report/group_a_plus/latest/2609_04917_bridge_signed_approval_validation.json` family=`governance_gate` status=`blocked` md=`None`
+- `report/group_a_plus/latest/2609_04917_bridge_signed_approval_TEMPLATE.json` family=`research_related` status=`unsigned_template_ready_for_manual_completion` md=`None`
+- `report/group_a_plus/latest/2609_04917_manual_review_packet_cap465.json` family=`research_review` status=`ready_for_manual_review_packet` md=`report/group_a_plus/latest/2609_04917_manual_review_packet_cap465.md`
+- `report/group_a_plus/latest/2609_04917_joint_execution_readiness_turnover_bridge_shadow_cap465.json` family=`governance_gate` status=`blocked` md=`report/group_a_plus/latest/2609_04917_joint_execution_readiness_turnover_bridge_shadow_cap465.md`
+- `report/group_a_plus/latest/2609_04917_turnover_bridge_cap_sweep_summary.json` family=`shadow_backtest_or_monitor` status=`available` md=`report/group_a_plus/latest/2609_04917_turnover_bridge_cap_sweep_summary.md`
+- `report/group_a_plus/latest/2609_04917_market_impact_turnover_bridge_shadow_cap465.json` family=`governance_gate` status=`blocked` md=`None`
+- `report/group_a_plus/latest/2609_04917_bridge_rebalance_review_cap465.json` family=`shadow_backtest_or_monitor` status=`ready_for_human_rebalance_review` md=`report/group_a_plus/latest/2609_04917_bridge_rebalance_review_cap465.md`
+- `report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap45.json` family=`shadow_backtest_or_monitor` status=`shadow_bridge_available_for_manual_review` md=`report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap45.md`
+- `report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap465.json` family=`shadow_backtest_or_monitor` status=`shadow_bridge_available_for_manual_review` md=`report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap465.md`
+- `report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap47.json` family=`shadow_backtest_or_monitor` status=`shadow_bridge_available_for_manual_review` md=`report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap47.md`
+- `report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap20.json` family=`shadow_backtest_or_monitor` status=`shadow_bridge_available_for_manual_review` md=`report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap20.md`
+- `report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap30.json` family=`shadow_backtest_or_monitor` status=`shadow_bridge_available_for_manual_review` md=`report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap30.md`
+- `report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap40.json` family=`shadow_backtest_or_monitor` status=`shadow_bridge_available_for_manual_review` md=`report/group_a_plus/latest/2609_04917_turnover_bridge_shadow_cap40.md`
+- `report/group_a_plus/latest/2609_04917_execution_path_comparison.json` family=`shadow_backtest_or_monitor` status=`shadow_bridge_is_best_manual_review_candidate` md=`report/group_a_plus/latest/2609_04917_execution_path_comparison.md`
+- `report/group_a_plus/latest/2609_04917_bridge_rebalance_review.json` family=`shadow_backtest_or_monitor` status=`ready_for_human_rebalance_review` md=`report/group_a_plus/latest/2609_04917_bridge_rebalance_review.md`
+- `report/group_a_plus/latest/2609_04917_cost_robustness_quarterly_shadow.json` family=`governance_gate` status=`blocked_for_live_promotion` md=`None`
+- `report/group_a_plus/latest/2609_04917_cost_robustness_no_00631l_shadow.json` family=`governance_gate` status=`blocked_for_live_promotion` md=`None`
+- `report/group_a_plus/latest/2609_04917_cost_robustness_no_00631l_quarterly_shadow.json` family=`governance_gate` status=`blocked_for_live_promotion` md=`None`
+- `report/group_a_plus/latest/2609_04917_joint_execution_readiness_turnover_bridge_shadow.json` family=`governance_gate` status=`blocked` md=`report/group_a_plus/latest/2609_04917_joint_execution_readiness_turnover_bridge_shadow.md`
+- `report/group_a_plus/latest/2609_04917_market_impact_turnover_bridge_shadow.json` family=`governance_gate` status=`blocked` md=`None`
+- `report/group_a_plus/latest/2609_04917_turnover_bridge_shadow.json` family=`shadow_backtest_or_monitor` status=`shadow_bridge_available_for_manual_review` md=`report/group_a_plus/latest/2609_04917_turnover_bridge_shadow.md`
+- `report/group_a_plus/latest/2609_04917_market_impact_same_day_shadow.json` family=`governance_gate` status=`blocked` md=`None`
+- `report/group_a_plus/latest/2609_04917_joint_execution_readiness_same_day_shadow.json` family=`governance_gate` status=`blocked` md=`report/group_a_plus/latest/2609_04917_joint_execution_readiness_same_day_shadow.md`
+- `report/group_a_plus/latest/2609_04917_controlled_adaptation.json` family=`shadow_backtest_or_monitor` status=`blocked` md=`report/group_a_plus/latest/2609_04917_controlled_adaptation.md`
+- `report/group_a_plus/latest/2609_04917_information_bom.json` family=`shadow_backtest_or_monitor` status=`warning` md=`report/group_a_plus/latest/2609_04917_information_bom.md`
+- `report/group_a_plus/latest/2609_04917_alpha_translation_readiness.json` family=`governance_gate` status=`blocked_for_live_promotion` md=`report/group_a_plus/latest/2609_04917_alpha_translation_readiness.md`
+- ... truncated `453` more

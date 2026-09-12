@@ -6,6 +6,7 @@ from typing import Any
 
 
 DEFAULT_LEVERAGED_TICKER = "00631L.TW"
+DEFAULT_INVERSE_TICKER = "00632R.TW"
 DEFAULT_EXTREME_WARNING_TICKERS = ("0050.TW", "00631L.TW")
 VOLATILITY_GATE_ALERT_TYPE = "volatility_gate_high_vol"
 TAIL_CONFORMAL_ALERT_TYPE = "tail_specific_conformal_warning"
@@ -278,7 +279,14 @@ def apply_compounding_regime_pre_trade_guard(
         "requested_target_shares": target,
         "guarded_target_shares": target,
         "blocked_trades": [],
-        "policy": "diagnostic_no_auto_weight_change",
+        # 2026-08-08 (2504.20116 paper-audit cross-check): this string was
+        # "diagnostic_no_auto_weight_change", which undersold what the guard
+        # actually does. It IS a live, auto-enforcing guard for the buy side
+        # -- see the target-capping logic below (guarded_targets[ticker] =
+        # current) -- it just never forces a sell/reduction. Renamed so the
+        # label matches the docstring/behavior rather than implying this is
+        # inert/observation-only.
+        "policy": "auto_blocks_00631l_buy_additions_only_never_forces_sells",
         "allow_00631l_add": not active,
         "compounding_regime": latest.get("compounding_regime"),
         "recommended_policy": latest.get("recommended_policy"),
@@ -314,4 +322,89 @@ def apply_compounding_regime_pre_trade_guard(
     guard["status"] = "blocked"
     guard["guarded_target_shares"] = current
     guard["blocked_trades"] = [blocked]
+    return guarded_targets, guard
+
+
+def apply_inverse_etf_manual_review_gate(
+    current_shares: dict[str, int],
+    target_shares: dict[str, int],
+    *,
+    ticker: str = DEFAULT_INVERSE_TICKER,
+    realized_pnl_review_available: bool = False,
+    cost_basis_available: bool = False,
+    artifact_freshness_verified: bool = False,
+    hedge_rationale_available: bool = False,
+    manual_approval_record_available: bool = False,
+) -> tuple[dict[str, int], dict[str, Any]]:
+    """Manual-review gate for inverse ETF exposure.
+
+    This is intentionally stricter than the 00631L add guards. 00632R is an
+    inverse hedge ETF; opening, increasing, reducing, or closing it can create
+    realized P&L issues that are invisible when only current holdings are
+    checked. The function is pure and does not mutate live strategy weights.
+    """
+
+    guarded_targets = dict(target_shares)
+    current = int(current_shares.get(ticker, 0) or 0)
+    target = int(target_shares.get(ticker, current) or 0)
+    delta = target - current
+    side = "hold"
+    if delta > 0:
+        side = "buy"
+    elif delta < 0:
+        side = "sell"
+
+    required_checks = {
+        "artifact_freshness_verified": bool(artifact_freshness_verified),
+        "cost_basis_available": bool(cost_basis_available),
+        "realized_pnl_review_available": bool(realized_pnl_review_available),
+        "hedge_rationale_available": bool(hedge_rationale_available),
+        "manual_approval_record_available": bool(manual_approval_record_available),
+    }
+    missing = sorted(name for name, passed in required_checks.items() if not passed)
+    guard: dict[str, Any] = {
+        "name": "inverse_etf_00632r_manual_review_gate",
+        "status": "inactive",
+        "ticker": ticker,
+        "current_shares": current,
+        "requested_target_shares": target,
+        "guarded_target_shares": target,
+        "delta_shares": delta,
+        "side": side,
+        "blocked_trades": [],
+        "advisory_trades": [],
+        "policy": "manual_review_required_for_inverse_etf_no_auto_execution",
+        "required_checks": required_checks,
+        "missing_checks": missing,
+        "allow_00632r_open": False,
+        "allow_00632r_auto_trade": False,
+        "target_weight_change_allowed": False,
+        "auto_rebalance_allowed": False,
+    }
+    if delta == 0:
+        return guarded_targets, guard
+
+    trade = {
+        "ticker": ticker,
+        "side": side,
+        "current_shares": current,
+        "requested_target_shares": target,
+        "guarded_target_shares": current,
+        "blocked_delta_shares": delta,
+        "reason": "inverse_etf_requires_manual_review_and_realized_pnl_check",
+    }
+    guard.update(
+        {
+            "status": "blocked",
+            "reason": "inverse_etf_trade_requires_manual_review",
+            "guarded_target_shares": current,
+            "blocked_trades": [trade],
+            "review_note": (
+                "00632R/inverse ETF action blocked from automatic execution. "
+                "Require artifact freshness, cost basis, realized P&L review, "
+                "hedge rationale, and manual approval before any broker action."
+            ),
+        }
+    )
+    guarded_targets[ticker] = current
     return guarded_targets, guard

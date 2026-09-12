@@ -15,11 +15,23 @@ from pathlib import Path
 from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_LIVE_SIGNAL = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "live_signal_20260720_estimate.json"
+# 2026-08-09 (readiness-review staleness systemic fix): both DEFAULT_LIVE_SIGNAL
+# and DEFAULT_OUTPUT used to be hardcoded to a one-off 2026-07-20 dated
+# filename. This script was run manually once on 2026-07-17 and never
+# scheduled again, so every downstream readiness review that reads
+# DEFAULT_OUTPUT (9 consumer scripts, 7 of them wired into the daily
+# pipeline) had its `as_of`/`dates` fields silently frozen at 2026-07-20
+# ever since -- see docs/READINESS_REVIEW_AS_OF_STALENESS_AUDIT_20260808.md
+# for the original diagnosis. Fixed by switching both to undated "latest"
+# pointers and wiring this script into run_ncf_daily_pipeline.py (see that
+# file's "rebalance_review" step) so DEFAULT_OUTPUT actually refreshes daily
+# going forward, the same way DEFAULT_EXECUTION_PLAN/DEFAULT_GOLDEN1 already
+# did.
+DEFAULT_LIVE_SIGNAL = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "live_signal.json"
 DEFAULT_EXECUTION_PLAN = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "execution_plan.json"
 DEFAULT_HETEROGENEOUS_VOL = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "heterogeneous_vol_regime_advisory.json"
 DEFAULT_GOLDEN1 = PROJECT_ROOT / "results" / "group_a_release_Golden1_0531.json"
-DEFAULT_OUTPUT = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "rebalance_review_20260720.json"
+DEFAULT_OUTPUT = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "rebalance_review.json"
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -149,7 +161,7 @@ def build_review(
             "target_weights": target_weights,
             "golden1_reference_weights": _golden1_reference_weights(live, golden1),
             "last_known_current_weights_from_execution_plan": current_weights_reference,
-            "current_weights_reliable_for_20260720": False,
+            "current_weights_reliable": bool(current_weights_reference) and not execution_plan_stale,
             "cash_buffer_policy": "active_risk_buffer",
             "cash_buffer_target": target_weights.get("cash"),
             "cash_buffer_actual_reference": current_weights_reference.get("cash") if current_weights_reference else None,
@@ -185,7 +197,14 @@ def build_review(
         "blocking_reasons": blocking_reasons,
         "warning_reasons": warning_reasons,
         "decision": {
-            "summary": "Do not auto-rebalance for 2026-07-20. Keep target weights as reference only; require manual review before any execution.",
+            "summary": (
+                f"Auto-rebalance allowed for {actual_date or requested_date}. Target weights may be executed."
+                if auto_rebalance_allowed
+                else (
+                    f"Do not auto-rebalance for {actual_date or requested_date}. "
+                    "Keep target weights as reference only; require manual review before any execution."
+                )
+            ),
             "auto_rebalance_allowed": auto_rebalance_allowed,
             "manual_review_required": manual_review_required,
             "allow_00631l_add": allow_00631l_add,

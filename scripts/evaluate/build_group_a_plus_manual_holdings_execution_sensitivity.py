@@ -131,6 +131,16 @@ def build_sensitivity(
                     manifest_path,
                     compounding_regime_path=compounding_regime_path,
                     holdings_json_path=scenario_path,
+                    # build_execution_plan()'s own function-level default for
+                    # this flag is True, but the CLI (and therefore live
+                    # production) defaults to False -- "all orders are placed
+                    # manually" -- see execution_plan.py's --enforce-advisory-
+                    # pre-trade-guards help text. Passing it explicitly here
+                    # keeps this sensitivity scenario's guard behavior aligned
+                    # with what production actually does, rather than silently
+                    # picking up the function's out-of-sync default (found
+                    # 2026-08-08 during the 2606.18199 paper-audit cross-check).
+                    enforce_advisory_pre_trade_guards=False,
                 )
                 rows.append(_summarize_plan(plan, cash_balance=cash_balance, bond_shares=bond_shares))
     all_block_631l_add = all(int(row["blocked_00631l_add_shares"] or 0) > 0 for row in rows)

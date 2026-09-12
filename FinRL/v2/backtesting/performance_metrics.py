@@ -277,7 +277,15 @@ def calculate_sortino_ratio(
             return float('inf')  # 無下行風險的正報酬 = 無限大 Sortino
         return (ann_return - ann_target) / 0.001  # 除以極小值避免除零
 
-    downside_std = np.std(negative_returns, ddof=1)
+    # BUG FIX (2026-08-12): 少樣本時用 ddof=0 避免 NaN
+    # ddof=1 需要至少 2 筆資料才能計算有意義的樣本標準差
+    # 1 筆資料時：分子分母皆為 0 → NaN
+    n_neg = len(negative_returns)
+    if n_neg < 4:
+        downside_std = np.std(negative_returns, ddof=0)  # 母體標準差
+    else:
+        downside_std = np.std(negative_returns, ddof=1)  # 樣本標準差
+
     if downside_std < 1e-10:
         # 負報酬標準差極小（接近零）：說明下行波動極低
         # 使用無風險利率作為回報基准，避免返回荒謬的巨大負數
@@ -332,21 +340,29 @@ def calculate_max_drawdown(
     
     # 最大回撤
     max_dd = np.max(drawdown)
-    
-    # 計算最大回撤持續天數
-    max_dd_duration = 0
-    current_duration = 0
-    in_drawdown = False
-    
-    for i in range(len(drawdown)):
-        if drawdown[i] > 0:
-            in_drawdown = True
-            current_duration += 1
-            max_dd_duration = max(max_dd_duration, current_duration)
-        else:
-            in_drawdown = False
-            current_duration = 0
-    
+
+    # 計算最大回撤持續天數（向量化版本）
+    # 定義（與原始 for-loop 一致）：
+    # 從 drawdown 段起點（is_drawdown[0]=True 且 is_drawdown[-1]=False 的位置）
+    # 計算到該 drawdown 段最後一個正值元素（recovery 前夕）的天數
+    # 簡化：每段長度 = (ends_plus1 - starts)，與 for-loop 行為一致
+    is_drawdown = drawdown > 0
+
+    if not np.any(is_drawdown):
+        max_dd_duration = 0
+    else:
+        # 找每段 drawdown 的起始（i>0 且之前是 False，or i==0）
+        starts = np.where(is_drawdown & ~np.concatenate([[False], is_drawdown[:-1]]))[0]
+        # 找每段 drawdown 的「最後一個正值 drawdown」的下一個 index
+        # 即第一個後續為 False 的 drawdown 位置 + 1
+        ends_plus1 = np.where(is_drawdown & ~np.concatenate([is_drawdown[1:], [False]]))[0] + 1
+        # 若最後一段從未 recovery，ends_plus1 會超出範圍，截斷到 len(drawdown)
+        ends_plus1 = np.clip(ends_plus1, 0, len(drawdown))
+
+        # 每段長度（與 for-loop 的 current_duration 累加方式等價）
+        lengths = ends_plus1 - starts
+        max_dd_duration = int(np.max(lengths))
+
     return max_dd, max_dd_duration
 
 
@@ -589,6 +605,7 @@ class PerformanceMetrics:
         total_trades = 0
         winning_trades = 0
         losing_trades = 0
+        win_rate = 0.0
         avg_win = 0.0
         avg_loss = 0.0
         profit_factor = 0.0
@@ -597,7 +614,7 @@ class PerformanceMetrics:
         consecutive_wins = 0
         consecutive_losses = 0
         
-        if trade_pnls and len(trade_pnls) > 0:
+        if trade_pnls is not None and len(trade_pnls) > 0:
             total_trades = len(trade_pnls)
             winning_trades = sum(1 for pnl in trade_pnls if pnl > 0)
             losing_trades = sum(1 for pnl in trade_pnls if pnl < 0)
@@ -642,7 +659,7 @@ class PerformanceMetrics:
             total_trades=total_trades,
             winning_trades=winning_trades,
             losing_trades=losing_trades,
-            win_rate=win_rate if trade_pnls else 0.0,
+            win_rate=win_rate,
             avg_win=avg_win,
             avg_loss=avg_loss,
             profit_factor=profit_factor,
@@ -665,7 +682,7 @@ class PerformanceMetrics:
         返回:
             (max_consecutive_wins, max_consecutive_losses)
         """
-        if not trade_pnls:
+        if trade_pnls is None or len(trade_pnls) == 0:
             return 0, 0
         
         max_wins = 0

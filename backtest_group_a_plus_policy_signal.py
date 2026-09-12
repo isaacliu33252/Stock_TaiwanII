@@ -20,7 +20,7 @@ DEFAULT_DECISION_POINTER = PROJECT_ROOT / "report" / "group_a_plus" / "latest" /
 DEFAULT_ORIGINAL_SIGNAL = PROJECT_ROOT / "results" / "group_a_plus_final_signal_20260613_6p12data.json"
 DEFAULT_GOLDEN_SIGNAL = PROJECT_ROOT / "results" / "signal_group_a_golden1_0531_predict_20260615_from_all_20260613_total1000000.json"
 DEFAULT_LATEST = PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "decision_backtest.json"
-TICKERS = ("0050.TW", "00631L.TW", "00632R.TW", "00679B.TWO")
+TICKERS = ("0050.TW", "00631L.TW", "00632R.TW", "00679B.TWO", "00713.TW")
 
 
 def _resolve(path: str | Path) -> Path:

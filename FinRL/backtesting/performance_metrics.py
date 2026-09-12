@@ -91,10 +91,24 @@ def calculate_sortino_ratio(
     downside_excess = excess_returns[excess_returns < target_daily]
 
     if len(downside_excess) == 0:
-        return 0.0
+        # 無下行風險：全部報酬都高於目標 → 極佳的 Sortino（回報 +inf）
+        # 這是正確的財務意義：不承受任何下行風險
+        mean_excess = np.mean(excess_returns)
+        if mean_excess >= target_daily:
+            return float('inf')
+        else:
+            return 0.0
 
-    # 日均下行標準差（使用 ddof=1 與 Sharpe Ratio 一致）
-    downside_std_daily = np.std(downside_excess, ddof=1)
+    # 關鍵修復：少樣本時用 ddof=0 避免 NaN
+    # ddof=1 需要至少 2 筆資料才能計算有意義的樣本標準差
+    # 1 筆資料時：分子分母皆為 0 → NaN
+    n = len(downside_excess)
+    if n < 4:
+        # 樣本不足4個：用 population std (ddof=0) 避免 NaN
+        downside_std_daily = np.std(downside_excess, ddof=0)
+    else:
+        # 樣本充足：用 sample std (ddof=1) 維持統計一致性
+        downside_std_daily = np.std(downside_excess, ddof=1)
 
     # 使用絕對容差檢查，避免浮點精度問題
     if downside_std_daily < 1e-10:

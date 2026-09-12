@@ -14,6 +14,10 @@ from typing import Any
 import duckdb
 import pandas as pd
 
+from backtesting.performance_metrics import (
+    calculate_max_drawdown_duration,
+    calculate_recovery_duration,
+)
 from backtest_group_a_plus_policy_signal import (
     DEFAULT_DECISION_POINTER,
     DEFAULT_GOLDEN_SIGNAL,
@@ -605,17 +609,37 @@ def _simulate_regime_curve(
     regimes: pd.Series,
     weights_by_regime: dict[str, dict[str, float]],
     initial_value: float,
+    rebalance_every_days: int | None = None,
 ) -> pd.Series:
+    """Rebalances whenever the regime label changes. A regime that never
+    changes (e.g. golden1_0531_1m/group_a_plus_defensive_1m, which are
+    simulated with a constant regime series) therefore only rebalances once,
+    at t=0 -- any leveraged sleeve (00631L) then drifts away from its target
+    weight indefinitely as it compounds faster than the rest of the
+    portfolio. `rebalance_every_days` is opt-in (default None preserves the
+    original, unchanged behavior for every existing caller/test) and adds a
+    periodic rebalance on top of the regime-change trigger, so a constant- or
+    long-lived regime doesn't silently turn into an ever-more-leveraged
+    buy-and-hold. See
+    GROUP_A_PLUS_20260811_ALPHAZEROBETA_FACTOR_ATTRIBUTION_AND_CRASH_PROTECTION_HANDOFF.md
+    section 8 for the discovery (00631L weight drifted from 20% at inception
+    to 62% by 2026-08 in the never-rebalanced golden1_0531_1m curve)."""
     values = []
     current_regime = str(regimes.iloc[0])
     shares, cash = _rebalance(initial_value, prices.iloc[0], weights_by_regime[current_regime])
+    days_since_rebalance = 0
     for dt, price_row in prices.iterrows():
         value = _mark_to_market(price_row, shares, cash)
         next_regime = str(regimes.loc[dt])
-        if next_regime != current_regime:
+        regime_changed = next_regime != current_regime
+        periodic_due = rebalance_every_days is not None and days_since_rebalance >= rebalance_every_days
+        if regime_changed or periodic_due:
             current_regime = next_regime
             shares, cash = _rebalance(value, price_row, weights_by_regime[current_regime])
             value = _mark_to_market(price_row, shares, cash)
+            days_since_rebalance = 0
+        else:
+            days_since_rebalance += 1
         values.append(value)
     return pd.Series(values, index=prices.index, dtype=float)
 
@@ -679,8 +703,36 @@ def _metrics(values: pd.Series, initial_value: float) -> dict[str, Any]:
     volatility_weighted_tail = vol_weighted_returns[vol_weighted_returns <= volatility_weighted_var_5pct]
     volatility_weighted_etl_5pct = float(volatility_weighted_tail.mean()) if len(volatility_weighted_tail) else 0.0
     worst_daily_return = float(returns.min()) if len(returns) else 0.0
+    rolling_5d_return = values.pct_change(5).dropna()
+    rolling_10d_return = values.pct_change(10).dropna()
     rolling_20d_return = values.pct_change(20).dropna()
+    worst_5d_return = float(rolling_5d_return.min()) if len(rolling_5d_return) else 0.0
+    worst_10d_return = float(rolling_10d_return.min()) if len(rolling_10d_return) else 0.0
     worst_20d_return = float(rolling_20d_return.min()) if len(rolling_20d_return) else 0.0
+    # 2026-08-18 user proposal (arXiv:2607.16450, Taiwan/semiconductor-ETF
+    # heavy-tail study): expose the same field names group_a_plus/governance/
+    # compare.py's TAIL_RISK_METRIC_KEYS already reads (added 2026-08-01 as
+    # forward-looking, always-None infra) so a real candidate's promotion
+    # utility / tail_risk_metrics block finally gets non-None values.
+    expected_shortfall_loss_95 = abs(expected_tail_loss_5pct)
+    starr_95 = starr_ratio_5pct
+    top_gains_95 = returns[returns >= returns.quantile(0.95)] if len(returns) else pd.Series(dtype=float)
+    expected_tail_gain_95pct = float(top_gains_95.mean()) if len(top_gains_95) else 0.0
+    rachev_95_95 = (
+        float(expected_tail_gain_95pct / expected_shortfall_loss_95)
+        if expected_shortfall_loss_95 > 0.0
+        else 0.0
+    )
+    # Negative semivariance: mean of squared *negative* daily returns,
+    # annualized (decimal-fraction scale, matching this function's
+    # convention -- see module docstring above on why this is NOT unified
+    # with FinRL's percentage-scale metrics).
+    negative_semivariance = (
+        float(downside_returns.pow(2).mean() * 252) if len(downside_returns) > 0 else 0.0
+    )
+    equity_array = values.to_numpy(dtype=float)
+    max_drawdown_duration = calculate_max_drawdown_duration(equity_array)
+    recovery_duration = calculate_recovery_duration(equity_array)
     return {
         "initial_value": float(initial_value),
         "final_value": float(values.iloc[-1]),
@@ -691,6 +743,8 @@ def _metrics(values: pd.Series, initial_value: float) -> dict[str, Any]:
         "sharpe_ratio": sharpe,
         "sortino_ratio": sortino,
         "max_drawdown": max_drawdown,
+        "max_drawdown_duration": max_drawdown_duration,
+        "recovery_duration": recovery_duration,
         "value_at_risk_5pct": value_at_risk_5pct,
         "expected_tail_loss_5pct": expected_tail_loss_5pct,
         "starr_ratio_5pct": starr_ratio_5pct,
@@ -701,7 +755,14 @@ def _metrics(values: pd.Series, initial_value: float) -> dict[str, Any]:
         "volatility_weighted_var_5pct": volatility_weighted_var_5pct,
         "volatility_weighted_etl_5pct": volatility_weighted_etl_5pct,
         "worst_daily_return": worst_daily_return,
+        "worst_5d_return": worst_5d_return,
+        "worst_10d_return": worst_10d_return,
         "worst_20d_return": worst_20d_return,
+        "negative_semivariance": negative_semivariance,
+        "expected_shortfall_loss_95": expected_shortfall_loss_95,
+        "starr_95": starr_95,
+        "expected_tail_gain_95pct": expected_tail_gain_95pct,
+        "rachev_95_95": rachev_95_95,
     }
 
 
@@ -1261,6 +1322,14 @@ def main() -> None:
     parser.add_argument("--no-chip-features", action="store_true")
     parser.add_argument("--use-debate", action="store_true", help="使用多 Agent 辯論引擎取代 quantitative threshold 來決策 switch")
     parser.add_argument("--debate-rounds", type=int, default=2, help="辯論輪數（預設2）")
+    parser.add_argument(
+        "--rebalance-every-days",
+        type=int,
+        default=None,
+        help="Opt-in periodic rebalance (trading days) on top of regime-change triggers, for every curve in this run. "
+        "Default None preserves the original rebalance-only-on-regime-change behavior (a constant/long-lived regime "
+        "then never rebalances after t=0, letting 00631L's weight drift -- see _simulate_regime_curve docstring).",
+    )
     args = parser.parse_args()
 
     policy_signal, policy_signal_path = _load_policy_signal(_resolve(args.decision_pointer))
@@ -1281,12 +1350,14 @@ def main() -> None:
         pd.Series("golden1", index=prices.index),
         weights_by_regime,
         args.initial_value,
+        rebalance_every_days=args.rebalance_every_days,
     )
     curves["group_a_plus_defensive_1m"] = _simulate_regime_curve(
         prices,
         pd.Series("group_a_plus_defensive", index=prices.index),
         weights_by_regime,
         args.initial_value,
+        rebalance_every_days=args.rebalance_every_days,
     )
     summary: dict[str, Any] = {
         "golden1_0531_1m": _metrics(curves["golden1_0531_1m"], args.initial_value),
@@ -1315,6 +1386,7 @@ def main() -> None:
             regime_frame["regime"],
             weights_by_regime,
             args.initial_value,
+            rebalance_every_days=args.rebalance_every_days,
         )
         metrics = _metrics(curves[variant], args.initial_value)
         defense_days = int((regime_frame["regime"] == "group_a_plus_defensive").sum())

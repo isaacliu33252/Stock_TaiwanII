@@ -79,10 +79,15 @@ class TaiwanStockTradingEnv(gym.Env):
         initial_avg_cost: float = 0.0,
         enable_risk_manager: bool = True,
         crash_window: int = 15,
+        randomize_start: bool = False,
+        min_episode_days: int = 100,
+        turnover_penalty: float = 0.01,
+        min_hold_days: int = 20,
+        short_hold_penalty: float = 0.02,
     ):
         """
         初始化交易環境
-        
+
         Args:
             df: 股票數據 DataFrame，必須包含欄位:
                 date, open, high, low, close, volume
@@ -95,6 +100,15 @@ class TaiwanStockTradingEnv(gym.Env):
             tax_rate: 證交稅 (預設 0.003 = 0.3%，賣出時收取)
             lookback_window: 狀態回看窗口 (預設 60)
             reward_func: 獎勵函數物件 (若為 None，使用預設)
+            randomize_start: 每次reset()是否隨機選擇起始日 (預設False，維持舊行為固定從day 0開始)。
+                啟用後每個episode從隨機索引開始，強迫agent接觸不同市場情境而非只記住固定序列
+                (arXiv:2607.16028的技巧)。只影響訓練，不影響eval時的固定起點需求(呼叫端自行控制)。
+            min_episode_days: randomize_start=True時，保證起始點之後至少留下這麼多天可跑 (預設100)
+            turnover_penalty: 每次成功執行交易(非HOLD)扣的固定reward懲罰 (預設0.01)。
+                從FinRL/environments/taiwan_stock_env.py搬過來——portfolio_train_v2.py的
+                env_config原本就會傳這個參數，但本檔案先前沒有對應的建構子參數，會直接TypeError。
+            min_hold_days: 賣出/清倉/停損動作要求至少持有這麼多天才不扣short_hold_penalty (預設20)
+            short_hold_penalty: 持有天數不到min_hold_days時的線性遞減懲罰上限 (預設0.02)
         """
         super().__init__()
         
@@ -109,7 +123,13 @@ class TaiwanStockTradingEnv(gym.Env):
         self.commission_rate = commission_rate
         self.tax_rate = tax_rate
         self.lookback_window = lookback_window
-        
+        self.randomize_start = randomize_start
+        self.min_episode_days = min_episode_days
+        self.turnover_penalty = turnover_penalty
+        self.min_hold_days = min_hold_days
+        self.short_hold_penalty = short_hold_penalty
+        self.last_buy_step: Optional[int] = None
+
         # 獎勵函數
         if reward_func is None:
             from .reward_function import RewardFunction
@@ -479,7 +499,8 @@ class TaiwanStockTradingEnv(gym.Env):
                 'type': 'BUY',
                 'settlement_step': settlement_step  # T+2 交割日
             })
-            
+            self.last_buy_step = self.current_step
+
             return True, f"BUY {self.trade_unit}@{trade_price:.2f} (T+2 解鎖)"
         
         # =====================================================================
@@ -716,7 +737,23 @@ class TaiwanStockTradingEnv(gym.Env):
             trade_history=self.trade_history,
             previous_close=prev_close
         )
-        
+
+        # =====================================================================
+        # Turnover / 短期持有懲罰 (從FinRL/environments/taiwan_stock_env.py搬過來，
+        # 原本portfolio_train_v2.py的env_config就會傳這兩組參數，本檔案先前沒有
+        # 對應邏輯會直接TypeError)
+        # =====================================================================
+        if executed and action != 0:
+            reward -= self.turnover_penalty
+            reward_breakdown['turnover_penalty'] = -self.turnover_penalty
+
+        if executed and action in (2, 3, 4) and self.last_buy_step is not None:
+            held_days = self.current_step - self.last_buy_step
+            if held_days < self.min_hold_days:
+                penalty = self.short_hold_penalty * (1.0 - held_days / max(self.min_hold_days, 1))
+                reward -= penalty
+                reward_breakdown['short_hold_penalty'] = -penalty
+
         # 更新風險指標
         if portfolio_value > self.peak_value:
             self.peak_value = portfolio_value
@@ -752,6 +789,10 @@ class TaiwanStockTradingEnv(gym.Env):
             'portfolio_value': portfolio_value,
             'reward_breakdown': reward_breakdown,
             'max_drawdown': self.max_drawdown,
+            # portfolio_train_v2.py::EnhancedStockTrainer.backtest() reads this
+            # to count trades -- it never existed here before, so num_trades
+            # was silently always 0 regardless of actual trading activity.
+            'trade_executed': executed,
         }
         
         # =====================================================================
@@ -776,19 +817,31 @@ class TaiwanStockTradingEnv(gym.Env):
             (state, info)
         """
         # 重置狀態
-        self.current_step = 0
+        if self.randomize_start:
+            # arXiv:2607.16028: 每個episode從隨機起始日開始，避免記住固定序列。
+            # 保留至少min_episode_days天可跑；資料不夠長就退回day 0。
+            latest_start = len(self.df) - 1 - self.min_episode_days
+            if latest_start > 0:
+                rng = np.random.RandomState(seed) if seed is not None else np.random
+                self.current_step = int(rng.randint(0, latest_start + 1))
+            else:
+                self.current_step = 0
+        else:
+            self.current_step = 0
         self.balance = self.initial_balance
         self.position = self._initial_shares
         self.avg_cost = self._initial_avg_cost if self._initial_shares > 0 else 0.0
         self.total_cost = self.position * self.avg_cost if self.position > 0 else 0.0
-        
+
         # 重置風險指標
-        self.peak_value = self.initial_balance + self.position * self.df.iloc[0]['close']
+        self.peak_value = self.initial_balance + self.position * self.df.iloc[self.current_step]['close']
         self.max_drawdown = 0.0
         
         # 重置 T+2 交割追蹤
         self.pending_shares = {}
-        
+        self.last_buy_step = None
+
+
         # 清空歷史
         self.trade_history = []
         self.portfolio_value_history = [self.initial_balance]

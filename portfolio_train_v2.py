@@ -208,6 +208,15 @@ class EnhancedStockTrainer:
         early_stop_patience: int = 30,
         target_sharpe: float = 0.5,
         seed: int = 42,
+        # 研究用：arXiv:2607.16028的兩個技巧，預設關閉、不改變既有行為
+        reward_variant: str = "v3",  # "v3" (既有DynamicRewardShaper) 或 "alpha" (AlphaRewardFunction)
+        randomize_start: bool = False,
+        min_episode_days: int = 100,
+        # turnover_penalty/min_hold_days/short_hold_penalty：None時依reward_variant自動決定
+        # （見下方解析邏輯的說明），可明確傳入覆寫。
+        turnover_penalty: float | None = None,
+        min_hold_days: int | None = None,
+        short_hold_penalty: float | None = None,
     ):
         self.ticker = ticker
         self.df = df
@@ -216,6 +225,35 @@ class EnhancedStockTrainer:
         self.initial_avg_cost = initial_avg_cost
         self.enable_risk_manager = enable_risk_manager
         self.enable_enhanced_reward = enable_enhanced_reward
+        self.reward_variant = reward_variant
+        self.randomize_start = randomize_start
+        self.min_episode_days = min_episode_days
+
+        # 2026-08-06 minimal comparison run (v3 vs alpha x randomize_start,
+        # see results in project_alpha_reward_2607.16028_rl_env_upgrade
+        # memory) found reward_variant="alpha" collapses to a never-trade
+        # policy: turnover_penalty=0.01 was calibrated against v3's heavily
+        # amplified reward scale (benchmark_weight=2.0 plus several bonus
+        # terms, typically ~0.1-0.2 per step), but AlphaRewardFunction's raw
+        # log-return scale is ~0.005-0.02 per step -- the same flat 0.01
+        # penalty dominates and swamps the alpha signal entirely. Real
+        # transaction costs (commission_rate/tax_rate) are already deducted
+        # from balance in _execute_trade and therefore already flow through
+        # portfolio_value into alpha_reward's own accounting -- an
+        # *additional* flat turnover/short-hold shaping penalty on top is a
+        # v3-specific behavioral nudge, not something the alpha reward needs
+        # or was designed to carry. Default to 0 for the alpha variant;
+        # explicit turnover_penalty=/min_hold_days=/short_hold_penalty=
+        # arguments still override this either way.
+        if reward_variant == "alpha":
+            self.turnover_penalty = 0.0 if turnover_penalty is None else turnover_penalty
+            self.min_hold_days = 0 if min_hold_days is None else min_hold_days
+            self.short_hold_penalty = 0.0 if short_hold_penalty is None else short_hold_penalty
+        else:
+            self.turnover_penalty = 0.01 if turnover_penalty is None else turnover_penalty
+            self.min_hold_days = 20 if min_hold_days is None else min_hold_days
+            self.short_hold_penalty = 0.02 if short_hold_penalty is None else short_hold_penalty
+
         self.seed = int(seed)
         self.timesteps = 0  # 儲存訓練步數
 
@@ -233,8 +271,11 @@ class EnhancedStockTrainer:
         else:
             self.risk_manager = None
         
-        # 初始化增強獎勵（v3 DynamicRewardShaper）
-        if enable_enhanced_reward:
+        # 初始化增強獎勵（v3 DynamicRewardShaper，或研究用的alpha reward變體）
+        if reward_variant == "alpha":
+            from environments.reward_function_alpha import AlphaRewardFunction
+            self.reward_func = AlphaRewardFunction()
+        elif enable_enhanced_reward:
             from environments.reward_function_v3 import DynamicRewardShaper
             self.reward_func = DynamicRewardShaper(
                 trade_penalty=0.02,
@@ -283,11 +324,13 @@ class EnhancedStockTrainer:
             'reward_func': self.reward_func,
             'enable_risk_manager': self.enable_risk_manager,
             'crash_window': 15,
-            'turnover_penalty': 0.01,
-            'min_hold_days': 20,
-            'short_hold_penalty': 0.02,
+            'turnover_penalty': self.turnover_penalty,
+            'min_hold_days': self.min_hold_days,
+            'short_hold_penalty': self.short_hold_penalty,
+            'randomize_start': self.randomize_start,
+            'min_episode_days': self.min_episode_days,
         }
-        
+
         env = TaiwanStockTradingEnv(**env_config)
         return env
     
@@ -482,11 +525,11 @@ class EnhancedStockTrainer:
             'initial_avg_cost': self.initial_avg_cost,
             'reward_func': self.reward_func,
             'enable_risk_manager': self.enable_risk_manager,
-            'turnover_penalty': 0.01,
-            'min_hold_days': 20,
-            'short_hold_penalty': 0.02,
+            'turnover_penalty': self.turnover_penalty,
+            'min_hold_days': self.min_hold_days,
+            'short_hold_penalty': self.short_hold_penalty,
         }
-        
+
         env = TaiwanStockTradingEnv(**env_config)
         obs, _ = env.reset()
         

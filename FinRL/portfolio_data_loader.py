@@ -654,6 +654,8 @@ def _download_twse_monthly_history(
     ticker: str,
     start_date: str,
     end_date: str,
+    *,
+    apply_split_adjustments: bool = True,
 ) -> pd.DataFrame:
     """Download TWSE monthly OHLCV data when Yahoo has no usable response."""
     local_code = ticker.split(".")[0]
@@ -707,11 +709,55 @@ def _download_twse_monthly_history(
     df["dividends"] = 0.0
     df["stock splits"] = 0.0
 
-    for split_date, factor in TWSE_SPLIT_ADJUSTMENTS.get(local_code, []):
-        mask = df["date"] >= split_date
-        df.loc[mask, ["open", "high", "low", "close"]] *= factor
+    if apply_split_adjustments:
+        for split_date, factor in TWSE_SPLIT_ADJUSTMENTS.get(local_code, []):
+            mask = df["date"] >= split_date
+            df.loc[mask, ["open", "high", "low", "close"]] *= factor
 
     return df
+
+
+def _repair_missing_twse_close_rows(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
+    """Patch incomplete Yahoo TWSE rows with official TWSE daily OHLCV."""
+    if df.empty or not ticker.endswith(".TW") or "date" not in df.columns or "close" not in df.columns:
+        return df
+
+    out = df.copy()
+    out["date"] = pd.to_datetime(out["date"], errors="coerce").dt.tz_localize(None)
+    missing_mask = out["date"].notna() & pd.to_numeric(out["close"], errors="coerce").isna()
+    if not bool(missing_mask.any()):
+        return out
+
+    missing_dates = out.loc[missing_mask, "date"].dt.normalize()
+    start_date = missing_dates.min().strftime("%Y-%m-%d")
+    end_date = missing_dates.max().strftime("%Y-%m-%d")
+    official = _download_twse_monthly_history(
+        ticker,
+        start_date,
+        end_date,
+        apply_split_adjustments=False,
+    )
+    if official.empty:
+        return out
+
+    official = official.copy()
+    official["date"] = pd.to_datetime(official["date"], errors="coerce").dt.normalize()
+    official = official.dropna(subset=["date"]).drop_duplicates("date", keep="last").set_index("date")
+    repaired = 0
+    for idx in out.index[missing_mask]:
+        dt = pd.Timestamp(out.at[idx, "date"]).normalize()
+        if dt not in official.index:
+            continue
+        for col in ("open", "high", "low", "close", "volume"):
+            if col in out.columns and col in official.columns:
+                out.at[idx, col] = official.at[dt, col]
+        if "adj close" in out.columns and pd.isna(out.at[idx, "adj close"]):
+            out.at[idx, "adj close"] = official.at[dt, "close"]
+        repaired += 1
+
+    if repaired:
+        print(f"TWSE official repaired {ticker} missing close rows: {repaired}", end=" ", flush=True)
+    return out
 
 
 def download_all_stocks(
@@ -832,6 +878,7 @@ def download_all_stocks(
                 pass  # 已經是正確格式
 
             df.columns = [c.lower() for c in df.columns]
+            df = _repair_missing_twse_close_rows(df, ticker)
 
             # 確保必要欄位
             required = ['date', 'open', 'high', 'low', 'close', 'volume']

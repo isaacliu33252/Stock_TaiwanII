@@ -20,9 +20,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CVAR = PROJECT_ROOT / "report/group_a_plus/latest/cvar_tail_risk_diagnostic.json"
 DEFAULT_DENSITY = PROJECT_ROOT / "report/group_a_plus/latest/density_head_tail_risk_advisory.json"
 DEFAULT_MARKET_IMPACT = PROJECT_ROOT / "report/group_a_plus/latest/market_impact_readiness_review.json"
-DEFAULT_REBALANCE = PROJECT_ROOT / "report/group_a_plus/latest/rebalance_review_20260720.json"
+DEFAULT_REBALANCE = PROJECT_ROOT / "report/group_a_plus/latest/rebalance_review.json"
 DEFAULT_SYSTEMIC_BUBBLE = PROJECT_ROOT / "report/group_a_plus/latest/systemic_bubble_time_at_risk_review.json"
 DEFAULT_HMM_WJ = PROJECT_ROOT / "report/group_a_plus/latest/hmm_wj_synthetic_scenario_readiness_review.json"
+DEFAULT_CVAR_COST_WINDOW_SPLIT = PROJECT_ROOT / "report/group_a_plus/latest/2606_26625_cvar_cost_window_split.json"
+DEFAULT_ROLLING_TAIL_NO_ADD = PROJECT_ROOT / "report/group_a_plus/latest/2606_26625_rolling_tail_no_add_gate.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json"
 DEFAULT_HISTORY_DIR = PROJECT_ROOT / "report/group_a_plus/dynamic_cvar_tail_cost_readiness/history"
 
@@ -80,6 +82,8 @@ def build_review(
     rebalance_path: Path,
     systemic_bubble_path: Path,
     hmm_wj_path: Path,
+    cvar_cost_window_split_path: Path = DEFAULT_CVAR_COST_WINDOW_SPLIT,
+    rolling_tail_no_add_path: Path = DEFAULT_ROLLING_TAIL_NO_ADD,
 ) -> dict[str, Any]:
     cvar = _load(cvar_path)
     density = _load(density_path)
@@ -87,6 +91,8 @@ def build_review(
     rebalance = _load(rebalance_path)
     systemic = _load(systemic_bubble_path)
     hmm_wj = _load(hmm_wj_path)
+    cvar_cost_window_split = _load(cvar_cost_window_split_path)
+    rolling_tail_no_add = _load(rolling_tail_no_add_path)
 
     cvar_summary = _cvar_summary(cvar)
     density_best = density.get("best_heads") or {}
@@ -107,6 +113,8 @@ def build_review(
             "rebalance_review": rebalance,
             "systemic_bubble_time_at_risk_review": systemic,
             "hmm_wj_synthetic_scenario_readiness_review": hmm_wj,
+            "cvar_cost_window_split_2606_26625": cvar_cost_window_split,
+            "rolling_tail_no_add_gate_2606_26625": rolling_tail_no_add,
         }.items()
         if not payload
     ]
@@ -153,7 +161,14 @@ def build_review(
         blockers.append("scenario_generator_not_decision_ready")
 
     blockers.append("dynamic_cvar_optimizer_not_implemented")
-    blockers.append("taiwan_etf_walkforward_validation_missing")
+    cvar_cost_summary = cvar_cost_window_split.get("summary") or {}
+    if cvar_cost_window_split and cvar_cost_summary.get("tail_cost_window_split_passed") is not True:
+        blockers.append("cvar_cost_window_split_2606_26625_failed")
+    rolling_summary = rolling_tail_no_add.get("summary") or {}
+    if rolling_tail_no_add and rolling_summary.get("allow_00631l_add") is not True:
+        blockers.append("rolling_tail_no_add_gate_2606_26625_blocks_00631l_add")
+    if not cvar_cost_window_split:
+        blockers.append("taiwan_etf_walkforward_validation_missing")
 
     as_of = (
         _nested(rebalance, "dates", "requested_as_of_date")
@@ -213,13 +228,30 @@ def build_review(
                 "all_required_tickers_ready": _nested(hmm_wj, "data_readiness", "all_required_tickers_ready"),
                 "can_generate_scenarios_for_decision": hmm_decision.get("can_generate_scenarios_for_decision"),
             },
+            "cvar_cost_window_split_2606_26625": {
+                "status": cvar_cost_window_split.get("status"),
+                "valid_windows": cvar_cost_summary.get("valid_windows"),
+                "tail_cost_window_split_passed": cvar_cost_summary.get("tail_cost_window_split_passed"),
+                "latest_loses_to_no_00631l_windows": cvar_cost_summary.get(
+                    "latest_loses_to_no_00631l_windows"
+                ),
+                "latest_loses_to_no_letf_windows": cvar_cost_summary.get("latest_loses_to_no_letf_windows"),
+            },
+            "rolling_tail_no_add_gate_2606_26625": {
+                "status": rolling_tail_no_add.get("status"),
+                "window_count": rolling_summary.get("window_count"),
+                "block_00631l_add_windows": rolling_summary.get("block_00631l_add_windows"),
+                "block_00632r_open_windows": rolling_summary.get("block_00632r_open_windows"),
+                "allow_00631l_add": rolling_summary.get("allow_00631l_add"),
+                "allow_00632r_open": rolling_summary.get("allow_00632r_open"),
+            },
         },
         "validation_readiness": {
             "dynamic_optimizer_implemented": False,
             "arma_garch_student_t_copula_validated": False,
-            "turnover_cost_walkforward_validated": False,
+            "turnover_cost_walkforward_validated": cvar_cost_summary.get("tail_cost_window_split_passed") is True,
             "tail_thickness_improvement_validated": False,
-            "taiwan_etf_walkforward_validated": False,
+            "taiwan_etf_walkforward_validated": cvar_cost_summary.get("tail_cost_window_split_passed") is True,
         },
         "blocking_reasons": blockers,
         "warning_reasons": warnings,
@@ -243,6 +275,8 @@ def build_review(
             "rebalance": str(rebalance_path),
             "systemic_bubble": str(systemic_bubble_path),
             "hmm_wj": str(hmm_wj_path),
+            "cvar_cost_window_split_2606_26625": str(cvar_cost_window_split_path),
+            "rolling_tail_no_add_gate_2606_26625": str(rolling_tail_no_add_path),
         },
     }
 
@@ -271,6 +305,8 @@ def main() -> None:
     parser.add_argument("--rebalance", default=str(DEFAULT_REBALANCE))
     parser.add_argument("--systemic-bubble", default=str(DEFAULT_SYSTEMIC_BUBBLE))
     parser.add_argument("--hmm-wj", default=str(DEFAULT_HMM_WJ))
+    parser.add_argument("--cvar-cost-window-split", default=str(DEFAULT_CVAR_COST_WINDOW_SPLIT))
+    parser.add_argument("--rolling-tail-no-add", default=str(DEFAULT_ROLLING_TAIL_NO_ADD))
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     parser.add_argument("--history-dir", default=str(DEFAULT_HISTORY_DIR))
     parser.add_argument("--no-history", action="store_true")
@@ -283,6 +319,8 @@ def main() -> None:
         rebalance_path=_resolve(args.rebalance),
         systemic_bubble_path=_resolve(args.systemic_bubble),
         hmm_wj_path=_resolve(args.hmm_wj),
+        cvar_cost_window_split_path=_resolve(args.cvar_cost_window_split),
+        rolling_tail_no_add_path=_resolve(args.rolling_tail_no_add),
     )
     history_dir = None if args.no_history else _resolve(args.history_dir)
     output = _resolve(args.output)

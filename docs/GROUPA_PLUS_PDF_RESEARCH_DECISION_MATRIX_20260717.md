@@ -1,8 +1,167 @@
 # GroupA+ PDF Research Decision Matrix（2026-07-17）
 
+## 2026-08-07 Addendum
+
+Recent paper imports after this matrix are summarized in:
+
+- `docs/GROUPA_PLUS_RECENT_PAPER_IMPORT_STATUS_20260807.md`
+
+Covered addendum papers:
+
+- `2605.24345`
+- `2605.01954`
+- `2603.05862`
+
+The addendum keeps the same governance stance: paper imports are
+shadow/review-only unless separately validated and signed.
+
+## 2026-08-29 Addendum
+
+Additional reviewed papers:
+
+- `2608.07977`: Riccati/Merton-variance formulation retained as shadow
+  risk-budget diagnostics only; no optimizer promotion.
+- `2104.03667`: regime clustering / VLSTAR concepts retained as shadow
+  diagnostics only; no live regime allocator.
+- `1610.09404`: LETF tracking-error / effective-fee readiness remains blocked;
+  no `00631L` add and no `00632R` open.
+- `2604.02126`: robust hedge ratio under covariance/variance uncertainty is
+  implemented as a `0050.TW`/`00632R.TW` shadow review only.
+- `2605.20636`: continuous growth/defensive style timing is reviewed as the
+  A21.19 lineage; only its validation checklist is retained, no live smooth-score
+  allocation import.
+- `2604.11335`: trends in heteroscedastic tail dependence retained as a
+  shadow tail-dependence trend diagnostic only; no full tail-copula live gate.
+- `2602.24037`: Scenario-Context Rollout retained as a shadow
+  scenario-to-real mismatch readiness guard only; no SCR-PPO training and no
+  live allocation import.
+
+Current `2602.24037` decision:
+
+- artifact: `report/group_a_plus/latest/2602_24037_scr_readiness_review.json`
+- handoff: `docs/HANDOFF_2602_24037_SCR_READINESS_GROUPA_PLUS_20260830.md`
+- status: `available_for_shadow_review`
+- imported benefit: SCR readiness and reward-transition mismatch guard for any
+  future scenario-conditioned RL work.
+- Taiwan ETF audit: nearest-neighbor scenario-to-real review on current
+  `live_signal.json` target weights from `2024-01-02` to `2026-08-28` produced
+  `643` OOS days, mean absolute gap `0.007926`, median gap `0.004396`, P90 gap
+  `0.014028`, and passed the `0.01` average gap gate.
+- beta_cf proxy: `0.769555`, slightly outside the paper's moderate
+  `0.25`-`0.75` range; this warns against immediate SCR training/promotion.
+- robustness sweep: `eval_start=2023/2024/2025` x `min_history=252/504` x
+  `k_neighbors=15/30/60` produced `18/18` gap-gate passes, mean absolute gap
+  range `0.006586` to `0.008189`, but only `4/18` beta_cf values landed in the
+  paper's moderate range. Scenario audit is robust; SCR training readiness is
+  not robust enough.
+- stress-window split: COVID 2020, 2022 rate-hike, post-2023, 2024-2026, and
+  2025-2026 windows produced `5/5` gap-gate passes, mean absolute gap range
+  `0.005605` to `0.007926`, but only `2/5` beta_cf values in the moderate
+  range; stress readiness supports diagnostics, not training.
+- latest SCR scenario stress score: as of `2026-08-28`, current
+  `live_signal.json` target weights produced `60` nearest-context scenarios,
+  mean next return `0.000666`, P10 `-0.005023`, VaR 5% `-0.006251`, ES 5%
+  `-0.009360`, probability loss `0.483333`, and downside warning `false`
+  versus the `-0.020000` ES threshold. This is useful as a daily shadow stress
+  monitor only.
+- live impact: no SCR-PPO training, no PPO/model training, no target weight
+  change, no auto rebalance, no `00631L` add, no `00632R` open, no `00679B` add,
+  keep `Golden1_0531` unchanged.
+
+Current `2604.02126` decision:
+
+- artifact: `report/group_a_plus/latest/2604_02126_robust_hedge_review.json`
+- sweep artifact: `report/group_a_plus/latest/2604_02126_robust_hedge_sweep.json`
+- temporal OOS artifact:
+  `report/group_a_plus/latest/2604_02126_robust_hedge_temporal_oos.json`
+- forecast variant artifact:
+  `report/group_a_plus/latest/2604_02126_forecast_variants.json`
+- cost stress artifact:
+  `report/group_a_plus/latest/2604_02126_cost_stress.json`
+- handoff: `docs/HANDOFF_2604_02126_ROBUST_HEDGE_GROUPA_PLUS_20260829.md`
+- status: `blocked_for_live_promotion`
+- conclusion: variance-only robust hedge ratio is useful as a diagnostic/cap
+  candidate, but current daily-close proxy does not validate live use; full-box
+  covariance uncertainty collapses to zero exposure.
+- sweep conclusion: `27` parameter sets tested across rolling windows,
+  uncertainty windows, and `00632R` caps; `0` passed the shadow stability filter.
+- temporal OOS conclusion: `27` parameter sets tested across
+  `2020-2022`, `2023-2024`, and `2025-2026`; `0` passed all temporal windows.
+- forecast conclusion: rolling mean, `AR(1)`, and `HAR-lite` variants tested;
+  `0` passed the shadow filter.
+- cost conclusion: `15` model/cost scenarios tested from `0` to `50` bps;
+  `0` passed robust-versus-standard net-performance filters.
+- final archive decision: the uncertainty-adjusted hedge-sizing idea was
+  explicitly tested for `0050.TW`/`00632R.TW`; current artifacts do not show
+  live inverse eligibility, so the idea remains shadow/cap diagnostic only.
+- live impact: no target weight change, no auto rebalance, no `00632R` open,
+  keep `Golden1_0531` unchanged.
+
+Current `2605.20636` decision:
+
+- artifact: `report/group_a_plus/latest/2605_20636_continuous_timing_review.json`
+- handoff:
+  `docs/HANDOFF_2605_20636_CONTINUOUS_TIMING_GROUPA_PLUS_20260829.md`
+- status: `blocked_for_live_promotion`
+- imported benefit: validation checklist only, already present in
+  `GROUP_A_PLUS_SIGNAL_VALIDATION_CHECKLIST_20260723.md`
+- strategy conclusion: continuous tanh-mapped growth/defensive score is not
+  imported into GroupA+ latest strategy; A21.19 shadow line remains unpromoted.
+- experiment scope: GroupA+ importability review is complete; full replication
+  of the paper's US ETF tables/factor attribution is not complete and not
+  required for this strategy decision.
+- Taiwan ETF sensitivity: tested `0050_cash`, `0050_00679b_cash`, and
+  `0050_00631l_cash` endpoints across full/covid/rate-hike/recent windows;
+  all were `0/4` triple-pass, best endpoint was only least bad
+  (`0050_00631l_cash`, avg final-value delta `-115341.54`, avg Sharpe delta
+  `-0.347761`, avg turnover delta `10.632059`), so no live import.
+- friction-control sweep: tested the best endpoint with no-trade bands
+  `0.005/0.02/0.05/0.10` and tilt update frequencies `1/5/10`; all `12`
+  combinations were `0/4` triple-pass. Best combo `band0.1_freq5` improved
+  average final value (`81633.59`) but still had negative average Sharpe
+  (`-0.206229`), worse minimum MaxDD (`-0.044307`), and higher turnover
+  (`1.352798`); the average gain came from `2024-2026`, while
+  full-history/COVID/2022 final-value deltas stayed negative, so still no live
+  import.
+- live impact: no target weight change, no auto rebalance, no `00631L` unlock,
+  no `00632R` open, keep `Golden1_0531` unchanged.
+- archive: closed for GroupA+ import on `2026-08-30`; do not rerun by default
+  unless new Taiwan ETF evidence or an explicit new user request appears.
+
+Current `2604.11335` decision:
+
+- artifact: `report/group_a_plus/latest/2604_11335_tail_dependence_trend_review.json`
+- handoff:
+  `docs/HANDOFF_2604_11335_TAIL_DEPENDENCE_TRENDS_GROUPA_PLUS_20260830.md`
+- status: `available_for_shadow_monitoring`
+- imported benefit: tail-dependence trend/stability monitoring under
+  heteroscedastic marginals, implemented as an empirical rolling lower-tail
+  co-exceedance trend proxy.
+- latest warning: `00631L.TW` lower-tail co-exceedance versus `0050.TW` is high
+  (`0.923077` as of `2026-08-28`), cautioning against leverage adds from this
+  research line.
+- no recent tail-dependence-rising asset was flagged by threshold.
+- robustness: `alpha=0.05/0.10/0.15` x `window=126/252/504` produced `9/9`
+  high `00631L.TW` lower-tail dependence flags and `0/9` recent-rising
+  `00631L.TW` flags; this confirms the high tail dependence warning is robust,
+  but does not justify a new live de-risking gate.
+- stress-window split: full sample, 2018 trade war, 2020 COVID, 2022 rate-hike,
+  and 2024-2026 recent windows produced `5/5` high `00631L.TW` lower-tail
+  dependence windows, `0/5` high `00679B.TWO` windows, and `0/5` positive
+  `00632R.TW` lower-lower co-exceedance windows; this reinforces the
+  no-`00631L`-add warning but does not create a live bond or inverse gate.
+- `00679B.TWO` tail-break alert: latest lower-tail proxy `0.076923`, baseline
+  mean `0.115920`, recent mean `0.128816`, break alert `false`; no downgrade of
+  bond-hedge confidence today, but also no standalone bond add rule.
+- live impact: no target weight change, no auto rebalance, no `00631L` add,
+  no `00632R` open, keep `Golden1_0531` unchanged.
+- 2026-08-31 recheck after `golden2_0830`: all four evaluators re-ran on latest
+  available data (`2026-08-28`) and the decision is unchanged; no latest-strategy
+  change, no `golden2_0830` change, no `golden1_0531` change.
+
 ## Scope
 
-This matrix consolidates the latest GroupA+ research decisions from twenty-three PDFs:
+This matrix consolidates the latest GroupA+ research decisions from twenty-four PDFs:
 
 - `C:\Users\isaac\Downloads\2512.02166.pdf`
 - `C:\Users\isaac\Downloads\2606.03184.pdf`
@@ -27,6 +186,7 @@ This matrix consolidates the latest GroupA+ research decisions from twenty-three
 - `C:\Users\isaac\Downloads\2107.09048.pdf`
 - `C:\Users\isaac\Downloads\2512.10913.pdf`
 - `C:\Users\isaac\Downloads\2606.08450.pdf`
+- `C:\Users\isaac\Downloads\2602.24037.pdf`
 
 Active strategy under review:
 
@@ -66,7 +226,7 @@ Use all PDF imports as research / shadow / manual review only.
 | `2603.21330` | FinRL-X deployment-consistent weight-centric trading architecture | Deployment consistency / target-weight interface / execution guard monitoring review | `docs/2603_21330_FINRLX_GROUPA_PLUS_REVIEW_20260718.md` | No engine import / no weight change |
 | `1212.2833` | Perpetual money machine / financialization / bubbles / ETF coupling | Time-at-risk governance, ETF-coupling fragility checklist, reflexivity proxy, scenario discipline | `docs/1212_2833_PERPETUAL_MONEY_MACHINE_GROUPA_PLUS_REVIEW_20260718.md` | No macro timing import / no weight change |
 | `2603.10202` | Hybrid HMM with jump-duration synthetic financial scenarios | Synthetic scenario quality gate, multi-day jump-duration stress episodes, interpretable quantile-state transitions, Student-t copula dependence concept | `docs/2603_10202_HMM_WJ_SYNTHETIC_SCENARIO_GROUPA_PLUS_REVIEW_20260718.md` | No synthetic alpha / no weight change |
-| `2606.26625` | Commodity ETF optimization under heavy-tailed returns | Dynamic CVaR/tail/cost readiness governance, CVaR/EVT tail diagnostics, turnover and transaction-cost robustness checklist, warning against return-seeking tangent optimizers | `docs/2606_26625_COMMODITY_ETF_CVAR_TAIL_RISK_GROUPA_PLUS_REVIEW_20260718.md`; `report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json` | Research-only / blocked / no commodity allocation / no weight change |
+| `2606.26625` | Commodity ETF optimization under heavy-tailed returns | Dynamic CVaR/tail/cost readiness governance, CVaR/EVT tail diagnostics, turnover and transaction-cost robustness checklist, warning against return-seeking tangent optimizers; 2026-08-31 Taiwan ETF window-split audit shows latest loses to no-00631L in `5/5` windows and no-LETF in `4/5` windows | `docs/2606_26625_COMMODITY_ETF_CVAR_TAIL_RISK_GROUPA_PLUS_REVIEW_20260718.md`; `docs/HANDOFF_2606_26625_COMMODITY_ETF_CVAR_TAIL_COST_GROUPA_PLUS_20260718.md`; `report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json`; `report/group_a_plus/latest/2606_26625_cvar_cost_window_split.json` | Research-only / measured live-promotion failure / no commodity allocation / no optimizer / no weight change |
 | `2604.14498` | Synthetic augmentation validation for financial ML | Size-matched null augmentation gate, block permutation test, task-type restriction for synthetic data, rare-regime metric alignment | `docs/2604_14498_SYNTHETIC_AUGMENTATION_VALIDATION_GROUPA_PLUS_REVIEW_20260718.md` | Validation governance only / no synthetic alpha / no weight change |
 | `2605.12462` | Gymnasium environment for risk-aware demand-response RL | Modular environment design, multi-objective CVaR reward, intervention fatigue, risk-budget pacing | `docs/2605_12462_DR_GYM_RISK_AWARE_ENV_GROUPA_PLUS_REVIEW_20260718.md`; `report/group_a_plus/latest/intervention_fatigue_risk_budget_readiness_review.json` | Research-only / blocked / no RL policy / no weight change |
 | `1610.09404` | Tracking errors of commodity leveraged ETFs | LETF holding-horizon risk, realized-variance decay, realized effective fee proxy, inverse ETF hedge-neutrality warning | `docs/1610_09404_LETF_TRACKING_ERROR_GROUPA_PLUS_REVIEW_20260718.md` | Research-only / no LETF pair strategy / no weight change |
@@ -76,6 +236,7 @@ Use all PDF imports as research / shadow / manual review only.
 | `2107.09048` | Reduced-rank correlation market states as long-term crisis precursors | Largest-eigenvalue market-mode subtraction, reduced-rank correlation averaged-distance monitor, k-means crisis-state snapshot concept | `docs/2107_09048_REDUCED_RANK_CORRELATION_CRISIS_PRECURSOR_GROUPA_PLUS_REVIEW_20260719.md`; `docs/HANDOFF_2107_09048_REDUCED_RANK_CORRELATION_GROUPA_PLUS_20260719.md`; `docs/DETAILED_HANDOFF_2107_09048_REDUCED_RANK_CORRELATION_GROUPA_PLUS_20260720.md`; `report/group_a_plus/latest/reduced_rank_correlation_readiness_review.json`; `report/group_a_plus/latest/reduced_rank_correlation_proxy.json`; `report/group_a_plus/latest/reduced_rank_correlation_proxy_param_sweep.json`; `report/group_a_plus/latest/reduced_rank_correlation_crash_window_backtest.json`; `report/group_a_plus/latest/reduced_rank_confirmation_overlap_backtest.json` | Research-only / readiness blocked / confirmation gate lowers false positives / no crash predictor / no live gate / no weight change |
 | `2512.10913` | Systematic review of RL in financial decision making | RL/ML promotion governance: explainability, robustness, deployment feasibility, benchmark discipline, implementation quality over algorithm complexity | `docs/2512_10913_RL_FINANCIAL_DECISION_SYSTEMATIC_REVIEW_GROUPA_PLUS_REVIEW_20260720.md`; `docs/HANDOFF_2512_10913_RL_FINANCIAL_DECISION_SYSTEMATIC_REVIEW_GROUPA_PLUS_20260720.md`; `docs/DETAILED_HANDOFF_2512_10913_RL_GOVERNANCE_GROUPA_PLUS_20260720.md`; `report/group_a_plus/latest/rl_governance_readiness_review.json` | Research-only governance / RL governance blocked / no RL allocator / no live gate / no weight change |
 | `2606.08450` | GIFT LLM-guided state-reward interface for financial RL | Constrained LLM feature/reward proposal governance, risk-rule reward audit, diagnostic-guided refinement, frozen interface before OOS, multi-ticker feature-stability and windowed stress audit, manual hedge eligibility checklist, 00632R tail-gate split review, effective-fee proxy validation, live hedge policy boundary | `docs/2606_08450_GIFT_LLM_STATE_REWARD_INTERFACE_GROUPA_PLUS_REVIEW_20260720.md`; `docs/HANDOFF_2606_08450_GIFT_LLM_STATE_REWARD_INTERFACE_GROUPA_PLUS_20260720.md`; `report/group_a_plus/latest/llm_state_reward_interface_readiness_review.json`; `report/group_a_plus/latest/llm_state_reward_interface_catalog.json`; `report/group_a_plus/latest/llm_state_reward_interface_proposal_validation_review.json`; `report/group_a_plus/latest/llm_state_reward_interface_offline_smoke_review.json`; `report/group_a_plus/latest/llm_state_reward_interface_multi_ticker_smoke_review.json`; `report/group_a_plus/latest/llm_state_reward_interface_feature_stability_review.json`; `report/group_a_plus/latest/llm_state_reward_interface_windowed_stability_review.json`; `report/group_a_plus/latest/llm_state_reward_interface_manual_hedge_eligibility_review.json`; `report/group_a_plus/latest/00632r_tail_tracking_error_gate_review.json`; `report/group_a_plus/latest/00632r_effective_fee_proxy_validation_review.json`; `report/group_a_plus/latest/live_hedge_policy_review.json` | Research-only governance / readiness blocked / hedge evidence present / policy boundary defined but not live validated / manual hedge eligibility blocked / no weight change |
+| `2602.24037` | Scenario-Context Rollout for RL portfolio rebalancing with counterfactual critic continuation | SCR readiness review, scenario-to-real mismatch audit, beta_cf bias-variance proxy, robustness sweep, stress-window split, and latest SCR scenario downside stress score for future shadow RL governance | `docs/HANDOFF_2602_24037_SCR_READINESS_GROUPA_PLUS_20260830.md`; `report/group_a_plus/latest/2602_24037_scr_readiness_review.json`; `report/group_a_plus/latest/2602_24037_scr_readiness_robustness.json`; `report/group_a_plus/latest/2602_24037_scr_readiness_window_split.json`; `report/group_a_plus/latest/2602_24037_scr_scenario_stress_score.json` | Research-only / shadow diagnostics only / no SCR-PPO training / no PPO or model training / no weight change |
 
 ## Imported Concepts
 
@@ -456,6 +617,20 @@ Decision:
 - `status = blocked`, actual data end `2026-07-17`.
 - Research shadow now includes
   `letf_tracking_error_effective_fee_readiness_blocked`.
+
+2026-08-29 refresh for 2026-08-31 latest-strategy preview:
+
+- Latest LETF readiness artifact is still `blocked` as of `2026-08-28`.
+- 2026-08-31 preview weights include `00631L.TW = 10.0388%` and
+  `00632R.TW = 16.4782%`, but this paper does not validate either LETF leg for
+  automatic promotion.
+- Failed checks remain: `00631L` mean/p05 30d tracking-error floors, `00631L`
+  latest 30d realized-variance ceiling, `00632R` 30d p05 tracking-error floor,
+  effective-fee proxy validation, and live hedge policy validation.
+- Decision unchanged: use as LETF caution / readiness blocker only; no live
+  weight change.
+- Final archive decision on 2026-08-29: GroupA+ import experiments complete;
+  preserve the shadow blocker and do not re-run or promote by default.
 
 ### 2605.12462
 

@@ -90,6 +90,35 @@
       "metadata_status": "partial"
     },
     {
+      "model_id": "golden2_0830_last_ppo_group_a_100k",
+      "status": "frozen_release",
+      "role": "Golden2_0830 frozen GroupA+ latest strategy PPO checkpoint copy",
+      "model_path": "models/portfolio/golden2_0830/last_ppo_group_a_100k_golden2_0830.zip",
+      "sha256": "ef9f363b98c03969601bc5a090a14f34a5df83ddda727f1dba26a211b03a9cf3",
+      "size_bytes": 207057,
+      "modified_at": 1788105158,
+      "training": {
+        "algorithm": "PPO",
+        "train_start": "2020-01-01",
+        "train_end": "2025-12-31",
+        "features": "same binary checkpoint as last_ppo_group_a_100k runtime copy",
+        "action_schema": "triplet_v4"
+      },
+      "evaluation": {
+        "metrics_source": "results/golden2_0830/last_ppo_group_a_backtest_golden2_0830.json",
+        "release_signal_source": "results/golden2_0830/group_a_combined_live_golden2_0830.json",
+        "release_live_signal": "results/golden2_0830/group_a_plus_live_signal_v2_golden2_0830_20260831_total_1m.json"
+      },
+      "lineage": {
+        "release": "golden2_0830",
+        "release_manifest": "results/group_a_plus_release_golden2_0830.json",
+        "release_doc": "GROUP_A_PLUS_GOLDEN2_0830_RELEASE.md",
+        "source_model_path": "models/portfolio/last_ppo_group_a_100k.zip",
+        "notes": "Frozen copy of the latest GroupA+ strategy state as of 2026-08-30. Do not overwrite in place."
+      },
+      "metadata_status": "complete"
+    },
+    {
       "model_id": "group_a_plus_4tickers_2020_2025",
       "status": "shadow_diagnostic_reference",
       "role": "Default model for read-only model weight health diagnostics",
@@ -116,4 +145,3 @@
     }
   ]
 }
-

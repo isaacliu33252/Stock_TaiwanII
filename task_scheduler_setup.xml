@@ -23,7 +23,7 @@
     <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
     <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
     <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
-    <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
+    <ExecutionTimeLimit>PT72H</ExecutionTimeLimit>
     <Enabled>true</Enabled>
     <RunOnlyIfNetworkAvailable>true</RunOnlyIfNetworkAvailable>
   </Settings>

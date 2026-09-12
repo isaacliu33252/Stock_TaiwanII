@@ -19,9 +19,9 @@ import duckdb
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = PROJECT_ROOT / "FinRL/data/stock_data.db"
-DEFAULT_LIVE_SIGNAL = PROJECT_ROOT / "report/group_a_plus/latest/live_signal_20260720_estimate.json"
+DEFAULT_LIVE_SIGNAL = PROJECT_ROOT / "report/group_a_plus/latest/live_signal.json"
 DEFAULT_EXECUTION_PLAN = PROJECT_ROOT / "report/group_a_plus/latest/execution_plan.json"
-DEFAULT_REBALANCE_REVIEW = PROJECT_ROOT / "report/group_a_plus/latest/rebalance_review_20260720.json"
+DEFAULT_REBALANCE_REVIEW = PROJECT_ROOT / "report/group_a_plus/latest/rebalance_review.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "report/group_a_plus/latest/market_impact_readiness_review_20260720.json"
 DEFAULT_HISTORY_DIR = PROJECT_ROOT / "report/group_a_plus/market_impact_readiness/history"
 

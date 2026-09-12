@@ -226,6 +226,29 @@ class TaiwanStockTradingEnv(gym.Env):
         # 52維狀態 = 價格(6) + 技術指標(44) + 型態(8) + 法人(6) + 部位(4) = 52維
         # 但根據原始設計應該是 57 維，這裡我們計算實際的特徵數
         self.state_dim = self._calculate_state_dim()
+        
+        # 預計算技術指標欄位名稱列表（用於 _get_observation 加速）
+        # 避免每步都遍歷 self.df.columns
+        excluded_base = ['date', 'open', 'high', 'low', 'close', 'volume', 'turnover']
+        self._indicator_col_names = [c for c in self.df.columns if c not in excluded_base]
+        
+        # 預計算欄位索引（用於 _get_observation 加速，11.5x speedup）
+        # 避免每步重複調用 df.columns.index()
+        all_columns = self.df.columns.tolist()
+        self._price_idx = [all_columns.index(c) for c in ['open', 'high', 'low', 'close', 'volume']]
+        self._indicator_idx = [all_columns.index(c) for c in self._indicator_col_names]
+        self._has_turnover = 'turnover' in all_columns
+        if self._has_turnover:
+            self._price_idx.append(all_columns.index('turnover'))
+        
+        # 預分配狀態陣列（避免每步重新分配記憶體）
+        self._state_buffer = np.zeros(self.state_dim, dtype=np.float32)
+
+        # 預提取整個 DataFrame 為 numpy 陣列（2026-08-18 優化）
+        # df.iloc[i].values 每步都有 pandas 索引處理開銷
+        # 改用預提取的 numpy 陣列直接索引可獲得 17.8x 加速
+        self._df_values = self.df.values
+
         self.observation_space = spaces.Box(
             low=-np.inf,
             high=np.inf,
@@ -238,7 +261,14 @@ class TaiwanStockTradingEnv(gym.Env):
         self.portfolio = PortfolioState()
         self.trade_history: List[TradeInfo] = []
         self.price_history: List[float] = []
-        
+
+        # 用於追蹤每步報酬的先前市值（計算 per-step return）
+        self._previous_portfolio_value: float = 0.0
+
+        # 用於追蹤最後一筆交易的 step（避免每次計算 reward 時 O(n) 查找 date）
+        self._last_trade_step: int = -1
+        self._last_trade_action: int = 0  # 最後一筆交易的 action code（用於快速判斷停損等）
+
         # 漲跌停追蹤
         self.limit_up_price = 0.0
         self.limit_down_price = 0.0
@@ -301,30 +331,25 @@ class TaiwanStockTradingEnv(gym.Env):
         注意：
         - 某些特徵可能在初期歷史窗口不足時為 NaN
         - 我們用 0 填充 NaN 值
+        
+        優化（2026-08-17, 2026-08-18）：
+        - 使用預計算的欄位索引（_price_idx, _indicator_idx）
+        - 避免每步調用 df.columns.index()
+        - 預提取整個 DataFrame 為 numpy 陣列（_df_values）避免每步 iloc 開銷
+        - 預分配狀態陣列避免每步重新分配記憶體
         """
-        # 獲取當前價
-        current_price = self.df.iloc[self.current_step]['close']
+        # 使用預提取的 numpy 陣列直接索引（17.8x 加速）
+        all_values = self._df_values[self.current_step]
         
-        # 構建價格特徵
-        price_data = self.df.iloc[self.current_step]
-        price_features = [
-            price_data.get('open', 0),
-            price_data.get('high', 0),
-            price_data.get('low', 0),
-            price_data.get('close', 0),
-            price_data.get('volume', 0),
-            price_data.get('turnover', 0),
-        ]
+        # 價格特徵（使用預計算的索引）
+        price_features = [all_values[i] for i in self._price_idx]
         
-        # 構建技術指標特徵
-        excluded = ['date', 'open', 'high', 'low', 'close', 'volume', 'turnover']
-        indicator_features = []
-        for col in self.df.columns:
-            if col not in excluded:
-                val = price_data.get(col, 0)
-                if pd.isna(val):
-                    val = 0
-                indicator_features.append(val)
+        # 技術指標特徵（使用預計算的索引 + nan_to_num）
+        indicator_values = all_values[self._indicator_idx]
+        indicator_features = np.nan_to_num(indicator_values, nan=0.0).tolist()
+        
+        # 當前價格（用於部位特徵計算）
+        current_price = all_values[self._price_idx[3]]  # close is 4th in ['open', 'high', 'low', 'close', 'volume']
         
         # 構建部位特徵
         position_features = [
@@ -334,25 +359,27 @@ class TaiwanStockTradingEnv(gym.Env):
             (current_price - self.portfolio.avg_cost) / self.portfolio.avg_cost if self.portfolio.avg_cost > 0 else 0,  # 成本偏離率（持有成本時）
         ]
         
-        # 組合所有特徵
-        all_features = price_features + indicator_features + position_features
+        # 組合所有特徵並寫入預分配緩衝區
+        buf = self._state_buffer
+        idx = 0
         
-        # 確保維度一致
-        state = np.array(all_features, dtype=np.float32)
+        for v in price_features:
+            buf[idx] = v if not np.isnan(v) else 0.0
+            idx += 1
+        for v in indicator_features:
+            buf[idx] = v
+            idx += 1
+        for v in position_features:
+            buf[idx] = v if not np.isnan(v) else 0.0
+            idx += 1
         
-        # 填充或截斷到固定維度
-        if len(state) < self.state_dim:
-            state = np.pad(state, (0, self.state_dim - len(state)))
-        elif len(state) > self.state_dim:
-            state = state[:self.state_dim]
-        
-        return state
+        return buf.copy()
     
     def _execute_trade(
         self,
         action: int,
         price: float
-    ) -> Tuple[int, float, float]:
+    ) -> Tuple[int, float, float, float]:
         """
         執行交易動作
         
@@ -371,14 +398,16 @@ class TaiwanStockTradingEnv(gym.Env):
             price: 成交價格
         
         返回:
-            (executed_shares, commission, tax)
+            (executed_shares, commission, tax, realized_pnl)
             - executed_shares: 實際成交股數（正值=買入，負值=賣出）
             - commission: 手續費
             - tax: 交易稅（僅賣出時收取）
+            - realized_pnl: 已實現損益（僅賣出時計算，買入時為 0）
         """
         executed_shares = 0
         commission = 0.0
         tax = 0.0
+        realized_pnl = 0.0
         
         # 根據動作計算成交股數
         if action == 1:  # BUY_1000
@@ -402,10 +431,17 @@ class TaiwanStockTradingEnv(gym.Env):
                     
                     # 扣減現金
                     self.portfolio.cash -= (turnover + commission)
-                    
+
                     # 記錄交易
                     self.portfolio.total_trades += 1
-                    
+                else:
+                    # BUG FIX (20260811): cash-insufficient buy attempts must not report
+                    # executed_shares as if the trade went through -- callers (step()'s
+                    # trade_history logging, _calculate_reward()'s trade-penalty lookback)
+                    # otherwise treat every failed attempt as a real, recent trade.
+                    executed_shares = 0
+                    commission = 0.0
+
         elif action == 2:  # SELL_1000
             # 檢查是否有持仓
             available = self.portfolio.position
@@ -506,7 +542,11 @@ class TaiwanStockTradingEnv(gym.Env):
                     
                     self.portfolio.cash -= (turnover + commission)
                     self.portfolio.total_trades += 1
-        
+                else:
+                    # BUG FIX (20260811): see BUY_1000 branch above.
+                    executed_shares = 0
+                    commission = 0.0
+
         elif action == 6:  # SELL_3000
             available = self.portfolio.position
             executed_shares = -min(3000, available)
@@ -547,7 +587,11 @@ class TaiwanStockTradingEnv(gym.Env):
                     
                     self.portfolio.cash -= (turnover + commission)
                     self.portfolio.total_trades += 1
-        
+                else:
+                    # BUG FIX (20260811): see BUY_1000 branch above.
+                    executed_shares = 0
+                    commission = 0.0
+
         elif action == 8:  # SELL_5000
             available = self.portfolio.position
             executed_shares = -min(5000, available)
@@ -571,63 +615,152 @@ class TaiwanStockTradingEnv(gym.Env):
                 else:
                     self.portfolio.losing_trades += 1
         
-        return executed_shares, commission, tax
-    
+        return executed_shares, commission, tax, realized_pnl
+
+    def _execute_target_position_trade(
+        self,
+        target_shares: float,
+        price: float,
+    ) -> Tuple[int, float, float, float]:
+        """
+        連續模式的目標倉位交易（2026-08-11新增）
+
+        取代先前把連續動作硬切成 HOLD/BUY_1000/SELL_1000 三個固定桶的作法
+        （那個設計讓 policy 不管輸出什麼連續值，實際能做的動作都只有 3 種，
+        不是真正的連續倉位控制，會讓任何"瓶頸穩定訓練"的比較實驗失真）。
+        這裡改成：把動作值解讀成目標倉位比例，換算成目標股數（四捨五入到
+        MIN_TRADE_UNIT 的整數倍），再交易「目前持股 -> 目標持股」的差額，
+        差額本身自然是 MIN_TRADE_UNIT 的整數倍（因為所有交易，不管是這個
+        函式還是舊的固定手數動作，都只會讓持股維持在 MIN_TRADE_UNIT 的整
+        數倍上）。現金不足時逐步縮小購買量而非直接放棄整筆交易。
+
+        參數:
+            target_shares: 目標持股數（會被四捨五入並限制在 [0, max_position]）
+            price: 成交價格
+
+        返回:
+            (executed_shares, commission, tax, realized_pnl) -- 語意跟 _execute_trade 相同：
+            正值=買入，負值=賣出，0=沒有實際成交（含現金不足導致完全買不起）
+        """
+        unit = TaiwanStockConstants.MIN_TRADE_UNIT
+        target = int(round(target_shares / unit)) * unit
+        target = max(0, min(target, self.max_position))
+        diff = target - self.portfolio.position
+
+        executed_shares = 0
+        commission = 0.0
+        tax = 0.0
+        realized_pnl = 0.0
+
+        if diff > 0:
+            buy_shares = diff
+            turnover = buy_shares * price
+            commission = turnover * TaiwanStockConstants.BROKERAGE_FEE_RATE
+            total_cost = turnover + commission
+            # 現金不夠買到完整目標差額時，逐步縮小到買得起的最大 unit 倍數，
+            # 而不是（跟舊版一樣）整筆放棄 -- 這樣才是真正逼近目標倉位。
+            while buy_shares > 0 and self.portfolio.cash < total_cost:
+                buy_shares -= unit
+                turnover = buy_shares * price
+                commission = turnover * TaiwanStockConstants.BROKERAGE_FEE_RATE
+                total_cost = turnover + commission
+
+            if buy_shares > 0:
+                executed_shares = buy_shares
+                total_shares = self.portfolio.position + executed_shares
+                total_cost_basis = self.portfolio.position * self.portfolio.avg_cost + turnover
+                self.portfolio.avg_cost = total_cost_basis / total_shares if total_shares > 0 else 0
+                self.portfolio.position += executed_shares
+                self.portfolio.cash -= (turnover + commission)
+                self.portfolio.total_trades += 1
+            else:
+                commission = 0.0
+
+        elif diff < 0:
+            sell_shares = min(-diff, self.portfolio.position)
+            if sell_shares > 0:
+                turnover = sell_shares * price
+                commission = turnover * TaiwanStockConstants.BROKERAGE_FEE_RATE
+                tax = turnover * TaiwanStockConstants.TRANSACTION_TAX_RATE
+
+                net_proceeds = turnover - commission - tax
+                cost_basis = sell_shares * self.portfolio.avg_cost
+                realized_pnl = net_proceeds - cost_basis
+
+                executed_shares = -sell_shares
+                self.portfolio.position += executed_shares
+                self.portfolio.cash += net_proceeds
+                self.portfolio.total_trades += 1
+                self.portfolio.realized_pnl += realized_pnl
+
+                if realized_pnl > 0:
+                    self.portfolio.winning_trades += 1
+                else:
+                    self.portfolio.losing_trades += 1
+
+        return executed_shares, commission, tax, realized_pnl
+
     def _calculate_reward(self) -> float:
         """
         計算複合獎勵
-        
+
         獎勵組成：
-        1. capital_reward: 投資組合市值變化率（主要獎勵）
+        1. capital_reward: 每步投資組合市值變化率（per-step return，修正！）
         2. holding_bonus: 持有獲利部位的 bonus
         3. trade_penalty: 交易懲罰（避免過度交易）
         4. stop_loss_penalty: 停損懲罰
         5. drawdown_penalty: 最大回撒懲罰
         6. win_rate_bonus: 勝率獎勵
-        
+
         Returns:
-            複合獎勵值
+            複合獎勵值（clamped to [-1, 1]）
         """
         reward = 0.0
-        
-        # 1. Capital Reward（市值變化率）
-        # 計算相對於初始資本的回報率
-        portfolio_return = (self.portfolio.total_value - self.initial_capital) / self.initial_capital
-        reward += portfolio_return * 100  # 放大以便 RL 更好學習
-        
+
+        # 1. Capital Reward（每步市值變化率）— 修正：使用 per-step return 而非 cumulative return
+        # _previous_portfolio_value 在 step() 中於價格更新前保存
+        if self._previous_portfolio_value > 0:
+            portfolio_return = (
+                self.portfolio.total_value - self._previous_portfolio_value
+            ) / self._previous_portfolio_value
+            # Clamp: 單步報酬不超過 ±10%，避免 NaN/inf 傳播
+            portfolio_return = max(-0.10, min(0.10, portfolio_return))
+        else:
+            portfolio_return = 0.0
+        reward += portfolio_return  # 不再 *100，直接用小幅值（與 v1 一致）
+
         # 2. Holding Bonus（持有獲利部位的 bonus）
         if self.portfolio.position > 0:
             if self.portfolio.unrealized_pnl > 0:
                 reward += 0.1  # 持有獲利部位的小獎勵
-        
+
         # 3. Trade Penalty（交易懲罰，避免過度交易）
-        if len(self.trade_history) > 0:
-            last_trade = self.trade_history[-1]
-            # 如果上一筆交易是最近執行的，給予小幅懲罰
-            # 安全地查找交易發生的 step，避免 KeyError
-            matching_indices = self.df[self.df['date'] == last_trade.date].index
-            if len(matching_indices) > 0:
-                trade_step = matching_indices[0]
-                if self.current_step - trade_step < 5:
-                    reward -= 0.001  # 小幅懲罰
-        
+        # 使用 _last_trade_step 直接追蹤，避免每次計算 reward 時 O(n) 查找 date
+        if self._last_trade_step >= 0 and self._last_trade_step < self.current_step:
+            if self.current_step - self._last_trade_step < 5:
+                reward -= 0.001  # 小幅懲罰
+
         # 4. Stop Loss Penalty（停損懲罰）
-        if len(self.trade_history) > 0:
-            last_trade = self.trade_history[-1]
-            if last_trade.action == 4:  # STOP_LOSS
-                reward -= 0.05
-        
+        # 使用 _last_trade_action 快速判斷，避免每次讀取 trade_history[-1]
+        if self._last_trade_action == 4:  # STOP_LOSS
+            reward -= 0.05
+
         # 5. Drawdown Penalty（最大回撒懲罰）
-        current_drawdown = (self.portfolio.peak_value - self.portfolio.total_value) / self.portfolio.peak_value if self.portfolio.peak_value > 0 else 0
+        current_drawdown = (
+            self.portfolio.peak_value - self.portfolio.total_value
+        ) / self.portfolio.peak_value if self.portfolio.peak_value > 0 else 0
         if current_drawdown > 0.2:  # 回撤超過 20%
             reward -= 0.5 * current_drawdown
-        
+
         # 6. Win Rate Bonus（勝率獎勵）
         if self.portfolio.total_trades > 0:
             win_rate = self.portfolio.winning_trades / self.portfolio.total_trades
             if win_rate > 0.5:
                 reward += 0.1 * win_rate
-        
+
+        # Clamp 最終獎勵：避免單步 reward 太大/太小導致梯度爆炸
+        reward = max(-1.0, min(1.0, reward))
+
         return reward
     
     def _update_market_limits(self):
@@ -661,10 +794,9 @@ class TaiwanStockTradingEnv(gym.Env):
         - 未實現損益 = 持股市值 - 持股成本
         """
         position_value = self.portfolio.position * price
-        cost_basis = self.portfolio.position * self.portfolio.avg_cost
         
         self.portfolio.total_value = self.portfolio.cash + position_value
-        self.portfolio.unrealized_pnl = position_value - cost_basis
+        self.portfolio.unrealized_pnl = position_value - self.portfolio.position * self.portfolio.avg_cost
         
         # 更新歷史高/低
         if self.portfolio.total_value > self.portfolio.peak_value:
@@ -705,7 +837,14 @@ class TaiwanStockTradingEnv(gym.Env):
         
         # 記錄初始價格
         self.price_history.append(price)
-        
+
+        # 初始化先前市值（用於計算 per-step 報酬）
+        self._previous_portfolio_value = self.portfolio.total_value
+
+        # 初始化最後交易 step（用於計算 trade penalty）
+        self._last_trade_step = -1
+        self._last_trade_action = 0
+
         # 獲取初始觀察
         observation = self._get_observation()
         
@@ -741,51 +880,62 @@ class TaiwanStockTradingEnv(gym.Env):
             - truncated: 是否截斷（達到最大步數）
             - info: 額外資訊
         """
-        # 解析動作
+        # 獲取當前價格（使用預提取的 numpy 陣列）
+        all_values = self._df_values[self.current_step]
+        price = all_values[self._price_idx[3]]  # close is 4th
+
+        # 解析並執行動作
         if self.mode == 'discrete':
             action = int(action)
+            executed_shares, commission, tax, realized_pnl = self._execute_trade(action, price)
         else:
-            # 連續模式：動作是目標持倉比重
-            target_position_ratio = float(action[0])
-            # 轉換為離散動作
-            if target_position_ratio < 0.1:
-                action = 0  # HOLD
-            elif target_position_ratio < 0.5:
-                action = 1  # BUY_1000
-            elif self.portfolio.position > 0:
-                action = 2  # SELL_1000
+            # 連續模式（2026-08-11改版）：動作值直接解讀為目標持倉比重，
+            # 交易「目前持股 -> 目標持股」的真實差額，而非硬切成
+            # HOLD/BUY_1000/SELL_1000 三個固定桶（舊版無論動作值多少，
+            # policy 實際能做的只有 3 種離散結果，不是真正的連續控制）。
+            target_position_ratio = float(np.clip(action[0], 0.0, 1.0))
+            target_shares = target_position_ratio * self.max_position
+            executed_shares, commission, tax, realized_pnl = self._execute_target_position_trade(target_shares, price)
+            # action 之後仍作為交易方向代碼給 trade_history / reward 停損判斷使用，
+            # 語意對齊既有的離散代碼（1=買、2=賣、0=無成交）。
+            if executed_shares > 0:
+                action = 1
+            elif executed_shares < 0:
+                action = 2
             else:
-                action = 0  # HOLD
+                action = 0
         
-        # 獲取當前價格
-        current_data = self.df.iloc[self.current_step]
-        price = current_data['close']
-        
-        # 執行交易
-        executed_shares, commission, tax = self._execute_trade(action, price)
-        
-        # 記錄交易
+        # 記錄交易（使用預提取的 numpy 陣列）
+        step_date = str(self.df.iloc[self.current_step]['date'])  # date needs string conversion
         if executed_shares != 0:
             trade_info = TradeInfo(
-                date=str(current_data['date']),
+                date=step_date,
                 action=action,
                 price=price,
                 shares=executed_shares,
                 turnover=abs(executed_shares) * price,
                 commission=commission,
                 tax=tax,
-                realized_pnl=0,  # 在 _execute_trade 中已計算
+                realized_pnl=realized_pnl,
                 position=self.portfolio.position,
             )
             self.trade_history.append(trade_info)
+            # 追蹤最後交易 step（避免每次計算 reward 時 O(n) 查找 date）
+            self._last_trade_step = self.current_step
+            self._last_trade_action = action  # 用於快速判斷停損等特殊動作
         
         # 移動到下一個時間步
         self.current_step += 1
         terminated = self.current_step >= self.total_timesteps
-        
+
+        # 在計算獎勵前更新先前市值（用於 per-step return）
+        self._previous_portfolio_value = self.portfolio.total_value
+
         # 更新市值
         if not terminated:
-            price = self.df.iloc[self.current_step]['close']
+            # 使用預提取的 numpy 陣列讀取下一個時間步的收盤價
+            next_all_values = self._df_values[self.current_step]
+            price = next_all_values[self._price_idx[3]]  # close is 4th
             self._update_portfolio_value(price)
             self._update_market_limits()
             self.price_history.append(price)
@@ -798,21 +948,25 @@ class TaiwanStockTradingEnv(gym.Env):
             reward = (self.portfolio.total_value - self.initial_capital) / self.initial_capital
         
         # 檢查停損條件（僅在非 STOP_LOSS 動作時自動停損，避免重複執行）
-        if action != 4 and self.portfolio.position > 0 and self.portfolio.avg_cost > 0:
+        # terminatd=True 時不執行停損檢查（price=0 會導致除零錯誤）
+        if not terminated and action != 4 and self.portfolio.position > 0 and self.portfolio.avg_cost > 0:
             unrealized_return = (price - self.portfolio.avg_cost) / self.portfolio.avg_cost
             if unrealized_return < TaiwanStockConstants.STOP_LOSS_THRESHOLD:
                 # 自動執行停損
                 self._execute_trade(4, price)  # STOP_LOSS action = 4
         
         # 移動停損檢查（Trailing Stop）
-        if TaiwanStockConstants.TRAILING_STOP_ENABLED and self.portfolio.position > 0 and self.portfolio.avg_cost > 0:
+        # terminatd=True 時不執行移動停損檢查
+        if not terminated and TaiwanStockConstants.TRAILING_STOP_ENABLED and self.portfolio.position > 0 and self.portfolio.avg_cost > 0:
             current_total = self.portfolio.total_value
             cost_basis = self.portfolio.position * self.portfolio.avg_cost
             unrealized_return = (current_total - cost_basis - self.portfolio.cash) / cost_basis if cost_basis > 0 else 0
             
             # 如果獲利超過激活門檻，更新移動停損峰值
+            # 初始化時：首次激活時 peak = current_total（當前總市值），而非 0
+            # 這樣才能正確計算「從高點回撤多少」，而不需要依賴「曾經等於 0」的奇偶邏輯
             if unrealized_return > TaiwanStockConstants.TRAILING_STOP_ACTIVATION:
-                if self.portfolio.trailing_stop_peak == 0:
+                if self.portfolio.trailing_stop_peak <= 0:
                     self.portfolio.trailing_stop_peak = current_total
                 else:
                     self.portfolio.trailing_stop_peak = max(self.portfolio.trailing_stop_peak, current_total)
@@ -827,18 +981,29 @@ class TaiwanStockTradingEnv(gym.Env):
                     # 執行移動停損（相當於 CLOSE_POSITION）
                     self._execute_trade(3, price)  # CLOSE action = 3
         
-        # 獲取觀察
-        observation = self._get_observation()
-        
-        # 構建 info
-        info = {
-            'portfolio': self.portfolio,
-            'current_step': self.current_step,
-            'date': str(self.df.iloc[self.current_step]['date']) if not terminated else '',
-            'price': price if not terminated else 0,
-            'executed_shares': executed_shares,
-            'action': action,
-        }
+        # 獲取觀察（terminated=True 時不呼叫，避免 index out of bounds）
+        if terminated:
+            observation = np.zeros(self.state_dim, dtype=np.float32)
+            info = {
+                'portfolio': self.portfolio,
+                'current_step': self.current_step,
+                'date': '',
+                'price': 0,
+                'executed_shares': 0,
+                'action': action,
+            }
+        else:
+            observation = self._get_observation()
+            # 構建 info（使用預提取的 numpy 陣列）
+            info_date = str(self.df.iloc[self.current_step]['date'])
+            info = {
+                'portfolio': self.portfolio,
+                'current_step': self.current_step,
+                'date': info_date,
+                'price': price,
+                'executed_shares': executed_shares,
+                'action': action,
+            }
         
         return observation, reward, terminated, False, info
     

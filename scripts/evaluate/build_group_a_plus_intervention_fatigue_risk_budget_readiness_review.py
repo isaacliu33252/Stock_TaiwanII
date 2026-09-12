@@ -17,7 +17,7 @@ from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_EXECUTION_PLAN = PROJECT_ROOT / "report/group_a_plus/latest/execution_plan.json"
-DEFAULT_REBALANCE = PROJECT_ROOT / "report/group_a_plus/latest/rebalance_review_20260720.json"
+DEFAULT_REBALANCE = PROJECT_ROOT / "report/group_a_plus/latest/rebalance_review.json"
 DEFAULT_MARKET_IMPACT = PROJECT_ROOT / "report/group_a_plus/latest/market_impact_readiness_review.json"
 DEFAULT_DYNAMIC_CVAR = PROJECT_ROOT / "report/group_a_plus/latest/dynamic_cvar_tail_cost_readiness_review.json"
 DEFAULT_RESEARCH_SHADOW = PROJECT_ROOT / "report/group_a_plus/latest/research_shadow_decision_snapshot.json"

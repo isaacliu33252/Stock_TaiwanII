@@ -19,8 +19,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_NAME = "latest_group_a_improved_0050_step0300bp_stepgate105_ma60_brake30_631l0_tdcc18"
 RELEASE_HANDOFF = PROJECT_ROOT / "GROUP_A_GOLDEN1_0531_RELEASE.md"
 DEFAULT_TDCC_CONFIG = PROJECT_ROOT / "group_a_tdcc_improved_config_destination_primary.json"
+# "Last PPO": the PPO signal source the latest strategy (a2118) actually depends
+# on day to day. Kept as an independent copy of the frozen golden1_0531 artifact
+# (models/portfolio/last_ppo_group_a_100k.zip + this result JSON) so future
+# retraining/iteration never touches golden1_0531 itself. See
+# feedback_golden1_0531_immutable_naming memory, 2026-08-14.
 DEFAULT_RESULT_JSON = (
-    PROJECT_ROOT / "results" / "group_a_backtest_20250101_20260531_20260609_214023.json"
+    PROJECT_ROOT / "results" / "last_ppo_group_a_backtest_20250101_20260531_20260609_214023.json"
 )
 DEFAULT_LATEST_JSON = PROJECT_ROOT / "results" / "group_a_combined_live_latest.json"
 DEFAULT_LATEST_CSV = PROJECT_ROOT / "results" / "group_a_combined_live_latest.csv"

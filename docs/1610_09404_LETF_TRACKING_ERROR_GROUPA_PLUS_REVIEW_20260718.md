@@ -112,6 +112,41 @@ Reason:
 - Broker holdings reconciliation is blocked and cannot generate live orders.
 - `00631L` already has compounding-regime and volatility-memory concerns.
 
+2026-08-29 refresh for the 2026-08-31 preview:
+
+- Latest LETF readiness artifact:
+  `report/group_a_plus/latest/letf_tracking_error_effective_fee_readiness_review.json`
+- Artifact `as_of`: `2026-08-28`
+- Artifact status: `blocked`
+- 2026-08-31 preview weights from
+  `results/group_a_plus_latest_strategy_predict_20260831_from_20260828_total1000000.json`:
+  `0050.TW = 47.0000%`, `00631L.TW = 10.0388%`,
+  `00632R.TW = 16.4782%`, `00679B.TWO = 0.0000%`,
+  `cash = 26.4830%`.
+
+The refreshed LETF readiness decision remains:
+
+- `allow_00631l_add = false`
+- `allow_00632r_open = false`
+- `target_weight_change_allowed = false`
+- `auto_rebalance_allowed = false`
+
+Current failed checks:
+
+- `00631L` mean 30d tracking-error floor failed:
+  `-0.005443384995685611 < -0.003`.
+- `00631L` p05 30d tracking-error floor failed:
+  `-0.06726248295164249 < -0.05`.
+- `00631L` latest 30d realized-variance ceiling failed:
+  `0.01674647848524199 > 0.01`.
+- `00632R` p05 30d tracking-error floor failed:
+  `-0.04179082076309815 < -0.03`.
+- Effective-fee proxy and live hedge policy are still not validated.
+
+Interpretation: the paper supports the existing LETF caution / readiness
+blocker. It does not support turning the preview's `00631L` or `00632R` weights
+into an automatic live trade permission.
+
 ## Implemented Artifact
 
 Added a research-only review:
@@ -219,3 +254,12 @@ Useful and relevant, but only as a governance layer.
 The paper strengthens the current conservative GroupA+ decision: leverage and
 inverse ETF exposure should require explicit holding-horizon, realized-variance,
 and tracking-error checks before any live action.
+
+Standing 2026-08-29 rule:
+
+- Keep `letf_tracking_error_effective_fee_readiness_review` in the daily
+  pipeline.
+- Do not import LETF pair trades.
+- Do not use this paper as an alpha override.
+- Re-open only for blocker/reduction review, effective-fee validation, or live
+  hedge policy validation.

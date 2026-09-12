@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "name": "group_a_plus_latest_strategy_watchlist",
+  "name": "group_a_plusplus_latest_strategy_watchlist",
   "symbols": [
     {
       "symbol": "0050.TW",
@@ -21,6 +21,16 @@
       "symbol": "00679B.TWO",
       "label": "元大美債20年",
       "keywords": ["美債", "公債", "債券", "殖利率", "降息", "聯準會"]
+    },
+    {
+      "symbol": "00713.TW",
+      "label": "元大台灣高息低波",
+      "keywords": ["高息低波", "高股息", "低波動", "現金流", "除息", "收益"]
+    },
+    {
+      "symbol": "2330.TW",
+      "label": "台灣積體電路(台積電)",
+      "keywords": ["台積電", "TSMC", "半導體", "晶圓", "先進封裝", "AI晶片", "外資"]
     }
   ],
   "market_fallback_keywords": ["台股", "加權", "台積電", "半導體", "AI", "聯準會", "美債"]

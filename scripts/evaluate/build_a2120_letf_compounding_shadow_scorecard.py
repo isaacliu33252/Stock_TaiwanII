@@ -26,6 +26,13 @@ DEFAULT_TURNOVER = PROJECT_ROOT / "results" / "turnover_capped_execution_shadow_
 DEFAULT_OVERLAP = PROJECT_ROOT / "results" / "a2120_a2119_tunedtrend_overlap_audit_20260715.json"
 DEFAULT_REPLAY = PROJECT_ROOT / "results" / "00631l_compounding_execution_replay_shadow_tunedtrend_score3_ar0_persist50_rev50_20260715.json"
 DEFAULT_ROLLING = PROJECT_ROOT / "results" / "00631l_compounding_rolling_windows_252d_step126_12win_cost20bps_20260715.json"
+# 2026-08-22 (Fable 00631L direction #2, items a/b): resolved-in-code, not
+# just resolved-in-a-one-off-report -- requires_daily_ops_integration and
+# requires_t_plus_1_execution_alignment_audit are now checked programmatically
+# below rather than being permanently baked into production_blockers, so a
+# future scorecard run automatically reflects the current wiring/evidence
+# instead of a hand-edited string that would silently go stale again.
+DEFAULT_T_PLUS_1_DELAY = PROJECT_ROOT / "results" / "00631l_compounding_t_plus_1_execution_delay_shadow.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "report" / "group_a_plus" / "shadow" / "a2120_letf_compounding_shadow_scorecard_20260715.json"
 
 
@@ -77,6 +84,8 @@ def build_scorecard(
     overlap_report: dict[str, Any],
     replay_report: dict[str, Any],
     rolling_report: dict[str, Any],
+    t_plus_1_delay_report: dict[str, Any] | None = None,
+    execution_plan_is_fresh_shadow_snapshot: bool = False,
 ) -> dict[str, Any]:
     seven = _totals(seven_window_report)
     cost20 = _totals(cost20_report)
@@ -169,6 +178,38 @@ def build_scorecard(
         ),
     ]
 
+    t_plus_1_totals = (t_plus_1_delay_report or {}).get("totals") if isinstance(t_plus_1_delay_report, dict) else None
+    t_plus_1_totals = t_plus_1_totals if isinstance(t_plus_1_totals, dict) else {}
+    t_plus_1_pass = (
+        t_plus_1_delay_report is not None
+        and bool(t_plus_1_totals.get("delayed_still_positive_overall"))
+        and _int(t_plus_1_totals.get("delayed_positive_windows")) == _int(t_plus_1_totals.get("window_count"))
+        and _int(t_plus_1_totals.get("window_count")) > 0
+    )
+    # Advisory severity: a genuine T+1-audit result that shows the edge holds
+    # up (even if this run's underlying data has drifted, see totals below)
+    # resolves the "never tested" gap this check exists for. It is advisory,
+    # not "fail", because unlike the other checks above it does not gate
+    # shadow_decision/daily_advisory -- it only informs the production
+    # blockers list below, since the audit itself does not need to be
+    # re-run every single day to stay meaningful.
+    checks.append(
+        _check(
+            "t_plus_1_execution_delay_positive",
+            t_plus_1_pass,
+            {
+                "report_present": t_plus_1_delay_report is not None,
+                "delayed_still_positive_overall": t_plus_1_totals.get("delayed_still_positive_overall"),
+                "delayed_positive_windows": t_plus_1_totals.get("delayed_positive_windows"),
+                "window_count": t_plus_1_totals.get("window_count"),
+                "same_day_delta_final_value_sum": t_plus_1_totals.get("same_day_delta_final_value_sum"),
+                "delayed_delta_final_value_sum": t_plus_1_totals.get("delayed_delta_final_value_sum"),
+            },
+            "All windows remain final-value-positive under a realistic 1-trading-day execution delay",
+            severity="advisory",
+        )
+    )
+
     failed = [item for item in checks if not item["passed"] and item["severity"] == "fail"]
     if failed:
         shadow_decision = "fail"
@@ -177,13 +218,22 @@ def build_scorecard(
         shadow_decision = "pass"
         advisory_decision = "enable_daily_advisory_shadow_only"
 
+    # 2026-08-22: these three used to be an unconditional static list,
+    # regardless of what the checks above actually found -- meaning the text
+    # could describe work as "still required" long after it was done (see
+    # project_fable_00631l_directions_1_2_20260822 memory). Two of the three
+    # are now evaluated from real evidence each time this scorecard is
+    # rebuilt; the third (real forward-day accumulation) has no shortcut and
+    # always applies until there is enough live shadow-log history.
     production_blockers = [
         "research_only_shadow_candidate",
         "hard_guards_must_remain_precedence",
-            "requires_daily_ops_integration",
-            "requires_t_plus_1_execution_alignment_audit",
-            "requires_rolling_window_shadow_monitoring_before_production",
-        ]
+        "requires_rolling_window_shadow_monitoring_before_production",
+    ]
+    if not execution_plan_is_fresh_shadow_snapshot:
+        production_blockers.append("requires_daily_ops_integration")
+    if not t_plus_1_pass:
+        production_blockers.append("requires_t_plus_1_execution_alignment_audit")
     return {
         "schema_version": 1,
         "report_type": "a2120_letf_compounding_shadow_scorecard",
@@ -245,6 +295,17 @@ def main() -> None:
     parser.add_argument("--overlap-report", default=str(DEFAULT_OVERLAP))
     parser.add_argument("--replay-report", default=str(DEFAULT_REPLAY))
     parser.add_argument("--rolling-report", default=str(DEFAULT_ROLLING))
+    parser.add_argument("--t-plus-1-delay-report", default=str(DEFAULT_T_PLUS_1_DELAY))
+    parser.add_argument(
+        "--execution-plan-is-fresh-shadow-snapshot",
+        action="store_true",
+        default=False,
+        help=(
+            "Set when the replay/turnover inputs were built from a same-day "
+            "shadow execution_plan snapshot (see run_a2120_daily_shadow_pipeline.py) "
+            "rather than a possibly-stale manually-triggered execution_plan.json."
+        ),
+    )
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     args = parser.parse_args()
 
@@ -256,6 +317,9 @@ def main() -> None:
         "replay_report": Path(args.replay_report),
         "rolling_report": Path(args.rolling_report),
     }
+    t_plus_1_path = Path(args.t_plus_1_delay_report)
+    t_plus_1_report = _load_json(t_plus_1_path) if t_plus_1_path.exists() else None
+
     payload = build_scorecard(
         seven_window_report=_load_json(paths["seven_window_report"]),
         cost20_report=_load_json(paths["cost20_report"]),
@@ -263,8 +327,12 @@ def main() -> None:
         overlap_report=_load_json(paths["overlap_report"]),
         replay_report=_load_json(paths["replay_report"]),
         rolling_report=_load_json(paths["rolling_report"]),
+        t_plus_1_delay_report=t_plus_1_report,
+        execution_plan_is_fresh_shadow_snapshot=bool(args.execution_plan_is_fresh_shadow_snapshot),
     )
     payload["inputs"] = {name: _relative(path) for name, path in paths.items()}
+    if t_plus_1_report is not None:
+        payload["inputs"]["t_plus_1_delay_report"] = _relative(t_plus_1_path)
 
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)

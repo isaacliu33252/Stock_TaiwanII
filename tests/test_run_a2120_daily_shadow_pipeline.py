@@ -1,6 +1,11 @@
 from __future__ import annotations
 
-from scripts.run.run_a2120_daily_shadow_pipeline import build_latest_summary
+from pathlib import Path
+
+from scripts.run.run_a2120_daily_shadow_pipeline import (
+    _build_fresh_execution_plan_snapshot,
+    build_latest_summary,
+)
 
 
 def test_build_latest_summary_exposes_shadow_state_and_artifacts() -> None:
@@ -47,3 +52,65 @@ def test_build_latest_summary_exposes_shadow_state_and_artifacts() -> None:
     assert out["risk_sensitive_variant"]["turnover50_target_00631l"] == 900
     assert out["scorecard_decision"]["shadow_gate"] == "pass"
     assert out["artifacts"]["scorecard"] == "report/group_a_plus/shadow/a2120.json"
+
+
+def test_fresh_execution_plan_snapshot_is_best_effort_on_failure(tmp_path, monkeypatch) -> None:
+    """2026-08-22: the snapshot generator must never break the rest of the
+    a2120 shadow chain -- if build_execution_plan() raises for any reason
+    (missing workbook, bad holdings row, DB issue), the function must log and
+    return None rather than propagate, so run_pipeline() falls back to
+    whatever --execution-plan was already given.
+    """
+
+    def _boom(**_kwargs):
+        raise RuntimeError("simulated failure")
+
+    monkeypatch.setattr(
+        "scripts.run.run_a2120_daily_shadow_pipeline.build_execution_plan", _boom
+    )
+
+    result = _build_fresh_execution_plan_snapshot(
+        diagnostic_path=tmp_path / "diagnostic.json",
+        date_stamp="20260822",
+        output_dir=tmp_path,
+        latest_dir=tmp_path,
+        db_path=tmp_path / "stock_data.db",
+    )
+
+    assert result is None
+    # No snapshot files should be written when generation fails.
+    assert not any(tmp_path.glob("*shadow_snapshot*"))
+
+
+def test_fresh_execution_plan_snapshot_writes_shadow_only_paths(tmp_path, monkeypatch) -> None:
+    """The snapshot must land under the given output/latest dirs -- never at
+    the real report/group_a_plus/latest/execution_plan.json production path.
+    """
+
+    fake_plan = {"actual_data_date": "2026-08-21", "target_shares": {}}
+
+    def _fake_build(**_kwargs):
+        return fake_plan
+
+    monkeypatch.setattr(
+        "scripts.run.run_a2120_daily_shadow_pipeline.build_execution_plan", _fake_build
+    )
+
+    output_dir = tmp_path / "results"
+    latest_dir = tmp_path / "latest"
+    output_dir.mkdir()
+    latest_dir.mkdir()
+
+    result = _build_fresh_execution_plan_snapshot(
+        diagnostic_path=tmp_path / "diagnostic.json",
+        date_stamp="20260822",
+        output_dir=output_dir,
+        latest_dir=latest_dir,
+        db_path=tmp_path / "stock_data.db",
+    )
+
+    assert result == output_dir / "group_a_plus_execution_plan_a2120_shadow_snapshot_20260822.json"
+    assert result.exists()
+    assert (latest_dir / "execution_plan_a2120_shadow_snapshot.json").exists()
+    assert (latest_dir / "execution_plan.json") != result
+    assert not (latest_dir / "execution_plan.json").exists()
