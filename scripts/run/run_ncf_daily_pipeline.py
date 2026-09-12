@@ -319,6 +319,11 @@ BEST_EFFORT_STEP_NAMES = frozenset(
         "paper_2609_08106_latest_target_weight_replay",
         "paper_2609_08106_latest_target_weight_param_sweep",
         "paper_2609_08106_adoption_matrix",
+        # Order-flow regime review (2609.07989, 2026-09-12): execution
+        # advisory only. It requires signed intraday order-flow data and
+        # emits status=unavailable when that data is missing; it never uses
+        # daily OHLCV proxies, changes live weights, or creates orders.
+        "paper_2609_07989_order_flow_regime_shadow",
         # Deep-hedging overlay review (2026-07-17): option-state coverage is
         # a governance/data-readiness check for TXO/SOXX option features.
         # It only writes a latest JSON report and never changes live target
@@ -1953,6 +1958,18 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "2609_08106_adoption_matrix.json"),
         "--markdown",
         str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "2609_08106_adoption_matrix.md"),
+    ]
+    commands["paper_2609_07989_order_flow_regime_shadow"] = [
+        sys.executable,
+        "scripts/run/build_group_a_plus_2609_07989_order_flow_regime_shadow.py",
+        "--input",
+        str(PROJECT_ROOT / "results" / "intraday_signed_order_flow_latest.csv"),
+        "--output",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "2609_07989_order_flow_regime_shadow.json"),
+        "--markdown",
+        str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "2609_07989_order_flow_regime_shadow.md"),
+        "--log",
+        str(PROJECT_ROOT / "results" / "2609_07989_order_flow_regime_shadow_log.jsonl"),
     ]
     commands["option_state_coverage_review"] = [
         sys.executable,

@@ -339,6 +339,7 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         "paper_2609_08106_latest_target_weight_replay",
         "paper_2609_08106_latest_target_weight_param_sweep",
         "paper_2609_08106_adoption_matrix",
+        "paper_2609_07989_order_flow_regime_shadow",
         "option_state_coverage_review",
         "adversarial_market_integrity_review",
         "sciphyrl_readiness_review",
@@ -2084,6 +2085,19 @@ def test_build_commands_includes_refresh_ncf_and_advisory_steps() -> None:
         commands["paper_2609_08106_adoption_matrix"].index("--output") + 1
     ].endswith("report/group_a_plus/latest/2609_08106_adoption_matrix.json")
     assert "paper_2609_08106_adoption_matrix" in module.BEST_EFFORT_STEP_NAMES
+    assert commands["paper_2609_07989_order_flow_regime_shadow"][1] == (
+        "scripts/run/build_group_a_plus_2609_07989_order_flow_regime_shadow.py"
+    )
+    assert commands["paper_2609_07989_order_flow_regime_shadow"][
+        commands["paper_2609_07989_order_flow_regime_shadow"].index("--input") + 1
+    ].endswith("results/intraday_signed_order_flow_latest.csv")
+    assert commands["paper_2609_07989_order_flow_regime_shadow"][
+        commands["paper_2609_07989_order_flow_regime_shadow"].index("--output") + 1
+    ].endswith("report/group_a_plus/latest/2609_07989_order_flow_regime_shadow.json")
+    assert commands["paper_2609_07989_order_flow_regime_shadow"][
+        commands["paper_2609_07989_order_flow_regime_shadow"].index("--log") + 1
+    ].endswith("results/2609_07989_order_flow_regime_shadow_log.jsonl")
+    assert "paper_2609_07989_order_flow_regime_shadow" in module.BEST_EFFORT_STEP_NAMES
     assert commands["paper_convergence_review"][1] == (
         "scripts/evaluate/build_group_a_plus_paper_convergence_review.py"
     )
@@ -2227,6 +2241,7 @@ def test_build_commands_can_skip_refresh_and_disable_external_features() -> None
             "paper_2609_08106_latest_target_weight_replay",
             "paper_2609_08106_latest_target_weight_param_sweep",
             "paper_2609_08106_adoption_matrix",
+            "paper_2609_07989_order_flow_regime_shadow",
             "option_state_coverage_review",
             "adversarial_market_integrity_review",
             "sciphyrl_readiness_review",
