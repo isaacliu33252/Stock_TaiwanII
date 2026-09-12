@@ -53,7 +53,9 @@ def _daterange(start: date, end: date):
         current += timedelta(days=1)
 
 
-def fetch_day(ticker: str, day: date, *, token: str, session: requests.Session) -> list[dict[str, Any]]:
+def fetch_day(
+    ticker: str, day: date, *, token: str, session: requests.Session, max_retries: int = 3
+) -> list[dict[str, Any]]:
     params = {
         "dataset": DATASET,
         "data_id": _finmind_stock_id(ticker),
@@ -61,7 +63,24 @@ def fetch_day(ticker: str, day: date, *, token: str, session: requests.Session) 
     }
     if token:
         params["token"] = token
-    resp = session.get(API_URL, params=params, timeout=20)
+    # Transient network errors (read timeouts, connection resets) are common
+    # against this API on long backfills and previously crashed the whole
+    # run, discarding every row already accumulated in memory (write_jsonl
+    # only writes once at the very end -- see fetch_range). Retry those
+    # before giving up; HTTP errors (quota, etc.) are still handled by the
+    # caller via raise_for_status/HTTPError, unaffected by this retry.
+    last_exc: requests.exceptions.RequestException | None = None
+    for attempt in range(max_retries):
+        try:
+            resp = session.get(API_URL, params=params, timeout=20)
+            break
+        except requests.exceptions.RequestException as exc:
+            last_exc = exc
+            if attempt == max_retries - 1:
+                raise
+            time.sleep(2.0 * (attempt + 1))
+    else:  # pragma: no cover - loop always breaks or raises
+        raise last_exc  # type: ignore[misc]
     resp.raise_for_status()
     payload = resp.json()
     if payload.get("status") != 200:

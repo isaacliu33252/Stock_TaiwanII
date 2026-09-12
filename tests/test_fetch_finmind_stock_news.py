@@ -88,6 +88,53 @@ def test_fetch_day_maps_finmind_rows_to_ltn_shaped_schema() -> None:
     ]
 
 
+class _TimeoutThenOkSession:
+    """First N calls raise a transient network error, then succeed -- models
+    the ReadTimeout observed against the real API on long backfills."""
+
+    def __init__(self, failures_before_success: int, response: _FakeResponse) -> None:
+        self._failures_left = failures_before_success
+        self._response = response
+        self.call_count = 0
+
+    def get(self, url: str, params: dict[str, Any], timeout: int) -> _FakeResponse:
+        self.call_count += 1
+        if self._failures_left > 0:
+            self._failures_left -= 1
+            raise requests.exceptions.ReadTimeout("simulated timeout")
+        return self._response
+
+
+def test_fetch_day_retries_transient_network_errors(monkeypatch) -> None:
+    import datetime as _dt
+
+    monkeypatch.setattr(mod.time, "sleep", lambda _seconds: None)
+    session = _TimeoutThenOkSession(
+        failures_before_success=2,
+        response=_FakeResponse(200, {"status": 200, "data": []}),
+    )
+
+    rows = mod.fetch_day("0050.TW", _dt.date(2026, 6, 29), token="", session=session, max_retries=3)
+
+    assert rows == []
+    assert session.call_count == 3  # two failures + one success, within max_retries
+
+
+def test_fetch_day_gives_up_after_max_retries(monkeypatch) -> None:
+    import datetime as _dt
+
+    monkeypatch.setattr(mod.time, "sleep", lambda _seconds: None)
+    session = _TimeoutThenOkSession(
+        failures_before_success=10,  # never succeeds within the retry budget
+        response=_FakeResponse(200, {"status": 200, "data": []}),
+    )
+
+    with pytest.raises(requests.exceptions.ReadTimeout):
+        mod.fetch_day("0050.TW", _dt.date(2026, 6, 29), token="", session=session, max_retries=3)
+
+    assert session.call_count == 3
+
+
 def test_fetch_range_stops_gracefully_on_quota_error_and_keeps_prior_rows(monkeypatch) -> None:
     import datetime as _dt
 
