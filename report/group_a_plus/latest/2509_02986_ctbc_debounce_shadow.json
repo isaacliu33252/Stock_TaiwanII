@@ -1,0 +1,2002 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2509_02986_ctbc_debounce_shadow",
+  "generated_at": "2026-09-12T08:01:29",
+  "source_paper": {
+    "id": "2509.02986",
+    "title": "CTBC: Contact-Triggered Blind Climbing for Wheeled Bipedal Robots with Instruction Learning and Reinforcement Learning",
+    "transferred_idea": "sliding_window_trigger_debounce"
+  },
+  "policy": "research_only_no_weight_change",
+  "changes_latest_strategy": false,
+  "changes_golden1_0531": false,
+  "changes_golden2_0830": false,
+  "changes_ncf_live_gate": false,
+  "inputs": {
+    "panel": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/ncf_00631l_panel_latest_20260909.csv",
+    "db_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/stock_data.db",
+    "ticker": "00631L.TW",
+    "gate_names": [
+      "realized_var_20_top25_and_weak_ncf",
+      "realized_var_20_top25",
+      "garch_gjr_top25_and_negative_5d",
+      "garch_disagreement_top25_and_negative_1d"
+    ],
+    "confirmation_modes": [
+      "raw",
+      "2of3",
+      "3of3"
+    ],
+    "bullish_prob_min": 0.55,
+    "confidence_min": 0.1,
+    "min_blocked_rows": 5
+  },
+  "window": {
+    "date_start": "2025-01-02",
+    "date_end": "2026-08-10",
+    "rows": 388,
+    "non_live_only": true
+  },
+  "split": {
+    "n_splits": 4,
+    "purge": 20,
+    "min_train_size": 160
+  },
+  "candidate_summaries": {
+    "realized_var_20_top25_and_weak_ncf_raw": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 4,
+      "total_allowed_rows": 66,
+      "avg_blocked_mean_gain": 0.09716023921092914,
+      "avg_allowed_mean_gain": 0.23229717753815576,
+      "avg_blocked_mdd_gt5_rate": 0.25,
+      "avg_allowed_mdd_gt5_rate": 0.23402255639097744
+    },
+    "realized_var_20_top25_and_weak_ncf_2of3": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 2,
+      "total_allowed_rows": 68,
+      "avg_blocked_mean_gain": 0.103516514713864,
+      "avg_allowed_mean_gain": 0.2315730238196382,
+      "avg_blocked_mdd_gt5_rate": 0.0,
+      "avg_allowed_mdd_gt5_rate": 0.23214285714285712
+    },
+    "realized_var_20_top25_and_weak_ncf_3of3": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 0,
+      "total_allowed_rows": 70,
+      "avg_blocked_mean_gain": null,
+      "avg_allowed_mean_gain": 0.23125116968272955,
+      "avg_blocked_mdd_gt5_rate": null,
+      "avg_allowed_mdd_gt5_rate": 0.21972049689440992
+    },
+    "realized_var_20_top25_raw": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 24,
+      "total_allowed_rows": 46,
+      "avg_blocked_mean_gain": 0.23195390469214827,
+      "avg_allowed_mean_gain": 0.16367150740478534,
+      "avg_blocked_mdd_gt5_rate": 0.26666666666666666,
+      "avg_allowed_mdd_gt5_rate": 0.326007326007326
+    },
+    "realized_var_20_top25_2of3": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 20,
+      "total_allowed_rows": 50,
+      "avg_blocked_mean_gain": 0.24490152379837318,
+      "avg_allowed_mean_gain": 0.15863553129707011,
+      "avg_blocked_mdd_gt5_rate": 0.047619047619047616,
+      "avg_allowed_mdd_gt5_rate": 0.3500457875457876
+    },
+    "realized_var_20_top25_3of3": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 18,
+      "total_allowed_rows": 52,
+      "avg_blocked_mean_gain": 0.24725458313822382,
+      "avg_allowed_mean_gain": 0.1572052933389876,
+      "avg_blocked_mdd_gt5_rate": 0.0,
+      "avg_allowed_mdd_gt5_rate": 0.34310134310134305
+    },
+    "garch_gjr_top25_and_negative_5d_raw": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 0,
+      "total_allowed_rows": 70,
+      "avg_blocked_mean_gain": null,
+      "avg_allowed_mean_gain": 0.23125116968272955,
+      "avg_blocked_mdd_gt5_rate": null,
+      "avg_allowed_mdd_gt5_rate": 0.21972049689440992
+    },
+    "garch_gjr_top25_and_negative_5d_2of3": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 0,
+      "total_allowed_rows": 70,
+      "avg_blocked_mean_gain": null,
+      "avg_allowed_mean_gain": 0.23125116968272955,
+      "avg_blocked_mdd_gt5_rate": null,
+      "avg_allowed_mdd_gt5_rate": 0.21972049689440992
+    },
+    "garch_gjr_top25_and_negative_5d_3of3": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 0,
+      "total_allowed_rows": 70,
+      "avg_blocked_mean_gain": null,
+      "avg_allowed_mean_gain": 0.23125116968272955,
+      "avg_blocked_mdd_gt5_rate": null,
+      "avg_allowed_mdd_gt5_rate": 0.21972049689440992
+    },
+    "garch_disagreement_top25_and_negative_1d_raw": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 9,
+      "total_allowed_rows": 61,
+      "avg_blocked_mean_gain": 0.3338012138628549,
+      "avg_allowed_mean_gain": 0.22380216271164727,
+      "avg_blocked_mdd_gt5_rate": 0.07142857142857142,
+      "avg_allowed_mdd_gt5_rate": 0.2611607142857143
+    },
+    "garch_disagreement_top25_and_negative_1d_2of3": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 9,
+      "total_allowed_rows": 61,
+      "avg_blocked_mean_gain": 0.10922320957480991,
+      "avg_allowed_mean_gain": 0.23252031041888477,
+      "avg_blocked_mdd_gt5_rate": 0.5,
+      "avg_allowed_mdd_gt5_rate": 0.27142857142857146
+    },
+    "garch_disagreement_top25_and_negative_1d_3of3": {
+      "ok_folds": 4,
+      "pass_count": 0,
+      "pass_fraction": 0.0,
+      "total_blocked_rows": 0,
+      "total_allowed_rows": 70,
+      "avg_blocked_mean_gain": null,
+      "avg_allowed_mean_gain": 0.23125116968272955,
+      "avg_blocked_mdd_gt5_rate": null,
+      "avg_allowed_mdd_gt5_rate": 0.21972049689440992
+    }
+  },
+  "ranking": [
+    "realized_var_20_top25_raw",
+    "realized_var_20_top25_2of3",
+    "realized_var_20_top25_3of3",
+    "garch_disagreement_top25_and_negative_1d_2of3",
+    "garch_disagreement_top25_and_negative_1d_raw",
+    "realized_var_20_top25_and_weak_ncf_raw",
+    "realized_var_20_top25_and_weak_ncf_2of3",
+    "realized_var_20_top25_and_weak_ncf_3of3",
+    "garch_gjr_top25_and_negative_5d_raw",
+    "garch_gjr_top25_and_negative_5d_2of3",
+    "garch_gjr_top25_and_negative_5d_3of3",
+    "garch_disagreement_top25_and_negative_1d_3of3"
+  ],
+  "decision": {
+    "promotion_allowed": false,
+    "decision": "do_not_promote_keep_shadow",
+    "best_candidate": "realized_var_20_top25_raw",
+    "strict_debounce_gate_passed": false,
+    "reason": "CTBC debounce can be promoted only if a confirmed event identifies NCF-bullish rows with lower H20 gain, worse drawdown, and higher MDD>5% rate in at least 3/4 purged folds."
+  },
+  "folds_by_candidate": {
+    "realized_var_20_top25_and_weak_ncf_raw": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "raw",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.0028010122140062644,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "raw",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.001067043923357435,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 14,
+          "mean_forward_gain_h20": 0.2266975798151273,
+          "mean_forward_mdd_h20": 0.003508529958140251,
+          "mdd_gt5_rate_h20": 0.07142857142857142,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "raw",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.0009584065774420828,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 2,
+        "confirmed_trigger_days_in_test": 2,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.45963983145600196,
+          "mean_forward_mdd_h20": -0.00867787838454586,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "raw",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.002084538661928091,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 4,
+        "confirmed_trigger_days_in_test": 4,
+        "blocked": {
+          "rows": 4,
+          "mean_forward_gain_h20": 0.09716023921092914,
+          "mean_forward_mdd_h20": -0.03888332606290128,
+          "mdd_gt5_rate_h20": 0.25,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 19,
+          "mean_forward_gain_h20": 0.12121841988573202,
+          "mean_forward_mdd_h20": -0.08613222755580027,
+          "mdd_gt5_rate_h20": 0.5789473684210527,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": -0.02405818067480288,
+          "blocked_minus_allowed_mean_mdd": 0.047248901492898995,
+          "blocked_minus_allowed_mdd_gt5_rate": -0.32894736842105265,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      }
+    ],
+    "realized_var_20_top25_and_weak_ncf_2of3": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "2of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.0028010122140062644,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "2of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.001067043923357435,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 14,
+          "mean_forward_gain_h20": 0.2266975798151273,
+          "mean_forward_mdd_h20": 0.003508529958140251,
+          "mdd_gt5_rate_h20": 0.07142857142857142,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "2of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.0009584065774420828,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 2,
+        "confirmed_trigger_days_in_test": 2,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.45963983145600196,
+          "mean_forward_mdd_h20": -0.00867787838454586,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "2of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.002084538661928091,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 4,
+        "confirmed_trigger_days_in_test": 2,
+        "blocked": {
+          "rows": 2,
+          "mean_forward_gain_h20": 0.103516514713864,
+          "mean_forward_mdd_h20": 0.0016457000833051505,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.11832180501166178,
+          "mean_forward_mdd_h20": -0.08549223942754383,
+          "mdd_gt5_rate_h20": 0.5714285714285714,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": -0.014805290297797785,
+          "blocked_minus_allowed_mean_mdd": 0.08713793951084899,
+          "blocked_minus_allowed_mdd_gt5_rate": -0.5714285714285714,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      }
+    ],
+    "realized_var_20_top25_and_weak_ncf_3of3": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "3of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.0028010122140062644,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "3of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.001067043923357435,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 14,
+          "mean_forward_gain_h20": 0.2266975798151273,
+          "mean_forward_mdd_h20": 0.003508529958140251,
+          "mdd_gt5_rate_h20": 0.07142857142857142,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "3of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.0009584065774420828,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 2,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.45963983145600196,
+          "mean_forward_mdd_h20": -0.00867787838454586,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "realized_var_20_top25_and_weak_ncf",
+        "confirmation": "3of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": "weak_ncf_bull",
+        "train_threshold": 0.002084538661928091,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 4,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 23,
+          "mean_forward_gain_h20": 0.11703438846402718,
+          "mean_forward_mdd_h20": -0.07791502729616565,
+          "mdd_gt5_rate_h20": 0.5217391304347826,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      }
+    ],
+    "realized_var_20_top25_raw": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "realized_var_20_top25",
+        "confirmation": "raw",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.0028010122140062644,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "realized_var_20_top25",
+        "confirmation": "raw",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.001067043923357435,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 6,
+        "confirmed_trigger_days_in_test": 6,
+        "blocked": {
+          "rows": 2,
+          "mean_forward_gain_h20": 0.13201820759711866,
+          "mean_forward_mdd_h20": -0.0413928547162327,
+          "mdd_gt5_rate_h20": 0.5,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.24247747518479543,
+          "mean_forward_mdd_h20": 0.010992094070535743,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": -0.11045926758767677,
+          "blocked_minus_allowed_mean_mdd": -0.05238494878676844,
+          "blocked_minus_allowed_mdd_gt5_rate": 0.5,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "realized_var_20_top25",
+        "confirmation": "raw",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.0009584065774420828,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 44,
+        "confirmed_trigger_days_in_test": 44,
+        "blocked": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.45963983145600196,
+          "mean_forward_mdd_h20": -0.00867787838454586,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "realized_var_20_top25",
+        "confirmation": "raw",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.002084538661928091,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 14,
+        "confirmed_trigger_days_in_test": 14,
+        "blocked": {
+          "rows": 10,
+          "mean_forward_gain_h20": 0.1042036750233242,
+          "mean_forward_mdd_h20": -0.0426734534792056,
+          "mdd_gt5_rate_h20": 0.3,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 13,
+          "mean_forward_gain_h20": 0.12690416803379873,
+          "mean_forward_mdd_h20": -0.10502393023228881,
+          "mdd_gt5_rate_h20": 0.6923076923076923,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": -0.022700493010474526,
+          "blocked_minus_allowed_mean_mdd": 0.062350476753083216,
+          "blocked_minus_allowed_mdd_gt5_rate": -0.3923076923076923,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      }
+    ],
+    "realized_var_20_top25_2of3": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "realized_var_20_top25",
+        "confirmation": "2of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.0028010122140062644,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "realized_var_20_top25",
+        "confirmation": "2of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.001067043923357435,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 6,
+        "confirmed_trigger_days_in_test": 5,
+        "blocked": {
+          "rows": 1,
+          "mean_forward_gain_h20": 0.1726171200450712,
+          "mean_forward_mdd_h20": -0.0150629873580502,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 13,
+          "mean_forward_gain_h20": 0.2308576151820547,
+          "mean_forward_mdd_h20": 0.0049371082132318245,
+          "mdd_gt5_rate_h20": 0.07692307692307693,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": -0.05824049513698348,
+          "blocked_minus_allowed_mean_mdd": -0.020000095571282024,
+          "blocked_minus_allowed_mdd_gt5_rate": -0.07692307692307693,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "realized_var_20_top25",
+        "confirmation": "2of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.0009584065774420828,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 44,
+        "confirmed_trigger_days_in_test": 42,
+        "blocked": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.45963983145600196,
+          "mean_forward_mdd_h20": -0.00867787838454586,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "realized_var_20_top25",
+        "confirmation": "2of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.002084538661928091,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 14,
+        "confirmed_trigger_days_in_test": 12,
+        "blocked": {
+          "rows": 7,
+          "mean_forward_gain_h20": 0.1024476198940464,
+          "mean_forward_mdd_h20": -0.024596368270181888,
+          "mdd_gt5_rate_h20": 0.14285714285714285,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 16,
+          "mean_forward_gain_h20": 0.12341609971339378,
+          "mean_forward_mdd_h20": -0.10124194062003358,
+          "mdd_gt5_rate_h20": 0.6875,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": -0.02096847981934738,
+          "blocked_minus_allowed_mean_mdd": 0.0766455723498517,
+          "blocked_minus_allowed_mdd_gt5_rate": -0.5446428571428572,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      }
+    ],
+    "realized_var_20_top25_3of3": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "realized_var_20_top25",
+        "confirmation": "3of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.0028010122140062644,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "realized_var_20_top25",
+        "confirmation": "3of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.001067043923357435,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 6,
+        "confirmed_trigger_days_in_test": 4,
+        "blocked": {
+          "rows": 1,
+          "mean_forward_gain_h20": 0.1726171200450712,
+          "mean_forward_mdd_h20": -0.0150629873580502,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 13,
+          "mean_forward_gain_h20": 0.2308576151820547,
+          "mean_forward_mdd_h20": 0.0049371082132318245,
+          "mdd_gt5_rate_h20": 0.07692307692307693,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": -0.05824049513698348,
+          "blocked_minus_allowed_mean_mdd": -0.020000095571282024,
+          "blocked_minus_allowed_mdd_gt5_rate": -0.07692307692307693,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "realized_var_20_top25",
+        "confirmation": "3of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.0009584065774420828,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 44,
+        "confirmed_trigger_days_in_test": 40,
+        "blocked": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.45963983145600196,
+          "mean_forward_mdd_h20": -0.00867787838454586,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "realized_var_20_top25",
+        "confirmation": "3of3",
+        "feature": "realized_var_20",
+        "direction": "high",
+        "extra": null,
+        "train_threshold": 0.002084538661928091,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 14,
+        "confirmed_trigger_days_in_test": 7,
+        "blocked": {
+          "rows": 5,
+          "mean_forward_gain_h20": 0.10950679791359834,
+          "mean_forward_mdd_h20": 0.00315844838732274,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 18,
+          "mean_forward_gain_h20": 0.11912538583914631,
+          "mean_forward_mdd_h20": -0.10043543720824577,
+          "mdd_gt5_rate_h20": 0.6666666666666666,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": -0.00961858792554797,
+          "blocked_minus_allowed_mean_mdd": 0.10359388559556851,
+          "blocked_minus_allowed_mdd_gt5_rate": -0.6666666666666666,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      }
+    ],
+    "garch_gjr_top25_and_negative_5d_raw": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "raw",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.001275974002090216,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "raw",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.00104776457933934,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 14,
+          "mean_forward_gain_h20": 0.2266975798151273,
+          "mean_forward_mdd_h20": 0.003508529958140251,
+          "mdd_gt5_rate_h20": 0.07142857142857142,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "raw",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.0008293826839473016,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.45963983145600196,
+          "mean_forward_mdd_h20": -0.00867787838454586,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "raw",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.0012438516984164616,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 23,
+          "mean_forward_gain_h20": 0.11703438846402718,
+          "mean_forward_mdd_h20": -0.07791502729616565,
+          "mdd_gt5_rate_h20": 0.5217391304347826,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      }
+    ],
+    "garch_gjr_top25_and_negative_5d_2of3": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "2of3",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.001275974002090216,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "2of3",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.00104776457933934,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 14,
+          "mean_forward_gain_h20": 0.2266975798151273,
+          "mean_forward_mdd_h20": 0.003508529958140251,
+          "mdd_gt5_rate_h20": 0.07142857142857142,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "2of3",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.0008293826839473016,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.45963983145600196,
+          "mean_forward_mdd_h20": -0.00867787838454586,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "2of3",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.0012438516984164616,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 23,
+          "mean_forward_gain_h20": 0.11703438846402718,
+          "mean_forward_mdd_h20": -0.07791502729616565,
+          "mdd_gt5_rate_h20": 0.5217391304347826,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      }
+    ],
+    "garch_gjr_top25_and_negative_5d_3of3": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "3of3",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.001275974002090216,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "3of3",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.00104776457933934,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 14,
+          "mean_forward_gain_h20": 0.2266975798151273,
+          "mean_forward_mdd_h20": 0.003508529958140251,
+          "mdd_gt5_rate_h20": 0.07142857142857142,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "3of3",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.0008293826839473016,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.45963983145600196,
+          "mean_forward_mdd_h20": -0.00867787838454586,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "garch_gjr_top25_and_negative_5d",
+        "confirmation": "3of3",
+        "feature": "garch_gjr_var",
+        "direction": "high",
+        "extra": "return_5d_negative",
+        "train_threshold": 0.0012438516984164616,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 0,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 23,
+          "mean_forward_gain_h20": 0.11703438846402718,
+          "mean_forward_mdd_h20": -0.07791502729616565,
+          "mdd_gt5_rate_h20": 0.5217391304347826,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      }
+    ],
+    "garch_disagreement_top25_and_negative_1d_raw": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "raw",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.3270055835140728,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 6,
+        "confirmed_trigger_days_in_test": 6,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "raw",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.30238608598011507,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 7,
+        "confirmed_trigger_days_in_test": 7,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 14,
+          "mean_forward_gain_h20": 0.2266975798151273,
+          "mean_forward_mdd_h20": 0.003508529958140251,
+          "mdd_gt5_rate_h20": 0.07142857142857142,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "raw",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.3409248405029518,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 14,
+        "confirmed_trigger_days_in_test": 14,
+        "blocked": {
+          "rows": 2,
+          "mean_forward_gain_h20": 0.5016822021113958,
+          "mean_forward_mdd_h20": 0.03400539143335385,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 10,
+          "mean_forward_gain_h20": 0.4512313573249232,
+          "mean_forward_mdd_h20": -0.0172145323481258,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": 0.050450844786472604,
+          "blocked_minus_allowed_mean_mdd": 0.051219923781479645,
+          "blocked_minus_allowed_mdd_gt5_rate": 0.0,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "raw",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.33722457182515975,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 12,
+        "confirmed_trigger_days_in_test": 12,
+        "blocked": {
+          "rows": 7,
+          "mean_forward_gain_h20": 0.165920225614314,
+          "mean_forward_mdd_h20": 0.007038588718068213,
+          "mdd_gt5_rate_h20": 0.14285714285714285,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 16,
+          "mean_forward_gain_h20": 0.0956468347107767,
+          "mean_forward_mdd_h20": -0.115082234302393,
+          "mdd_gt5_rate_h20": 0.6875,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": 0.07027339090353729,
+          "blocked_minus_allowed_mean_mdd": 0.12212082302046122,
+          "blocked_minus_allowed_mdd_gt5_rate": -0.5446428571428572,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      }
+    ],
+    "garch_disagreement_top25_and_negative_1d_2of3": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "2of3",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.3270055835140728,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 6,
+        "confirmed_trigger_days_in_test": 3,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "2of3",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.30238608598011507,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 7,
+        "confirmed_trigger_days_in_test": 5,
+        "blocked": {
+          "rows": 1,
+          "mean_forward_gain_h20": 0.0914192951491661,
+          "mean_forward_mdd_h20": -0.0677227220744152,
+          "mdd_gt5_rate_h20": 1.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 13,
+          "mean_forward_gain_h20": 0.23710360171250894,
+          "mean_forward_mdd_h20": 0.008987857037567593,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": -0.14568430656334286,
+          "blocked_minus_allowed_mean_mdd": -0.07671057911198279,
+          "blocked_minus_allowed_mdd_gt5_rate": 1.0,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "2of3",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.3409248405029518,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 14,
+        "confirmed_trigger_days_in_test": 8,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.45963983145600196,
+          "mean_forward_mdd_h20": -0.00867787838454586,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "2of3",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.33722457182515975,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 12,
+        "confirmed_trigger_days_in_test": 12,
+        "blocked": {
+          "rows": 8,
+          "mean_forward_gain_h20": 0.12702712400045374,
+          "mean_forward_mdd_h20": 0.011028757049583789,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "allowed": {
+          "rows": 15,
+          "mean_forward_gain_h20": 0.11170492951126636,
+          "mean_forward_mdd_h20": -0.12535171228056538,
+          "mdd_gt5_rate_h20": 0.8,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": 0.015322194489187382,
+          "blocked_minus_allowed_mean_mdd": 0.13638046933014916,
+          "blocked_minus_allowed_mdd_gt5_rate": -0.8,
+          "blocked_minus_allowed_negative_gain_rate": 0.0
+        },
+        "pass": false
+      }
+    ],
+    "garch_disagreement_top25_and_negative_1d_3of3": [
+      {
+        "fold": 1,
+        "status": "ok",
+        "test_start": "2025-09-30",
+        "test_end": "2025-12-15",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "3of3",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.3270055835140728,
+        "train_bullish_rows": 86,
+        "test_bullish_rows": 21,
+        "raw_trigger_days_in_test": 6,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 21,
+          "mean_forward_gain_h20": 0.12163287899576185,
+          "mean_forward_mdd_h20": -0.027154130123105708,
+          "mdd_gt5_rate_h20": 0.2857142857142857,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 2,
+        "status": "ok",
+        "test_start": "2025-12-16",
+        "test_end": "2026-03-11",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "3of3",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.30238608598011507,
+        "train_bullish_rows": 94,
+        "test_bullish_rows": 14,
+        "raw_trigger_days_in_test": 7,
+        "confirmed_trigger_days_in_test": 1,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 14,
+          "mean_forward_gain_h20": 0.2266975798151273,
+          "mean_forward_mdd_h20": 0.003508529958140251,
+          "mdd_gt5_rate_h20": 0.07142857142857142,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 3,
+        "status": "ok",
+        "test_start": "2026-03-12",
+        "test_end": "2026-05-27",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "3of3",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.3409248405029518,
+        "train_bullish_rows": 124,
+        "test_bullish_rows": 12,
+        "raw_trigger_days_in_test": 14,
+        "confirmed_trigger_days_in_test": 1,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 12,
+          "mean_forward_gain_h20": 0.45963983145600196,
+          "mean_forward_mdd_h20": -0.00867787838454586,
+          "mdd_gt5_rate_h20": 0.0,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      },
+      {
+        "fold": 4,
+        "status": "ok",
+        "test_start": "2026-05-28",
+        "test_end": "2026-08-10",
+        "gate": "garch_disagreement_top25_and_negative_1d",
+        "confirmation": "3of3",
+        "feature": "garch_disagreement_abs_log",
+        "direction": "high",
+        "extra": "return_1d_negative",
+        "train_threshold": 0.33722457182515975,
+        "train_bullish_rows": 138,
+        "test_bullish_rows": 23,
+        "raw_trigger_days_in_test": 12,
+        "confirmed_trigger_days_in_test": 0,
+        "blocked": {
+          "rows": 0,
+          "mean_forward_gain_h20": null,
+          "mean_forward_mdd_h20": null,
+          "mdd_gt5_rate_h20": null,
+          "negative_gain_rate_h20": null
+        },
+        "allowed": {
+          "rows": 23,
+          "mean_forward_gain_h20": 0.11703438846402718,
+          "mean_forward_mdd_h20": -0.07791502729616565,
+          "mdd_gt5_rate_h20": 0.5217391304347826,
+          "negative_gain_rate_h20": 0.0
+        },
+        "delta_blocked_minus_allowed": {
+          "blocked_minus_allowed_mean_gain": null,
+          "blocked_minus_allowed_mean_mdd": null,
+          "blocked_minus_allowed_mdd_gt5_rate": null,
+          "blocked_minus_allowed_negative_gain_rate": null
+        },
+        "pass": false
+      }
+    ]
+  }
+}

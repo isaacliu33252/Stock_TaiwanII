@@ -1,0 +1,355 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2509_02986_ctbc_00713_domain_randomization",
+  "generated_at": "2026-09-12T08:02:46",
+  "source_paper": {
+    "id": "2509.02986",
+    "transferred_idea": "domain_randomization_for_strategy_robustness"
+  },
+  "policy": "research_only_no_weight_change",
+  "changes_latest_strategy": false,
+  "changes_golden1_0531": false,
+  "changes_golden2_0830": false,
+  "changes_ncf_live_gate": false,
+  "scenario_count": 7,
+  "aggregate": {
+    "raw_gate": {
+      "scenario_count": 7,
+      "positive_avg_delta_final_value_scenarios": 0,
+      "positive_avg_delta_sharpe_scenarios": 0,
+      "nonnegative_worst_delta_final_value_scenarios": 0,
+      "mean_average_delta_final_value": -3882.7027324040787,
+      "worst_average_delta_final_value": -5656.143975374289,
+      "best_average_delta_final_value": -1784.073692525737
+    },
+    "debounce_2of3": {
+      "scenario_count": 7,
+      "positive_avg_delta_final_value_scenarios": 0,
+      "positive_avg_delta_sharpe_scenarios": 0,
+      "nonnegative_worst_delta_final_value_scenarios": 0,
+      "mean_average_delta_final_value": -1951.162751958855,
+      "worst_average_delta_final_value": -2779.2369916774333,
+      "best_average_delta_final_value": -848.4131691972725
+    },
+    "debounce_3of3": {
+      "scenario_count": 7,
+      "positive_avg_delta_final_value_scenarios": 0,
+      "positive_avg_delta_sharpe_scenarios": 0,
+      "nonnegative_worst_delta_final_value_scenarios": 0,
+      "mean_average_delta_final_value": -1519.6499609593136,
+      "worst_average_delta_final_value": -2375.70275953738,
+      "best_average_delta_final_value": -626.4853694064077
+    }
+  },
+  "scenario_reports": [
+    {
+      "scenario": "base_1m_delay1",
+      "settings": {
+        "initial_value": 1000000.0,
+        "signal_delay_days": 1,
+        "commission_rate": 0.001425,
+        "slippage_rate": 0.0005,
+        "equity_etf_sell_tax": 0.001
+      },
+      "decision": {
+        "promotion_allowed": false,
+        "decision": "do_not_promote_keep_shadow",
+        "best_variant": "raw_gate",
+        "strict_debounce_gate_passed": false,
+        "reason": "00713 debounce must beat fixed 10% on final value and Sharpe with non-worse MDD across all windows before promotion."
+      },
+      "summary": {
+        "raw_gate": {
+          "beats_fixed_final_value_windows": 1,
+          "beats_fixed_sharpe_windows": 1,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -3747.4039138995577,
+          "average_delta_sharpe": -0.006581663158621187,
+          "worst_delta_final_value": -7497.315677550621
+        },
+        "debounce_2of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -1823.9486883704085,
+          "average_delta_sharpe": -0.003587900549019807,
+          "worst_delta_final_value": -3647.897376740817
+        },
+        "debounce_3of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -1583.801839691354,
+          "average_delta_sharpe": -0.0039033093380580475,
+          "worst_delta_final_value": -3167.603679382708
+        }
+      }
+    },
+    {
+      "scenario": "capital_500k_delay1",
+      "settings": {
+        "initial_value": 500000.0,
+        "signal_delay_days": 1,
+        "commission_rate": 0.001425,
+        "slippage_rate": 0.0005,
+        "equity_etf_sell_tax": 0.001
+      },
+      "decision": {
+        "promotion_allowed": false,
+        "decision": "do_not_promote_keep_shadow",
+        "best_variant": "raw_gate",
+        "strict_debounce_gate_passed": false,
+        "reason": "00713 debounce must beat fixed 10% on final value and Sharpe with non-worse MDD across all windows before promotion."
+      },
+      "summary": {
+        "raw_gate": {
+          "beats_fixed_final_value_windows": 1,
+          "beats_fixed_sharpe_windows": 1,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -1873.7019569497788,
+          "average_delta_sharpe": -0.006581663158621187,
+          "worst_delta_final_value": -3748.6578387753107
+        },
+        "debounce_2of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -911.9743441852042,
+          "average_delta_sharpe": -0.003587900549019807,
+          "worst_delta_final_value": -1823.9486883704085
+        },
+        "debounce_3of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -791.900919845677,
+          "average_delta_sharpe": -0.0039033093380580475,
+          "worst_delta_final_value": -1583.801839691354
+        }
+      }
+    },
+    {
+      "scenario": "capital_1500k_delay1",
+      "settings": {
+        "initial_value": 1500000.0,
+        "signal_delay_days": 1,
+        "commission_rate": 0.001425,
+        "slippage_rate": 0.0005,
+        "equity_etf_sell_tax": 0.001
+      },
+      "decision": {
+        "promotion_allowed": false,
+        "decision": "do_not_promote_keep_shadow",
+        "best_variant": "raw_gate",
+        "strict_debounce_gate_passed": false,
+        "reason": "00713 debounce must beat fixed 10% on final value and Sharpe with non-worse MDD across all windows before promotion."
+      },
+      "summary": {
+        "raw_gate": {
+          "beats_fixed_final_value_windows": 1,
+          "beats_fixed_sharpe_windows": 1,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -5621.105870849802,
+          "average_delta_sharpe": -0.00658166315862263,
+          "worst_delta_final_value": -11245.973516326863
+        },
+        "debounce_2of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -2735.9230325564276,
+          "average_delta_sharpe": -0.0035879005490224714,
+          "worst_delta_final_value": -5471.846065112855
+        },
+        "debounce_3of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -2375.70275953738,
+          "average_delta_sharpe": -0.0039033093380584916,
+          "worst_delta_final_value": -4751.40551907476
+        }
+      }
+    },
+    {
+      "scenario": "delay0_1m",
+      "settings": {
+        "initial_value": 1000000.0,
+        "signal_delay_days": 0,
+        "commission_rate": 0.001425,
+        "slippage_rate": 0.0005,
+        "equity_etf_sell_tax": 0.001
+      },
+      "decision": {
+        "promotion_allowed": false,
+        "decision": "do_not_promote_keep_shadow",
+        "best_variant": "raw_gate",
+        "strict_debounce_gate_passed": false,
+        "reason": "00713 debounce must beat fixed 10% on final value and Sharpe with non-worse MDD across all windows before promotion."
+      },
+      "summary": {
+        "raw_gate": {
+          "beats_fixed_final_value_windows": 1,
+          "beats_fixed_sharpe_windows": 1,
+          "non_worse_mdd_windows": 1,
+          "average_delta_final_value": -1784.073692525737,
+          "average_delta_sharpe": -0.004638057954468144,
+          "worst_delta_final_value": -3570.65523480298
+        },
+        "debounce_2of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 1,
+          "average_delta_final_value": -848.4131691972725,
+          "average_delta_sharpe": -0.002214199145740281,
+          "worst_delta_final_value": -1696.826338394545
+        },
+        "debounce_3of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -626.4853694064077,
+          "average_delta_sharpe": -0.0024413555495510497,
+          "worst_delta_final_value": -1252.9707388128154
+        }
+      }
+    },
+    {
+      "scenario": "delay2_1m",
+      "settings": {
+        "initial_value": 1000000.0,
+        "signal_delay_days": 2,
+        "commission_rate": 0.001425,
+        "slippage_rate": 0.0005,
+        "equity_etf_sell_tax": 0.001
+      },
+      "decision": {
+        "promotion_allowed": false,
+        "decision": "do_not_promote_keep_shadow",
+        "best_variant": "raw_gate",
+        "strict_debounce_gate_passed": false,
+        "reason": "00713 debounce must beat fixed 10% on final value and Sharpe with non-worse MDD across all windows before promotion."
+      },
+      "summary": {
+        "raw_gate": {
+          "beats_fixed_final_value_windows": 1,
+          "beats_fixed_sharpe_windows": 1,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -3859.377670844551,
+          "average_delta_sharpe": -0.006676861429001479,
+          "worst_delta_final_value": -7721.263191440608
+        },
+        "debounce_2of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -2289.478072239086,
+          "average_delta_sharpe": -0.0041590666069013515,
+          "worst_delta_final_value": -4578.956144478172
+        },
+        "debounce_3of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -1393.4527269566897,
+          "average_delta_sharpe": -0.003035259033679294,
+          "worst_delta_final_value": -2786.9054539133795
+        }
+      }
+    },
+    {
+      "scenario": "high_slippage_1m",
+      "settings": {
+        "initial_value": 1000000.0,
+        "signal_delay_days": 1,
+        "commission_rate": 0.001425,
+        "slippage_rate": 0.001,
+        "equity_etf_sell_tax": 0.001
+      },
+      "decision": {
+        "promotion_allowed": false,
+        "decision": "do_not_promote_keep_shadow",
+        "best_variant": "raw_gate",
+        "strict_debounce_gate_passed": false,
+        "reason": "00713 debounce must beat fixed 10% on final value and Sharpe with non-worse MDD across all windows before promotion."
+      },
+      "summary": {
+        "raw_gate": {
+          "beats_fixed_final_value_windows": 1,
+          "beats_fixed_sharpe_windows": 1,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -4637.112046384835,
+          "average_delta_sharpe": -0.007620788112392973,
+          "worst_delta_final_value": -9276.966024792287
+        },
+        "debounce_2of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -2269.164965486154,
+          "average_delta_sharpe": -0.0041126636804769134,
+          "worst_delta_final_value": -4538.329930972308
+        },
+        "debounce_3of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -1805.8246974039357,
+          "average_delta_sharpe": -0.004170894733011243,
+          "worst_delta_final_value": -3611.6493948078714
+        }
+      }
+    },
+    {
+      "scenario": "high_cost_1m",
+      "settings": {
+        "initial_value": 1000000.0,
+        "signal_delay_days": 1,
+        "commission_rate": 0.002,
+        "slippage_rate": 0.001,
+        "equity_etf_sell_tax": 0.001
+      },
+      "decision": {
+        "promotion_allowed": false,
+        "decision": "do_not_promote_keep_shadow",
+        "best_variant": "raw_gate",
+        "strict_debounce_gate_passed": false,
+        "reason": "00713 debounce must beat fixed 10% on final value and Sharpe with non-worse MDD across all windows before promotion."
+      },
+      "summary": {
+        "raw_gate": {
+          "beats_fixed_final_value_windows": 1,
+          "beats_fixed_sharpe_windows": 1,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -5656.143975374289,
+          "average_delta_sharpe": -0.008815761574842984,
+          "worst_delta_final_value": -11315.29854641715
+        },
+        "debounce_2of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 1,
+          "average_delta_final_value": -2779.2369916774333,
+          "average_delta_sharpe": -0.004716062715432567,
+          "worst_delta_final_value": -5558.4739833548665
+        },
+        "debounce_3of3": {
+          "beats_fixed_final_value_windows": 0,
+          "beats_fixed_sharpe_windows": 0,
+          "non_worse_mdd_windows": 2,
+          "average_delta_final_value": -2060.3814138737507,
+          "average_delta_sharpe": -0.004478667390503288,
+          "worst_delta_final_value": -4120.762827747501
+        }
+      }
+    }
+  ],
+  "decision": {
+    "domain_randomization_completed": true,
+    "promotion_allowed": false,
+    "decision": "robustness_test_complete_do_not_promote",
+    "best_variant": "debounce_3of3",
+    "strict_robustness_passed": false,
+    "reason": "No 00713 debounce variant beats fixed 10% across all perturbation scenarios."
+  }
+}

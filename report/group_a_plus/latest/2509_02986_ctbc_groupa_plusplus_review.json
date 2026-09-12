@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2509_02986_ctbc_review",
+  "generated_at": "2026-09-12T08:03:09",
+  "source_paper": {
+    "path": "/mnt/c/Users/isaac/Downloads/2509.02986.pdf",
+    "arxiv_id": "2509.02986",
+    "title": "CTBC: Contact-Triggered Blind Climbing for Wheeled Bipedal Robots with Instruction Learning and Reinforcement Learning",
+    "domain": "robotics_control_reinforcement_learning",
+    "main_claims_used": [
+      "Contact-triggered task decomposition activates special behavior only after obstacle contact.",
+      "Feedforward instruction learning guides exploration and is annealed away.",
+      "An asymmetric actor-critic separates deployable observations from privileged training information.",
+      "Domain randomization improves zero-shot transfer robustness.",
+      "Ablations remove feedforward and contact-trigger components to isolate contribution."
+    ]
+  },
+  "current_group_a_plusplus_context": {
+    "strategy_path": "report/group_a_plus/latest/strategy.json",
+    "active_strategy_id": "a2118_a2111_ncf_late_bull_deleverage",
+    "ncf_00631l_panel": "results/ncf_00631l_panel_latest_20260716.csv",
+    "ncf_00713_path": "results/ncf_00713_latest_20260909.json",
+    "cash_sleeve_00713_weight_param": 0.12,
+    "ncf_00713_enabled": true
+  },
+  "implemented_shadow_artifacts": {
+    "ctbc_debounce_shadow": "report/group_a_plus/latest/2509_02986_ctbc_debounce_shadow.json",
+    "ctbc_debounce_decision": "do_not_promote_keep_shadow",
+    "ctbc_debounce_best_candidate": "realized_var_20_top25_raw",
+    "ctbc_debounce_strict_passed": false,
+    "ctbc_00713_debounce_shadow": "report/group_a_plus/latest/2509_02986_ctbc_00713_debounce_shadow.json",
+    "ctbc_00713_debounce_decision": "do_not_promote_keep_shadow",
+    "ctbc_00713_debounce_best_variant": "raw_gate",
+    "ctbc_00713_debounce_strict_passed": false,
+    "ctbc_00713_domain_randomization": "report/group_a_plus/latest/2509_02986_ctbc_00713_domain_randomization.json",
+    "ctbc_00713_domain_randomization_decision": "robustness_test_complete_do_not_promote",
+    "ctbc_00713_domain_randomization_best_variant": "debounce_3of3",
+    "ctbc_00713_domain_randomization_strict_passed": false,
+    "ctbc_promotion_readiness_gate": "report/group_a_plus/latest/2509_02986_ctbc_promotion_readiness_gate.json",
+    "ctbc_promotion_readiness_decision": "do_not_promote_import_governance_requirements_only",
+    "ctbc_promotion_readiness_allowed": false
+  },
+  "policy": "research_only_no_weight_change",
+  "changes_latest_strategy": false,
+  "changes_golden1_0531": false,
+  "changes_golden2_0830": false,
+  "changes_ncf_live_gate": false,
+  "checks": {
+    "paper_is_finance_or_trading": false,
+    "direct_alpha_claim_available": false,
+    "portfolio_pnl_evidence_available": false,
+    "transferable_control_patterns_available": true,
+    "latest_strategy_change_allowed": false,
+    "golden_change_allowed": false,
+    "shadow_only_review_complete": true
+  },
+  "transfer_candidates": [
+    {
+      "idea": "contact_triggered_event_controller",
+      "paper_basis": "CTBC activates leg-lifting rewards and feedforward motion only after contact force crosses a threshold.",
+      "group_a_plusplus_mapping": "Use event-triggered shadow controllers for actual market contact events such as realized drawdown, gap-down, liquidity stress, stale-data contact, or broker-fill friction. Do not let the controller fire from a pure forecast without an observed contact condition.",
+      "recommended_status": "candidate_shadow",
+      "latest_strategy_change": false,
+      "why": "This matches groupA++ better than a continuous always-on overlay and reduces unnecessary churn."
+    },
+    {
+      "idea": "sliding_window_trigger_debounce",
+      "paper_basis": "The paper uses a short sliding window to suppress contact flicker before confirming stable contact.",
+      "group_a_plusplus_mapping": "Test 2-of-3 or 3-of-3 confirmation for slow actions such as no-add, re-entry, and 00713 sleeve disablement. Do not apply it blindly to emergency de-risking because confirmation can delay protection.",
+      "recommended_status": "tested_do_not_promote",
+      "latest_strategy_change": false,
+      "why": "Implemented as 00631L no-add debounce shadow; strict gate did not pass, so it remains research-only."
+    },
+    {
+      "idea": "feedforward_instruction_warm_start",
+      "paper_basis": "CTBC guides exploration with a hand-designed feedforward trajectory, then anneals it away.",
+      "group_a_plusplus_mapping": "For future RL or learned micro-tilt agents, initialize behavior near the current latest strategy or Golden1 policy and anneal the imitation weight during shadow training.",
+      "recommended_status": "training_governance_candidate",
+      "latest_strategy_change": false,
+      "why": "This can reduce exploration damage in training; it is not evidence for changing live allocation."
+    },
+    {
+      "idea": "asymmetric_actor_critic_privileged_training",
+      "paper_basis": "The critic sees privileged information during training while the actor uses deployable observations.",
+      "group_a_plusplus_mapping": "Allow shadow critics to use ex-post labels, realized future drawdown diagnostics, and full-cost attribution for training diagnostics, while live actors/signals remain limited to point-in-time features.",
+      "recommended_status": "research_only_design_pattern",
+      "latest_strategy_change": false,
+      "why": "This is compatible with no-leakage governance only if the actor's production inputs are audited separately."
+    },
+    {
+      "idea": "domain_randomization_for_strategy_robustness",
+      "paper_basis": "The robot policy is trained with randomized mass, friction, restitution, torque, sensor offset, and delay.",
+      "group_a_plusplus_mapping": "Add robustness sweeps for transaction costs, execution delay, price slippage, missing chip/news data, stale TDCC rows, NCF probability perturbation, and capital-size scaling before any new overlay is promoted.",
+      "recommended_status": "can_import_as_validation_requirement",
+      "latest_strategy_change": false,
+      "why": "This is the paper's strongest transferable point and fits existing multi-window promotion gates."
+    },
+    {
+      "idea": "component_ablation_and_seed_stability",
+      "paper_basis": "The paper compares full CTBC against no-feedforward, no-contact-trigger, and no-both variants across seeds.",
+      "group_a_plusplus_mapping": "Any paper-inspired GroupA++ candidate should report full, no-trigger, no-guidance, and baseline variants with at least three seed or window slices before promotion review.",
+      "recommended_status": "can_import_as_research_checklist",
+      "latest_strategy_change": false,
+      "why": "Prevents attributing gains to the wrong component."
+    }
+  ],
+  "blocked_or_deferred_items": [
+    {
+      "idea": "direct_rl_policy_import",
+      "reason": "The paper controls robot joints in a physics simulator; it does not model market returns, ETF flows, portfolio PnL, or transaction costs."
+    },
+    {
+      "idea": "contact_force_threshold_as_market_signal",
+      "reason": "Robot contact force has no direct market analogue. Trading triggers must be rebuilt from observed market/account states."
+    },
+    {
+      "idea": "blind_policy_as_no_news_rule",
+      "reason": "Blind locomotion means no vision sensor; it does not imply financial news/chip/external features should be removed."
+    },
+    {
+      "idea": "zero_shot_transfer_to_live_strategy",
+      "reason": "The paper validates sim-to-real hardware transfer; groupA++ requires purged walk-forward, cost, capital, and multi-window portfolio validation."
+    }
+  ],
+  "decision": {
+    "promotion_allowed_now": false,
+    "latest_strategy_weight_change_allowed": false,
+    "recommended_import_now": [
+      "domain_randomization_for_strategy_robustness_as_validation_requirement",
+      "component_ablation_and_seed_stability_as_research_checklist"
+    ],
+    "recommended_shadow_experiments": [
+      "feedforward_warm_start_for_future_rl_micro_tilt_shadow"
+    ],
+    "reason": "The paper is useful as a control/governance analogy, but it provides no direct financial alpha, no ETF allocation result, and no evidence that live groupA++ weights should change."
+  }
+}

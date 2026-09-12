@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_2509_02986_ctbc_promotion_readiness_gate",
+  "generated_at": "2026-09-12T08:03:04",
+  "source_paper": {
+    "id": "2509.02986",
+    "title": "CTBC: Contact-Triggered Blind Climbing for Wheeled Bipedal Robots with Instruction Learning and Reinforcement Learning",
+    "import_scope": "governance_validation_requirements_only"
+  },
+  "policy": "research_governance_only_no_weight_change",
+  "changes_latest_strategy": false,
+  "changes_golden1_0531": false,
+  "changes_golden2_0830": false,
+  "changes_ncf_live_gate": false,
+  "inputs": {
+    "review": "report/group_a_plus/latest/2509_02986_ctbc_groupa_plusplus_review.json",
+    "debounce_00631l": "report/group_a_plus/latest/2509_02986_ctbc_debounce_shadow.json",
+    "debounce_00713": "report/group_a_plus/latest/2509_02986_ctbc_00713_debounce_shadow.json",
+    "domain_randomization": "report/group_a_plus/latest/2509_02986_ctbc_00713_domain_randomization.json"
+  },
+  "checks": {
+    "source_is_financial_strategy_paper": false,
+    "direct_alpha_or_portfolio_claim_available": false,
+    "review_artifact_available": true,
+    "component_ablation_available": true,
+    "raw_vs_debounced_trigger_tested": true,
+    "window_stability_tested": true,
+    "strict_00631l_debounce_passed": false,
+    "strict_00713_debounce_passed": false,
+    "domain_randomization_stress_completed": true,
+    "strict_domain_randomization_passed": false,
+    "pit_actor_input_separation_documented": true,
+    "no_latest_strategy_change_requested_by_gate": true,
+    "no_golden_change_requested_by_gate": true
+  },
+  "blockers": [
+    "source_is_financial_strategy_paper",
+    "direct_alpha_or_portfolio_claim_available",
+    "strict_00631l_debounce_passed",
+    "strict_00713_debounce_passed",
+    "strict_domain_randomization_passed"
+  ],
+  "evidence": {
+    "review_decision": "The paper is useful as a control/governance analogy, but it provides no direct financial alpha, no ETF allocation result, and no evidence that live groupA++ weights should change.",
+    "00631l_best_candidate": "realized_var_20_top25_raw",
+    "00631l_best_pass_count": 0,
+    "00631l_best_pass_fraction": 0.0,
+    "00631l_strict_passed": false,
+    "00713_best_variant": "raw_gate",
+    "00713_average_delta_final_value": -3747.4039138995577,
+    "00713_strict_passed": false,
+    "domain_randomization_best_variant": "debounce_3of3",
+    "domain_randomization_strict_passed": false,
+    "domain_randomization_scenario_count": 7,
+    "confirmation_modes_seen": [
+      "2of3",
+      "3of3",
+      "raw"
+    ]
+  },
+  "governance_imports": [
+    {
+      "requirement": "component_ablation",
+      "status": "implemented_as_readiness_requirement",
+      "minimum": "full/raw, no-trigger/debounced, and baseline/fixed variants must be reported."
+    },
+    {
+      "requirement": "window_or_seed_stability",
+      "status": "implemented_as_readiness_requirement",
+      "minimum": "A candidate must pass all required windows/folds before promotion review."
+    },
+    {
+      "requirement": "domain_randomization_stress",
+      "status": "added_as_future_required_blocker",
+      "minimum": "Cost, delay, slippage, stale data, missing feature, probability perturbation, and capital-size sweeps."
+    },
+    {
+      "requirement": "pit_actor_privileged_critic_separation",
+      "status": "implemented_as_documented_boundary",
+      "minimum": "Training diagnostics may use ex-post labels; live actor/signal inputs must remain point-in-time only."
+    }
+  ],
+  "decision": {
+    "promotion_allowed": false,
+    "decision": "do_not_promote_import_governance_requirements_only",
+    "latest_strategy_weight_change_allowed": false,
+    "reason": "The CTBC-derived trigger experiments failed promotion criteria, but the paper's ablation, robustness, and deployment-boundary discipline is useful as future GroupA++ research governance."
+  }
+}
