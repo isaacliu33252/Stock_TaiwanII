@@ -1,0 +1,617 @@
+{
+  "report_type": "riccati_mv_shadow",
+  "status": "ok",
+  "policy": "research_only_no_weight_change",
+  "source_paper": {
+    "id": "2608.07977",
+    "title": "A Computable Stochastic Riccati Equations Framework for Mean-Variance Portfolio Selection with Multifactor Stochastic Volatility Model",
+    "transferable_use": "state_dependent_mean_variance_risk_budget_shadow"
+  },
+  "generated_at": "2026-09-12T08:36:38",
+  "as_of": "2026-09-09",
+  "price_window": {
+    "start": "2025-08-21",
+    "end": "2026-09-09",
+    "observations": 252
+  },
+  "spec": {
+    "lookback_days": 252,
+    "min_observations": 126,
+    "shrinkage": 0.3,
+    "grid_step": 0.025,
+    "min_cash": 0.2,
+    "max_weights": {
+      "0050.TW": 0.8,
+      "00631L.TW": 0.2,
+      "00632R.TW": 0.25,
+      "00679B.TWO": 0.4
+    },
+    "target_return_fraction": 0.8,
+    "variance_penalty": 35.0
+  },
+  "expected_return_proxy": {
+    "daily_by_ticker": {
+      "0050.TW": 0.00016566333798449394,
+      "00631L.TW": 0.0020781722273080765,
+      "00632R.TW": -0.0016914246371502377,
+      "00679B.TWO": -0.0005440107968019053
+    },
+    "historical_lookback_days": 63,
+    "ncf_sources": {
+      "0050.TW": {
+        "status": "ok",
+        "expected_return": -0.000996,
+        "direction": "DOWN",
+        "calibrated_probability_up": 0.4101,
+        "confidence": 0.6243,
+        "last_close_date": "2026-09-10",
+        "stale_days": -1,
+        "source_path": "results/ncf_0050_latest_20260910.json"
+      },
+      "00631L.TW": {
+        "status": "ok",
+        "expected_return": 0.001599,
+        "direction": "UP",
+        "calibrated_probability_up": 0.6336,
+        "confidence": 0.6914,
+        "last_close_date": "2026-09-10",
+        "stale_days": -1,
+        "source_path": "results/ncf_00631l_latest_20260910.json"
+      },
+      "00632R.TW": {
+        "status": "ok",
+        "expected_return": -0.001815,
+        "direction": "DOWN",
+        "calibrated_probability_up": 0.3046,
+        "confidence": 0.7566,
+        "last_close_date": "2026-09-10",
+        "stale_days": -1,
+        "source_path": "results/ncf_00632r_latest_20260910.json"
+      },
+      "00679B.TWO": {
+        "status": "missing",
+        "expected_return": null,
+        "source_path": null
+      }
+    }
+  },
+  "risk_state": {
+    "latest_target_stats": {
+      "expected_daily_return": 3.041418766893951e-07,
+      "daily_variance": 8.241899534465634e-05,
+      "daily_volatility": 0.009078490807653898,
+      "annualized_volatility": 0.14411657374102882
+    },
+    "shadow_target_stats": {
+      "expected_daily_return": 5.195430568270191e-05,
+      "daily_variance": 7.728244830993971e-07,
+      "daily_volatility": 0.0008791043641680987,
+      "annualized_volatility": 0.013955349144362103
+    },
+    "cap_only_shadow_stats": {
+      "expected_daily_return": 0.00012981607453541407,
+      "daily_variance": 8.112220619916304e-05,
+      "daily_volatility": 0.00900678667445627,
+      "annualized_volatility": 0.14297830591453056
+    },
+    "annualized_volatility_reduction": 0.1301612245966667,
+    "cap_only_annualized_volatility_reduction": 0.001138267826498257,
+    "correlation_matrix": {
+      "0050.TW": {
+        "0050.TW": 1.0,
+        "00631L.TW": 0.980917057820915,
+        "00632R.TW": -0.9783950393426026,
+        "00679B.TWO": -0.038890121873582394
+      },
+      "00631L.TW": {
+        "0050.TW": 0.980917057820915,
+        "00631L.TW": 1.0,
+        "00632R.TW": -0.9956253887786314,
+        "00679B.TWO": -0.03229839013347864
+      },
+      "00632R.TW": {
+        "0050.TW": -0.9783950393426026,
+        "00631L.TW": -0.9956253887786314,
+        "00632R.TW": 1.0,
+        "00679B.TWO": 0.021785645986739932
+      },
+      "00679B.TWO": {
+        "0050.TW": -0.038890121873582394,
+        "00631L.TW": -0.03229839013347864,
+        "00632R.TW": 0.021785645986739932,
+        "00679B.TWO": 1.0
+      }
+    }
+  },
+  "latest_strategy_weights": {
+    "0050.TW": 0.47,
+    "00631L.TW": 0.09871434512265483,
+    "00632R.TW": 0.1671390088790092,
+    "00679B.TWO": 0.0,
+    "cash": 0.264146645998336
+  },
+  "shadow_mean_variance_weights": {
+    "0050.TW": 0.0,
+    "00631L.TW": 0.025,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.0,
+    "cash": 0.975
+  },
+  "cap_only_shadow_weights": {
+    "0050.TW": 0.47,
+    "00631L.TW": 0.025,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.0,
+    "cash": 0.505
+  },
+  "cap_only_events": [
+    {
+      "ticker": "00631L.TW",
+      "baseline_weight": 0.09871434512265483,
+      "shadow_cap_weight": 0.025,
+      "cap_only_weight": 0.025,
+      "excess_weight_moved": 0.07371434512265482
+    },
+    {
+      "ticker": "00632R.TW",
+      "baseline_weight": 0.1671390088790092,
+      "shadow_cap_weight": 0.0,
+      "cap_only_weight": 0.0,
+      "excess_weight_moved": 0.1671390088790092
+    }
+  ],
+  "adjoint_policy_iteration_shadow": {
+    "source_paper": {
+      "id": "2608.17808",
+      "title": "Self-Consistent Adjoint Policy Iteration for Constrained Dynamic Portfolio Choice",
+      "transferable_use": "current_policy_re_evaluation_stability_audit"
+    },
+    "policy": "research_only_no_weight_change",
+    "implementation_note": "Discrete two-pass cap-only stability audit; not the paper's full continuous-time OL-BPTT/HJB policy iteration.",
+    "first_pass": {
+      "shadow_weights": {
+        "0050.TW": 0.0,
+        "00631L.TW": 0.025,
+        "00632R.TW": 0.0,
+        "00679B.TWO": 0.0,
+        "cash": 0.975
+      },
+      "cap_only_weights": {
+        "0050.TW": 0.47,
+        "00631L.TW": 0.025,
+        "00632R.TW": 0.0,
+        "00679B.TWO": 0.0,
+        "cash": 0.505
+      },
+      "cap_only_events": [
+        {
+          "ticker": "00631L.TW",
+          "baseline_weight": 0.09871434512265483,
+          "shadow_cap_weight": 0.025,
+          "cap_only_weight": 0.025,
+          "excess_weight_moved": 0.07371434512265482
+        },
+        {
+          "ticker": "00632R.TW",
+          "baseline_weight": 0.1671390088790092,
+          "shadow_cap_weight": 0.0,
+          "cap_only_weight": 0.0,
+          "excess_weight_moved": 0.1671390088790092
+        }
+      ],
+      "cap_only_stats": {
+        "expected_daily_return": 0.00012981607453541407,
+        "daily_variance": 8.112220619916304e-05,
+        "daily_volatility": 0.00900678667445627,
+        "annualized_volatility": 0.14297830591453056
+      },
+      "optimizer": {
+        "status": "ok",
+        "feasible_count": 10987,
+        "objective": "maximize_expected_return_minus_variance_penalty",
+        "variance_penalty": 35.0,
+        "baseline_expected_daily_return": 3.041418766893951e-07,
+        "min_expected_daily_return": 2.433135013515161e-07,
+        "best_score": 2.4905448774223013e-05
+      }
+    },
+    "second_pass": {
+      "shadow_weights": {
+        "0050.TW": 0.0,
+        "00631L.TW": 0.05,
+        "00632R.TW": 0.0,
+        "00679B.TWO": 0.0,
+        "cash": 0.95
+      },
+      "cap_only_weights": {
+        "0050.TW": 0.47,
+        "00631L.TW": 0.025,
+        "00632R.TW": 0.0,
+        "00679B.TWO": 0.0,
+        "cash": 0.505
+      },
+      "cap_only_events": [],
+      "cap_only_stats": {
+        "expected_daily_return": 0.00012981607453541407,
+        "daily_variance": 8.112220619916304e-05,
+        "daily_volatility": 0.00900678667445627,
+        "annualized_volatility": 0.14297830591453056
+      },
+      "optimizer": {
+        "status": "ok",
+        "feasible_count": 6373,
+        "objective": "maximize_expected_return_minus_variance_penalty",
+        "variance_penalty": 35.0,
+        "baseline_expected_daily_return": 0.00012981607453541407,
+        "min_expected_daily_return": 0.00010385285962833127,
+        "best_score": -4.286816268511773e-06
+      }
+    },
+    "cap_delta_second_minus_first": {
+      "0050.TW": 0.0,
+      "00631L.TW": 0.0,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.0
+    },
+    "stable_within_grid_step": true,
+    "persistent_cap_tickers": [
+      "00631L.TW",
+      "00632R.TW"
+    ],
+    "recommendations": [
+      "persistent_cap_recommendation_after_re_evaluation",
+      "two_pass_cap_only_lowers_annualized_volatility"
+    ],
+    "promotion_decision": "shadow_only_requires_multi_window_backtest_before_guard_use"
+  },
+  "two_pass_cap_only_weights": {
+    "0050.TW": 0.47,
+    "00631L.TW": 0.025,
+    "00632R.TW": 0.0,
+    "00679B.TWO": 0.0,
+    "cash": 0.505
+  },
+  "two_pass_recommendations": [
+    "persistent_cap_recommendation_after_re_evaluation",
+    "two_pass_cap_only_lowers_annualized_volatility"
+  ],
+  "stability_tuned_re_evaluation_gate": {
+    "source_paper": {
+      "id": "2608.17808",
+      "transferable_use": "current_policy_re_evaluation_trigger_stability"
+    },
+    "policy": "research_only_no_weight_change",
+    "gate_active": false,
+    "params": {
+      "cap_tickers": [
+        "00631L.TW"
+      ],
+      "tail_risk_min": 2,
+      "drawdown_max": -0.1,
+      "vol_ratio_20_60_min": 1.25,
+      "cap_beta": 0.5
+    },
+    "observed": {
+      "tail_risk_score": 0,
+      "drawdown": 0.0,
+      "realized_vol_ratio_20_60": 0.522243402827691
+    },
+    "reasons": [
+      "stability_tuned_gate_inactive"
+    ]
+  },
+  "stability_tuned_two_pass_weights": {
+    "0050.TW": 0.47,
+    "00631L.TW": 0.09871434512265483,
+    "00632R.TW": 0.1671390088790092,
+    "00679B.TWO": 0.0,
+    "cash": 0.264146645998336
+  },
+  "stability_tuned_recommendations": [
+    "no_action_stability_gate_inactive"
+  ],
+  "negative_control": {
+    "source_paper": {
+      "id": "2608.17808",
+      "transferable_use": "negative_control_for_policy_re_evaluation"
+    },
+    "policy": "research_only_no_weight_change",
+    "low_risk_state": true,
+    "gate_active": false,
+    "passed": true,
+    "params": {
+      "tail_risk_max": 0,
+      "drawdown_min": -0.05,
+      "vol_ratio_20_60_max": 1.0
+    },
+    "observed": {
+      "tail_risk_score": 0,
+      "drawdown": 0.0,
+      "realized_vol_ratio_20_60": 0.522243402827691
+    },
+    "verdict": "negative_control_passed",
+    "promotion_decision": "diagnostic_only_blocks_promotion_if_failed"
+  },
+  "active_set_stability": {
+    "source_paper": {
+      "id": "2608.17808",
+      "transferable_use": "active_set_boundary_stability_audit"
+    },
+    "policy": "research_only_no_weight_change",
+    "base_optimizer_status": "ok",
+    "base_cap_flags": {
+      "00631L.TW": true
+    },
+    "base_shadow_weights": {
+      "0050.TW": 0.0,
+      "00631L.TW": 0.025,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.975
+    },
+    "perturbation": {
+      "mu_perturbation": 0.0005,
+      "cov_scale_delta": 0.1
+    },
+    "stability_ratio": 1.0,
+    "scenario_count": 4,
+    "matching_scenarios": 4,
+    "verdict": "stable_active_set",
+    "scenarios": [
+      {
+        "name": "00631L.TW_mu_plus",
+        "optimizer_status": "ok",
+        "cap_flags": {
+          "00631L.TW": true
+        },
+        "shadow_weights": {
+          "0050.TW": 0.0,
+          "00631L.TW": 0.025,
+          "00632R.TW": 0.0,
+          "00679B.TWO": 0.0,
+          "cash": 0.975
+        },
+        "matches_base_active_set": true
+      },
+      {
+        "name": "00631L.TW_mu_minus",
+        "optimizer_status": "ok",
+        "cap_flags": {
+          "00631L.TW": true
+        },
+        "shadow_weights": {
+          "0050.TW": 0.0,
+          "00631L.TW": 0.025,
+          "00632R.TW": 0.0,
+          "00679B.TWO": 0.0,
+          "cash": 0.975
+        },
+        "matches_base_active_set": true
+      },
+      {
+        "name": "covariance_scale_up",
+        "optimizer_status": "ok",
+        "cap_flags": {
+          "00631L.TW": true
+        },
+        "shadow_weights": {
+          "0050.TW": 0.0,
+          "00631L.TW": 0.025,
+          "00632R.TW": 0.0,
+          "00679B.TWO": 0.0,
+          "cash": 0.975
+        },
+        "matches_base_active_set": true
+      },
+      {
+        "name": "covariance_scale_down",
+        "optimizer_status": "ok",
+        "cap_flags": {
+          "00631L.TW": true
+        },
+        "shadow_weights": {
+          "0050.TW": 0.0,
+          "00631L.TW": 0.025,
+          "00632R.TW": 0.0,
+          "00679B.TWO": 0.0,
+          "cash": 0.975
+        },
+        "matches_base_active_set": true
+      }
+    ],
+    "promotion_decision": "diagnostic_only_requires_walk_forward_confirmation"
+  },
+  "matched_budget_re_evaluation_comparator": {
+    "source_paper": {
+      "id": "2608.17808",
+      "transferable_use": "matched_budget_re_evaluation_comparator"
+    },
+    "policy": "research_only_no_weight_change",
+    "current_policy_cap_flags": {
+      "00631L.TW": true
+    },
+    "frozen_policy_consensus_flags": {
+      "00631L.TW": true
+    },
+    "frozen_policy_vote_fraction": {
+      "00631L.TW": 1.0
+    },
+    "agrees_with_frozen_budget": true,
+    "verdict": "current_policy_re_evaluation_supported",
+    "frozen_policy_scenarios": [
+      {
+        "name": "00631L.TW_mu_plus_frozen",
+        "optimizer_status": "ok",
+        "cap_flags": {
+          "00631L.TW": true
+        },
+        "cap_only_weights": {
+          "0050.TW": 0.47,
+          "00631L.TW": 0.025,
+          "00632R.TW": 0.1671390088790092,
+          "00679B.TWO": 0.0,
+          "cash": 0.3378609911209908
+        },
+        "cap_events": [
+          {
+            "ticker": "00631L.TW",
+            "baseline_weight": 0.09871434512265483,
+            "shadow_cap_weight": 0.025,
+            "cap_only_weight": 0.025,
+            "excess_weight_moved": 0.07371434512265482
+          }
+        ]
+      },
+      {
+        "name": "00631L.TW_mu_minus_frozen",
+        "optimizer_status": "ok",
+        "cap_flags": {
+          "00631L.TW": true
+        },
+        "cap_only_weights": {
+          "0050.TW": 0.47,
+          "00631L.TW": 0.025,
+          "00632R.TW": 0.1671390088790092,
+          "00679B.TWO": 0.0,
+          "cash": 0.3378609911209908
+        },
+        "cap_events": [
+          {
+            "ticker": "00631L.TW",
+            "baseline_weight": 0.09871434512265483,
+            "shadow_cap_weight": 0.025,
+            "cap_only_weight": 0.025,
+            "excess_weight_moved": 0.07371434512265482
+          }
+        ]
+      },
+      {
+        "name": "covariance_scale_up_frozen",
+        "optimizer_status": "ok",
+        "cap_flags": {
+          "00631L.TW": true
+        },
+        "cap_only_weights": {
+          "0050.TW": 0.47,
+          "00631L.TW": 0.025,
+          "00632R.TW": 0.1671390088790092,
+          "00679B.TWO": 0.0,
+          "cash": 0.3378609911209908
+        },
+        "cap_events": [
+          {
+            "ticker": "00631L.TW",
+            "baseline_weight": 0.09871434512265483,
+            "shadow_cap_weight": 0.025,
+            "cap_only_weight": 0.025,
+            "excess_weight_moved": 0.07371434512265482
+          }
+        ]
+      },
+      {
+        "name": "covariance_scale_down_frozen",
+        "optimizer_status": "ok",
+        "cap_flags": {
+          "00631L.TW": true
+        },
+        "cap_only_weights": {
+          "0050.TW": 0.47,
+          "00631L.TW": 0.025,
+          "00632R.TW": 0.1671390088790092,
+          "00679B.TWO": 0.0,
+          "cash": 0.3378609911209908
+        },
+        "cap_events": [
+          {
+            "ticker": "00631L.TW",
+            "baseline_weight": 0.09871434512265483,
+            "shadow_cap_weight": 0.025,
+            "cap_only_weight": 0.025,
+            "excess_weight_moved": 0.07371434512265482
+          }
+        ]
+      }
+    ],
+    "promotion_decision": "diagnostic_only_not_a_trade_signal"
+  },
+  "error_decomposition": {
+    "source_paper": {
+      "id": "2608.17808",
+      "transferable_use": "decomposed_error_certificate"
+    },
+    "policy": "research_only_no_weight_change",
+    "components": {
+      "mu_error": {
+        "status": "review",
+        "stale_or_missing_ncf_sources": [
+          "00679B.TWO"
+        ]
+      },
+      "cov_error": {
+        "status": "ok",
+        "00631l_00632r_covariance_correlation": -0.6969377721450405
+      },
+      "constraint_error": {
+        "status": "ok",
+        "00631l_shadow_minus_target": -0.07371434512265482,
+        "near_grid_boundary": false
+      },
+      "re_evaluation_error": {
+        "active_set_verdict": "stable_active_set",
+        "matched_budget_verdict": "current_policy_re_evaluation_supported"
+      },
+      "execution_error": {
+        "status": "blocked",
+        "stability_tuned_gate_active": false,
+        "cap_only_annualized_volatility_reduction": 0.001138267826498257
+      }
+    },
+    "blockers": [
+      "expected_return_source_stale_or_missing",
+      "stability_tuned_gate_inactive"
+    ],
+    "verdict": "diagnostic_blocked",
+    "promotion_decision": "diagnostic_only_do_not_trade_from_this_snapshot"
+  },
+  "weight_delta_shadow_minus_latest": {
+    "0050.TW": -0.47,
+    "00631L.TW": -0.07371434512265482,
+    "00632R.TW": -0.1671390088790092,
+    "00679B.TWO": 0.0,
+    "cash": 0.7108533540016639
+  },
+  "weight_delta_cap_only_minus_latest": {
+    "0050.TW": 0.0,
+    "00631L.TW": -0.07371434512265482,
+    "00632R.TW": -0.1671390088790092,
+    "00679B.TWO": 0.0,
+    "cash": 0.24085335400166402
+  },
+  "optimizer": {
+    "status": "ok",
+    "feasible_count": 10987,
+    "objective": "maximize_expected_return_minus_variance_penalty",
+    "variance_penalty": 35.0,
+    "baseline_expected_daily_return": 3.041418766893951e-07,
+    "min_expected_daily_return": 2.433135013515161e-07,
+    "best_score": 2.4905448774223013e-05
+  },
+  "recommendations": [
+    "review_00631l_add_or_cap",
+    "review_00632r_hedge_size",
+    "shadow_allocation_has_materially_lower_annualized_volatility"
+  ],
+  "cap_only_recommendations": [
+    "cap_00631l_tw_to_shadow_budget",
+    "cap_00632r_tw_to_shadow_budget"
+  ],
+  "promotion_decision": "shadow_only_needs_backtest_before_any_guard_or_strategy_change",
+  "paper_limitations_for_group_a_plus": [
+    "paper_backtest_uses_us_sector_etfs_not_taiwan_leveraged_inverse_etfs",
+    "continuous_time_no_transaction_cost_assumption_does_not_match_live_execution",
+    "expected_return_estimation_error_can_dominate_mean_variance_optimization",
+    "full_deep_bsde_solver_is_too_heavy_for_daily_production_without_separate_validation"
+  ],
+  "input_execution_plan": "report/group_a_plus/latest/execution_plan.json"
+}

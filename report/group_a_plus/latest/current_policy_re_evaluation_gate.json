@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "report_type": "group_a_plus_current_policy_re_evaluation_gate",
+  "generated_at": "2026-09-12T08:36:46",
+  "as_of": "2026-09-09",
+  "source_paper": {
+    "id": "2608.17808",
+    "title": "Self-Consistent Adjoint Policy Iteration for Constrained Dynamic Portfolio Choice",
+    "transferable_use": "current_policy_re_evaluation_gate_only"
+  },
+  "policy": "research_only_no_weight_change",
+  "changes_latest_strategy": false,
+  "changes_golden1_0531": false,
+  "changes_golden2_0830": false,
+  "inputs": {
+    "riccati_mv_shadow": "report/group_a_plus/latest/riccati_mv_shadow.json",
+    "tail_bank_review": "report/group_a_plus/latest/2608_17808_tail_bank_review.json"
+  },
+  "decision": {
+    "promotion_allowed": false,
+    "decision": "keep_shadow_do_not_promote",
+    "reason": "One or more required checks failed, so the 2608.17808 transfer stays shadow-only.",
+    "blockers": [
+      "error_certificate_not_blocked",
+      "stability_tuned_gate_active",
+      "tail_bank_promotion_allowed"
+    ]
+  },
+  "checks": {
+    "shadow_report_ok": true,
+    "research_only_policy": true,
+    "two_pass_stable_within_grid_step": true,
+    "active_set_stable": true,
+    "matched_budget_supported": true,
+    "error_certificate_not_blocked": false,
+    "stability_tuned_gate_active": false,
+    "cap_only_reduces_volatility": true,
+    "tail_bank_available": true,
+    "tail_bank_promotion_allowed": false
+  },
+  "evidence": {
+    "two_pass_l1_delta_second_minus_first": 0.0,
+    "cap_delta_second_minus_first": {
+      "0050.TW": 0.0,
+      "00631L.TW": 0.0,
+      "00632R.TW": 0.0,
+      "00679B.TWO": 0.0,
+      "cash": 0.0
+    },
+    "active_set_verdict": "stable_active_set",
+    "active_set_stability_ratio": 1.0,
+    "matched_budget_verdict": "current_policy_re_evaluation_supported",
+    "frozen_policy_vote_fraction": {
+      "00631L.TW": 1.0
+    },
+    "error_decomposition_verdict": "diagnostic_blocked",
+    "error_decomposition_blockers": [
+      "expected_return_source_stale_or_missing",
+      "stability_tuned_gate_inactive"
+    ],
+    "stability_tuned_gate_active": false,
+    "cap_only_annualized_volatility_reduction": 0.001138267826498257,
+    "tail_bank": {
+      "available": true,
+      "promotion_allowed": false,
+      "decision": "do_not_promote_keep_shadow",
+      "best_stability_candidate": "cap631_tail2_dd10_vol125_beta05",
+      "no_further_auto_tuning_recommended": true
+    }
+  },
+  "non_goals": [
+    "no_live_weight_change",
+    "no_golden1_0531_change",
+    "no_golden2_0830_change",
+    "no_execution_permission_change",
+    "no_order_generation"
+  ]
+}
