@@ -52,6 +52,7 @@ SCHEDULER_FILES = {
 MODULE_OUTPUT_PATTERNS = {
     "ncf_00631l": "results/ncf_00631l_latest_*.json",
     "ncf_00632r": "results/ncf_00632r_latest_*.json",
+    "ncf_00713": "results/ncf_00713_latest_*.json",
     "factor_lens": "results/group_a_plus_factor_lens_*.json",
     "daily_pipeline": "results/ncf_daily_pipeline_*.json",
     "alphagen_lite_feature_pool": "results/alphagen_lite_feature_pool_latest_*.json",
@@ -61,32 +62,46 @@ MODULE_OUTPUT_PATTERNS = {
 DEFAULT_SYNC_REFERENCE_TICKERS = ("0050.TW", "00631L.TW", "00632R.TW")
 # max_lag_days values mirror the per-table business-day tolerance
 # daily_signal.py's OPTIONAL_SOURCE_SPECS already treats as acceptable for the
-# same source table (institutional_data=0, margin_data=1, market_margin_data=1,
+# same source table (institutional_data=1, margin_data=1, market_margin_data=1,
 # derivative_institutional_data TX/TXO=3) -- this collector must not flag an
 # "error" for lag that production's own gate already tolerates, or it becomes
 # noise. institutional_00631l/00632r and margin_00631l/00632r aren't gated by
 # name in OPTIONAL_SOURCE_SPECS (which only checks the 0050 ticker), but share
 # the same source table, so the same table-level tolerance applies.
+#
+# 2026-08-27: institutional_data was previously pinned at max_lag_days=0 here,
+# which had drifted out of sync with daily_signal.py's OPTIONAL_SOURCE_SPECS
+# (institutional_0050 = 1, with an explicit comment there: "TWSE institutional
+# data can lag same-day OHLCV during after-close next-day signal generation;
+# allow T-1 before fail-closing execution"). The 0-day value made this
+# collector strictly stricter than the production gate it's documented to
+# mirror, and was empirically observed to fail on ordinary T-1 publish lag
+# almost every day, contributing to strategy_trust_gate's ABSTAIN classifier
+# reporting ABSTAIN on 10/10 sampled days
+# (results/strategy_trust_shadow_log.jsonl) -- with zero TRUST/SHADOW_ONLY
+# samples ever produced, `evaluate_model_trust_gate.py` cannot even be
+# evaluated (see its own insufficient_data output). Corrected to 1 to match
+# daily_signal.py.
 FEATURE_TABLE_SYNC_CHECKS = (
     {
         "name": "institutional_0050",
         "table": "institutional_data",
         "where": "ticker = '0050.TW'",
-        "max_lag_days": 0,
+        "max_lag_days": 1,
         "severity": "error",
     },
     {
         "name": "institutional_00631l",
         "table": "institutional_data",
         "where": "ticker = '00631L.TW'",
-        "max_lag_days": 0,
+        "max_lag_days": 1,
         "severity": "error",
     },
     {
         "name": "institutional_00632r",
         "table": "institutional_data",
         "where": "ticker = '00632R.TW'",
-        "max_lag_days": 0,
+        "max_lag_days": 1,
         "severity": "error",
     },
     {
@@ -893,6 +908,95 @@ def collect_tsmc_weight_assumption_health() -> dict[str, Any]:
     }
 
 
+KNOWN_FROZEN_READINESS_REVIEWS = frozenset(
+    {
+        "reduced_rank_correlation_readiness_review.json",
+    }
+)
+MANUALLY_SOURCED_READINESS_REVIEWS = frozenset(
+    {
+        "broker_holdings_reconciliation_review.json",
+    }
+)
+
+
+def _extract_as_of(payload: dict[str, Any] | None) -> str | None:
+    if not isinstance(payload, dict):
+        return None
+    for key in ("as_of", "actual_data_date", "requested_as_of_date"):
+        value = payload.get(key)
+        if isinstance(value, str) and value:
+            return value[:10]
+    dates = payload.get("dates")
+    if isinstance(dates, dict):
+        for key in ("requested_as_of_date", "actual_data_date", "as_of"):
+            value = dates.get(key)
+            if isinstance(value, str) and value:
+                return value[:10]
+    data = payload.get("data")
+    if isinstance(data, dict):
+        return _extract_as_of(data)
+    return None
+
+
+def _pipeline_script_text(root: Path) -> str:
+    path = root / "scripts/run/run_ncf_daily_pipeline.py"
+    try:
+        return path.read_text(encoding="utf-8")
+    except Exception:
+        return ""
+
+
+def collect_readiness_review_freshness(root: Path = PROJECT_ROOT) -> dict[str, Any]:
+    """Audit latest readiness/review JSON freshness without changing outputs."""
+
+    latest_dir = root / "report/group_a_plus/latest"
+    today = _utc_now().date().isoformat()
+    pipeline_text = _pipeline_script_text(root)
+    checked: list[dict[str, Any]] = []
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    for path in sorted(latest_dir.glob("*review*.json")):
+        payload = _unwrap_standard_payload(_read_json(path))
+        as_of = _extract_as_of(payload)
+        wired = path.name in pipeline_text
+        entry = {
+            "file": path.name,
+            "path": str(path),
+            "as_of": as_of,
+            "today": today,
+            "wired_into_daily_pipeline": wired,
+            "modified_at": _iso(path.stat().st_mtime),
+            "status": "fresh",
+        }
+        if as_of is None:
+            entry["status"] = "no_as_of_field"
+        elif as_of >= today:
+            entry["status"] = "fresh"
+        elif path.name in KNOWN_FROZEN_READINESS_REVIEWS and not wired:
+            entry["status"] = "frozen_expected"
+        elif path.name in MANUALLY_SOURCED_READINESS_REVIEWS:
+            entry["status"] = "manually_sourced_stale"
+            warnings.append(f"{path.name}: manually sourced stale as_of={as_of}")
+        elif wired:
+            entry["status"] = "stale_despite_wiring"
+            errors.append(f"{path.name}: stale despite daily pipeline wiring as_of={as_of}")
+        else:
+            entry["status"] = "orphaned_stale"
+            warnings.append(f"{path.name}: stale and not wired into daily pipeline as_of={as_of}")
+        checked.append(entry)
+
+    return {
+        "status": _status_from_warnings(errors, warnings),
+        "today": today,
+        "checked": checked,
+        "errors": errors,
+        "warnings": warnings,
+        "policy": "readiness review latest pointers should be fresh, manually sourced, or explicitly frozen",
+    }
+
+
 def build_ops_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
     root = root.resolve()
     system = collect_system_resources(root)
@@ -902,6 +1006,7 @@ def build_ops_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
     external_data_freshness = collect_external_data_freshness(root)
     feature_table_sync = collect_feature_table_sync(root)
     tsmc_weight_assumption = collect_tsmc_weight_assumption_health()
+    readiness_review_freshness = collect_readiness_review_freshness(root)
     sections = {
         "system_resources": system,
         "artifact_health": artifacts,
@@ -910,6 +1015,7 @@ def build_ops_health(root: Path = PROJECT_ROOT) -> dict[str, Any]:
         "external_data_freshness": external_data_freshness,
         "feature_table_sync": feature_table_sync,
         "tsmc_weight_assumption_health": tsmc_weight_assumption,
+        "readiness_review_freshness": readiness_review_freshness,
     }
     errors = [name for name, section in sections.items() if section.get("status") == "error"]
     warnings = [name for name, section in sections.items() if section.get("status") == "warning"]

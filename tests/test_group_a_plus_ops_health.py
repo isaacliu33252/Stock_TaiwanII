@@ -153,17 +153,32 @@ def test_ops_health_reports_no_active_allocation_impact(tmp_path: Path) -> None:
 
 
 def test_feature_table_sync_errors_when_institutional_lags_ohlcv(tmp_path: Path) -> None:
-    _write_sync_test_db(tmp_path, institutional_0050_date="2026-07-27")
+    _write_sync_test_db(tmp_path, institutional_0050_date="2026-07-26")
 
     report = collect_feature_table_sync(tmp_path)
 
     check = report["checks"]["institutional_0050"]
     assert report["status"] == "error"
     assert "institutional_0050" in report["errors"]
-    assert check["latest_date"] == "2026-07-27"
+    assert check["latest_date"] == "2026-07-26"
     assert check["reference_ohlcv_date"] == "2026-07-28"
-    assert check["lag_days"] == 1
+    assert check["lag_days"] == 2
     assert check["reason"] == "feature_table_lags_ohlcv"
+
+
+def test_feature_table_sync_tolerates_institutional_t_minus_1(tmp_path: Path) -> None:
+    # 2026-08-27: institutional_data's max_lag_days was corrected from 0 to 1
+    # to match daily_signal.py's OPTIONAL_SOURCE_SPECS ("TWSE institutional
+    # data can lag same-day OHLCV ... allow T-1"). A same-day-minus-1 lag must
+    # not be flagged as an error.
+    _write_sync_test_db(tmp_path, institutional_0050_date="2026-07-27")
+
+    report = collect_feature_table_sync(tmp_path)
+
+    check = report["checks"]["institutional_0050"]
+    assert check["status"] == "ok"
+    assert "institutional_0050" not in report["errors"]
+    assert check["lag_days"] == 1
 
 
 def test_feature_table_sync_ok_when_tables_match_ohlcv(tmp_path: Path) -> None:
@@ -733,4 +748,138 @@ def test_ops_health_overall_status_reflects_external_freshness_error(tmp_path: P
 
     assert report["external_data_freshness"]["status"] == "error"
     assert "external_data_freshness" in report["errors"]
+    assert report["status"] == "error"
+
+
+def _write_pipeline_stub(root: Path, wired_basenames: list[str]) -> None:
+    lines = [
+        f'    commands["{name.replace(".json", "")}"] = ['
+        f'"scripts/evaluate/x.py", "--output", '
+        f'str(PROJECT_ROOT / "report" / "group_a_plus" / "latest" / "{name}")]'
+        for name in wired_basenames
+    ]
+    _write(root / "scripts/run/run_ncf_daily_pipeline.py", "\n".join(lines) + "\n")
+
+
+def test_readiness_review_freshness_flags_stale_as_of_despite_wiring(tmp_path: Path) -> None:
+    from group_a_plus.operations.ops_health import collect_readiness_review_freshness
+
+    _write_pipeline_stub(tmp_path, ["foo_review.json"])
+    _write(
+        tmp_path / "report/group_a_plus/latest/foo_review.json",
+        json.dumps({"as_of": "2026-01-01"}),
+    )
+
+    today = datetime.now(UTC).date().isoformat()
+    result = collect_readiness_review_freshness(tmp_path)
+
+    assert result["status"] == "error"
+    entry = next(e for e in result["checked"] if e["file"] == "foo_review.json")
+    assert entry["wired_into_daily_pipeline"] is True
+    assert entry["status"] == "stale_despite_wiring"
+    assert any("foo_review.json" in err for err in result["errors"])
+    assert today  # sanity: today's date is computable in this environment
+
+
+def test_readiness_review_freshness_fresh_as_of_is_ok(tmp_path: Path) -> None:
+    from group_a_plus.operations.ops_health import collect_readiness_review_freshness
+
+    today = datetime.now(UTC).date().isoformat()
+    _write_pipeline_stub(tmp_path, ["foo_review.json"])
+    _write(
+        tmp_path / "report/group_a_plus/latest/foo_review.json",
+        json.dumps({"dates": {"requested_as_of_date": today}}),
+    )
+
+    result = collect_readiness_review_freshness(tmp_path)
+
+    entry = next(e for e in result["checked"] if e["file"] == "foo_review.json")
+    assert entry["status"] == "fresh"
+    assert result["status"] == "ok"
+
+
+def test_readiness_review_freshness_known_frozen_artifact_not_flagged(tmp_path: Path) -> None:
+    from group_a_plus.operations.ops_health import collect_readiness_review_freshness
+
+    _write_pipeline_stub(tmp_path, [])  # not wired
+    _write(
+        tmp_path / "report/group_a_plus/latest/reduced_rank_correlation_readiness_review.json",
+        json.dumps({"as_of": "2026-01-01"}),
+    )
+
+    result = collect_readiness_review_freshness(tmp_path)
+
+    entry = next(
+        e for e in result["checked"] if e["file"] == "reduced_rank_correlation_readiness_review.json"
+    )
+    assert entry["status"] == "frozen_expected"
+    assert result["warnings"] == []
+    assert result["status"] == "ok"
+
+
+def test_readiness_review_freshness_orphaned_stale_is_warning(tmp_path: Path) -> None:
+    from group_a_plus.operations.ops_health import collect_readiness_review_freshness
+
+    _write_pipeline_stub(tmp_path, [])  # not wired, not in the known-frozen allowlist
+    _write(
+        tmp_path / "report/group_a_plus/latest/some_forgotten_review.json",
+        json.dumps({"as_of": "2026-01-01"}),
+    )
+
+    result = collect_readiness_review_freshness(tmp_path)
+
+    entry = next(e for e in result["checked"] if e["file"] == "some_forgotten_review.json")
+    assert entry["status"] == "orphaned_stale"
+    assert result["status"] == "warning"
+    assert any("some_forgotten_review.json" in w for w in result["warnings"])
+
+
+def test_readiness_review_freshness_manually_sourced_stale_is_warning_not_error(tmp_path: Path) -> None:
+    from group_a_plus.operations.ops_health import collect_readiness_review_freshness
+
+    _write_pipeline_stub(tmp_path, ["broker_holdings_reconciliation_review.json"])
+    _write(
+        tmp_path / "report/group_a_plus/latest/broker_holdings_reconciliation_review.json",
+        json.dumps({"as_of": "2026-01-01"}),
+    )
+
+    result = collect_readiness_review_freshness(tmp_path)
+
+    entry = next(e for e in result["checked"] if e["file"] == "broker_holdings_reconciliation_review.json")
+    assert entry["status"] == "manually_sourced_stale"
+    assert result["status"] == "warning"
+    assert result["errors"] == []
+    assert any("broker_holdings_reconciliation_review.json" in w for w in result["warnings"])
+
+
+def test_readiness_review_freshness_no_as_of_field_is_informational_only(tmp_path: Path) -> None:
+    from group_a_plus.operations.ops_health import collect_readiness_review_freshness
+
+    _write_pipeline_stub(tmp_path, ["foo_review.json"])
+    _write(tmp_path / "report/group_a_plus/latest/foo_review.json", json.dumps({"generated_at": "2020-01-01"}))
+
+    result = collect_readiness_review_freshness(tmp_path)
+
+    entry = next(e for e in result["checked"] if e["file"] == "foo_review.json")
+    assert entry["status"] == "no_as_of_field"
+    assert result["status"] == "ok"
+
+
+def test_readiness_review_freshness_wired_into_build_ops_health(tmp_path: Path) -> None:
+    _write(tmp_path / "report/group_a_plus/latest/strategy.json", "{}")
+    _write(tmp_path / "report/group_a_plus/latest/live_signal.json", _minimal_live_signal())
+    _write(tmp_path / "report/group_a_plus/latest/execution_plan.json", "{}")
+    _write(tmp_path / "report/group_a_plus/latest/strategy_env_health.json", "{}")
+    _write(tmp_path / "results/ncf_00631l_panel_latest_20260630.csv", "date,value\n")
+    _write_pipeline_stub(tmp_path, ["foo_review.json"])
+    _write(
+        tmp_path / "report/group_a_plus/latest/foo_review.json",
+        json.dumps({"as_of": "2026-01-01"}),
+    )
+
+    report = build_ops_health(tmp_path)
+
+    assert "readiness_review_freshness" in report
+    assert report["readiness_review_freshness"]["status"] == "error"
+    assert "readiness_review_freshness" in report["errors"]
     assert report["status"] == "error"
