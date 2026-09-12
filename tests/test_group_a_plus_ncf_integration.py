@@ -28,8 +28,10 @@ from group_a_plus.governance.latest import SUPPORTED_STRATEGIES
 from group_a_plus.runners.a2113 import A2113_ID, _resolve_ncf_path
 from group_a_plus.runners.a2118 import (
     NCF_LB_REGIME,
+    _add_00713_cash_sleeve,
     _apply_late_bull_overlay,
     _ncf_panel_metadata,
+    _resize_00713_cash_sleeve,
     _signal_date_matches,
 )
 
@@ -258,6 +260,43 @@ class NCF00713CashSleeveDecisionTests(unittest.TestCase):
 
 
 class A2118LateBullHoldTests(unittest.TestCase):
+    def test_00713_cash_sleeve_is_funded_only_from_cash(self) -> None:
+        weights = {
+            "0050.TW": 0.35,
+            "00631L.TW": 0.25,
+            "00679B.TWO": 0.0,
+            "cash": 0.40,
+        }
+
+        adjusted = _add_00713_cash_sleeve(weights, 0.05)
+
+        self.assertAlmostEqual(0.35, adjusted["0050.TW"], places=6)
+        self.assertAlmostEqual(0.25, adjusted["00631L.TW"], places=6)
+        self.assertAlmostEqual(0.05, adjusted["00713.TW"], places=6)
+        self.assertAlmostEqual(0.35, adjusted["cash"], places=6)
+        self.assertAlmostEqual(1.0, sum(adjusted.values()), places=6)
+
+    def test_00713_cash_sleeve_resize_moves_only_between_00713_and_cash(self) -> None:
+        weights = {
+            "0050.TW": 0.35,
+            "00631L.TW": 0.25,
+            "00713.TW": 0.05,
+            "00679B.TWO": 0.0,
+            "cash": 0.35,
+        }
+
+        reduced = _resize_00713_cash_sleeve(weights, 0.02)
+        expanded = _resize_00713_cash_sleeve(weights, 0.08)
+
+        self.assertAlmostEqual(0.35, reduced["0050.TW"], places=6)
+        self.assertAlmostEqual(0.25, reduced["00631L.TW"], places=6)
+        self.assertAlmostEqual(0.02, reduced["00713.TW"], places=6)
+        self.assertAlmostEqual(0.38, reduced["cash"], places=6)
+        self.assertAlmostEqual(0.35, expanded["0050.TW"], places=6)
+        self.assertAlmostEqual(0.25, expanded["00631L.TW"], places=6)
+        self.assertAlmostEqual(0.08, expanded["00713.TW"], places=6)
+        self.assertAlmostEqual(0.32, expanded["cash"], places=6)
+
     def test_ncf_panel_metadata_records_content_fingerprint(self) -> None:
         idx = pd.to_datetime(["2026-02-23", "2026-02-24"])
         panel = pd.DataFrame(

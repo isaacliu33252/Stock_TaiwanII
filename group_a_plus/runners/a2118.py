@@ -83,7 +83,11 @@ from backtest_group_a_plus_switch_policy import (
     _switch_returns,
 )
 from backtest_group_a_plus_warmup_consistency import _trim_window, _warmup_start
-from group_a_plus.integrations.ncf import load_ncf_signal, ncf_overlay_summary
+from group_a_plus.integrations.ncf import (
+    load_ncf_signal,
+    ncf_00713_cash_sleeve_decision,
+    ncf_overlay_summary,
+)
 from group_a_plus.paths import PROJECT_ROOT
 from group_a_plus.runners.a2111 import (
     _build_switch_rule,
@@ -129,6 +133,7 @@ CHIP_DATA_FALLBACK_MAX_STALE_DAYS = 10
 RISK_SCORE_LOOKBACK_DAYS = 5
 MOMENTUM_FAST_EXIT_MIN = 0.10
 MOMENTUM_FAST_EXIT_MA_GAP_MIN = -0.08
+GROUP_A_PLUS_PLUS_00713_CASH_SLEEVE_WEIGHT = 0.05
 
 
 def _late_bull_hedge_weights(golden_weights: dict[str, float], intensity: float = 1.0) -> dict[str, float]:
@@ -165,6 +170,34 @@ def _recovery_boost_weights(recovery_weights: dict[str, float], boost_fraction: 
     weights["0050.TW"] = float(weights.get("0050.TW", 0.0)) - shift
     weights["00631L.TW"] = float(weights.get("00631L.TW", 0.0)) + shift
     return _normalize(weights)
+
+
+def _add_00713_cash_sleeve(weights: dict[str, float], target_weight: float) -> dict[str, float]:
+    """Fund 00713 from cash without reducing 0050/00631L exposure."""
+    out = dict(weights)
+    target = min(max(float(target_weight), 0.0), 1.0)
+    available_cash = max(float(out.get("cash", 0.0) or 0.0), 0.0)
+    shift = min(target, available_cash)
+    out["cash"] = available_cash - shift
+    out["00713.TW"] = float(out.get("00713.TW", 0.0) or 0.0) + shift
+    return _normalize(out)
+
+
+def _resize_00713_cash_sleeve(weights: dict[str, float], target_weight: float) -> dict[str, float]:
+    """Move only between 00713.TW and cash."""
+    out = dict(weights)
+    current = max(float(out.get("00713.TW", 0.0) or 0.0), 0.0)
+    target = min(max(float(target_weight), 0.0), 1.0)
+    if target < current:
+        released = current - target
+        out["00713.TW"] = target
+        out["cash"] = max(float(out.get("cash", 0.0) or 0.0), 0.0) + released
+    elif target > current:
+        available_cash = max(float(out.get("cash", 0.0) or 0.0), 0.0)
+        shift = min(target - current, available_cash)
+        out["00713.TW"] = current + shift
+        out["cash"] = available_cash - shift
+    return _normalize(out)
 
 
 def _apply_recovery_boost_age_guard(
@@ -691,6 +724,8 @@ def run_a2118(
     equity_etf_sell_tax: float = 0.001,
     ncf_00631l_path: str | None = None,
     ncf_panel_631l_path: str | None = None,
+    ncf_00632r_path: str | None = None,
+    ncf_00713_path: str | None = None,
     ma_gap_min: float = NCF_LB_MA_GAP_MIN,
     h20_max: float = NCF_LB_H20_MAX,
     conf_min: float = NCF_LB_CONF_MIN,
@@ -736,6 +771,8 @@ def run_a2118(
     golden_leverage_cap_drawdown_max: float | None = -0.08,
     recovery_00631l_boost_fraction: float = 0.0,
     recovery_00631l_boost_max_age_days: int | None = None,
+    group_a_plusplus_00713_cash_sleeve_weight: float = 0.0,
+    group_a_plusplus_00713_ncf_enabled: bool = False,
     exclude_zero_volume_rows: bool = False,
     golden_signal_path_override: str | Path | None = None,
 ) -> tuple[dict, pd.DataFrame]:
@@ -790,9 +827,34 @@ def run_a2118(
         else _resolve_golden_signal_path()
     )
     golden_signal = _load(golden_signal_path)
-    current_defensive = _normalize(_weights_from_group_a_plus(policy_signal))
-    basket = _normalize(DEFENSIVE_BASKETS["bond30_cash30"])
-    golden_weights = _normalize(_weights_from_group_a(golden_signal))
+    group_a_plusplus_00713_cash_sleeve_weight = min(
+        max(float(group_a_plusplus_00713_cash_sleeve_weight), 0.0),
+        1.0,
+    )
+    current_defensive = _add_00713_cash_sleeve(
+        _weights_from_group_a_plus(policy_signal),
+        group_a_plusplus_00713_cash_sleeve_weight,
+    )
+    # 2026-08-18 promotion (arXiv:2601.21447 stock-bond correlation proposal):
+    # bond0_cash60 (0050 40% / 00679B 0% / cash 60%) strictly dominated the
+    # prior bond30_cash30 basket (0050 40% / 00679B 30% / cash 30%) on
+    # final_value/Sharpe/MDD *and* every tail-risk metric (ES95, negative
+    # semivariance, drawdown/recovery duration), robust across cost2x/delay1/
+    # delay3 stress scenarios, over 2020-2026 (15 defensive episodes, 382
+    # defense days). Root cause: 00679B (20Y Treasury, high duration) only
+    # genuinely hedged in 1 of 7 major defensive episodes (2020 COVID); in
+    # 2022 and 2025-03 it fell *more* than 0050 during the defensive window,
+    # actively hurting instead of hedging. See
+    # backtest_group_a_plus_defensive_basket.py DEFENSIVE_BASKETS and
+    # results/whatif_bond_cash_shadow_20260818.json for the full comparison.
+    basket = _add_00713_cash_sleeve(
+        DEFENSIVE_BASKETS["bond0_cash60"],
+        group_a_plusplus_00713_cash_sleeve_weight,
+    )
+    golden_weights = _add_00713_cash_sleeve(
+        _weights_from_group_a(golden_signal),
+        group_a_plusplus_00713_cash_sleeve_weight,
+    )
 
     load_start = _warmup_start(start, warmup_days)
     switch_rule = _build_switch_rule()
@@ -962,8 +1024,16 @@ def run_a2118(
     today_regime = str(executed_regime.iloc[-1])
     ncf_live: dict = {}
     path_631l = _resolve_ncf_path(ncf_00631l_path, "00631l")
+    path_632r = _resolve_ncf_path(ncf_00632r_path, "00632r")
+    path_713 = _resolve_ncf_path(ncf_00713_path, "00713")
     today_ma_gap = float(ma_gap_series.iloc[-1]) if len(ma_gap_series) > 0 else 0.0
     frame_data_date = pd.Timestamp(modified_regime.index[-1]).normalize()
+    ncf_00713_sleeve = ncf_00713_cash_sleeve_decision(
+        None,
+        actual_date=str(frame_data_date.date()),
+        base_weight=group_a_plusplus_00713_cash_sleeve_weight,
+        enabled=group_a_plusplus_00713_ncf_enabled,
+    )
 
     if path_631l:
         sig_631l = load_ncf_signal(path_631l)
@@ -1048,7 +1118,49 @@ def run_a2118(
     else:
         ncf_live = {"status": "unavailable", "missing": "ncf_00631l"}
 
-    live_weights = weights_by_regime.get(today_regime, basket)
+    if path_713:
+        sig_713 = load_ncf_signal(path_713)
+        ncf_00713_sleeve = ncf_00713_cash_sleeve_decision(
+            sig_713,
+            actual_date=str(frame_data_date.date()),
+            base_weight=group_a_plusplus_00713_cash_sleeve_weight,
+            enabled=group_a_plusplus_00713_ncf_enabled,
+        )
+        ncf_00713_sleeve["ncf_00713_file"] = str(path_713.relative_to(PROJECT_ROOT))
+    elif group_a_plusplus_00713_ncf_enabled:
+        ncf_00713_sleeve["missing"] = "ncf_00713"
+
+    # 2026-08-08 (2603.21330 paper-audit cross-check): ncf_overlay_summary
+    # was imported but never called anywhere in this file -- a2118's own
+    # late_bull_triggered/rally_suppressed/soft_hedge_triggered logic above
+    # is a hand-rolled 00631L-only mechanism and never even loads a 00632R
+    # NCF signal. This block is purely additive: a cross-ticker (00631L +
+    # 00632R) diagnostic summary, sibling to what a2113/a2114/a2115 already
+    # compute and use live, attached under a separate report key. It does
+    # not feed into ncf_live, executed_regime, weights_by_regime, or any
+    # other value that affects the simulated curve or the live trade
+    # decision above -- purely observational.
+    if path_631l and path_632r:
+        sig_632r = load_ncf_signal(path_632r)
+        ncf_overlay_diagnostic = ncf_overlay_summary(
+            sig_631l,
+            sig_632r,
+            golden_weights,
+            today_regime,
+            ma_gap=today_ma_gap,
+        )
+        ncf_overlay_diagnostic["ncf_00631l_file"] = str(path_631l.relative_to(PROJECT_ROOT))
+        ncf_overlay_diagnostic["ncf_00632r_file"] = str(path_632r.relative_to(PROJECT_ROOT))
+    else:
+        ncf_overlay_diagnostic = {
+            "status": "unavailable",
+            "missing": "ncf_00631l" if not path_631l else "ncf_00632r",
+        }
+
+    live_weights = _resize_00713_cash_sleeve(
+        weights_by_regime.get(today_regime, basket),
+        float(ncf_00713_sleeve.get("effective_weight", group_a_plusplus_00713_cash_sleeve_weight)),
+    )
 
     report = {
         "experiment": "group_a_plus_a2118_ncf_late_bull_deleverage",
@@ -1088,7 +1200,7 @@ def run_a2118(
         "rules": {
             "base": switch_rule.name,
             "warmup_days": warmup_days,
-            "basket_name": "bond30_cash30",
+            "basket_name": "bond0_cash60",
             "ma_window": 100,
             "entry_gap": 0.003,
             "exit_gap": 0.010,
@@ -1113,6 +1225,13 @@ def run_a2118(
             "recovery_00631l_boost_fraction": recovery_00631l_boost_fraction,
             "recovery_00631l_boost_max_age_days": recovery_00631l_boost_max_age_days,
             "recovery_00631l_boost_regime": RECOVERY_00631L_BOOST_REGIME,
+            "group_a_plusplus_00713_cash_sleeve_weight": group_a_plusplus_00713_cash_sleeve_weight,
+            "group_a_plusplus_00713_ncf_enabled": group_a_plusplus_00713_ncf_enabled,
+            "group_a_plusplus_00713_cash_sleeve_policy": (
+                "Fund 00713.TW from available cash up to this sleeve weight; "
+                "NCF_00713 may reduce this sleeve back to cash when enabled; "
+                "do not reduce 0050.TW or 00631L.TW exposure."
+            ),
             "recovery_boost_weights": _recovery_boost_weights(current_defensive, recovery_00631l_boost_fraction),
             "late_bull_hedge_regime": NCF_LB_REGIME,
             "late_bull_hedge_weights": _late_bull_hedge_weights(golden_weights),
@@ -1176,8 +1295,23 @@ def run_a2118(
         "golden_signal_coverage": _golden_signal_metadata(golden_signal_path, golden_weights),
         "today_regime": today_regime,
         "live_weights": live_weights,
+        "strategy_family": "groupA++" if group_a_plusplus_00713_cash_sleeve_weight > 0.0 else "groupA+",
+        "group_a_plusplus_extension": {
+            "enabled": group_a_plusplus_00713_cash_sleeve_weight > 0.0,
+            "added_ticker": "00713.TW",
+            "added_ticker_label": "元大台灣高息低波",
+            "cash_sleeve_weight": group_a_plusplus_00713_cash_sleeve_weight,
+            "ncf_enabled": group_a_plusplus_00713_ncf_enabled,
+            "ncf_sleeve_decision": ncf_00713_sleeve,
+            "funding_source": "cash",
+        },
         "base_weights": weights_by_regime,
         "ncf_live_signal": ncf_live,
+        # Diagnostic-only, cross-ticker (00631L + 00632R) NCF overlay summary --
+        # see the "2603.21330 paper-audit cross-check" note above this
+        # function's ncf_overlay_diagnostic computation. Not consumed by any
+        # weight/regime decision in this runner.
+        "ncf_overlay_diagnostic": ncf_overlay_diagnostic,
         "inputs": {
             "policy_signal": str(policy_signal_path.relative_to(PROJECT_ROOT)),
             "golden_signal": str(golden_signal_path.relative_to(PROJECT_ROOT)),
@@ -1247,6 +1381,11 @@ def main() -> None:
     parser.add_argument("--ncf-00631l", default=None)
     parser.add_argument("--ncf-panel-631l", default=None,
                         help="val-prediction panel CSV for 00631L (enables NCF historical backtest)")
+    parser.add_argument("--ncf-00632r", default=None,
+                        help="NCF signal JSON for 00632R, used only for the diagnostic-only "
+                             "ncf_overlay_diagnostic report field (auto-resolved if omitted).")
+    parser.add_argument("--ncf-00713", default=None,
+                        help="NCF signal JSON for 00713 sleeve sizing (auto-resolved if omitted).")
     parser.add_argument("--ma-gap-min", type=float, default=NCF_LB_MA_GAP_MIN)
     parser.add_argument("--h20-max", type=float, default=NCF_LB_H20_MAX)
     parser.add_argument("--conf-min", type=float, default=NCF_LB_CONF_MIN)
@@ -1312,6 +1451,10 @@ def main() -> None:
     parser.add_argument("--recovery-00631l-boost-fraction", type=float, default=0.0)
     parser.add_argument("--recovery-00631l-boost-max-age-days", type=int, default=None,
                         help="Only apply recovery 00631L boost to the first N days of each recovery episode.")
+    parser.add_argument("--group-a-plusplus-00713-cash-sleeve-weight", type=float, default=0.0,
+                        help="Fund 00713.TW from cash up to this sleeve weight; 0 keeps GroupA+ behavior.")
+    parser.add_argument("--group-a-plusplus-00713-ncf-enabled", action="store_true",
+                        help="Let NCF_00713 reduce the 00713 cash sleeve back to cash when weak/high-risk.")
     parser.add_argument("--output", default="results/group_a_plus_runner_a2118.json")
     parser.add_argument("--frame-output", default="results/group_a_plus_runner_a2118_frame.csv")
     args = parser.parse_args()
@@ -1329,6 +1472,8 @@ def main() -> None:
             args.equity_etf_sell_tax,
             ncf_00631l_path=args.ncf_00631l,
             ncf_panel_631l_path=args.ncf_panel_631l,
+            ncf_00632r_path=args.ncf_00632r,
+            ncf_00713_path=args.ncf_00713,
             ma_gap_min=args.ma_gap_min,
             h20_max=args.h20_max,
             conf_min=args.conf_min,
@@ -1374,6 +1519,8 @@ def main() -> None:
             golden_leverage_cap_drawdown_max=args.golden_leverage_cap_drawdown_max,
             recovery_00631l_boost_fraction=args.recovery_00631l_boost_fraction,
             recovery_00631l_boost_max_age_days=args.recovery_00631l_boost_max_age_days,
+            group_a_plusplus_00713_cash_sleeve_weight=args.group_a_plusplus_00713_cash_sleeve_weight,
+            group_a_plusplus_00713_ncf_enabled=args.group_a_plusplus_00713_ncf_enabled,
         )
         Path(args.frame_output).parent.mkdir(parents=True, exist_ok=True)
         frame.to_csv(args.frame_output, encoding="utf-8-sig")
