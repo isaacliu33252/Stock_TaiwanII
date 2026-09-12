@@ -1,0 +1,327 @@
+{
+  "group": "group_a",
+  "result_json": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/a2118_own_golden_source_20260909_cap20.json",
+  "model_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/models/portfolio/a2118_independent_ppo_v1_80k_cap20.zip",
+  "workbook": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/taiwan_stock_20260516_group.xlsx",
+  "signal_mode": "live_start",
+  "override_holdings_source": null,
+  "holdings_row_label": "即時庫存",
+  "requested_as_of_date": "2026-09-09",
+  "actual_data_date": "2026-09-07",
+  "stale_days": 2,
+  "signal_status": "rebalance",
+  "signal_reason": "pva_overlay_s; limited_0050_target_weight_step",
+  "guard_reasons": [],
+  "group_a_action_schema": "triplet_v2",
+  "group_b_action_schema": null,
+  "latest_action": 0,
+  "action_label": "hold_current_weights",
+  "base_target_label": "0050 50% / 00631L 50%",
+  "candidate_target_label": "0050 82.8% / 00631L 17.2%",
+  "effective_target_label": "0050 82.8% / 00631L 17.2%",
+  "strategy_portfolio_value": 1000000.0,
+  "strategy_drawdown": 0.0,
+  "relative_vs_0050_bh": 0.0,
+  "current_holdings_market_value": 265981.1085281372,
+  "current_cash": 1000000.0,
+  "current_cash_weight": 0.7899012025247566,
+  "current_total_portfolio_value": 1265981.1085281372,
+  "reference_state_weights": {
+    "0050.TW": 0.49999999999999994,
+    "00631L.TW": 0.5,
+    "00679B.TWO": 0.0,
+    "00632R.TW": 0.0
+  },
+  "reference_state_cash_weight": 0.0,
+  "latest_prices": {
+    "0050.TW": 109.9000015258789,
+    "00631L.TW": 37.84000015258789,
+    "00679B.TWO": 25.6200008392334,
+    "00632R.TW": 9.640000343322754
+  },
+  "current_shares": {
+    "0050.TW": 89,
+    "00631L.TW": 0,
+    "00679B.TWO": 10000,
+    "00632R.TW": 0
+  },
+  "current_weights": {
+    "0050.TW": 0.007726102759286026,
+    "00631L.TW": 0.0,
+    "00679B.TWO": 0.20237269471595734,
+    "00632R.TW": 0.0
+  },
+  "strategy_weights": {
+    "0050.TW": 0.49999999999999994,
+    "00631L.TW": 0.5,
+    "00679B.TWO": 0.0,
+    "00632R.TW": 0.0
+  },
+  "planned_target_weights": {
+    "0050.TW": 0.8283315473722292,
+    "00631L.TW": 0.17166845262777064,
+    "00679B.TWO": 0.0,
+    "00632R.TW": 0.0
+  },
+  "planned_target_shares": {
+    "0050.TW": 9542,
+    "00631L.TW": 5743,
+    "00679B.TWO": 0,
+    "00632R.TW": 0
+  },
+  "target_weights": {
+    "0050.TW": 0.5299999999999999,
+    "00631L.TW": 0.17166845262777064,
+    "00679B.TWO": 0.0,
+    "00632R.TW": 0.0
+  },
+  "target_cash_weight": 0.29833154737222944,
+  "group_a_0050_weight_overlay": {
+    "enabled": true,
+    "reason": "limited_0050_target_weight_step",
+    "max_weight_step": 0.03,
+    "step_active_max_ma_ratio": 1.05,
+    "step_gate_active": true,
+    "reference_0050_weight": 0.49999999999999994,
+    "raw_0050_weight": 0.8283315473722292,
+    "adjusted_0050_weight": 0.5299999999999999,
+    "cash_adjustment": 0.29833154737222933,
+    "raw_cash_weight": 1.1102230246251565e-16,
+    "adjusted_cash_weight": 0.29833154737222944,
+    "ma_brake_enabled": true,
+    "ma_brake_triggered": false,
+    "ma_brake_price": 109.9000015258789,
+    "ma_brake_value": 104.87166684468588,
+    "ma_brake_ratio": 1.0,
+    "ma_brake_max_weight": 0.3,
+    "ma_brake_00631l_max_weight": 0.0,
+    "ma_brake_00631l_triggered": false,
+    "raw_00631l_weight": 0.17166845262777064,
+    "adjusted_00631l_weight": 0.17166845262777064
+  },
+  "target_shares": {
+    "0050.TW": 6105,
+    "00631L.TW": 5743,
+    "00679B.TWO": 0,
+    "00632R.TW": 0
+  },
+  "decision": {
+    "date": "2026-09-07",
+    "step_idx": 649,
+    "action": 0,
+    "action_label": "hold_current_weights",
+    "base_target_label": "0050 50% / 00631L 50%",
+    "candidate_target_label": "0050 82.8% / 00631L 17.2%",
+    "effective_target_label": "0050 82.8% / 00631L 17.2%",
+    "current_weights": {
+      "0050.TW": 0.49999999999999994,
+      "00631L.TW": 0.5,
+      "00679B.TWO": 0.0,
+      "00632R.TW": 0.0
+    },
+    "current_cash_weight": 0.0,
+    "base_target_weights": {
+      "0050.TW": 0.49999999999999994,
+      "00631L.TW": 0.5,
+      "00679B.TWO": 0.0,
+      "00632R.TW": 0.0
+    },
+    "candidate_target_weights": {
+      "0050.TW": 0.8283315473722292,
+      "00631L.TW": 0.17166845262777064,
+      "00679B.TWO": 0.0,
+      "00632R.TW": 0.0
+    },
+    "candidate_target_cash_weight": 1.1102230246251565e-16,
+    "effective_target_weights": {
+      "0050.TW": 0.8283315473722292,
+      "00631L.TW": 0.17166845262777064,
+      "00679B.TWO": 0.0,
+      "00632R.TW": 0.0
+    },
+    "effective_target_cash_weight": 1.1102230246251565e-16,
+    "candidate_source": "pva_risk_scale",
+    "candidate_reason": "pva_overlay_s",
+    "reason": "pva_overlay_s",
+    "sjm_state": "S",
+    "sjm_details": {
+      "p": 0.12688574172142864,
+      "v": 0.06183576353403586,
+      "a": -0.014571068085570182,
+      "p_z": -0.8599686280824688,
+      "v_z": -1.511126948235984,
+      "a_z": -0.047365042284326996,
+      "state": "S"
+    },
+    "pva_allowed": true,
+    "pva_state_weight": 0.32,
+    "pva_drift": 0.6566630947444587,
+    "pva_details": {
+      "sjm": {
+        "p": 0.12688574172142864,
+        "v": 0.06183576353403586,
+        "a": -0.014571068085570182,
+        "p_z": -0.8599686280824688,
+        "v_z": -1.511126948235984,
+        "a_z": -0.047365042284326996,
+        "state": "S"
+      },
+      "policy": "continuous_risk_scaling",
+      "raw_pva_weights": {
+        "0050.TW": 0.8283315473722292,
+        "00631L.TW": 0.17166845262777064,
+        "00679B.TWO": 0.0,
+        "00632R.TW": 0.0
+      },
+      "risk_metrics": {
+        "blend_weight": 0.32,
+        "risk_score": 0.520800503165981,
+        "realized_vol_20": 0.011339988602332637,
+        "downside_vol_20": 0.005808293001407809,
+        "drawdown_20": 9.099387909827783e-13,
+        "vol_scale": 1.0,
+        "regime_scale": 0.8583422631388531,
+        "leverage_scale": 0.8583422631388531,
+        "hedge_signal": 0.0,
+        "inverse_cooldown_active": false
+      },
+      "base_target_weights": {
+        "0050.TW": 0.7999999999999999,
+        "00631L.TW": 0.2,
+        "00679B.TWO": 0.0,
+        "00632R.TW": 0.0
+      }
+    },
+    "candidate_turnover": 0.6566630947444587,
+    "days_since_last_rebalance": 252,
+    "cooldown_remaining": 0,
+    "can_trade_now": true,
+    "needs_rebalance": true,
+    "execute_trade": true,
+    "inverse_rule": {
+      "force_rebalance": false,
+      "reason": null,
+      "holding_inverse": false,
+      "current_inverse_weight": 0.0,
+      "inverse_holding_days": 0,
+      "inverse_cooldown_active": false,
+      "override_active": false
+    },
+    "risk_gate": {
+      "source": "none",
+      "reason": null,
+      "allow_inverse_override": false,
+      "market_stress": {
+        "risk_off": false,
+        "severe": false,
+        "score": 0.0
+      },
+      "llm_sentiment": {
+        "enabled": false,
+        "available": false,
+        "active": false,
+        "risk_off": false,
+        "severe": false,
+        "composite_score": 0.0,
+        "negative_score": 0.0,
+        "confidence": 0.0,
+        "risk_off_score": 0.0,
+        "news_intensity": 0.0,
+        "sentiment_score": 0.0
+      }
+    }
+  },
+  "output_csv": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/results/signal_group_a_20260909_153206.csv",
+  "tdcc_assessment": {
+    "state": "normal",
+    "reasons": [
+      "00631L leverage ETF crowding remained below caution thresholds"
+    ],
+    "requested_as_of_date": "2026-09-09",
+    "availability_cutoff_date": "2026-09-08",
+    "availability_lag_days": 1,
+    "snapshots": {
+      "0050": {
+        "available": true,
+        "data_date": "2026-09-04",
+        "comparison_date": "2026-07-09",
+        "comparison_weeks": 8,
+        "minority_percent": 39.46,
+        "major_percent": 26.48,
+        "total_people": 3537377,
+        "minority_percent_change": 0.4399999999999977,
+        "major_percent_change": -1.3099999999999987,
+        "total_people_change": 225527,
+        "total_people_change_ratio": 0.06809698506876821
+      },
+      "00631L": {
+        "available": true,
+        "data_date": "2026-09-04",
+        "comparison_date": "2026-07-09",
+        "comparison_weeks": 8,
+        "minority_percent": 16.849999999999998,
+        "major_percent": 29.189999999999998,
+        "total_people": 314938,
+        "minority_percent_change": -1.7200000000000024,
+        "major_percent_change": 0.9100000000000001,
+        "total_people_change": -2584,
+        "total_people_change_ratio": -0.008138018782950472
+      },
+      "00632R": {
+        "available": true,
+        "data_date": "2026-09-04",
+        "comparison_date": "2026-07-09",
+        "comparison_weeks": 8,
+        "minority_percent": 8.79,
+        "major_percent": 47.01,
+        "total_people": 65277,
+        "minority_percent_change": -0.47000000000000064,
+        "major_percent_change": 1.9499999999999957,
+        "total_people_change": 3685,
+        "total_people_change_ratio": 0.05982919859722042
+      }
+    }
+  },
+  "tdcc_overlay": {
+    "state": "normal",
+    "changed": false,
+    "leverage_weight_cap": null,
+    "released_leverage_budget": 0.0,
+    "released_leverage_budget_destination": "primary",
+    "inverse_added_weight": 0.0,
+    "signal_status": "rebalance",
+    "signal_reason": "pva_overlay_s; limited_0050_target_weight_step",
+    "base_target_weights": {
+      "0050.TW": 0.5299999999999999,
+      "00631L.TW": 0.17166845262777064,
+      "00679B.TWO": 0.0,
+      "00632R.TW": 0.0
+    },
+    "base_target_cash_weight": 0.29833154737222944,
+    "target_weights": {
+      "0050.TW": 0.5299999999999999,
+      "00631L.TW": 0.17166845262777064,
+      "00679B.TWO": 0.0,
+      "00632R.TW": 0.0
+    },
+    "target_cash_weight": 0.29833154737222944
+  },
+  "tdcc_config": {
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/group_a_tdcc_improved_config_destination_primary.json",
+    "strategy_name": "Golden1_0531_tdcc_v1_destination_primary",
+    "status": "shadow_candidate"
+  },
+  "release_name": "a2118_cap20_20260909",
+  "release_handoff_md": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/GROUP_A_PLUS_20260909_A2118_CAP20_PRODUCTION_SWITCH_HANDOFF.md",
+  "live_mode": "live_start",
+  "production_overlay_config": {
+    "group_a_0050_max_weight_step": 0.03,
+    "group_a_0050_step_active_max_ma_ratio": 1.05,
+    "group_a_0050_ma_brake_window": 60,
+    "group_a_0050_ma_brake_ratio": 1.0,
+    "group_a_0050_ma_brake_max_weight": 0.3,
+    "group_a_0050_ma_brake_00631l_max_weight": 0.0,
+    "group_a_tdcc_overlay_enabled": true,
+    "group_a_tdcc_config": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/group_a_tdcc_improved_config_destination_primary.json"
+  }
+}

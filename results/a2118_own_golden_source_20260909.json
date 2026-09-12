@@ -1,0 +1,4190 @@
+{
+  "experiment": "dual_group_0050_vs_multi",
+  "workbook": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/taiwan_stock_20260516_group.xlsx",
+  "initial_cash_per_group": 1000000.0,
+  "timesteps": 100000,
+  "seed": 42,
+  "group_filter": "group_a",
+  "group_a_profile": "default",
+  "group_a_resume_model": null,
+  "group_a_action_schema": "triplet_v4",
+  "group_a_ppo_config": {
+    "learning_rate": 0.0003,
+    "n_steps": 1024,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "ent_coef": 0.08
+  },
+  "group_a_use_dji_features": false,
+  "group_a_use_llm_sentiment": false,
+  "group_a_dca_enabled": true,
+  "group_a_exposure_caps": {
+    "00631L.TW": 0.3,
+    "00632R.TW": 0.3
+  },
+  "group_a_llm_sentiment_config": {
+    "enabled": true,
+    "path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/sentiment/llm_market_sentiment_daily.csv",
+    "source_path": "/mnt/c/Users/isaac/Downloads/Stock_taiwan2-main/Stock_taiwan2-main/FinRL/data/sentiment/llm_market_sentiment_daily.csv",
+    "mode": "pre_scored",
+    "generated": false,
+    "input_rows": null,
+    "daily_rows": null,
+    "text_columns": [],
+    "columns": [
+      "llm_sentiment_score",
+      "llm_sentiment_confidence",
+      "llm_risk_off_score",
+      "llm_news_intensity"
+    ],
+    "note": "Daily market-level LLM sentiment features are merged into Group A shared market state and also drive a sentiment risk gate that can neutralize 00631L or enable 00632R defense."
+  },
+  "group_a_sentiment_gate_config": {
+    "enabled": true,
+    "risk_off_threshold": 0.1,
+    "severe_threshold": 0.15,
+    "min_confidence": 0.4,
+    "min_intensity": 0.0,
+    "risk_off_inverse_floor": 0.15,
+    "severe_inverse_floor": 0.3,
+    "note": "LLM sentiment can zero 00631L on risk-off days and force a 00632R defensive floor on severe days."
+  },
+  "group_a_pva_sigmoid_config": {
+    "features_enabled": false,
+    "overlay_enabled": true,
+    "pva_weight": 0.3,
+    "pva_j_state_weight": 0.0,
+    "pva_m_state_weight": 1.0,
+    "pva_drift_threshold": 0.05,
+    "policy_mode": "risk_scaled",
+    "pva_target_vol": 0.012,
+    "pva_min_leverage_scale": 0.35,
+    "pva_inverse_hedge_budget": 0.3,
+    "note": "Group A PVA/SJM is disabled."
+  },
+  "group_a_inverse_hedge_config": {
+    "m_state_only": true,
+    "max_holding_days": 5,
+    "note": "00632R is treated as a short hedge and is forcibly exited when M state ends or max holding days is reached."
+  },
+  "execution_timing": {
+    "signal_price": "close_t",
+    "execution_price": "open_t_plus_1",
+    "mark_to_market_price": "close_t_plus_1",
+    "note": "Signals use day-t data, trades execute at next trading day's open, and performance is marked at next close."
+  },
+  "group_a_dca_config": {
+    "dca_day": 20,
+    "monthly_amounts": {
+      "0050.TW": 5000.0
+    },
+    "note": "Group A DCA is applied only during evaluation/backtest, not PPO training reward."
+  },
+  "train_start": "2020-01-01",
+  "train_end": "2025-05-31",
+  "backtest_start": "2025-01-01",
+  "backtest_end": "2026-05-31",
+  "download_end": "2026-05-31",
+  "group_a": {
+    "tickers": [
+      "0050.TW",
+      "00631L.TW",
+      "00679B.TWO",
+      "00632R.TW"
+    ],
+    "train_start": "2020-01-01",
+    "train_end": "2025-05-31",
+    "profile": "default",
+    "resume_model": null,
+    "action_schema": "triplet_v4",
+    "ppo_config": {
+      "learning_rate": 0.0003,
+      "n_steps": 1024,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "ent_coef": 0.08
+    },
+    "model_name": "a2118_own_golden_ppo_20260909",
+    "shared_feature_cols": [],
+    "train_rows": 1310,
+    "result": {
+      "group": "GroupA",
+      "tickers": [
+        "0050.TW",
+        "00631L.TW",
+        "00679B.TWO",
+        "00632R.TW"
+      ],
+      "backtest_start": "2025-01-02",
+      "backtest_end": "2026-05-29",
+      "backtest_rows": 338,
+      "final_value": 2049572.2056896302,
+      "rl_metrics": {
+        "total_return": 1.0495722056896302,
+        "annual_return": 0.7102271818643542,
+        "sharpe": 2.3242136515513216,
+        "max_drawdown": -0.24427034680006252,
+        "volatility": 0.2343202977555318
+      },
+      "num_trades": 57,
+      "fees_paid_estimate": 2468.847862753568,
+      "pva_sigmoid_count": 0,
+      "dca_purchase_count": 17,
+      "dca_total_contributions": 85000.0,
+      "total_invested_capital": 1085000.0,
+      "net_profit": 964572.2056896302,
+      "contribution_return": 0.8890066411885993,
+      "dca_config": {
+        "dca_day": 20,
+        "monthly_amounts": {
+          "0050.TW": 5000.0
+        }
+      },
+      "pva_sigmoid_config": {
+        "features_enabled": false,
+        "overlay_enabled": false,
+        "pva_weight": 0.3,
+        "pva_j_state_weight": 0.0,
+        "pva_m_state_weight": 1.0,
+        "pva_drift_threshold": 0.05,
+        "policy_mode": "disabled",
+        "pva_target_vol": 0.012,
+        "pva_min_leverage_scale": 0.35,
+        "pva_inverse_hedge_budget": 0.3
+      },
+      "execution_timing": {
+        "signal_price": "close_t",
+        "execution_price": "open_t_plus_1",
+        "mark_to_market_price": "close_t_plus_1"
+      },
+      "exposure_cap_config": {
+        "00631L.TW": 0.3,
+        "00632R.TW": 0.3
+      },
+      "inverse_hedge_config": {
+        "m_state_only": true,
+        "max_holding_days": 5,
+        "forced_exit_count": 0
+      },
+      "dca_purchase_history": [
+        {
+          "date": "2025-01-20",
+          "month": "2025-01",
+          "scheduled_date": "2025-01-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 49.287498474121094,
+              "shares_bought": 101.30124865839865
+            }
+          }
+        },
+        {
+          "date": "2025-02-20",
+          "month": "2025-02",
+          "scheduled_date": "2025-02-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 49.23749923706055,
+              "shares_bought": 101.40411710672936
+            }
+          }
+        },
+        {
+          "date": "2025-03-20",
+          "month": "2025-03",
+          "scheduled_date": "2025-03-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 45.61249923706055,
+              "shares_bought": 109.4630906482016
+            }
+          }
+        },
+        {
+          "date": "2025-04-21",
+          "month": "2025-04",
+          "scheduled_date": "2025-04-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 40.1875,
+              "shares_bought": 124.23975461716665
+            }
+          }
+        },
+        {
+          "date": "2025-05-20",
+          "month": "2025-05",
+          "scheduled_date": "2025-05-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 45.462501525878906,
+              "shares_bought": 109.82425012040426
+            }
+          }
+        },
+        {
+          "date": "2025-06-20",
+          "month": "2025-06",
+          "scheduled_date": "2025-06-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 47.099998474121094,
+              "shares_bought": 106.00605733396586
+            }
+          }
+        },
+        {
+          "date": "2025-07-21",
+          "month": "2025-07",
+          "scheduled_date": "2025-07-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 51.099998474121094,
+              "shares_bought": 97.70812696219481
+            }
+          }
+        },
+        {
+          "date": "2025-08-20",
+          "month": "2025-08",
+          "scheduled_date": "2025-08-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 52.54999923706055,
+              "shares_bought": 95.0120877481609
+            }
+          }
+        },
+        {
+          "date": "2025-09-22",
+          "month": "2025-09",
+          "scheduled_date": "2025-09-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 57.0,
+              "shares_bought": 87.59447611714711
+            }
+          }
+        },
+        {
+          "date": "2025-10-20",
+          "month": "2025-10",
+          "scheduled_date": "2025-10-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 62.349998474121094,
+              "shares_bought": 80.07835221920215
+            }
+          }
+        },
+        {
+          "date": "2025-11-20",
+          "month": "2025-11",
+          "scheduled_date": "2025-11-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 61.54999923706055,
+              "shares_bought": 81.11917466395457
+            }
+          }
+        },
+        {
+          "date": "2025-12-22",
+          "month": "2025-12",
+          "scheduled_date": "2025-12-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 63.29999923706055,
+              "shares_bought": 78.87654342583589
+            }
+          }
+        },
+        {
+          "date": "2026-01-20",
+          "month": "2026-01",
+          "scheduled_date": "2026-01-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 71.9000015258789,
+              "shares_bought": 69.4420727777078
+            }
+          }
+        },
+        {
+          "date": "2026-02-23",
+          "month": "2026-02",
+          "scheduled_date": "2026-02-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 78.44999694824219,
+              "shares_bought": 63.64417250355622
+            }
+          }
+        },
+        {
+          "date": "2026-03-20",
+          "month": "2026-03",
+          "scheduled_date": "2026-03-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 76.19999694824219,
+              "shares_bought": 65.52342964093206
+            }
+          }
+        },
+        {
+          "date": "2026-04-20",
+          "month": "2026-04",
+          "scheduled_date": "2026-04-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 84.55000305175781,
+              "shares_bought": 59.05245367786633
+            }
+          }
+        },
+        {
+          "date": "2026-05-20",
+          "month": "2026-05",
+          "scheduled_date": "2026-05-20",
+          "total_contribution": 5000.0,
+          "fees": 7.1148613226152735,
+          "purchases": {
+            "0050.TW": {
+              "cash_contribution": 5000.0,
+              "buy_value": 4992.885138677385,
+              "fee": 7.1148613226152735,
+              "price": 93.0,
+              "shares_bought": 53.686936975025645
+            }
+          }
+        }
+      ],
+      "pva_sigmoid_history": [],
+      "inverse_forced_exit_history": [],
+      "sjm_state_history": [
+        {
+          "date": "2025-01-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-03",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-06",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-08",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-15",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-16",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-01-22",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-03",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-04",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-06",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-12",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-18",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-19",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-24",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-25",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-02-27",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-03",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-04",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-06",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-12",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-18",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-19",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-24",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-25",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-27",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-28",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-03-31",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-01",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-08",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-15",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-16",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-18",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-22",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-23",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-24",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-25",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-28",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-29",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-04-30",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-06",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-08",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-12",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-15",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-16",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-19",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-22",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-23",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-27",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-28",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-05-29",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-03",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-04",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-06",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-12",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-16",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-18",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-19",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-23",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-24",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-25",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-27",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-06-30",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-01",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-03",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-04",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-08",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-15",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-16",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-18",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-22",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-23",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-24",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-25",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-28",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-29",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-30",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-07-31",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-01",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-04",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-06",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-08",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-12",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-15",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-18",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-19",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-22",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-25",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-27",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-28",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-08-29",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-01",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-03",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-04",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-08",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-12",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-15",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-16",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-18",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-19",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-22",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-23",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-24",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-25",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-09-30",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-01",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-03",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-08",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-15",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-16",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-22",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-23",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-27",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-28",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-29",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-30",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-10-31",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-03",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-04",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-06",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-12",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-18",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-19",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-24",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-25",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-27",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-11-28",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-01",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-03",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-04",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-08",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-12",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-15",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-16",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-18",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-19",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-22",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-23",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-24",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-29",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-30",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2025-12-31",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-06",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-08",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-12",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-15",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-16",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-19",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-22",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-23",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-27",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-28",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-29",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-01-30",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-03",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-04",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-06",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-23",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-24",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-25",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-02-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-03",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-04",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-06",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-12",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-16",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-18",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-19",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-23",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-24",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-25",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-27",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-30",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-03-31",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-01",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-02",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-08",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-09",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-10",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-15",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-16",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-17",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-22",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-23",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-24",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-27",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-28",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-29",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-04-30",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-04",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-05",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-06",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-07",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-08",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-11",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-12",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-13",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-14",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-15",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-18",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-19",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-20",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-21",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-22",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-25",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-26",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-27",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        },
+        {
+          "date": "2026-05-28",
+          "p": 0.0,
+          "v": 0.0,
+          "a": 0.0,
+          "p_z": 0.0,
+          "v_z": 0.0,
+          "a_z": 0.0,
+          "state": "S"
+        }
+      ],
+      "sjm_state_counts": {
+        "S": 337,
+        "J": 0,
+        "M": 0
+      },
+      "final_weights": {
+        "0050.TW": 0.5028632876541683,
+        "00631L.TW": 0.20175305751068637,
+        "00679B.TWO": 0.0,
+        "00632R.TW": 0.0
+      },
+      "equity_curve": [
+        1000000.0,
+        998792.7884651526,
+        1025431.7932344021,
+        1033605.0316639137,
+        1021083.4769623338,
+        1009426.2564709211,
+        1008291.8816004073,
+        987108.6957402241,
+        993143.5700334985,
+        986012.0263838693,
+        1003818.6635585029,
+        1000660.7828911073,
+        1014797.2348363989,
+        1016216.5156041777,
+        1028091.7352266881,
+        988205.9546304408,
+        992110.8721618543,
+        1007177.5149848564,
+        1010397.6473524759,
+        1016040.5032026006,
+        1006857.3279344963,
+        1011557.2174352303,
+        1010330.0226255688,
+        1009618.1749341481,
+        999468.8286937927,
+        1013165.5615752148,
+        1016795.2256952273,
+        1015021.8489504685,
+        1016743.8946828295,
+        1024163.2126747579,
+        1016704.3055568652,
+        1005126.2816897607,
+        1009640.0071462719,
+        1000020.0878966406,
+        980983.112694358,
+        975658.9518725441,
+        986718.2965674608,
+        981204.0006500867,
+        973040.0732369854,
+        968774.028823125,
+        953310.1012773702,
+        957387.1444626553,
+        949650.3490570653,
+        947893.7435432433,
+        955057.4630300978,
+        958573.8115718747,
+        948998.1497351171,
+        970737.8689486925,
+        963221.8970885805,
+        961558.500061613,
+        969533.7400309371,
+        969533.5607779003,
+        953846.1125022285,
+        942805.0371822435,
+        912614.1743883542,
+        929387.5335157326,
+        929778.5587235567,
+        845360.2001165361,
+        814758.6374144068,
+        781125.97212508,
+        843605.1016957572,
+        864575.1971223343,
+        861938.2220908336,
+        872306.5318707582,
+        856493.5320845146,
+        850841.9438184032,
+        852451.2385753689,
+        845455.4061204632,
+        834066.3743449419,
+        866022.8330968465,
+        860760.0328046196,
+        878679.0506440897,
+        884873.6346701486,
+        889838.1400460601,
+        891270.785793136,
+        914308.3564263498,
+        905250.9119367459,
+        902314.5673892008,
+        900066.8469249691,
+        910281.8679536621,
+        920157.0990834851,
+        929351.2384926905,
+        939482.8929722325,
+        958317.9600745111,
+        956083.5531878553,
+        959857.8301905156,
+        947317.7401901211,
+        953682.9548487803,
+        965841.6282234506,
+        956576.0302827705,
+        953960.6288559772,
+        952301.909452551,
+        944646.8376425996,
+        946174.1822950573,
+        948308.8001639522,
+        930057.3701369239,
+        935758.7098851654,
+        956109.9944796755,
+        957330.6450561549,
+        958814.7691562112,
+        965807.5101994093,
+        986488.1514310398,
+        990245.2792314803,
+        988641.2709553228,
+        984056.2938263717,
+        985096.2090617456,
+        986277.7641280489,
+        993386.0723052737,
+        984299.1488715615,
+        987395.9942987497,
+        980013.5836772032,
+        997439.229619519,
+        1008996.2885602418,
+        1008620.3775929528,
+        1008667.4195504333,
+        1010637.0514761677,
+        1017397.2703538233,
+        1017833.1739624674,
+        1030561.9077559669,
+        1021258.1876916955,
+        1015529.5818012763,
+        1011809.9731010478,
+        1020848.28777564,
+        1029291.6858228726,
+        1034450.3817004077,
+        1027608.5768365436,
+        1040211.8796327142,
+        1048004.1486847176,
+        1054418.4265615346,
+        1066426.9131773692,
+        1064354.3065697495,
+        1056608.0925649707,
+        1061751.8063098532,
+        1067434.0412232152,
+        1065094.067713242,
+        1068804.7638467816,
+        1058066.6690593918,
+        1067835.7001790546,
+        1078139.8771733197,
+        1069620.3498674731,
+        1064640.8045780926,
+        1076650.5477228705,
+        1068754.3414640604,
+        1094792.043528631,
+        1094342.6240400102,
+        1101961.246866059,
+        1102961.2783540238,
+        1110220.7857512333,
+        1107308.5685014434,
+        1107874.3925914306,
+        1111962.3547332461,
+        1108741.789795416,
+        1086454.6628909234,
+        1093379.0461122892,
+        1088885.577755429,
+        1107518.1280662017,
+        1107917.3514934739,
+        1114741.5036909287,
+        1105666.1000056772,
+        1105623.6503946574,
+        1094805.369129566,
+        1094805.369129566,
+        1094747.9455241105,
+        1101039.8807997426,
+        1111610.4127243748,
+        1119946.4289401341,
+        1129876.2837543753,
+        1148697.5104769587,
+        1154086.0302008013,
+        1164077.3654952955,
+        1162399.8592657465,
+        1175198.2569075883,
+        1167965.9742915062,
+        1178834.7433825792,
+        1179436.9134642845,
+        1191874.3516562337,
+        1208951.403206133,
+        1208713.442503513,
+        1204559.2170535673,
+        1186052.9384478077,
+        1197588.425031388,
+        1201840.0654495303,
+        1220060.1891324632,
+        1234725.855099154,
+        1262897.47756533,
+        1253226.4699610528,
+        1261860.3006168138,
+        1248021.905859205,
+        1242646.048159874,
+        1262054.301887575,
+        1283715.6834665714,
+        1266323.1820973186,
+        1289717.0833499567,
+        1291850.097694267,
+        1285183.7489828882,
+        1278185.876093507,
+        1304672.0875384128,
+        1296500.696228065,
+        1314413.6011769478,
+        1314304.0176598737,
+        1319921.8603228335,
+        1310115.5869858155,
+        1305058.0491495288,
+        1291088.5198788645,
+        1297425.0651364154,
+        1282772.9180163993,
+        1296779.3153779772,
+        1288308.7595007136,
+        1295776.2866891767,
+        1291249.4312619762,
+        1268330.5608756044,
+        1271893.3463892767,
+        1245482.1052817542,
+        1238263.6484508927,
+        1276799.7279730109,
+        1238224.7487624947,
+        1235844.6014512891,
+        1249382.1252371448,
+        1267964.6365636343,
+        1278581.333164895,
+        1287059.6358858428,
+        1271053.6319952575,
+        1275408.716915883,
+        1285620.3969265718,
+        1284970.27243348,
+        1294275.3746842376,
+        1309618.7370624791,
+        1307517.1065120415,
+        1315484.622218941,
+        1302480.5355178497,
+        1307127.0433082199,
+        1294258.7788271424,
+        1283387.492505458,
+        1278487.8984436379,
+        1277069.8665772262,
+        1288873.7328718586,
+        1311003.3652396812,
+        1315273.458985087,
+        1317446.9388093913,
+        1327662.7655165768,
+        1341417.1230596618,
+        1339638.2598895202,
+        1346170.506019895,
+        1369277.3379239654,
+        1411147.9575928957,
+        1426452.8621303434,
+        1418854.537320128,
+        1420493.8432149088,
+        1417210.0758085544,
+        1426827.8453007308,
+        1433184.2280214145,
+        1436529.560161979,
+        1435762.302169215,
+        1458584.3072081497,
+        1469153.4135388734,
+        1474263.3667906928,
+        1459620.5014037746,
+        1466410.9319694147,
+        1475628.5552954455,
+        1475771.313192542,
+        1490399.1542520407,
+        1510742.4134036617,
+        1502666.9481040246,
+        1481687.7023035758,
+        1458574.7969294444,
+        1484855.9521058414,
+        1487482.409372838,
+        1468214.3098352072,
+        1463693.9746660793,
+        1501472.8385209183,
+        1527491.0352734171,
+        1555612.2463435452,
+        1562949.0373032982,
+        1601159.400372934,
+        1631140.4559944808,
+        1634205.3483819147,
+        1618558.6718264027,
+        1586364.5926746735,
+        1526291.289496135,
+        1559412.6943840384,
+        1553406.263803816,
+        1491153.9845762267,
+        1519393.263626221,
+        1572602.5918562354,
+        1546126.0506691935,
+        1536023.8033834416,
+        1531796.828453014,
+        1553054.8194488138,
+        1575487.344320361,
+        1541791.5891235424,
+        1543713.1730941457,
+        1509703.2036348511,
+        1511459.820747816,
+        1529821.1135088725,
+        1525740.8781123054,
+        1517523.9778713132,
+        1506354.303234127,
+        1477356.6573038502,
+        1534956.1274438943,
+        1504712.5068519907,
+        1528178.7653951454,
+        1601446.998687792,
+        1599242.756713139,
+        1628043.5912259794,
+        1625392.1319515235,
+        1667837.9716880373,
+        1685549.2487586313,
+        1702987.6572881876,
+        1689329.195062044,
+        1703607.2671918832,
+        1729958.9931801897,
+        1735992.003736401,
+        1729787.486570708,
+        1789694.8332522376,
+        1835345.2107160366,
+        1820852.171331924,
+        1802575.1364358044,
+        1797376.716114698,
+        1869078.0581983929,
+        1869874.825643135,
+        1891017.9912550019,
+        1924413.404490034,
+        1910373.4017489348,
+        1911678.3613628948,
+        1909494.3252031575,
+        1888004.8360699783,
+        1894759.1749609038,
+        1879971.9947745688,
+        1870847.1360224504,
+        1841340.3428071598,
+        1835356.5736243152,
+        1893113.8995840806,
+        1918931.695649052,
+        1976977.8382906872,
+        1968173.922306574,
+        2007988.0154479546,
+        1972954.2398730717,
+        2049572.2056896302
+      ],
+      "buy_and_hold_equal": {
+        "final_value": 1754433.7299180308,
+        "metrics": {
+          "total_return": 0.7544337299180308,
+          "annual_return": 0.5225073387562671,
+          "sharpe": 2.185035351092953,
+          "max_drawdown": -0.12892684062272738,
+          "volatility": 0.19173544796071906
+        }
+      },
+      "buy_and_hold_50_50_blend": {
+        "final_value": 2819480.270721397,
+        "metrics": {
+          "total_return": 1.8194802707213968,
+          "annual_return": 1.1708256029222026,
+          "sharpe": 2.1053119511359113,
+          "max_drawdown": -0.3950398405205046,
+          "volatility": 0.39659038784242334
+        }
+      }
+    }
+  }
+}

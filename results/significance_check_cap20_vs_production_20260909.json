@@ -1,0 +1,289 @@
+{
+  "window": {
+    "start": "2025-01-02",
+    "end": "2026-09-04"
+  },
+  "summary_rows": [
+    {
+      "label": "seed42_cap30",
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.1299902097869028,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.0005471808401960876,
+      "p_value": 0.946278335297774
+    },
+    {
+      "label": "seed42_cap30_100k",
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.12999020978690273,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.0005471808401960321,
+      "p_value": 0.9462783352977789
+    },
+    {
+      "label": "seed7_cap30",
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.1288786070145725,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": -0.0005644219321342125,
+      "p_value": 0.9424651581000679
+    },
+    {
+      "label": "seed123_cap30",
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.13024992494701998,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.0008068960003132786,
+      "p_value": 0.918097719250007
+    },
+    {
+      "label": "tripletv4_cap30",
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.12788192542972313,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": -0.0015611035169835752,
+      "p_value": 0.9042150612754614
+    },
+    {
+      "label": "seed42_cap20",
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.13970588462700503,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.010262855680298333,
+      "p_value": 0.347929529298478
+    },
+    {
+      "label": "seed7_cap20",
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.13141710731275547,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.001974078366048765,
+      "p_value": 0.8076781056257062
+    },
+    {
+      "label": "seed123_cap20",
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.13171748755377988,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.0022744586070731765,
+      "p_value": 0.7764960206965129
+    },
+    {
+      "label": "cap20_institutional_2020window",
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.1324620814370228,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.0030190524903160876,
+      "p_value": 0.7092205933636355
+    },
+    {
+      "label": "cap20_auxvol",
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.1314350417352798,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.001992012788573111,
+      "p_value": 0.8029932182954665
+    }
+  ],
+  "jkm_results": {
+    "seed42_cap30": {
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.1299902097869028,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.0005471808401960876,
+      "z_statistic": 0.06738107450860922,
+      "p_value": 0.946278335297774,
+      "significant_at_5pct": false,
+      "significant_at_1pct": false
+    },
+    "seed42_cap30_100k": {
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.12999020978690273,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.0005471808401960321,
+      "z_statistic": 0.06738107450860309,
+      "p_value": 0.9462783352977789,
+      "significant_at_5pct": false,
+      "significant_at_1pct": false
+    },
+    "seed7_cap30": {
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.1288786070145725,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": -0.0005644219321342125,
+      "z_statistic": -0.07217183628228319,
+      "p_value": 0.9424651581000679,
+      "significant_at_5pct": false,
+      "significant_at_1pct": false
+    },
+    "seed123_cap30": {
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.13024992494701998,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.0008068960003132786,
+      "z_statistic": 0.10283022132536987,
+      "p_value": 0.918097719250007,
+      "significant_at_5pct": false,
+      "significant_at_1pct": false
+    },
+    "tripletv4_cap30": {
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.12788192542972313,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": -0.0015611035169835752,
+      "z_statistic": -0.12033843161597485,
+      "p_value": 0.9042150612754614,
+      "significant_at_5pct": false,
+      "significant_at_1pct": false
+    },
+    "seed42_cap20": {
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.13970588462700503,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.010262855680298333,
+      "z_statistic": 0.9386128958567199,
+      "p_value": 0.347929529298478,
+      "significant_at_5pct": false,
+      "significant_at_1pct": false
+    },
+    "seed7_cap20": {
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.13141710731275547,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.001974078366048765,
+      "z_statistic": 0.24342251266521292,
+      "p_value": 0.8076781056257062,
+      "significant_at_5pct": false,
+      "significant_at_1pct": false
+    },
+    "seed123_cap20": {
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.13171748755377988,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.0022744586070731765,
+      "z_statistic": 0.28388825085540514,
+      "p_value": 0.7764960206965129,
+      "significant_at_5pct": false,
+      "significant_at_1pct": false
+    },
+    "cap20_institutional_2020window": {
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.1324620814370228,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.0030190524903160876,
+      "z_statistic": 0.37290306149629165,
+      "p_value": 0.7092205933636355,
+      "significant_at_5pct": false,
+      "significant_at_1pct": false
+    },
+    "cap20_auxvol": {
+      "n": 406,
+      "status": "ok",
+      "sharpe_a": 0.1314350417352798,
+      "sharpe_b": 0.1294430289467067,
+      "sharpe_diff": 0.001992012788573111,
+      "z_statistic": 0.24947520491334937,
+      "p_value": 0.8029932182954665,
+      "significant_at_5pct": false,
+      "significant_at_1pct": false
+    }
+  },
+  "bonferroni": {
+    "candidate_grid_size": 10,
+    "alpha": 0.05,
+    "corrected_alpha": 0.005,
+    "candidates": {
+      "seed42_cap30": {
+        "status": "ok",
+        "p_value": 0.946278335297774,
+        "sharpe_diff": 0.0005471808401960876,
+        "significant": false,
+        "significant_improvement": false
+      },
+      "seed42_cap30_100k": {
+        "status": "ok",
+        "p_value": 0.9462783352977789,
+        "sharpe_diff": 0.0005471808401960321,
+        "significant": false,
+        "significant_improvement": false
+      },
+      "seed7_cap30": {
+        "status": "ok",
+        "p_value": 0.9424651581000679,
+        "sharpe_diff": -0.0005644219321342125,
+        "significant": false,
+        "significant_improvement": false
+      },
+      "seed123_cap30": {
+        "status": "ok",
+        "p_value": 0.918097719250007,
+        "sharpe_diff": 0.0008068960003132786,
+        "significant": false,
+        "significant_improvement": false
+      },
+      "tripletv4_cap30": {
+        "status": "ok",
+        "p_value": 0.9042150612754614,
+        "sharpe_diff": -0.0015611035169835752,
+        "significant": false,
+        "significant_improvement": false
+      },
+      "seed42_cap20": {
+        "status": "ok",
+        "p_value": 0.347929529298478,
+        "sharpe_diff": 0.010262855680298333,
+        "significant": false,
+        "significant_improvement": false
+      },
+      "seed7_cap20": {
+        "status": "ok",
+        "p_value": 0.8076781056257062,
+        "sharpe_diff": 0.001974078366048765,
+        "significant": false,
+        "significant_improvement": false
+      },
+      "seed123_cap20": {
+        "status": "ok",
+        "p_value": 0.7764960206965129,
+        "sharpe_diff": 0.0022744586070731765,
+        "significant": false,
+        "significant_improvement": false
+      },
+      "cap20_institutional_2020window": {
+        "status": "ok",
+        "p_value": 0.7092205933636355,
+        "sharpe_diff": 0.0030190524903160876,
+        "significant": false,
+        "significant_improvement": false
+      },
+      "cap20_auxvol": {
+        "status": "ok",
+        "p_value": 0.8029932182954665,
+        "sharpe_diff": 0.001992012788573111,
+        "significant": false,
+        "significant_improvement": false
+      }
+    },
+    "any_significant": false,
+    "any_significant_improvement": false
+  }
+}
