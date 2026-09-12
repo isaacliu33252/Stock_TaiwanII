@@ -125,6 +125,69 @@ def test_append_risk_mechanism_shadow_log_is_idempotent_per_date() -> None:
     assert by_date["2026-07-02"]["mechanism"] == "NORMAL"
 
 
+def test_sentiment_shadow_absent_leaves_mechanism_and_news_attribution_none() -> None:
+    result = classify_risk_mechanism(_market_state("bull_trend", "bull_trend"), None, [])
+    assert result["components"]["news_attribution"] is None
+
+
+def test_sentiment_shadow_adds_news_attribution_without_changing_mechanism() -> None:
+    """Purely additive/informational -- must never influence `mechanism` itself
+    (this module's arbitration policy requires an OOS backtest before any
+    diagnostic axis is allowed to affect the classification decision)."""
+    sentiment_shadow = {
+        "status": "available",
+        "date": "2026-08-05",
+        "per_ticker": {
+            "0050.TW": {"same_day_sentiment_score": -0.09, "move_explained_by_news": False},
+        },
+    }
+    result_no_sentiment = classify_risk_mechanism(_market_state("crash_risk", "crash_risk"), None, [])
+    result_with_sentiment = classify_risk_mechanism(
+        _market_state("crash_risk", "crash_risk"), None, [], sentiment_shadow=sentiment_shadow
+    )
+
+    assert result_with_sentiment["mechanism"] == result_no_sentiment["mechanism"] == "FAST_CRASH"
+    assert result_with_sentiment["components"]["news_attribution"] == {
+        "ticker": "0050.TW",
+        "date": "2026-08-05",
+        "same_day_sentiment_score": -0.09,
+        "move_explained_by_news": False,
+    }
+    assert any("diverges from same-day sentiment" in reason for reason in result_with_sentiment["reasons"])
+
+
+def test_sentiment_shadow_explained_true_surfaces_matching_reason() -> None:
+    sentiment_shadow = {
+        "status": "available",
+        "date": "2026-08-05",
+        "per_ticker": {"0050.TW": {"same_day_sentiment_score": 0.12, "move_explained_by_news": True}},
+    }
+    result = classify_risk_mechanism(
+        _market_state("bull_trend", "bull_trend"), None, [], sentiment_shadow=sentiment_shadow
+    )
+    assert any("directionally consistent" in reason for reason in result["reasons"])
+
+
+def test_sentiment_shadow_null_explained_surfaces_unavailable_reason() -> None:
+    sentiment_shadow = {
+        "status": "available",
+        "date": "2026-08-05",
+        "per_ticker": {"0050.TW": {"same_day_sentiment_score": None, "move_explained_by_news": None}},
+    }
+    result = classify_risk_mechanism(
+        _market_state("bull_trend", "bull_trend"), None, [], sentiment_shadow=sentiment_shadow
+    )
+    assert any("unavailable or below" in reason for reason in result["reasons"])
+
+
+def test_sentiment_shadow_unavailable_status_is_ignored() -> None:
+    sentiment_shadow = {"status": "unavailable"}
+    result = classify_risk_mechanism(
+        _market_state("bull_trend", "bull_trend"), None, [], sentiment_shadow=sentiment_shadow
+    )
+    assert result["components"]["news_attribution"] is None
+
+
 def test_load_market_state_history_before_filters_and_sorts() -> None:
     with tempfile.TemporaryDirectory() as tmp_dir:
         log_path = Path(tmp_dir) / "market_state_shadow_log.jsonl"

@@ -81,6 +81,7 @@ def classify_risk_mechanism(
     history: list[dict[str, Any]] | None = None,
     *,
     persistent_min_days: int = DEFAULT_PERSISTENT_MIN_DAYS,
+    sentiment_shadow: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Classify today into NORMAL / FAST_CRASH / PERSISTENT_DRAWDOWN / RECOVERY.
 
@@ -99,6 +100,19 @@ def classify_risk_mechanism(
             DRAWDOWN_BUCKETS bucket must hold before this is called
             PERSISTENT_DRAWDOWN rather than left as NORMAL-with-a-building
             count in `components`.
+        sentiment_shadow: today's `build_market_aligned_sentiment_shadow(...)`
+            output (arXiv:2607.28127-motivated, research/shadow/
+            FINSMART_LITE_MARKET_ALIGNED_SENTIMENT_SHADOW_DESIGN_20260806.md),
+            or None if unavailable. Purely additive/informational -- read
+            once, for 0050.TW's `move_explained_by_news`, and surfaced as an
+            extra `reasons` line + `components["news_attribution"]` entry.
+            It NEVER participates in the `mechanism` decision itself: the
+            hypothesis that a news-explained vs. unexplained move should
+            change how FAST_CRASH/PERSISTENT_DRAWDOWN is read is untested
+            (see the design note's own caveat), and this module's arbitration
+            policy requires an out-of-sample backtest before any diagnostic
+            axis is allowed to affect classification, same bar as
+            market_state.py and crash_risk_alert above it.
     """
     history = history or []
     state = str(market_state.get("state") or "")
@@ -146,6 +160,23 @@ def classify_risk_mechanism(
             f"{prior_streak}-day drawdown streak"
         )
 
+    news_attribution: dict[str, Any] | None = None
+    if sentiment_shadow is not None and sentiment_shadow.get("status") == "available":
+        entry = (sentiment_shadow.get("per_ticker") or {}).get("0050.TW") or {}
+        explained = entry.get("move_explained_by_news")
+        news_attribution = {
+            "ticker": "0050.TW",
+            "date": sentiment_shadow.get("date"),
+            "same_day_sentiment_score": entry.get("same_day_sentiment_score"),
+            "move_explained_by_news": explained,
+        }
+        if explained is True:
+            reasons.append("news_attribution: today's 0050 move is directionally consistent with same-day sentiment")
+        elif explained is False:
+            reasons.append("news_attribution: today's 0050 move diverges from same-day sentiment direction")
+        else:
+            reasons.append("news_attribution: unavailable or below the economically-meaningful move threshold")
+
     return {
         "mechanism": mechanism,
         "reasons": reasons,
@@ -160,6 +191,7 @@ def classify_risk_mechanism(
             "prior_drawdown_streak_days": prior_streak,
             "persistent_min_days": persistent_min_days,
             "persistent_drawdown_confirmed": persistent_drawdown_confirmed,
+            "news_attribution": news_attribution,
         },
     }
 
