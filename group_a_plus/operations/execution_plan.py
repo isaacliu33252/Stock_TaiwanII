@@ -677,16 +677,54 @@ def build_execution_plan(
         staged_target_shares,
         compounding_regime,
     )
+    # 2026-08-09: downgraded to advisory-only unconditionally (independent of
+    # enforce_advisory_pre_trade_guards below), reusing the exact same
+    # downgrade shape as that flag's branch. Root cause: the daily pipeline
+    # feeds this guard the UNTUNED default-threshold classifier (see
+    # scripts/run/run_ncf_daily_pipeline.py's "compounding_regime" step --
+    # no threshold overrides passed), and this project's own validation
+    # (docs/a2120_letf_compounding_regime_shadow_20260715.md, "Baseline
+    # Threshold Result") found that exact untuned MEAN_REVERTING-block
+    # configuration backtests NEGATIVE (delta_final_value_sum=-8281.77, only
+    # 2/5 positive windows). The positive, 7/7-window-validated candidate
+    # needed both tuned thresholds and a trend-persistent fast-reentry half
+    # apply_compounding_regime_pre_trade_guard never implemented -- and even
+    # that validated candidate's own promotion-gate scorecard concluded
+    # `production = do_not_promote` (daily-advisory-shadow-only, pending
+    # unmet prerequisites like a T+1 execution-alignment audit). This guard
+    # was nonetheless auto-blocking real target shares in production --
+    # reverted to advisory-only until a properly-tuned, production-cleared
+    # configuration is actually promoted through that gate. See
+    # feedback_strategy_promotion_caution memory (the a214 mis-promotion
+    # incident) for why "looked good in one config, not actually cleared"
+    # is revert-worthy here, not tune-in-place.
+    compounding_regime_pre_trade_guard["enforced"] = False
+    if compounding_regime_pre_trade_guard.get("status") == "blocked":
+        compounding_regime_pre_trade_guard["advisory_trades"] = compounding_regime_pre_trade_guard.get(
+            "blocked_trades", []
+        )
+        compounding_regime_pre_trade_guard["blocked_trades"] = []
+        compounding_regime_pre_trade_guard["status"] = "flagged_advisory_only"
+        compounding_regime_pre_trade_guard["guarded_target_shares"] = compounding_regime_pre_trade_guard.get(
+            "requested_target_shares"
+        )
+        compounding_regime_pre_trade_guard["review_note"] = (
+            "Advisory only: unvalidated default-threshold configuration backtests negative "
+            "(see docs/a2120_letf_compounding_regime_shadow_20260715.md); full target kept "
+            "for manual review instead of being auto-blocked."
+        )
+    compounding_guarded_targets = dict(staged_target_shares)
+
     if not enforce_advisory_pre_trade_guards:
         # All orders are placed manually (no automated execution exists yet), so
-        # these two guards were designed to be a human-review prompt, not an
-        # automatic block -- see 2026-07-23 audit. Downgrading them here keeps
-        # apply_volatility_gate_pre_trade_guard / apply_compounding_regime_pre_trade_guard
-        # (and their unit tests) unchanged; only the enforcement decision made in
-        # this function changes. The full recommended target is kept in
-        # target_shares for manual review; what the guard would have blocked is
-        # preserved under advisory_trades instead of being silently zeroed out.
-        for guard in (pre_trade_guard, compounding_regime_pre_trade_guard):
+        # this guard was designed to be a human-review prompt, not an
+        # automatic block -- see 2026-07-23 audit. Downgrading it here keeps
+        # apply_volatility_gate_pre_trade_guard (and its unit tests) unchanged;
+        # only the enforcement decision made in this function changes. The full
+        # recommended target is kept in target_shares for manual review; what
+        # the guard would have blocked is preserved under advisory_trades
+        # instead of being silently zeroed out.
+        for guard in (pre_trade_guard,):
             guard["enforced"] = False
             if guard.get("status") == "blocked":
                 guard["advisory_trades"] = guard.get("blocked_trades", [])
@@ -697,10 +735,8 @@ def build_execution_plan(
                     "Advisory only: full target kept for manual review instead of being auto-blocked."
                 )
         volatility_guarded_targets = dict(staged_target_shares)
-        compounding_guarded_targets = dict(staged_target_shares)
     else:
-        for guard in (pre_trade_guard, compounding_regime_pre_trade_guard):
-            guard["enforced"] = True
+        pre_trade_guard["enforced"] = True
 
     target_shares = _combine_guarded_targets(
         staged_target_shares,

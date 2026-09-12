@@ -483,7 +483,16 @@ class ExecutionPlanV2Tests(unittest.TestCase):
         self.assertEqual(plan["risk_add_pre_trade_guard"]["status"], "blocked")
         self.assertEqual([trade["ticker"] for trade in plan["trades"]], ["00679B.TWO"])
 
-    def test_execution_plan_applies_compounding_regime_guard_end_to_end(self) -> None:
+    def test_execution_plan_compounding_regime_guard_is_advisory_only_2026_08_09(self) -> None:
+        # 2026-08-09: this guard was downgraded to always advisory-only
+        # (unconditional on enforce_advisory_pre_trade_guards) after finding
+        # it was auto-enforcing an untuned default-threshold configuration
+        # this project's own backtest found net-negative -- see
+        # execution_plan.py's comment at the compounding-guard downgrade
+        # site for the full story. Was previously
+        # test_execution_plan_applies_compounding_regime_guard_end_to_end
+        # and asserted the guard actually capped 00631L; now asserts it
+        # flags but does not block.
         signal = {
             "strategy_id": "a2118",
             "actual_data_date": "2026-07-09",
@@ -528,10 +537,17 @@ class ExecutionPlanV2Tests(unittest.TestCase):
                     compounding_regime_path=compounding_path,
                 )
 
-        self.assertEqual(plan["target_shares"]["00631L.TW"], 100)
+        self.assertEqual(plan["target_shares"]["00631L.TW"], 150)
         self.assertEqual(plan["target_shares"]["0050.TW"], 40)
-        self.assertEqual(plan["compounding_regime_pre_trade_guard"]["status"], "blocked")
-        self.assertEqual([trade["ticker"] for trade in plan["trades"]], ["0050.TW"])
+        self.assertEqual(plan["compounding_regime_pre_trade_guard"]["status"], "flagged_advisory_only")
+        self.assertFalse(plan["compounding_regime_pre_trade_guard"]["enforced"])
+        self.assertEqual(plan["compounding_regime_pre_trade_guard"]["blocked_trades"], [])
+        self.assertEqual(
+            plan["compounding_regime_pre_trade_guard"]["advisory_trades"][0]["blocked_delta_shares"], 50
+        )
+        self.assertEqual(
+            {trade["ticker"] for trade in plan["trades"]}, {"0050.TW", "00631L.TW"}
+        )
 
     def test_execution_plan_advisory_guards_do_not_block_when_not_enforced(self) -> None:
         signal = {
@@ -734,14 +750,21 @@ class ExecutionPlanV2Tests(unittest.TestCase):
                     compounding_regime_path=compounding_path,
                 )
 
+        # 2026-08-09: compounding guard is now always advisory-only, so only
+        # the volatility guard actually caps 00631L here -- target_shares
+        # still lands at 100 because the volatility guard alone blocks it.
         self.assertEqual(plan["target_shares"]["00631L.TW"], 100)
         self.assertEqual(plan["pre_trade_guard"]["status"], "blocked")
-        self.assertEqual(plan["compounding_regime_pre_trade_guard"]["status"], "blocked")
+        self.assertEqual(plan["compounding_regime_pre_trade_guard"]["status"], "flagged_advisory_only")
+        self.assertFalse(plan["compounding_regime_pre_trade_guard"]["enforced"])
         self.assertEqual(plan["pre_trade_guard"]["blocked_trades"][0]["blocked_delta_shares"], 50)
-        self.assertEqual(plan["compounding_regime_pre_trade_guard"]["blocked_trades"][0]["blocked_delta_shares"], 50)
+        self.assertEqual(plan["compounding_regime_pre_trade_guard"]["blocked_trades"], [])
+        self.assertEqual(
+            plan["compounding_regime_pre_trade_guard"]["advisory_trades"][0]["blocked_delta_shares"], 50
+        )
         self.assertEqual(
             plan["guard_impact_summary"]["blocked_guard_names"],
-            ["volatility_gate_no_00631l_add", "compounding_regime_no_00631l_add"],
+            ["volatility_gate_no_00631l_add"],
         )
         self.assertEqual(plan["guard_impact_summary"]["combined_blocked_trade_count"], 1)
         self.assertEqual(plan["guard_impact_summary"]["combined_blocked_buy_notional"], 2000.0)
