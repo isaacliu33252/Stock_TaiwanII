@@ -51,6 +51,48 @@ DEFAULT_TICKERS = [
     "^TNX",
     "^IRX",
     "GC=F",
+    # 2026-08-07: found stuck at 2026-07-31 (7 days stale) by
+    # check_ohlcv_freshness.py's external_market_ohlcv check. Same bug class
+    # as the 2026-08-04 fix for ^GSPC/^IXIC/^TNX/^IRX/GC=F above -- its only
+    # write path was bundled inside an ncf_2330 pipeline step, which
+    # `run_ncf_daily_pipeline.py --only-refresh` (the scheduled data-only
+    # daily run) intentionally skips. Several downstream tools already
+    # depend on this being fresh: group_a_plus/ncf_2330/dates.py's
+    # resolve_end_date(), scripts/evaluate/letf_close_auction_overshoot_reversal_test.py,
+    # and scripts/evaluate/build_market_aligned_sentiment_shadow.py's
+    # 2330 price lookup (external_market_ohlcv override in that script's
+    # _price_table()).
+    "2330.TW",
+    # 2026-08-09: found stuck at 2026-07-15 (found while building
+    # group_a_plus/integrations/tsmc_concentration_divergence.py's top-5
+    # breadth proxy) -- same bug class as above. These 4 were populated
+    # once by an unrelated research backtest (evaluate_stockmixer_atfnet_shadow.py
+    # / evaluate_cross_market_directed_graph_shadow.py) into `ohlcv`, then
+    # never refreshed again. Written here into external_market_ohlcv
+    # (not ohlcv) via this script's existing fetch_yf_close_cached() path --
+    # tsmc_concentration_divergence.py reads all 5 top-5-proxy tickers from
+    # external_market_ohlcv now, matching 2330.TW's existing source. The
+    # stale historical rows in `ohlcv` for these 4 tickers are left alone
+    # (not deleted) but are no longer read by that module.
+    "2317.TW",
+    "2454.TW",
+    "2308.TW",
+    "2382.TW",
+    # 2026-08-16: found stale during the 2607.09537 (GatedLinear) review
+    # session -- these 11 were only ever fetched manually (never through
+    # this schedule), so they drift stale between manual backfills. User
+    # confirmed adding them to the daily schedule.
+    "AMD",
+    "ASML",
+    "AVGO",
+    "DX-Y.NYB",
+    "EWT",
+    "HYG",
+    "NVDA",
+    "SHY",
+    "^HSI",
+    "^KS11",
+    "^N225",
 ]
 
 
